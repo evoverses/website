@@ -7,9 +7,9 @@ import Link from "next/link";
 
 const Landing = () => {
   const links = [
-    { name: "Discord", icon: DiscordLogoIcon, href: "https://discord.com/evoverses" },
-    { name: "Twitter", icon: TwitterLogoIcon, href: "https://twitter.com/evoverses" },
-    { name: "GitHub", icon: GitHubLogoIcon, href: "https://github.com/evoverses" },
+    { name: "Discord", icon: DiscordLogoIcon, href: "https://evoverses.com/discord" },
+    { name: "Twitter", icon: TwitterLogoIcon, href: "https://evoverses.com/twitter" },
+    { name: "GitHub", icon: GitHubLogoIcon, href: "https://evoverses.com/github" },
   ];
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24 pb-4 px-4 sm:px-24">
