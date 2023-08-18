@@ -1,6 +1,7 @@
 import "@/styles/aggregated.css";
 import Navbar from "@/app/_navbar/navbar";
 import Providers from "@/components/providers";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import { PropsWithChildren } from "react";
@@ -88,6 +89,7 @@ const RootLayout = ({ children }: PropsWithChildren) => {
           <Navbar />
           {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
