@@ -5,7 +5,7 @@ Readme is a WIP
 
 Components to be built:
 
-1. Profile  
+1. **Profile**  
    Create a player profile linked to wallet that includes  
    a. Username - possibly optional link to discord?  
    b. Asset summary, inc.:  
@@ -16,14 +16,14 @@ Components to be built:
    c. Matches played/won/lost  
    d. Player XP/rank  
 
-2. Inventory Page  
+2. **Inventory Page**  
    a. Complete sortable inventory of all player assets with multiple views (eg Cards, List (aka Cajun's PC)  
    b. API to opensea and tradescrow  
 
-4. Breeding & Hatching & Evolving  
+4. **Breeding & Hatching & Evolving**  
    Interfaces for breeding, hatching & Evolving activities  
 
-5. Evo University  
+5. **Evo University**  
    a. Evopedia  
    b. Charts and tables showing effectiveness etc.  
    c. Archive (as inventory above but all available Evos)  
