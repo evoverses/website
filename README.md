@@ -16,14 +16,21 @@ Components to be built:
    c. Matches played/won/lost  
    d. Player XP/rank  
 
-2. **Inventory Page**  
+2. **Banking**  
+   all banking functionality  
+   a. Director TBC  
+   b. Manager  
+   c. Investor  
+   d. Supervisor  
+     
+4. **Inventory Page**  
    a. Complete sortable inventory of all player assets with multiple views (eg Cards, List (aka Cajun's PC)  
    b. API to opensea and tradescrow  
 
-4. **Breeding & Hatching & Evolving**  
+5. **Breeding & Hatching & Evolving**  
    Interfaces for breeding, hatching & Evolving activities  
 
-5. **Evo University**  
+6. **Evo University**  
    a. Evopedia  
    b. Charts and tables showing effectiveness etc.  
    c. Archive (as inventory above but all available Evos)  
