@@ -1,7 +1,7 @@
 import Logo from "@/app/icon.png";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import PardonOurDustAlert from "@/app/temp-alert";
 import { Button } from "@/components/ui/button";
-import { DiscordLogoIcon, GitHubLogoIcon, RulerSquareIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import { DiscordLogoIcon, GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,13 +13,7 @@ const Landing = () => {
   ];
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24 pb-4 px-4 sm:px-24">
-      <Alert className="max-w-2xl">
-        <RulerSquareIcon className="h-4 w-4" />
-        <AlertTitle>Pardon our dust!</AlertTitle>
-        <AlertDescription>
-          The EvoVerses website is currently being rebuilt. Want to help? Let us know in discord!
-        </AlertDescription>
-      </Alert>
+      <PardonOurDustAlert />
       <div className="flex flex-col text-center items-center">
         <Image
           src={Logo}
