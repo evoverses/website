@@ -26,6 +26,7 @@ export interface EvoCardProps {
 export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "http://localhost:3000" }: EvoCardProps) => {
   const isEvoVideo = useVideo
   const imageCDN = 'https://images.evoverses.com/card';
+  console.log(`${imageCDN}/evo/${Species.toString(evo.species)}/${Rarity[evo.attributes.rarity]}`)
   return (
     <div
       style={{
@@ -57,7 +58,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
         />
       ) : (
         <img
-          src={`${imageCDN}/evo/${Species.toString(evo.species)}/${Rarity.toString(evo.attributes.rarity)}`}
+          src={`${imageCDN}/evo/${Species.toString(evo.species)}/${Rarity[evo.attributes.rarity]}`}
           style={{
             position: 'absolute',
             width: `${236 * multiplier}px`,
@@ -69,7 +70,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
       )}
       <img
         style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}
-        src={`${imageCDN}/border/${Rarity.toString(evo.attributes.rarity)}`}
+        src={`${imageCDN}/border/${Rarity[evo.attributes.rarity]}`}
         alt="border"
       />
       <div
@@ -272,7 +273,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
       </div>
       {evo.attributes.rarity !== Rarity.Normal && (
         <img
-          src={`${imageCDN}/rarity/${evo.attributes.rarity}`}
+          src={`${imageCDN}/rarity/${Rarity[evo.attributes.rarity]}`}
           alt="Rarity"
           style={{
             position: 'absolute',
