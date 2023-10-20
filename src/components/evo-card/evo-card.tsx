@@ -26,7 +26,6 @@ export interface EvoCardProps {
 export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "http://localhost:3000" }: EvoCardProps) => {
   const isEvoVideo = useVideo
   const imageCDN = 'https://images.evoverses.com/card';
-  console.log(`${imageCDN}/evo/${Species.toString(evo.species)}/${Rarity[evo.attributes.rarity]}`)
   return (
     <div
       style={{

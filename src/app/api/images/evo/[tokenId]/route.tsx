@@ -6,20 +6,14 @@ import { NextRequest } from "next/server";
 
 export const GET = async (req: NextRequest, { params }: { params: { tokenId: string }}) => {
   const tokenId = params.tokenId.replace(/[^0-9]/g,  '');
-  console.log(tokenId)
   const resp = await fetch(`https://api.evoverses.com/metadata/evo/${tokenId}`, {
     next: {
-
+      tags: ['evo', tokenId],
+      revalidate: 86_400
     }
   })
   const metadata = await resp.json();
-  console.log(metadata)
   const sizePct = metadata.attributes.find((a: any) => a.trait_type === "Size").value / 10;
-  console.log({
-    total: metadata.attributes.find((a: any) => a.trait_type === "Total Summons").value,
-    remaining: 100,
-    lastBreedTime: metadata.attributes.find((a: any) => a.trait_type === "Last Breed Time").value,
-  })
   const evo: any = {
     attributes: {
       gender: Gender[metadata.attributes.find((a: any) => a.trait_type === "Gender").value],
@@ -32,7 +26,7 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
     breeds: {
       total: metadata.attributes.find((a: any) => a.trait_type === "Total Summons").value,
       remaining: 100,
-      lastBreedTime: metadata.attributes.find((a: any) => a.trait_type === "Last Breed Time").value,
+      lastBreedTime: metadata.attributes.find((a: any) => a.trait_type === "Last Breed Time")?.value || 0,
     },
     experience: metadata.attributes.find((a: any) => a.trait_type === "XP").value,
     generation: metadata.attributes.find((a: any) => a.trait_type === "Generation").value,
