@@ -9,10 +9,11 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
   const resp = await fetch(`https://api.evoverses.com/metadata/evo/${tokenId}`, {
     next: {
       tags: ['evo', tokenId],
-      revalidate: 86_400
+      revalidate: 3_600,
     }
   })
   const metadata = await resp.json();
+  console.log(metadata)
   const sizePct = metadata.attributes.find((a: any) => a.trait_type === "Size").value / 10;
   const evo: any = {
     attributes: {
