@@ -13,7 +13,6 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
     }
   })
   const metadata = await resp.json();
-  console.log(metadata)
   const sizePct = metadata.attributes.find((a: any) => a.trait_type === "Size").value / 10;
   const evo: any = {
     attributes: {
@@ -46,7 +45,6 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
 
   }
 
-  console.log(evo)
   const sizeMultiplier = 2;
   const baseUrl = req.url.split('/api')[0];
   const nunito = await fetch(
