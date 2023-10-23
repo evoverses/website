@@ -52,12 +52,15 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
       species: Species[metadata.attributes.find((a: any) => a.trait_type === "Species").value],
       generation: metadata.attributes.find((a: any) => a.trait_type === "Generation").value,
       owner: "",
-      parents: [
-        Number(metadata.attributes.find((a: any) => a.trait_type === "Parent 1").value.replace("#", '')),
-        Number(metadata.attributes.find((a: any) => a.trait_type === "Parent 2").value.replace("#", ''))
-      ],
+      parents: [0, 0],
       treated: !!metadata.attributes.find((a: any) => a.value === "Treated"),
       createdAt: metadata.attributes.find((a: any) => a.trait_type === "Created At").value,
+    }
+    if (evo.generation > 0) {
+      evo.parents = [
+        Number(metadata.attributes.find((a: any) => a.trait_type === "Parent 1").value.replace("#", '')),
+        Number(metadata.attributes.find((a: any) => a.trait_type === "Parent 2").value.replace("#", ''))
+      ]
     }
   }
 

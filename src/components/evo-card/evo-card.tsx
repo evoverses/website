@@ -1,20 +1,20 @@
+import breed from "@/assets/evo/breed_bg.svg";
+
+import nature from "@/assets/evo/nature_bg.svg";
+import { IEgg, IEvo, Nature, Rarity, Species, Type } from "@/components/evo-card/types";
 import {
+  getGenderImage,
+  getIDColor,
   getLevelOfEvo,
+  getNameColor,
   getNumberAvailableBreeds,
   getRarityGemHeight,
   getRarityGemWidth,
   getTypeImage,
-  getGenderImage,
-  getIDColor,
-  getNameColor,
-  getTypes
-} from '@/components/helpers';
-import { IEgg, IEvo, Nature, Rarity, Species, Type } from "@/components/evo-card/types";
+  getTypes,
+} from "@/components/helpers";
 
 import { GenItem } from "./GenItem";
-
-import nature from '@/assets/evo/nature_bg.svg';
-import breed from '@/assets/evo/breed_bg.svg';
 
 export interface EvoCardProps {
   multiplier?: number;
@@ -31,7 +31,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
   const ageSeconds = Math.floor(Date.now() / 1000) - egg?.createdAt;
   const percentComplete = ageSeconds * 100 / 28800;
   const ageDays = Math.floor(ageSeconds / 86400);
-
+  console.log(`${imageCDN}/background/${Type.toString(getTypes(egg.species)?.[0])}`)
   if (isEgg) {
     return (
       <div
@@ -55,7 +55,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
           }}
         />
         <img
-          src={`${imageCDN}/evo/${Species.toString(egg.species)}/egg`}
+          src={`${imageCDN}/evo/${Species.toString(egg.species)}/${egg.generation === 0 ? egg.tokenId % 4 : "egg"}`}
           style={{
             position: 'absolute',
             width: `${236 * multiplier}px`,
@@ -97,7 +97,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
         >
           Egg
         </div>
-        {getTypes(egg.species).map((t, i) => Number(t) > 0 && (
+        {getTypes(egg.species).filter(t => t !== Type.None).map((t, i) => Number(t) > 0 && (
           <img
             key={`type-${t}`}
             id={`type-${t}`}
@@ -148,19 +148,21 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
         >
           Generation {egg.generation}
         </div>
-        <img
-          src={`${baseUrl}${getTypeImage(getTypes(egg.species)[0]).src}`}
-          style={{
-            position: 'absolute',
-            width: `${11 * multiplier}px`,
-            height: `${11 * multiplier}px`,
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'contain',
-            bottom: `${5 * multiplier}px`,
-            right: `${5 * multiplier}px`
-          }}
-        />
+        {egg.generation > 0 && (
+          <img
+            src={`${baseUrl}${getTypeImage(getTypes(egg.species)[0]).src}`}
+            style={{
+              position: 'absolute',
+              width: `${11 * multiplier}px`,
+              height: `${11 * multiplier}px`,
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'contain',
+              bottom: `${5 * multiplier}px`,
+              right: `${5 * multiplier}px`
+            }}
+          />
+        )}
         <div
           style={{
             width: 236 * multiplier,
@@ -214,7 +216,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
                   padding: 0
                 }}
               >
-                Parents: {egg.parents.map(n => `#${n}`).join(' & ')}
+                {egg.generation > 0 ? <>Parents: {egg.parents.map(n => `#${n}`).join(' & ')}</> : 'Genesis'}
               </p>
             </div>
             <div
