@@ -16,7 +16,8 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
   const egg = !!metadata.attributes.find((a: any) => a.value === "Egg");
   let evo;
   if (!egg) {
-    const sizePct = metadata.attributes.find((a: any) => a.trait_type === "Size").value / 10;
+    const sizeValue = metadata.attributes.find((a: any) => a.trait_type === "Size")?.value || 0
+    const sizePct = sizeValue / 10;
     evo = {
       attributes: {
         gender: Gender[metadata.attributes.find((a: any) => a.trait_type === "Gender").value],
