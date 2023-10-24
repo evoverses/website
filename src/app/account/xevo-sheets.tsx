@@ -3,18 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
 import { evoContract, xEvoContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
 import { parseViemDetailedError } from "@/lib/viem";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
 import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
@@ -102,18 +96,19 @@ interface DepositButtonProps {
 }
 
 const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
+  const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
   const { address } = useAccount();
-  const [isAllowed, setIsAllowed] = useState<boolean>(false);
-  const { data: allowance } = useContractRead({
+
+  const { data: allowance, refetch } = useContractRead({
     ...evoContract,
     functionName: "allowance",
     args: [ address || "0x0", xEvoContract.address ],
     enabled: !!address,
-    watch: !isAllowed,
   })
 
+  const isAllowed = BigInt(allowance || 0) >= parseEther("100000000");
 
   const { config: approveConfig } = usePrepareContractWrite({
     ...evoContract,
@@ -125,7 +120,11 @@ const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
 
   const { data: approveData, write: approveWrite } = useContractWrite(approveConfig);
 
-  const { data: approveTx } = useWaitForTransaction({ hash: approveData?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: approveTx } = useWaitForTransaction({
+    hash: approveData?.hash,
+    chainId: 43_114,
+    confirmations: 1,
+  });
 
   const { config } = usePrepareContractWrite({
     ...xEvoContract,
@@ -156,6 +155,7 @@ const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
         toast({ title: "Success!", description: "Deposit completed successfully" });
         close();
         reset();
+        router.refresh();
       } else {
         toast({
           variant: "destructive",
@@ -166,9 +166,9 @@ const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
 
       }
     }
-    const a = allowance ?? 0n;
-    if (!isAllowed && a >= parseEther("100000000.0")) {
-      setIsAllowed(true);
+
+    if (approveTx) {
+      refetch();
     }
   }, [ open, isError, error, tx, allowance, isAllowed, approveTx ]);
 
@@ -190,6 +190,7 @@ interface WithdrawButtonProps {
 }
 
 const WithdrawButton = ({ max, value, open, close }: WithdrawButtonProps) => {
+  const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
   const { config } = usePrepareContractWrite({
@@ -221,6 +222,7 @@ const WithdrawButton = ({ max, value, open, close }: WithdrawButtonProps) => {
         toast({ title: "Success!", description: "Withdrawal completed successfully" });
         close();
         reset();
+        router.refresh();
       } else {
         toast({
           variant: "destructive",

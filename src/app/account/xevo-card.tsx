@@ -10,7 +10,6 @@ import { formatEther } from "viem";
 export const XEvoCard = async () => {
   const { address, loggedIn } = getAccountCookie();
   const data = await getxEVOData(address);
-  console.log(data);
   const currentSharesRaw = data.xEvoUserBalance > 0 ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100 : 0;
   const currentShares = currentSharesRaw > 0 && Number(currentSharesRaw.toFixed(4)) === 0 ? "< 0.0001" : Number(currentSharesRaw.toFixed(4));
   const currentBalanceRaw = Number(formatEther(data.xEvoUserBalance));
@@ -50,8 +49,9 @@ export const XEvoCard = async () => {
           </TabsContent>
           <TabsContent value="account">
             <Table>
-              <TableCaption>xEVO is your bank holdings. The amount of EVO will increase proportional to the xEVO
-                multiplier.</TableCaption>
+              <TableCaption>
+                xEVO is your bank holdings. The amount of EVO will increase proportional to the xEVO multiplier.
+              </TableCaption>
               <TableBody>
                 <TableRow>
                   <TableCell>Multiplier</TableCell>

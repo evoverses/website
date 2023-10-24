@@ -18,6 +18,7 @@ import { investorContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
 import { parseViemDetailedError } from "@/lib/viem";
 import { Pool } from "@/types/core";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
@@ -153,6 +154,7 @@ interface ClaimButtonProps {
 }
 
 const ClaimButton = ({ poolId, enabled, open, close }: ClaimButtonProps) => {
+  const router = useRouter();
   const { config } = usePrepareContractWrite({
     ...investorContract,
     functionName: "claimReward",
@@ -182,6 +184,7 @@ const ClaimButton = ({ poolId, enabled, open, close }: ClaimButtonProps) => {
         toast({ title: "Success!", description: "Claim completed successfully" });
         close();
         reset();
+        router.refresh();
       } else {
         toast({
           variant: "destructive",
@@ -207,6 +210,7 @@ interface DepositButtonProps {
 }
 
 const DepositButton = ({ poolId, max, value, open, close }: DepositButtonProps) => {
+  const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
   const { config } = usePrepareContractWrite({
@@ -238,6 +242,7 @@ const DepositButton = ({ poolId, max, value, open, close }: DepositButtonProps) 
         toast({ title: "Success!", description: "Deposit completed successfully" });
         close();
         reset();
+        router.refresh();
       } else {
         toast({
           variant: "destructive",
@@ -264,6 +269,7 @@ interface WithdrawButtonProps {
 }
 
 const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps) => {
+  const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
   const { config } = usePrepareContractWrite({
@@ -295,6 +301,7 @@ const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps
         toast({ title: "Success!", description: "Withdrawal completed successfully" });
         close();
         reset();
+        router.refresh();
       } else {
         toast({
           variant: "destructive",

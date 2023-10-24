@@ -1,10 +1,11 @@
 import { LpTokenABI } from "@/assets/abi/lp-token";
-import { evoContract, investorContract, xEvoContract } from "@/data/contracts";
+import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { fetchPairDataOf } from "@/lib/dexscreener";
 import { client } from "@/lib/viem";
 import { Pool } from "@/types/core";
 import { erc20ABI } from "@wagmi/core";
 import { Address } from "abitype";
+import { cache } from "react";
 import { formatEther } from "viem";
 
 export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, number ] => {
@@ -30,7 +31,7 @@ export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, n
   return [ withdrawFee, nextFee, secondsRemaining ];
 };
 
-export const getPoolData = async (address: Address): Promise<Pool[]> => {
+export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
   const pair = await fetchPairDataOf("0x42006Ab57701251B580bDFc24778C43c9ff589A1");
 
   const now = BigInt(Math.floor(Date.now() / 1000));
@@ -132,9 +133,9 @@ export const getPoolData = async (address: Address): Promise<Pool[]> => {
         gas,
       };
     }));
-};
+});
 
-export const getxEVOData = async (address: Address = "0x0000000000000000000000000000000000000000") => {
+export const getxEVOData = cache(async (address: Address = "0x0000000000000000000000000000000000000000") => {
   const [ xEvoTotalSupply, xEvoEvoBalance, xEvoUserBalance, evoUserBalance ] = await client.multicall({
     contracts: [
       { ...xEvoContract, functionName: "totalSupply" },
@@ -153,4 +154,29 @@ export const getxEVOData = async (address: Address = "0x000000000000000000000000
     multiplier: Number(xEvoEvoBalance * 100_000n / xEvoTotalSupply) / 100_000,
     tvl: Number(formatEther(xEvoEvoBalance)) * Number(pair.priceUsd)
   }
-}
+});
+
+export const getcEVOData = cache(async (address: Address = "0x0000000000000000000000000000000000000000") => {
+  const [ disbursements, balance, pending, selfDisbursementArray ] = await client.multicall({
+    contracts: [
+      { ...cEvoContract, functionName: "disbursementsOf", args: [ address ] },
+      { ...cEvoContract, functionName: "balanceOf", args: [ address ] },
+      { ...cEvoContract, functionName: "pendingOf", args: [ address ] },
+      { ...cEvoContract, functionName: "selfDisbursement", args: [ address ] },
+    ],
+    allowFailure: false,
+  });
+  const selfDisbursement = {
+    startTime: selfDisbursementArray[0],
+    duration: selfDisbursementArray[1],
+    amount: selfDisbursementArray[2],
+    balance: selfDisbursementArray[3],
+  };
+
+  // const pair = await fetchPairDataOf(evoContract.address);
+  return {
+    disbursements: [ ...disbursements, selfDisbursement ].filter((d) => d.startTime > 0n && d.balance > 0n),
+    balance,
+    pending,
+  };
+});
