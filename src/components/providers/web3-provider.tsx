@@ -25,16 +25,13 @@ const wagmiConfig = createConfig({
 
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
-const chainImages = {
-  43_288: "https://bobascan.com/images/svg/brands/main.svg"
-}
+
 const tokenImages = {
   EVO: "/EVO.png",
 };
 
 const tokenContracts = {
-  43_288: "0x3e9694a37846C864C67253af6F5d1F534ff3BF46",
-  43_114: "0x42006Ab57701251B580bDFc24778C43c9ff589A1"
+  43114: "0x42006Ab57701251B580bDFc24778C43c9ff589A1"
 }
 const Web3Provider = ({ children }: PropsWithChildren) => {
   const { resolvedTheme } = useTheme();
@@ -46,7 +43,6 @@ const Web3Provider = ({ children }: PropsWithChildren) => {
       <Web3Modal
         projectId={projectId}
         ethereumClient={ethereumClient}
-        chainImages={chainImages}
         tokenImages={tokenImages}
         tokenContracts={tokenContracts}
         themeMode={(resolvedTheme as 'dark' | 'light' | undefined)  || 'dark'}

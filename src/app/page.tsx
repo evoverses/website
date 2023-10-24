@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DiscordLogoIcon, GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
+import { SiOpensea } from "react-icons/si";
 
 const Landing = () => {
   const links = [
@@ -25,6 +26,11 @@ const Landing = () => {
         <h1 className="pb-2">EvoVerses</h1>
         <h4>A 3D monster battling game bringing Web2 and Web3 together in one platform.</h4>
       </div>
+      <Button variant="outline" size="lg" asChild>
+        <Link href="https://opensea.com/collection/evoverses-evo" target="_blank">
+          <SiOpensea className="h-5 w-5 mr-2 text-[#2081e2]" /> Buy on OpenSea
+        </Link>
+      </Button>
       <div className="flex space-x-4">
         {links.map(({ name, icon: Icon, href }, key) => (
           <Button key={key} variant="outline" asChild>

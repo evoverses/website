@@ -7,7 +7,7 @@ import Logo from "@/app/icon.png";
 const Navbar = () => {
 
   return (
-    <div className="border-b fixed w-full">
+    <div className="border-b fixed w-full bg-background">
       <div className="flex h-16 items-center px-4">
         <Image src={Logo} alt="EvoVerses" width={48} height={48} />
         <nav className="items-center ml-2 sm:space-x-4 sm:mx-6 lg:space-x-6"> {/* lg:flex  */}

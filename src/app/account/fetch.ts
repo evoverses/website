@@ -1,10 +1,11 @@
 import { LpTokenABI } from "@/assets/abi/lp-token";
-import { evoContract, investorContract } from "@/data/contracts";
+import { evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { fetchPairDataOf } from "@/lib/dexscreener";
 import { client } from "@/lib/viem";
 import { Pool } from "@/types/core";
 import { erc20ABI } from "@wagmi/core";
 import { Address } from "abitype";
+import { formatEther } from "viem";
 
 export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, number ] => {
   timeDelta = Number(timeDelta);
@@ -132,3 +133,24 @@ export const getPoolData = async (address: Address): Promise<Pool[]> => {
       };
     }));
 };
+
+export const getxEVOData = async (address: Address = "0x0000000000000000000000000000000000000000") => {
+  const [ xEvoTotalSupply, xEvoEvoBalance, xEvoUserBalance, evoUserBalance ] = await client.multicall({
+    contracts: [
+      { ...xEvoContract, functionName: "totalSupply" },
+      { ...evoContract, functionName: "balanceOf", args: [ xEvoContract.address ] },
+      { ...xEvoContract, functionName: "balanceOf", args: [ address ] },
+      { ...evoContract, functionName: "balanceOf", args: [ address ] },
+    ],
+    allowFailure: false,
+  });
+  const pair = await fetchPairDataOf(evoContract.address);
+  return {
+    xEvoTotalSupply,
+    xEvoEvoBalance,
+    xEvoUserBalance,
+    evoUserBalance,
+    multiplier: Number(xEvoEvoBalance * 100_000n / xEvoTotalSupply) / 100_000,
+    tvl: Number(formatEther(xEvoEvoBalance)) * Number(pair.priceUsd)
+  }
+}

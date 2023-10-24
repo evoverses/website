@@ -31,7 +31,7 @@ interface FarmSheetProps {
   disabled?: boolean
 }
 
-const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetProps) => {
+export const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetProps) => {
   const pool: Pool = JSON.parse(poolJson, bigIntJsonReviver);
   const [ open, setOpen ] = useState<boolean>(false);
   const [ value, setValue ] = useState<string>("");
@@ -144,7 +144,6 @@ const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetProps) =
   );
 };
 
-export default FarmSheet;
 
 interface ClaimButtonProps {
   poolId: bigint,
