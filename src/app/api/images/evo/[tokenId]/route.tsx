@@ -1,7 +1,6 @@
-
 import { EvoCardPng } from "@/components/evo-card/evo-card";
-import { Gender, IEvo, Nature, Rarity, Species, Type } from "@/components/evo-card/types";
-import { ImageResponse } from 'next/server'
+import { Gender, Nature, Rarity, Species, Type } from "@/components/evo-card/types";
+import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
 export const GET = async (req: NextRequest, { params }: { params: { tokenId: string }}) => {
@@ -28,8 +27,8 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
         size: sizePct > 0 ? 10 + sizePct : sizePct,
       },
       breeds: {
-        total: metadata.attributes.find((a: any) => a.trait_type === "Total Summons").value,
-        remaining: 100,
+        total: metadata.attributes.find((a: any) => a.trait_type === "Total Breeds")?.value,
+        remaining: metadata.attributes.find((a: any) => a.trait_type === "Breeds Remaining")?.value,
         lastBreedTime: metadata.attributes.find((a: any) => a.trait_type === "Last Breed Time")?.value || 0,
       },
       experience: metadata.attributes.find((a: any) => a.trait_type === "XP").value,
@@ -55,7 +54,7 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
       owner: "",
       parents: [0, 0],
       treated: !!metadata.attributes.find((a: any) => a.value === "Treated"),
-      createdAt: metadata.attributes.find((a: any) => a.trait_type === "Created At").value,
+      createdAt: metadata.attributes.find((a: any) => a.trait_type === "Created")?.value,
     }
     if (evo.generation > 0) {
       evo.parents = [
