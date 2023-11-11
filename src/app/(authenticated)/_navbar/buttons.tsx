@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Web3Button } from "@web3modal/react";
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
 
 export const ModeButton = () => {
   const { theme, setTheme } = useTheme();
@@ -30,7 +31,8 @@ export const ModeButton = () => {
 };
 
 export const WalletButton = () => {
-  return (
+  const pathName = usePathname();
+  return pathName.startsWith("/account") ? (
     <>
       <div className="hidden md:block">
         <Web3Button icon="hide" avatar="show" balance="show" />
@@ -39,7 +41,7 @@ export const WalletButton = () => {
         <Web3Button icon="hide" />
       </div>
     </>
-  )
+  ) : null;
 }
 
 export const MobileNavButton = () => {
