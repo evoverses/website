@@ -1,8 +1,10 @@
 "use client";
+import AccountCookieManager from "@/components/providers/account-cookie-manager";
 import ThemeProvider from "@/components/providers/theme-provider";
+import Web3Provider from "@/components/providers/web3-provider";
 import { PropsWithChildren } from "react";
 
-const Providers = ({ children }: PropsWithChildren) => {
+export const GlobalProvider = ({ children }: PropsWithChildren) => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       {children}
@@ -10,4 +12,11 @@ const Providers = ({ children }: PropsWithChildren) => {
   );
 };
 
-export default Providers;
+export const AccountProvider = ({ children }: PropsWithChildren) => {
+  return (
+    <Web3Provider>
+      <AccountCookieManager />
+      {children}
+    </Web3Provider>
+  );
+};

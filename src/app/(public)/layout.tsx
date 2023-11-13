@@ -1,4 +1,4 @@
-import Providers from "@/components/providers";
+import { GlobalProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/aggregated.css";
 import { Analytics } from "@vercel/analytics/react";
@@ -85,11 +85,11 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: PropsWithChildren) => {
   return (
-    <html lang="en" className={nunito.variable}>
+    <html lang="en" className={nunito.variable} suppressHydrationWarning>
       <body className="font-nunito">
-        <Providers>
+        <GlobalProvider>
           {children}
-        </Providers>
+        </GlobalProvider>
         <Toaster />
         <Analytics />
       </body>
