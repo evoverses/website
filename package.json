@@ -35,6 +35,7 @@
     "eslint-config-next": "13.4.18",
     "googleapis": "^128.0.0",
     "next": "14.0.3",
+    "next-auth": "^5.0.0-beta.4",
     "next-themes": "^0.2.1",
     "playfab-sdk": "2.140.231027",
     "postcss": "8.4.28",

@@ -3,6 +3,11 @@ const nextConfig = {
   experimental: {
     webpackBuildWorker: true,
   },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "raw.seadn.io" },
+    ],
+  },
   redirects: () => {
     return [
       { source: "/discord", destination: "https://discord.gg/zxdTHCkpvJ", permanent: false },
