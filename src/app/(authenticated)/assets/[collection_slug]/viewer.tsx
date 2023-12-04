@@ -1,8 +1,7 @@
-import { getAllNFTs } from "@/app/(authenticated)/assets/[collection_slug]/fetch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { OpenSeaAPI } from "@/lib/opensea";
+import { getNftsOfCollection, OpenSeaAPI } from "@/lib/opensea";
 import Image from "next/image";
 import Link from "next/link";
 import Contract = OpenSeaAPI.NFTs.Contract;
@@ -30,10 +29,7 @@ export const ViewerLoading = () => {
 };
 
 export const Viewer = async ({ contract }: { contract: Contract }) => {
-
-  const nfts = await getAllNFTs(contract.collection);
-  /// console.log( collectionSlug, nfts)
-  console.log(nfts.length, contract);
+  const { nfts } = await getNftsOfCollection(contract.collection, 200);
   return (
     <div className="flex gap-2 flex-wrap justify-around  w-full">
       {nfts.map(nft => (
