@@ -24,7 +24,7 @@ const AssetsPage = async () => {
   const collectionSlugs = [ "evoverses-evo" ];
   const collections = await Promise.all(collectionSlugs.map(slug => getCollection(slug)));
   return (
-    <main className="flex min-h-screen flex-col items-center justify-around p-24 pb-4 px-4 sm:px-24">
+    <main className="flex flex-grow flex-col items-center justify-around pt-6 px-4 sm:px-24">
       <div className="flex flex-col sm:flex-row gap-8">
         {collections.map(collection => {
           const name = collection.name.replace("EvoVerses", "").trim();

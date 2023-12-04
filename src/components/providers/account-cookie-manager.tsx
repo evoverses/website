@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  getAccountCookie,
-  setAccountCookieAddress,
-} from "@/lib/cookies/account";
+import { getAccountCookie, setAccountCookieAddress } from "@/lib/cookies/account";
 import { useAddress } from "@/lib/wagmi";
 import { useEffect } from "react";
 
@@ -12,7 +9,7 @@ const AccountCookieManager = () => {
 
   useEffect(() => {
     const get = async () => {
-      const accountCookie = await getAccountCookie();
+      const accountCookie = getAccountCookie();
       if (address !== accountCookie.address) {
         await setAccountCookieAddress(address);
       }

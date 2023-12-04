@@ -1,4 +1,4 @@
-import { UserAuthForm } from "@/app/(public)/account/user-auth-form";
+import { UserAuthForm } from "@/app/(public)/user-auth-form";
 import Logo from "@/app/icon.png";
 import GameScreenshot1 from "@/assets/images/game-screenshot-1.png";
 import { buttonVariants } from "@/components/ui/button";
@@ -23,7 +23,7 @@ const LoginPage = () => {
         <span>EvoVerses</span>
       </Link>
       <Link
-        href="/account/create"
+        href="/signup"
         className={cn(
           buttonVariants({ variant: "ghost" }),
           "absolute right-4 top-4 md:right-8 md:top-8",
@@ -52,10 +52,10 @@ const LoginPage = () => {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Log in
+              Sign In
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your email below to log into your account
+              Sign in to your account via the social logins below!
             </p>
           </div>
           <UserAuthForm />

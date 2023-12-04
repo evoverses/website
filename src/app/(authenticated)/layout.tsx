@@ -1,4 +1,4 @@
-import Navbar from "@/app/(authenticated)/_navbar/navbar";
+import Navbar from "@/app/(authenticated)/navbar";
 
 import { GlobalProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
@@ -91,7 +91,9 @@ const RootLayout = ({ children }: PropsWithChildren) => {
       <body className="font-nunito">
         <GlobalProvider>
           <Navbar />
-          {children}
+          <div className="flex min-h-screen flex-col pt-16">
+            {children}
+          </div>
         </GlobalProvider>
         <Toaster />
         <Analytics />

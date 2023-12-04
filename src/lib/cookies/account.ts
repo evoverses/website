@@ -1,9 +1,8 @@
 "use server";
 
 import { DefaultAccountCookie } from "@/data/constants";
-import { IAccountCookie } from "@/types/cookies";
-
 import { getAddressSafe } from "@/lib/viem";
+import { IAccountCookie } from "@/types/cookies";
 import { Address } from "abitype";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
@@ -35,7 +34,6 @@ export const getAccountCookie = (): IAccountCookie => {
 
   return DefaultAccountCookie;
 };
-
 /** Set the current address of the account in cookieStore
  *
  * @function setAccountCookieAddress
