@@ -194,6 +194,7 @@ const ClaimButton = ({ poolId, enabled, open, close }: ClaimButtonProps) => {
         reset();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, tx ]);
 
   return (
@@ -253,6 +254,7 @@ const DepositButton = ({ poolId, max, value, open, close }: DepositButtonProps) 
 
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, tx ]);
 
   return (
@@ -311,6 +313,7 @@ const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps
         reset();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, tx ]);
 
   return (

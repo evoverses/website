@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
-import { NextAuthRequest } from "next-auth/lib";
 import { NextResponse } from "next/server";
 
-export const middleware = auth((request: NextAuthRequest) => {
+export const middleware = auth((request) => {
 
   if (!request.auth) {
     if (/^\/((profile).*)/i.test(request.nextUrl.pathname)) {

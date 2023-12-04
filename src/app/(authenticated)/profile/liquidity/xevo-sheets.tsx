@@ -170,6 +170,7 @@ const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
     if (approveTx) {
       refetch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, tx, allowance, isAllowed, approveTx ]);
 
   if (!isAllowed) {
@@ -232,6 +233,7 @@ const WithdrawButton = ({ max, value, open, close }: WithdrawButtonProps) => {
         reset();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, tx ]);
 
   return (

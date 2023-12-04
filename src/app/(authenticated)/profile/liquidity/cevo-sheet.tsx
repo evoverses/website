@@ -52,7 +52,7 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
 
       }
     }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ isError, error, tx ]);
 
   return (

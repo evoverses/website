@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import breed from "@/assets/evo/breed_bg.svg";
 
 import nature from "@/assets/evo/nature_bg.svg";
@@ -23,8 +24,7 @@ export interface EvoCardProps {
   baseUrl?: string;
 }
 
-export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "http://localhost:3000" }: EvoCardProps) => {
-  const isEvoVideo = useVideo
+export const EvoCardPng = ({ multiplier = 2, evo, baseUrl = "http://localhost:3000" }: EvoCardProps) => {
   const imageCDN = 'https://images.evoverses.com/card';
   const egg: IEgg = evo as unknown as IEgg;
   const isEgg = 'treated' in egg;
@@ -53,6 +53,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
             top: 0,
             left: 0
           }}
+          alt="background"
         />
         <img
           src={`${imageCDN}/evo/${Species.toString(egg.species)}/${egg.generation === 0 ? egg.tokenId % 4 : "egg"}`}
@@ -63,6 +64,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
             top: `${32 * multiplier}px`,
             left: '0px'
           }}
+          alt="egg image"
         />
         <img
           style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}
@@ -161,6 +163,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
               bottom: `${5 * multiplier}px`,
               right: `${5 * multiplier}px`
             }}
+            alt="type"
           />
         )}
         <div
@@ -339,6 +342,7 @@ export const EvoCardPng = ({ multiplier = 2, evo, useVideo = false, baseUrl = "h
           top: `${4 * multiplier}px`,
           left: '0px'
         }}
+        alt="rarity jewel"
       />
       <img
         style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}
