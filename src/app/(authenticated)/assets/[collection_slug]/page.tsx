@@ -5,6 +5,8 @@ import { getCollection, getCollectionStats, getContract } from "@/lib/opensea";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Assets",
 };

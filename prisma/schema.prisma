@@ -1,0 +1,238 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Evo {
+  id            Int          @id @default(autoincrement())
+  tokenId       BigInt       @unique
+  gender        Gender
+  generation    Int
+  nature        Nature
+  rarity        Rarity
+  species       Species
+  types         SpeciesTypes @relation(fields: [species], references: [species])
+  totalBreeds   Int
+  lastBreedTime DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  attack        Int
+  special       Int
+  defense       Int
+  resistance    Int
+  speed         Int
+  size          Int
+  xp            Int          @default(0)
+}
+
+model Egg {
+  id         Int      @id @default(autoincrement())
+  tokenId    BigInt   @unique
+  species    Species
+  generation Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  parent1Id  BigInt?
+  parent2Id  BigInt?
+  treated    Boolean  @default(false)
+}
+
+model SpeciesTypes {
+  id        Int     @id @default(autoincrement())
+  species   Species @unique
+  primary   Type
+  secondary Type
+  evos      Evo[]
+}
+
+enum Type {
+  None
+  Water
+  Fire
+  Air
+  Plant
+  Earth
+  Light
+  Dark
+  Mineral
+  Corrupt
+  Ether
+  Bug
+  Monster
+}
+
+enum Rarity {
+  Normal
+  Chroma
+  Epic
+}
+
+enum Species {
+  Unknown
+  Nissel
+  Finantis
+  Karoite
+  Nuvea
+  Hodeon
+  Eulocelus
+  Arnoriel
+  Raptoriel
+  Carcoid
+  Adhamandra
+  Ainepolux
+  Kapryno
+  Kitsul
+  Kitsumbra
+  Rattuos
+  Beldar
+  Belpillar
+  Beldarion
+  Firemon
+  Obryos
+  Mosuo
+  Lumi
+  Glaumer
+  Zhilumian
+  Onydae
+  Skycyx
+  Cinyx
+  Droserace
+  Hydraserace
+  Kerval
+  Kervalio
+  Megakeras
+  Gwenbee
+  Shazark
+  Krokon
+  Kradarkus
+  Clocarstone
+  Qwarzil
+  Tokaleaf
+  Sunopendra
+  Pendraminax
+  Yotnar
+  Hikarul
+  Opal
+  Aubelyon
+  Flint
+  Kraker
+  Venuserpien
+  Drakava
+  Espyke
+  Mobyd
+  Orcabyd
+  Ghorgon
+  Mellio
+  Fugush
+  Morphee
+  Morphian
+  Morphoon
+  Lounn
+  Lumiann
+  Uzumebach
+  Zumestra
+  Gemarites
+  Methyst
+  Spectross
+  Tamandu
+  Kanitro
+  Tytan
+  Moffunap
+  Nymphel
+  Buzzel
+  Jarel
+  Lumel
+  Vultrel
+  Allacrow
+  Corvalloy
+  Jokull
+  Vulpyro
+  Vulcario
+  Vulkran
+  Fayde
+  Kasscade
+  Ruard
+  Caerthos
+  Ryomizu
+  Obsy
+  Ceflora
+  Carnivyan
+  Dhaek
+  Drapex
+  Metheo
+  Glazzyx
+  Nythe
+  Nyferr
+  Wargrim
+  Meissa
+  Fluozacil
+  Zacirel
+  Vramakan
+  Cyarabat
+  Darkali
+  Struthor
+  Istral
+  Magistral
+  Norax
+  Cyzorak
+  Rhinurak
+  Trizorak
+  Kaos
+  Bird01
+  Bird02
+  Fish1geo
+  Fish2geo
+  Cephlare
+  Cephalopot
+  Krakenoa
+  Athel
+  Athidel
+  Athalasia
+  Lamphal
+  Lamphanuar
+  Geckaiba
+  Draxill
+  Kyrun
+  Sauderon
+  Ayacinth
+  Zhytrous
+  CuerpoHeraldo
+  Pikrel
+  Puffel
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum Nature {
+  Dauntless
+  Executive
+  Restless
+  Nervous
+  Cunning
+  Energetic
+  Clever
+  Confident
+  Ignorant
+  Arrogant
+  Biting
+  Aggressive
+  Patient
+  Mature
+  Sensible
+  Calm
+  Rude
+  Cautious
+  Curious
+  Discrete
+  Loyal
+}

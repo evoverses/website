@@ -5,3 +5,5 @@
 /httpRequests/
 /dynamoDBRequestHistory.xml
 /dynamoDBSettings.xml
+/dataSources/
+/dataSources*

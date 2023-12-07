@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getNftsOfCollection, OpenSeaAPI } from "@/lib/opensea";
+import { OpenSeaAPI } from "@/lib/opensea";
+import { getEvos } from "@/lib/prisma/server";
 import Image from "next/image";
 import Link from "next/link";
 import Contract = OpenSeaAPI.NFTs.Contract;
@@ -29,20 +30,29 @@ export const ViewerLoading = () => {
 };
 
 export const Viewer = async ({ contract }: { contract: Contract }) => {
-  const { nfts } = await getNftsOfCollection(contract.collection, 200);
+  const evos = await getEvos();
   return (
     <div className="flex gap-2 flex-wrap justify-around  w-full">
-      {nfts.map(nft => (
-        <Card key={nft.identifier} className="flex flex-row w-[350px]">
-          <Image src={nft.image_url} alt={nft.identifier} width={472} height={684} unoptimized className="w-40" />
+      {evos.map(nft => (
+        <Card key={nft.tokenId} className="flex flex-row w-[350px]">
+          <Image
+            src={`https://evoverses.com/api/images/evo/${nft.tokenId.toString()}`}
+            alt={`${nft.species} #${nft.tokenId.toString()}`}
+            width={472}
+            height={684}
+            unoptimized className="w-40"
+          />
           <div className="flex flex-col w-full">
             <CardHeader className="pr-2">
-              <CardTitle className="text-sm">{nft.name}</CardTitle>
+              <CardTitle className="text-sm">{nft.species} #{nft.tokenId.toString()}</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow">
             </CardContent>
             <CardFooter>
-              <Link href={`/assets/${contract.collection.replace("evoverses-", "")}/${nft.identifier}`} legacyBehavior>
+              <Link
+                href={`/assets/${contract.collection.replace("evoverses-", "")}/${nft.tokenId.toString()}`}
+                legacyBehavior
+              >
                 <Button className="w-full font-bold">
                   Details
                 </Button>

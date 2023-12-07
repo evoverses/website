@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
@@ -44,6 +45,7 @@
     "next-themes": "^0.2.1",
     "playfab-sdk": "2.143.231124",
     "postcss": "8.4.32",
+    "@prisma/client": "^5.7.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.48.2",
@@ -57,5 +59,8 @@
     "viem": "^1.19.11",
     "wagmi": "^1.4.7",
     "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.0"
   }
 }
