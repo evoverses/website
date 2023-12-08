@@ -1,4 +1,6 @@
+import { linkAccount } from "@/app/(authenticated)/profile/actions";
 import { ProfileForm } from "@/app/(authenticated)/profile/profile-form";
+import { signOutAction } from "@/app/(public)/actions";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
@@ -7,29 +9,37 @@ import { Separator } from "@/components/ui/separator";
 import { getAccountCookie } from "@/lib/cookies/account";
 import { getAccountInfo, getCombinedPlayerInfo } from "@/lib/playfab";
 import { cn } from "@/lib/utils";
+import { Provider } from "@/types/auth";
 import { CheckIcon } from "@radix-ui/react-icons";
 
 const connections = {
+  Twitch: {
+    Icon: Icons.twitch,
+    disabled: false,
+  },
   Google: {
     Icon: Icons.google,
+    disabled: process.env.NODE_ENV === "production",
   },
   Discord: {
     Icon: Icons.discord,
+    disabled: true,
   },
   Twitter: {
     Icon: Icons.x,
+    disabled: true,
   },
   Facebook: {
     Icon: Icons.facebook,
-  },
-  Twitch: {
-    Icon: Icons.twitch,
+    disabled: true,
   },
   Steam: {
     Icon: Icons.steam,
+    disabled: true,
   },
   Apple: {
     Icon: Icons.apple,
+    disabled: true,
   },
 };
 const AccountPage = async () => {
@@ -51,21 +61,24 @@ const AccountPage = async () => {
       <div className="grid gap-2">
         <Label htmlFor="buttons">Connections</Label>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(connections).map(([ name, { Icon } ]) => {
+          {Object.entries(connections).map(([ name, { Icon, disabled } ]) => {
+            const action = linkAccount.bind(null, name.toLowerCase() as Provider);
             const linked = combined.PlayerProfile.LinkedAccounts.some((account) => account.Platform.toLowerCase()
               .includes(name.toLowerCase()));
             return (
-              <Button
-                variant="outline"
-                key={name}
-                size="lg"
-                disabled={linked}
-                className={cn("font-bold relative", { "bg-green-500 text-white": linked })}
-              >
-                <Icon className="h-5 w-5 mr-2" />
-                {name}
-                {linked && <CheckIcon className="absolute right-2 h-5 w-5" />}
-              </Button>
+              <form action={action} key={name}>
+                <Button
+                  variant="outline"
+                  type="submit"
+                  size="lg"
+                  disabled={linked || disabled}
+                  className={cn("font-bold relative", { "bg-green-500 text-white": linked })}
+                >
+                  <Icon className="h-5 w-5 mr-2" />
+                  {name}
+                  {linked && <CheckIcon className="absolute right-2 h-5 w-5" />}
+                </Button>
+              </form>
             );
           })}
         </div>
@@ -73,9 +86,11 @@ const AccountPage = async () => {
       <div className="grid gap-2">
         <Label htmlFor="sign-out">Danger</Label>
         <div className="flex gap-2">
-          <Button type="submit">
-            Sign Out
-          </Button>
+          <form action={signOutAction}>
+            <Button type="submit">
+              Sign Out
+            </Button>
+          </form>
           <Button type="submit">
             Delete Account
           </Button>

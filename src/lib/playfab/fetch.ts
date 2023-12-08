@@ -5,7 +5,7 @@ import AccountInfoResponse = PlayFab.Client.Account.Responses.AccountInfoRespons
 import CombinedInfoResponse = PlayFab.Client.Account.Responses.CombinedInfoResponse;
 import LoginResponse = PlayFab.Client.Auth.LoginResponse;
 
-export const loginWithGoogle = async (access_token: string) => {
+export const loginWithGoogle = async (access_token?: string) => {
   const url = new URL("LoginWithGoogleAccount", BASE_URL);
 
   const body = JSON.stringify({
@@ -20,6 +20,66 @@ export const loginWithGoogle = async (access_token: string) => {
   }
   const loginResponse = await resp.json() as LoginResponse;
   return loginResponse.data;
+};
+
+export const loginWithDiscord = async (access_token?: string) => {
+  const url = new URL("LoginWithOpenIdConnect", BASE_URL);
+
+  const body = JSON.stringify({
+    ConnectionId: "Discord",
+    IdToken: access_token,
+    TitleId: process.env.PLAYFAB_TITLE_ID,
+    CreateAccount: true,
+  });
+  const resp = await fetch(url, { method: "POST", headers: { ...headers }, body });
+  if (!resp.ok) {
+    console.log(resp);
+    throw new Error(`Login Failed: ${resp.statusText}`);
+  }
+
+  const loginResponse = await resp.json() as LoginResponse;
+  console.log(loginResponse);
+  return loginResponse.data;
+};
+
+export const loginWithTwitch = async (access_token?: string) => {
+  const url = new URL("LoginWithTwitch", BASE_URL);
+
+  const body = JSON.stringify({
+    TitleId: process.env.PLAYFAB_TITLE_ID,
+    AccessToken: access_token,
+    CreateAccount: true,
+  });
+
+  const resp = await fetch(url, { method: "POST", headers: { ...headers }, body });
+  if (!resp.ok) {
+    console.log(resp);
+    throw new Error(`Login Failed: ${resp.statusText}`);
+  }
+
+  const loginResponse = await resp.json() as LoginResponse;
+  return loginResponse.data;
+};
+
+export const linkTwitch = async (sessionTicket: string, access_token?: string) => {
+  const url = new URL("LinkTwitch", BASE_URL);
+
+  const body = JSON.stringify({ AccessToken: access_token });
+
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      ...headers,
+      "X-Authorization": sessionTicket,
+    },
+    body,
+  });
+
+  if (!resp.ok) {
+    console.log(resp);
+    console.log(await resp.text());
+    throw new Error(`Login Failed: ${resp.statusText}`);
+  }
 };
 
 export const getAccountInfo = async (id: string, clientSessionTicket: string) => {

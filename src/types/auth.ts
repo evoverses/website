@@ -1,1 +1,1 @@
-export type Provider = "google" | "facebook" | "twitter" | "github" | "discord" | "apple" | "web3";
+export type Provider = "google" | "facebook" | "twitter" | "github" | "discord" | "apple" | "epic" | "twitch";

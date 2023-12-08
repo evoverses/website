@@ -88,7 +88,7 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input defaultValue={field.value} placeholder="Not Set..." {...field} />
+                <Input placeholder="Not Set..." {...field} />
               </FormControl>
               <FormDescription>
                 This is your public display name. It can be your real name or a

@@ -14,19 +14,33 @@ export const UserAuthForm = ({ isCreateAccount, className, ...props }: UserAuthF
   const isLoading = false;
   const providers = [
     {
+      name: "Twitch",
+      icon: Icons.twitch,
+      action: loginWithAction.bind(null, "twitch"),
+    },
+    {
+      name: "Epic",
+      icon: Icons.epic,
+      action: loginWithAction.bind(null, "epic"),
+      disabled: true,
+    },
+    {
       name: "Google",
       icon: Icons.google,
       action: loginWithAction.bind(null, "google"),
+      disabled: process.env.NODE_ENV === "production",
     },
     {
       name: "Discord",
       icon: Icons.discord,
       action: loginWithAction.bind(null, "discord"),
+      disabled: true,
     },
     {
       name: "Apple",
       icon: Icons.apple,
       action: loginWithAction.bind(null, "apple"),
+      disabled: true,
     },
   ];
   return (
@@ -63,13 +77,13 @@ export const UserAuthForm = ({ isCreateAccount, className, ...props }: UserAuthF
           </>
         )}
         <div className="grid gap-6">
-          {providers.map(({ name, icon: Icon, action }) => (
+          {providers.map(({ name, icon: Icon, action, disabled }) => (
             <Button
               key={name}
               variant="outline"
               type="submit"
               formAction={action}
-              disabled={isLoading}
+              disabled={isLoading || disabled}
             >
               {isLoading ? (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

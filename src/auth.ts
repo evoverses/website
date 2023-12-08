@@ -1,36 +1,7 @@
-import authConfig from "@/auth.config";
-import { loginWithGoogle } from "@/lib/playfab";
-import NextAuth, { DefaultSession } from "next-auth";
 import "server-only";
-import { PlayFab } from "./lib/playfab";
-
-declare module "@auth/core" {
-  /**
-   * The shape of the user object returned in the OAuth providers' `profile` callback,
-   * or the second parameter of the `session` callback, when using a database.
-   */
-  interface User {
-  }
-
-  /**
-   * The shape of the account object returned in the OAuth providers' `account` callback,
-   * Usually contains information about the provider being used, like OAuth tokens (`access_token`, etc).
-   */
-  interface Account {
-  }
-
-  /** Returned by `useSession`, `auth`, contains information about the active session. */
-  interface Session {
-    user: {} & DefaultSession["user"];
-    expires: string;
-    playFab: PlayFab.Client.Auth.LoginResponse["data"];
-  }
-
-  interface User {
-    lastLogin?: Date;
-    admin?: boolean;
-  }
-}
+import authConfig from "@/auth.config";
+import { loginWithDiscord, loginWithGoogle, loginWithTwitch } from "@/lib/playfab";
+import NextAuth from "next-auth";
 
 export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAuth({
   ...authConfig,
@@ -45,10 +16,12 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
           if (profile && !!profile.email_verified) {
             return true;
           }
-        } else if (account.provider === "web3") {
-          if (credentials && credentials.sessionTicket) {
+        } else if (account.provider === "discord") {
+          if (profile && profile.verified) {
             return true;
           }
+        } else if (account.provider === "twitch") {
+          return true;
         }
       }
 
@@ -64,6 +37,7 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
           displayName: "",
           image: token.picture,
         },
+        account: token.account,
         playFab: token.playFab,
       } as any;
     },
@@ -79,6 +53,26 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
               id: user.id,
               currentProvider: account.provider,
               playFab,
+              profile,
+              account,
+            };
+          } else if (account.provider === "discord") {
+            const playFab = await loginWithDiscord(account.access_token);
+            return {
+              ...token,
+              id: user.id,
+              currentProvider: account.provider,
+              playFab: playFab,
+              profile,
+              account,
+            };
+          } else if (account.provider === "twitch") {
+            const playFab = await loginWithTwitch(account.access_token);
+            return {
+              ...token,
+              id: user.id,
+              currentProvider: account.provider,
+              playFab: playFab,
               profile,
               account,
             };
