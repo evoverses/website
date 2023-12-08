@@ -13,7 +13,7 @@ const Landing = () => {
     { name: "GitHub", icon: GitHubLogoIcon, href: "https://evoverses.com/github" },
   ];
   return (
-    <main className="flex min-h-screen flex-col items-center justify-around p-24 pb-4 px-4 sm:px-24">
+    <main className="flex flex-grow flex-col items-center justify-around p-24 pb-4 px-4 sm:px-24">
       <PardonOurDustAlert />
       <div className="flex flex-col text-center items-center">
         <Image
@@ -34,7 +34,7 @@ const Landing = () => {
       <div className="flex space-x-4">
         {links.map(({ name, icon: Icon, href }, key) => (
           <Button key={key} variant="outline" asChild>
-            <Link href={href} target="_blank">
+            <Link href={href} target="_blank" rel="noopener nofollow noreferrer" prefetch={false}>
               <Icon className="h-4 w-4 mr-2" /> {name}
             </Link>
           </Button>

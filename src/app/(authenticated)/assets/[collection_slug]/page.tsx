@@ -11,7 +11,17 @@ export const metadata: Metadata = {
   title: "Assets",
 };
 
-const AssetPage = async ({ params: { collection_slug } }: { params: { collection_slug: string } }) => {
+export const generateStaticParams = async () => {
+  return [ { collection_slug: "evo" } ];
+};
+
+type Props = {
+  params: {
+    collection_slug: string;
+  }
+}
+
+const AssetPage = async ({ params: { collection_slug } }: Props) => {
   const slug = `evoverses-${collection_slug}`;
   const [ collection, rawStats ] = await Promise.all([
     getCollection(slug),
@@ -40,7 +50,9 @@ const AssetPage = async ({ params: { collection_slug } }: { params: { collection
         <div className="hidden sm:flex space-x-4 items-end">
           {stats.map(s => (
             <div className="flex flex-col" key={s.title}>
-              <h5>{Number(s.value.toFixed(2))} {s.suffix ? rawStats.total.floor_price_symbol : ""}</h5>
+              <h5>
+                {Number(s.value.toFixed(2))} {s.suffix ? rawStats.total.floor_price_symbol : ""}
+              </h5>
               <h4>Volume</h4>
             </div>
           ))}

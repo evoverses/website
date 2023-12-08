@@ -1,6 +1,6 @@
 import { type DefaultSession } from "next-auth";
 
-declare module "@auth/core" {
+declare module "@auth/core/types" {
   import { PlayFab } from "@/lib/playfab/types";
 
   /**
@@ -19,7 +19,9 @@ declare module "@auth/core" {
 
   /** Returned by `useSession`, `auth`, contains information about the active session. */
   interface Session {
-    user: {} & DefaultSession["user"];
+    user: {
+      displayName: string;
+    } & DefaultSession["user"];
     expires: string;
     playFab: PlayFab.Client.Auth.LoginResponse["data"];
   }
