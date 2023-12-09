@@ -1,7 +1,6 @@
 "use client";
 
 import { LinkWalletButton } from "@/app/(authenticated)/profile/web3-button";
-import { signOutAction } from "@/app/(public)/actions";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -142,14 +141,12 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
                     )}
                   </SelectContent>
                 </Select>
-                <form action={signOutAction}>
-                  <LinkWalletButton
-                    disabled={!!account.CustomIdInfo?.CustomId}
-                    session={session}
-                    accountCookie={accountCookie}
-                    className="ml-2"
-                  />
-                </form>
+                <LinkWalletButton
+                  disabled={!!account.CustomIdInfo?.CustomId}
+                  session={session}
+                  accountCookie={accountCookie}
+                  className="ml-2"
+                />
               </div>
               <FormDescription>
                 Connecting your wallet allows you to buy, sell, and trade NFTs.

@@ -1,9 +1,9 @@
 "use server";
-import { BASE_URL, headers } from "@/lib/playfab/common";
+import { CLIENT_URL, headers } from "@/lib/playfab/common";
 import { Address } from "abitype";
 
 export const linkWallet2 = async (address: Address, clientSessionTicket: string) => {
-  const url = new URL("AddGenericID", BASE_URL);
+  const url = new URL("AddGenericID", CLIENT_URL);
   console.log("LINKING", address, clientSessionTicket);
   console.log(url.toString());
   const body = JSON.stringify({
@@ -28,7 +28,7 @@ export const linkWallet2 = async (address: Address, clientSessionTicket: string)
 
 export const linkWallet = async (address: Address, clientSessionTicket: string) => {
 
-  const url = new URL("LinkCustomID", BASE_URL);
+  const url = new URL("LinkCustomID", CLIENT_URL);
 
   const body = JSON.stringify({
     TitleId: process.env.PLAYFAB_TITLE_ID,
@@ -49,7 +49,7 @@ export const linkWallet = async (address: Address, clientSessionTicket: string) 
 };
 
 export const updateUserTitleDisplayName = async (displayName: string, clientSessionTicket: string) => {
-  const url = new URL("UpdateUserTitleDisplayName", BASE_URL);
+  const url = new URL("UpdateUserTitleDisplayName", CLIENT_URL);
 
   const body = JSON.stringify({
     DisplayName: displayName,

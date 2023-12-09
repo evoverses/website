@@ -1,6 +1,7 @@
 import "server-only";
 import authConfig from "@/auth.config";
 import { loginWithDiscord, loginWithGoogle, loginWithTwitch } from "@/lib/playfab";
+// import PlayFabAdapter from "@/lib/playfab-adapter";
 import NextAuth from "next-auth";
 
 export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAuth({
@@ -9,6 +10,7 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
     signIn: "/signin",
     error: "/signin",
   },
+  session: { strategy: "jwt" },
   callbacks: {
     signIn: async ({ user, account, profile, credentials }) => {
       if (account) {
@@ -96,4 +98,5 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
 
     },
   },
+  // adapter: PlayFabAdapter({}),
 });

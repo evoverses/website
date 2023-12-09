@@ -90,7 +90,7 @@ export const UserAuthForm = ({ isCreateAccount, className, ...props }: UserAuthF
               ) : (
                 <Icon className={cn("mr-2 h-5 w-5", { "w-6 h-6": name === "Wallet" })} />
               )}
-              <span className="w-12">{name}</span>
+              <span className="w-36">Sign {isCreateAccount ? "Up" : "In"} with {name}</span>
             </Button>
           ))}
         </div>

@@ -1,11 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 import { typedData } from "@/data/viem/signature";
 import { getCsrfToken } from "@/lib/auth";
 import { linkWallet } from "@/lib/playfab/actions";
 import { cn } from "@/lib/utils";
 import { IAccountCookie } from "@/types/cookies";
 import { Session } from "next-auth";
+import { useEffect, useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
 import { recoverTypedDataAddress, verifyTypedData } from "viem";
 
 import { useAccount, useWalletClient } from "wagmi";
@@ -20,6 +23,11 @@ type LinkWalletButtonProps = {
 export const LinkWalletButton = ({ session, disabled, accountCookie, className }: LinkWalletButtonProps) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const [ mounted, setMounted ] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const onClick = async () => {
     if (!walletClient || !address) {
@@ -69,11 +77,15 @@ export const LinkWalletButton = ({ session, disabled, accountCookie, className }
       await linkWallet(address, sessionTicket);
 
     } catch (error) {
-      window.alert(error);
+      toast({
+        title: "Error",
+        description: `${error}`,
+        variant: "destructive",
+      });
     }
   };
 
-  return (
+  return mounted ? (
     <Button
       type="button"
       disabled={disabled}
@@ -82,6 +94,10 @@ export const LinkWalletButton = ({ session, disabled, accountCookie, className }
       // disabled={!isConnected || isConnected && added}
     >
       {accountCookie.loggedIn ? disabled ? "Linked" : "Link" : "Wallet Not Connected"}
+    </Button>
+  ) : (
+    <Button disabled className={cn(className)}>
+      <AiOutlineLoading />
     </Button>
   );
 };
