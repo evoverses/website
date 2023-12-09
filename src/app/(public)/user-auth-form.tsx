@@ -28,7 +28,7 @@ export const UserAuthForm = ({ isCreateAccount, className, ...props }: UserAuthF
       name: "Google",
       icon: Icons.google,
       action: loginWithAction.bind(null, "google"),
-      disabled: process.env.NODE_ENV === "production",
+      disabled: false,
     },
     {
       name: "Discord",
