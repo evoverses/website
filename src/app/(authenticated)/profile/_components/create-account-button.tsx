@@ -27,7 +27,7 @@ const CreateAccountButton = ({ accountId }: { accountId: string }) => {
             variant: "destructive",
           });
           break;
-        } else if (status === "completed") {
+        } else if (status === "mined") {
           toast({
             title: "Success",
             description: "Your account has been created!",
