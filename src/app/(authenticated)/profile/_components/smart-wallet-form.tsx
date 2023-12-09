@@ -64,7 +64,7 @@ const SmartWalletForm = async ({ accountId }: SmartWalletFormProps) => {
       <div>
         <AlertTitle>Heads up!</AlertTitle>
         <AlertDescription>
-          Looks like you haven't created your backend smart account yet!
+          Looks like you haven&apos;t created your backend smart account yet!
         </AlertDescription>
       </div>
       <CreateAccountButton accountId={accountId} />
