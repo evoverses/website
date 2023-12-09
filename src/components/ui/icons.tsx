@@ -244,4 +244,17 @@ export const Icons = {
       <path d="M1 1h22v22H1z" fill="none" />
     </svg>
   ),
+  moneySign: (props: IconProps) => (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      {...props}
+    >
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  ),
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { LinkWalletButton } from "@/app/(authenticated)/profile/web3-button";
+import { LinkWalletButton } from "@/app/(authenticated)/profile/_components/web3-button";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -24,16 +24,8 @@ const profileFormSchema = z.object({
     .max(16, {
       message: "Username must not be longer than 16 characters.",
     }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
-    })
-    .email(),
-  wallet: z
-    .string({
-      required_error: "Please choose a primary wallet.",
-    }).min(42).max(42),
-  // bio: z.string().max(160).min(4).optional(),
+  email: z.string().email().optional(),
+  wallet: z.string().min(42).max(42).optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -68,15 +60,11 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
       ).playFab.SessionTicket,
     );
     toast({
-
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+      title: "Success!",
+      description: "Your profile has been updated.",
     });
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -155,28 +143,6 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
             </FormItem>
           )}
         />
-        {/*<FormField
-         control={form.control}
-         name="bio"
-         disabled
-         render={({ field }) => (
-         <FormItem>
-         <FormLabel>Bio</FormLabel>
-         <FormControl>
-         <Textarea
-         placeholder="Tell us a little bit about yourself"
-         className="resize-none"
-         {...field}
-         />
-         </FormControl>
-         <FormDescription>
-         You can <span>@mention</span> other users and organizations to
-         link to them.
-         </FormDescription>
-         <FormMessage />
-         </FormItem>
-         )}
-         />*/}
         <Button
           disabled={!form.formState.dirtyFields.username || !form.formState.isValid}
           type="submit"

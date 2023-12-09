@@ -1,4 +1,4 @@
-import { AccountNavigation } from "@/app/(authenticated)/profile/navigation";
+import { AccountNavigation } from "@/app/(authenticated)/profile/_components/navigation";
 import { AccountProvider } from "@/components/providers";
 import { Separator } from "@/components/ui/separator";
 import { PropsWithChildren } from "react";

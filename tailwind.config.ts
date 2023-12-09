@@ -1,4 +1,4 @@
-import { Config } from 'tailwindcss';
+import { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: ["class"],
@@ -25,6 +25,10 @@ const config: Config = {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

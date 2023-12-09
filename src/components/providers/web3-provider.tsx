@@ -3,12 +3,24 @@ import { EthereumClient, w3mConnectors, w3mProvider } from "@web3modal/ethereum"
 import { Web3Modal } from "@web3modal/react";
 import { useTheme } from "next-themes";
 import { PropsWithChildren } from "react";
-import { Chain, configureChains, createConfig, WagmiConfig } from "wagmi";
+import { Address, Chain, configureChains, createConfig, WagmiConfig } from "wagmi";
 import { avalanche } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 
-const chains = [ avalanche ];
+const avvyDomainsResolver: Address = "0x40b0DC99681Db9703939bd62D76F4D448ab0fdE";
+
+const chains = [
+  {
+    ...avalanche,
+    contracts: {
+      ...avalanche.contracts,
+      ensUniversalResolver: {
+        address: avvyDomainsResolver,
+      },
+    },
+  },
+];
 const projectId = process.env.WALLETCONNECT_PROJECT_ID || process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
 
 const { publicClient } = configureChains(chains, [
@@ -26,7 +38,7 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 
 const tokenImages = {
-  EVO: "/EVO.png",
+  EVO: "https://evoverses.com/EVO.png",
 };
 
 const tokenContracts = {

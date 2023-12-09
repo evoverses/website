@@ -1,5 +1,6 @@
-import { linkAccount } from "@/app/(authenticated)/profile/actions";
-import { ProfileForm } from "@/app/(authenticated)/profile/profile-form";
+import { linkAccount } from "@/app/(authenticated)/profile/_components/actions";
+import { ProfileForm } from "@/app/(authenticated)/profile/_components/profile-form";
+import SmartWalletForm from "@/app/(authenticated)/profile/_components/smart-wallet-form";
 import { signOutAction } from "@/app/(public)/actions";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
@@ -44,8 +45,10 @@ const connections = {
 };
 const AccountPage = async () => {
   const accountCookie = getAccountCookie();
-  const session: any = await auth();
-
+  const session = await auth();
+  if (!session) {
+    return null;
+  }
   const account = await getAccountInfo(session.playFab.PlayFabId, session.playFab.SessionTicket);
   const combined = await getCombinedPlayerInfo(session.playFab.PlayFabId, session.playFab.SessionTicket);
   return (
@@ -57,6 +60,7 @@ const AccountPage = async () => {
         </p>
       </div>
       <Separator />
+      <SmartWalletForm accountId={session.playFab.PlayFabId} />
       <ProfileForm account={account} session={session} accountCookie={accountCookie} />
       <div className="grid gap-2">
         <Label htmlFor="buttons">Connections</Label>

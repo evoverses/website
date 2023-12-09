@@ -1,4 +1,4 @@
-import { getcEVOData, getPoolData, getxEVOData } from "@/app/(authenticated)/profile/fetch";
+import { getcEVOData, getPoolData, getxEVOData } from "@/app/(authenticated)/profile/_components/fetch";
 import { ClaimCEvoButton } from "@/app/(authenticated)/profile/liquidity/cevo-sheet";
 import { FarmSheet } from "@/app/(authenticated)/profile/liquidity/farm-sheets";
 import { XEvoSheet } from "@/app/(authenticated)/profile/liquidity/xevo-sheets";

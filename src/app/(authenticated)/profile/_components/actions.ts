@@ -1,5 +1,6 @@
 "use server";
 import { auth, signIn } from "@/auth";
+import { createAccount } from "@/lib/evoverses/fetch";
 import { Provider } from "@/types/auth";
 import { cookies } from "next/headers";
 
@@ -22,4 +23,8 @@ export const linkAccount = async (provider: Provider) => {
     }
   }
 
+};
+
+export const createAccountAction = async (accountId: string) => {
+  return createAccount(accountId);
 };
