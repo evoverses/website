@@ -1,12 +1,13 @@
+import "server-only";
 import { evoContract } from "@/data/contracts";
 import { Address } from "abitype";
 import { cache } from "react";
 import { toHex } from "viem";
 
-const BASE_URL = "https://thirdweb-engine-9ucqz.ondigitalocean.app/" as const;
+const BASE_URL = process.env.ENGINE_BASE_URL;
 const CHAIN = "avalanche" as const;
-const FACTORY_MANAGER = "0x8121d7f576f0e3699426cf05a12f8c5dcd007894" as const;
-const ACCOUNT_FACTORY = "0x7948fda426910FcaC375d23b177Cc4c87f63C521" as const;
+const FACTORY_MANAGER = process.env.ENGINE_FACTORY_MANAGER as Address;
+const ACCOUNT_FACTORY = process.env.ENGINE_ACCOUNT_FACTORY as Address;
 const CONTRACT_URL = new URL(`/contract/${CHAIN}/${ACCOUNT_FACTORY}/`, BASE_URL);
 const BACKEND_WALLET_URL = new URL(`/backend-wallet/${CHAIN}/`, BASE_URL);
 
