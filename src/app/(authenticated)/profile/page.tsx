@@ -13,14 +13,12 @@ import { cn } from "@/lib/utils";
 import { Provider } from "@/types/auth";
 import { CheckIcon } from "@radix-ui/react-icons";
 
-const connections = {
-  Twitch: {
-    Icon: Icons.twitch,
-    disabled: false,
-  },
+const connections: Record<string, { Icon: any, disabled?: boolean }> = {
   Google: {
     Icon: Icons.google,
-    disabled: false,
+  },
+  Twitch: {
+    Icon: Icons.twitch,
   },
   Discord: {
     Icon: Icons.discord,

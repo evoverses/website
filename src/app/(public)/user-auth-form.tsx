@@ -14,6 +14,11 @@ export const UserAuthForm = ({ isCreateAccount, className, ...props }: UserAuthF
   const isLoading = false;
   const providers = [
     {
+      name: "Google",
+      icon: Icons.google,
+      action: loginWithAction.bind(null, "google"),
+    },
+    {
       name: "Twitch",
       icon: Icons.twitch,
       action: loginWithAction.bind(null, "twitch"),
@@ -23,12 +28,6 @@ export const UserAuthForm = ({ isCreateAccount, className, ...props }: UserAuthF
       icon: Icons.epic,
       action: loginWithAction.bind(null, "epic"),
       disabled: true,
-    },
-    {
-      name: "Google",
-      icon: Icons.google,
-      action: loginWithAction.bind(null, "google"),
-      disabled: false,
     },
     {
       name: "Discord",

@@ -1,7 +1,8 @@
 import PardonOurDustAlert from "@/app/(authenticated)/temp-alert";
 import Logo from "@/app/icon.png";
 import { Button } from "@/components/ui/button";
-import { DiscordLogoIcon, GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import { Icons } from "@/components/ui/icons";
+import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { SiOpensea } from "react-icons/si";
@@ -9,7 +10,7 @@ import { SiOpensea } from "react-icons/si";
 const Landing = () => {
   const links = [
     { name: "Discord", icon: DiscordLogoIcon, href: "https://evoverses.com/discord" },
-    { name: "Twitter", icon: TwitterLogoIcon, href: "https://evoverses.com/twitter" },
+    { name: "Twitter", icon: Icons.x, href: "https://evoverses.com/twitter" },
     { name: "GitHub", icon: GitHubLogoIcon, href: "https://evoverses.com/github" },
   ];
   return (

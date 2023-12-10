@@ -34,7 +34,21 @@ const Navbar = async () => {
         </nav>
         <div className="ml-auto flex items-center space-x-4">
           {/*<WalletButton />*/}
-          {!session && <AccountButton />}
+          {!session && (
+            <div className="flex space-x-2">
+              <Button variant="ghost" className="font-bold" asChild>
+                <Link href="/signin">
+                  Sign In
+                </Link>
+              </Button>
+              <Button className="font-bold" asChild>
+                <Link href="/signup">
+                  Create Account
+                </Link>
+              </Button>
+            </div>
+
+          )}
           <ModeButton />
         </div>
       </div>
@@ -42,13 +56,4 @@ const Navbar = async () => {
   );
 };
 
-const AccountButton = () => {
-  return (
-    <Button size="lg" className="font-bold" asChild>
-      <Link href="/signup">
-        Create Account
-      </Link>
-    </Button>
-  );
-};
 export default Navbar;
