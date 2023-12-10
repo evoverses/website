@@ -95,9 +95,9 @@ const AccountPage = async () => {
               Sign Out
             </Button>
           </form>
-          <Button type="submit">
+          {/*<Button type="submit">
             Delete Account
-          </Button>
+           </Button>*/}
         </div>
       </div>
     </main>

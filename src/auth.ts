@@ -1,9 +1,12 @@
 import "server-only";
 import authConfig from "@/auth.config";
-import { loginWithDiscord, loginWithGoogle, loginWithTwitch } from "@/lib/playfab";
+import { setAccountCookieSessionTicket } from "@/lib/cookies/account";
+import { getPlayFabIDFromSocialLoginID, linkSocialAuth, loginWithSocialAuth } from "@/lib/playfab";
+import { Provider } from "@/types/auth";
 // import PlayFabAdapter from "@/lib/playfab-adapter";
 import NextAuth from "next-auth";
 
+// noinspection JSUnusedLocalSymbols
 export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAuth({
   ...authConfig,
   pages: {
@@ -12,16 +15,29 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
   },
   session: { strategy: "jwt" },
   callbacks: {
-    signIn: async ({ user, account, profile, credentials }) => {
+    signIn: async ({ user, account, profile }) => {
       if (account) {
+        const session = await auth();
+        if (session !== null) {
+          const playFabID = await getPlayFabIDFromSocialLoginID(
+            account.provider as Provider,
+            user.id,
+            session.playFab.SessionTicket,
+          );
+          console.log("PlayFabID:", playFabID);
+          if (!playFabID) {
+            console.log("Linking Account:", account.provider, user.id, session.playFab.SessionTicket);
+            await linkSocialAuth(account.provider as Provider, session.playFab.SessionTicket, account.access_token);
+          }
+        }
         if (account.provider === "google" && account.access_token) {
           if (profile && !!profile.email_verified) {
             return true;
           }
-        } else if (account.provider === "discord") {
-          if (profile && profile.verified) {
-            return true;
-          }
+          // } else if (account.provider === "discord") {
+          //   if (profile && profile.verified) {
+          //     return true;
+          //   }
         } else if (account.provider === "twitch") {
           return true;
         }
@@ -45,51 +61,30 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
     },
     // The arguments user, account, profile and isNewUser are only passed the first time this callback is called on a
     // new session, after the user signs in. In subsequent calls, only token will be available.
-    jwt: async ({ token, user, account, profile, trigger, session }) => {
+    jwt: async ({ token, user, account, profile, trigger }) => {
       if (trigger === "signIn" || trigger === "signUp") {
         if (account) {
-          if (account.provider === "google" && account.access_token) {
-            const playFab = await loginWithGoogle(account.access_token);
-            return {
-              ...token,
-              id: user.id,
-              currentProvider: account.provider,
-              playFab,
-              profile,
-              account,
-            };
-          } else if (account.provider === "discord") {
-            const playFab = await loginWithDiscord(account.access_token);
-            return {
-              ...token,
-              id: user.id,
-              currentProvider: account.provider,
-              playFab: playFab,
-              profile,
-              account,
-            };
-          } else if (account.provider === "twitch") {
-            const playFab = await loginWithTwitch(account.access_token);
-            return {
-              ...token,
-              id: user.id,
-              currentProvider: account.provider,
-              playFab: playFab,
-              profile,
-              account,
-            };
-          }
+          const playFab = await loginWithSocialAuth(account.provider as Provider, account.access_token);
+          await setAccountCookieSessionTicket(playFab.SessionTicket);
+          return {
+            ...token,
+            id: user.id,
+            currentProvider: account.provider,
+            playFab,
+            profile,
+            account,
+          };
         }
       }
       return token;
     },
   },
   events: {
+
     signIn: async ({ user, account, profile, isNewUser }) => {
 
     },
     signOut: async (message) => {
-
     },
     createUser: async ({ user }) => {
 

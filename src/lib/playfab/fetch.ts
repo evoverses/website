@@ -6,6 +6,19 @@ import AccountInfoResponse = PlayFab.Client.Account.Responses.AccountInfoRespons
 import CombinedInfoResponse = PlayFab.Client.Account.Responses.CombinedInfoResponse;
 import LoginResponse = PlayFab.Client.Auth.LoginResponse;
 
+export const loginWithSocialAuth = (provider: Provider, access_token?: string) => {
+  switch (provider) {
+    case "google":
+      return loginWithGoogle(access_token);
+    // case "discord":
+    //   return loginWithDiscord(access_token);
+    case "twitch":
+      return loginWithTwitch(access_token);
+    default:
+      throw new Error(`Invalid provider: ${provider}`);
+  }
+};
+
 export const loginWithGoogle = async (access_token?: string) => {
   const url = new URL("LoginWithGoogleAccount", CLIENT_URL);
 
@@ -62,11 +75,29 @@ export const loginWithTwitch = async (access_token?: string) => {
   return loginResponse.data;
 };
 
+export const linkSocialAuth = async (provider: Provider, sessionTicket: string, access_token?: string) => {
+  switch (provider) {
+    case "google":
+      return linkGoogle(sessionTicket, access_token);
+    // case "discord":
+    //   return linkDiscord(sessionTicket, access_token);
+    case "twitch":
+      return linkTwitch(sessionTicket, access_token);
+    default:
+      throw new Error(`Invalid provider: ${provider}`);
+  }
+};
+
 export const linkTwitch = async (sessionTicket: string, access_token?: string) => {
   const url = new URL("LinkTwitch", CLIENT_URL);
-
+  console.log("Calling LinkTwitch");
+  console.log("URL:", url.toString());
   const body = JSON.stringify({ AccessToken: access_token });
-
+  console.log("Body:", body);
+  console.log("Headers:", {
+    ...headers,
+    "X-Authorization": sessionTicket,
+  });
   const resp = await fetch(url, {
     method: "POST",
     headers: {
@@ -79,8 +110,82 @@ export const linkTwitch = async (sessionTicket: string, access_token?: string) =
   if (!resp.ok) {
     console.log(resp);
     console.log(await resp.text());
-    throw new Error(`Login Failed: ${resp.statusText}`);
+    throw new Error(`Link Failed: ${resp.statusText}`);
   }
+};
+
+export const linkGoogle = async (sessionTicket: string, access_token?: string) => {
+  const url = new URL("LinkGoogleAccount", CLIENT_URL);
+  const body = JSON.stringify({
+    AccessToken: access_token,
+    SetEmail: true,
+  });
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      ...headers,
+      "X-Authorization": sessionTicket,
+    },
+    body,
+  });
+
+  if (!resp.ok) {
+    console.log(resp);
+    console.log(await resp.text());
+    throw new Error(`Link Failed: ${resp.statusText}`);
+  }
+};
+
+export const getPlayFabIDFromSocialLoginID = async (provider: Provider, id: string, sessionTicket: string) => {
+  switch (provider) {
+    case "google":
+      return getPlayFabIDFromGoogleID(id, sessionTicket);
+    // case "discord":
+    //   return getPlayFabIDFromDiscordID(id, "");
+    case "twitch":
+      return getPlayFabIDFromTwitchID(id, sessionTicket);
+    default:
+      throw new Error(`Invalid provider: ${provider}`);
+  }
+};
+
+export const getPlayFabIDFromGoogleID = async (id: string, sessionTicket: string) => {
+  const url = new URL("GetPlayFabIDsFromGoogleIDs", CLIENT_URL);
+
+  const body = JSON.stringify({ GoogleIDs: [ id ] });
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      ...headers,
+      "X-Authorization": sessionTicket,
+    },
+    body,
+  });
+  if (!resp.ok) {
+    throw new Error(`Get GoogleID Failed: ${resp.statusText}`);
+  }
+  const data = await resp.json() as { data: { Data: { GoogleId: string, PlayFabId: string }[] } };
+  return data.data.Data.length === 0 ? undefined : data.data.Data[0].PlayFabId;
+};
+
+export const getPlayFabIDFromTwitchID = async (id: string, sessionTicket: string) => {
+  const url = new URL("GetPlayFabIDsFromTwitchIDs", CLIENT_URL);
+
+  const body = JSON.stringify({ TwitchIds: [ id ] });
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      ...headers,
+      "X-Authorization": sessionTicket,
+    },
+    body,
+  });
+  if (!resp.ok) {
+    throw new Error(`Get TwitchId Failed: ${resp.statusText}`);
+  }
+  const data = await resp.json() as { data: { Data: { TwitchId: string, PlayFabId: string }[] } };
+  console.log(JSON.stringify(data, null, 2));
+  return data.data.Data.length === 0 ? undefined : data.data.Data[0].PlayFabId;
 };
 
 export const getAccountInfo = async (id: string, clientSessionTicket: string) => {
@@ -92,25 +197,6 @@ export const getAccountInfo = async (id: string, clientSessionTicket: string) =>
     headers: {
       ...headers,
       "X-Authorization": clientSessionTicket,
-    },
-    body,
-  });
-  if (!resp.ok) {
-    throw new Error(`Get Account Info Failed: ${resp.statusText}`);
-  }
-  const data = await resp.json() as AccountInfoResponse;
-  return data.data.AccountInfo;
-};
-
-const getPlayFabIdFomProvider = async (provider: Provider, id: string) => {
-  const url = new URL(`GetPlayFabIDsFrom${provider.slice(0, 1).toUpperCase()}${provider.slice(-1)}IDs`, CLIENT_URL);
-
-  const body = JSON.stringify({ PlayFabId: id });
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      ...headers,
-      // "X-Authorization": clientSessionTicket,
     },
     body,
   });

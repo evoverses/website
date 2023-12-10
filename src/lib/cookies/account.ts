@@ -29,7 +29,7 @@ export const getAccountCookie = (): IAccountCookie => {
     if (process.env.IMPERSONATE === "true" && getAddressSafe(process.env.IMPERSONATE_ADDRESS) && cookie.loggedIn) {
       cookie.address = process.env.IMPERSONATE_ADDRESS;
     }
-    return cookie;
+    return { ...DefaultAccountCookie, ...cookie };
   }
 
   return DefaultAccountCookie;
@@ -45,5 +45,12 @@ export const setAccountCookieAddress = async (address: Address): Promise<void> =
     ...getAccountCookie(),
     address,
     loggedIn: address !== DefaultAccountCookie.address,
+  }));
+};
+
+export const setAccountCookieSessionTicket = async (sessionTicket: string): Promise<void> => {
+  cookies().set(makeAccountCookie({
+    ...getAccountCookie(),
+    sessionTicket,
   }));
 };

@@ -11,7 +11,7 @@ export default {
     //   authorization: `https://discord.com/api/oauth2/authorize?scope=${DISCORD_SCOPES.join("+")}`,
     // }),
     GoogleProvider({}),
-    TwitchProvider({ allowDangerousEmailAccountLinking: true }),
+    TwitchProvider({}),
     //CredentialsProvider({
     //  id: "web3",
     //  name: "Web3",

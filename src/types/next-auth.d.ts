@@ -1,7 +1,7 @@
-import { type DefaultSession } from "next-auth";
-
 declare module "@auth/core/types" {
   import { PlayFab } from "@/lib/playfab/types";
+  import { type Provider } from "@/types/auth";
+  import { type DefaultSession } from "next-auth";
 
   /**
    * The shape of the user object returned in the OAuth providers' `profile` callback,
@@ -16,6 +16,7 @@ declare module "@auth/core/types" {
    * Usually contains information about the provider being used, like OAuth tokens (`access_token`, etc).
    */
   interface Account {
+    provider: Provider;
   }
 
   /** Returned by `useSession`, `auth`, contains information about the active session. */
