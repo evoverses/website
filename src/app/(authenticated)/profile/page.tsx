@@ -20,7 +20,7 @@ const connections = {
   },
   Google: {
     Icon: Icons.google,
-    disabled: process.env.NODE_ENV === "production",
+    disabled: false,
   },
   Discord: {
     Icon: Icons.discord,
