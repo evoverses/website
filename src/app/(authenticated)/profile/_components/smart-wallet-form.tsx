@@ -50,12 +50,12 @@ const SmartWalletForm = async ({ accountId }: SmartWalletFormProps) => {
       <AccountCard
         title="Gas Balance"
         description={`${gasBalance.displayValue} ${gasBalance.symbol}`}
-        icon={Icons.moneySign as any}
+        icon={Icons.currency_dollar as any}
       />
       <AccountCard
         title="EVO Balance"
         description={`${evoBalance.displayValue} ${evoBalance.symbol}`}
-        icon={Icons.moneySign as any}
+        icon={Icons.currency_dollar as any}
       />
     </div>
   ) : (

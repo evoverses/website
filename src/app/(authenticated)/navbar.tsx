@@ -17,8 +17,13 @@ export const navigation: NavItem[] = [
   { name: "Play Now", href: "#", description: "Download EvoVerses and jump right in!", comingSoon: true },
   { name: "Explore", href: "/assets", description: "Explore all EvoVerses assets" },
   { name: "Profile", href: "/profile", description: "Manage your EvoVerses account and assets", authRequired: true },
-  { name: "About", href: "#", description: "The team, vision, and history", comingSoon: true },
-  { name: "Docs", href: "#", description: "Everything you need to know about EvoVerses" },
+  {
+    name: "About",
+    href: "/docs/general/meet-the-team",
+    description: "The team, vision, and history",
+    comingSoon: true,
+  },
+  { name: "Docs", href: "/docs", description: "Everything you need to know about EvoVerses" },
 ];
 
 const Navbar = async () => {
@@ -36,12 +41,12 @@ const Navbar = async () => {
           {/*<WalletButton />*/}
           {!session && (
             <div className="flex space-x-2">
-              <Button variant="ghost" className="font-bold" asChild>
+              <Button variant="ghost" className="font-bold hidden sm:block" asChild>
                 <Link href="/signin">
                   Sign In
                 </Link>
               </Button>
-              <Button className="font-bold" asChild>
+              <Button className="px-2 sm:px-4 font-bold" asChild>
                 <Link href="/signup">
                   Create Account
                 </Link>
