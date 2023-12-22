@@ -19,11 +19,11 @@ export const navigation: NavItem[] = [
   { name: "Profile", href: "/profile", description: "Manage your EvoVerses account and assets", authRequired: true },
   {
     name: "About",
-    href: "/docs/general/meet-the-team",
+    href: "https://docs.evoverses.com/general/meet-the-team",
     description: "The team, vision, and history",
     comingSoon: true,
   },
-  { name: "Docs", href: "/docs", description: "Everything you need to know about EvoVerses" },
+  { name: "Docs", href: "https://docs.evoverses.com", description: "Everything you need to know about EvoVerses" },
 ];
 
 const Navbar = async () => {
