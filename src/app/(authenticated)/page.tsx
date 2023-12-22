@@ -28,7 +28,7 @@ const Landing = () => {
         <h4>A 3D monster battling game bringing Web2 and Web3 together in one platform.</h4>
       </div>
       <Button variant="outline" size="lg" asChild>
-        <Link href="https://opensea.com/collection/evoverses-evo" target="_blank">
+        <Link href="https://opensea.io/collection/evoverses-evo" target="_blank">
           <SiOpensea className="h-5 w-5 mr-2 text-[#2081e2]" /> Buy on OpenSea
         </Link>
       </Button>
