@@ -1,8 +1,18 @@
+import { LimitSelect } from "@/app/(authenticated)/assets/[collection_slug]/limit-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCollectionItems } from "@/lib/evoverses/metadata";
 import { OpenSeaAPI } from "@/lib/opensea";
-import { getEvos } from "@/lib/prisma/server";
 import Image from "next/image";
 import Link from "next/link";
 import Contract = OpenSeaAPI.NFTs.Contract;
@@ -29,38 +39,100 @@ export const ViewerLoading = () => {
   );
 };
 
-export const Viewer = async ({ contract }: { contract: Contract }) => {
-  const evos = await getEvos();
+interface ViewerProps {
+  contract: Contract,
+  limit: number,
+  offset: number,
+  collection: "evo" | "egg",
+}
+
+export const Viewer = async ({ contract, limit, offset, collection }: ViewerProps) => {
+  const data = await getCollectionItems(collection, limit, offset);
+  const totalPages = Math.ceil(data.total / limit);
+  const currentPage = Math.ceil(offset / limit) + 1;
+  if (collection === "egg") {
+    console.log(data);
+  }
   return (
-    <div className="flex gap-2 flex-wrap justify-around  w-full">
-      {evos.map(nft => (
-        <Card key={nft.tokenId} className="flex flex-row w-[350px]">
-          <Image
-            src={`https://evoverses.com/api/images/evo/${nft.tokenId.toString()}`}
-            alt={`${nft.species} #${nft.tokenId.toString()}`}
-            width={472}
-            height={684}
-            unoptimized className="w-40"
-          />
-          <div className="flex flex-col w-full">
-            <CardHeader className="pr-2">
-              <CardTitle className="text-sm">{nft.species} #{nft.tokenId.toString()}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow">
-            </CardContent>
-            <CardFooter>
-              <Link
-                href={`/assets/${contract.collection.replace("evoverses-", "")}/${nft.tokenId.toString()}`}
-                legacyBehavior
-              >
-                <Button className="w-full font-bold">
-                  Details
-                </Button>
-              </Link>
-            </CardFooter>
-          </div>
-        </Card>
-      ))}
+    <div className="flex flex-col">
+      <div className="flex max-h-fit space-x-2 justify-end pb-4">
+        <div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationPrevious disabled={offset === 0} href={{ query: { limit: limit, offset: offset - limit } }} />
+              {currentPage > 2 && (
+                <>
+                  <PaginationLink href={{ query: { limit: limit, offset: 0 } }}>1</PaginationLink>
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                </>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(i => currentPage === 1 ? i < 4 : currentPage === totalPages ? i > totalPages - 2 : i
+                  >= currentPage
+                  - 1
+                  && i
+                  <= currentPage
+                  + 1)
+                .map(page => (
+                  <PaginationLink
+                    key={page}
+                    isActive={page === currentPage}
+                    href={{ query: { limit: limit, offset: page * limit - limit } }}
+                  >
+                    {page}
+                  </PaginationLink>
+                ))}
+              {currentPage < totalPages - 1 && (
+                <>
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                  <PaginationLink href={{ query: { limit: limit, offset: totalPages * limit - limit } }}>
+                    {totalPages}
+                  </PaginationLink>
+                </>
+              )}
+              <PaginationNext
+                disabled={currentPage === totalPages}
+                href={{ query: { limit: limit, offset: offset + limit } }}
+              />
+            </PaginationContent>
+          </Pagination>
+        </div>
+        <LimitSelect limit={limit} />
+      </div>
+      <div className="flex gap-2 flex-wrap justify-around w-full">
+        {data.items.map(nft => (
+          <Card key={nft.tokenId} className="flex flex-row w-[350px]">
+            <Image
+              src={`https://evoverses.com/api/images/evo/${nft.tokenId.toString()}`}
+              alt={`${nft.species} #${nft.tokenId.toString()}`}
+              width={472}
+              height={684}
+              unoptimized className="w-40"
+            />
+            <div className="flex flex-col w-full">
+              <CardHeader className="pr-2">
+                <CardTitle className="text-sm">{nft.species} #{nft.tokenId.toString()}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+              </CardContent>
+              <CardFooter>
+                <Link
+                  href={`/assets/${contract.collection.replace("evoverses-", "")}/${nft.tokenId.toString()}`}
+                  legacyBehavior
+                >
+                  <Button className="w-full font-bold">
+                    Details
+                  </Button>
+                </Link>
+              </CardFooter>
+            </div>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

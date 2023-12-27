@@ -1,42 +1,41 @@
-import CAir from '@/assets/evo/types/Colored_Air_Type_Circle.svg';
-import CBug from '@/assets/evo/types/Colored_Bug_Type_Circle.svg';
-import CCorrupt from '@/assets/evo/types/Colored_Corrupt_Type_Circle.svg';
-import CDark from '@/assets/evo/types/Colored_Dark_Type_Circle.svg';
-import CEarthly from '@/assets/evo/types/Colored_Earthly_Type_Circle.svg';
-import CEther from '@/assets/evo/types/Colored_Ether_Type_Circle.svg';
-import CFire from '@/assets/evo/types/Colored_Fire_Type_Circle.svg';
-import CLight from '@/assets/evo/types/Colored_Light_Type_Circle.svg';
-import CMineral from '@/assets/evo/types/Colored_Mineral_Type_Circle.svg';
-import CMonster from '@/assets/evo/types/Colored_Monster_Type_Circle.svg';
-import CPlant from '@/assets/evo/types/Colored_Plant_Type_Circle.svg';
-import CWater from '@/assets/evo/types/Colored_Water_Type_Circle.svg';
-import { Type } from '@/components/evo-card/types';
+import CAir from "@/assets/evo/types/Colored_Air_Type_Circle.svg";
+import CBug from "@/assets/evo/types/Colored_Bug_Type_Circle.svg";
+import CCorrupt from "@/assets/evo/types/Colored_Corrupt_Type_Circle.svg";
+import CDark from "@/assets/evo/types/Colored_Dark_Type_Circle.svg";
+import CEarthly from "@/assets/evo/types/Colored_Earthly_Type_Circle.svg";
+import CEther from "@/assets/evo/types/Colored_Ether_Type_Circle.svg";
+import CFire from "@/assets/evo/types/Colored_Fire_Type_Circle.svg";
+import CLight from "@/assets/evo/types/Colored_Light_Type_Circle.svg";
+import CMineral from "@/assets/evo/types/Colored_Mineral_Type_Circle.svg";
+import CMonster from "@/assets/evo/types/Colored_Monster_Type_Circle.svg";
+import CPlant from "@/assets/evo/types/Colored_Plant_Type_Circle.svg";
+import CWater from "@/assets/evo/types/Colored_Water_Type_Circle.svg";
 
-export const getTypeImage = (type: Type) => {
+export const getTypeImage = (type: string) => {
   switch (type) {
-    case Type.Monster:
+    case "Monster":
       return CMonster;
-    case Type.Bug:
+    case "Bug":
       return CBug;
-    case Type.Mineral:
+    case "Mineral":
       return CMineral;
-    case Type.Ether:
+    case "Ether":
       return CEther;
-    case Type.Corrupt:
+    case "Corrupt":
       return CCorrupt;
-    case Type.Earth:
+    case "Earth":
       return CEarthly;
-    case Type.Air:
+    case "Air":
       return CAir;
-    case Type.Water:
+    case "Water":
       return CWater;
-    case Type.Fire:
+    case "Fire":
       return CFire;
-    case Type.Dark:
+    case "Dark":
       return CDark;
-    case Type.Light:
+    case "Light":
       return CLight;
-    case Type.Plant:
+    case "Plant":
       return CPlant;
     default:
       return '';

@@ -1,7 +1,5 @@
 import { maxXpTable } from "@/components/evo-card/data";
-import { IEvo, Rarity } from "@/components/evo-card/types";
-
-
+import { Chroma, IEvo } from "@/components/evo-card/types";
 
 export const getLevelOfEvo = (evo: IEvo): number =>
   Array.from(Array(100)) // Create an array with 100 items
@@ -15,25 +13,25 @@ export const getLevelOfEvo = (evo: IEvo): number =>
         : cLevel,
       1)
 
-export const getRarityGemWidth = (rarity: Rarity) => {
+export const getRarityGemWidth = (rarity: Chroma) => {
   switch (rarity) {
-    case Rarity.Epic:
+    case Chroma.Super:
       return 24;
-    case Rarity.Chroma:
+    case Chroma.Chroma:
       return 22;
-    case Rarity.Normal:
+    case Chroma.None:
     default:
       return 0;
   }
 }
 
-export const getRarityGemHeight = (rarity: Rarity) => {
+export const getRarityGemHeight = (rarity: Chroma) => {
   switch (rarity) {
-    case Rarity.Epic:
+    case Chroma.Super:
       return 25.19;
-    case Rarity.Chroma:
+    case Chroma.Chroma:
       return 22;
-    case Rarity.Normal:
+    case Chroma.None:
     default:
       return 0;
   }

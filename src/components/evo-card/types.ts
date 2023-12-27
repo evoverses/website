@@ -21,15 +21,17 @@ export namespace Type {
   export const toID = (type: string) => (Type as any)[type];
 }
 
-export enum Rarity {
-  Normal,
+export enum Chroma {
+  None,
   Chroma,
-  Epic
+  Super
 }
 
-export namespace Rarity {
-  export const toString = (rarity: Rarity) => Rarity[rarity];
-  export const toID = (rarity: string) => (Rarity as any)[rarity];
+export namespace Chroma {
+  export const toString = (chroma: Chroma) => Chroma[chroma];
+  export const toID = (chroma: string) => (
+    Chroma as any
+  )[chroma];
 }
 
 export interface IGenItem {
@@ -38,6 +40,7 @@ export interface IGenItem {
   genValue: number,
   style?: CSSProperties
 }
+
 
 export enum Species {
   Unknown,
@@ -331,11 +334,11 @@ export interface IBreeds {
 }
 
 export interface IAttributes {
-  gender: Gender;
-  rarity: Rarity;
-  primaryType: Type;
-  secondaryType: Type;
-  nature: Nature;
+  gender: string;
+  chroma: string;
+  primaryType: string;
+  secondaryType: string;
+  nature: string;
   size: number;
 }
 

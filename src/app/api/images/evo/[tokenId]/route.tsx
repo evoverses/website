@@ -1,70 +1,71 @@
 import { EvoCardPng } from "@/components/evo-card/evo-card";
-import { Gender, Nature, Rarity, Species, Type } from "@/components/evo-card/types";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
 export const GET = async (req: NextRequest, { params }: { params: { tokenId: string }}) => {
   const tokenId = params.tokenId.replace(/[^0-9]/g,  '');
-  const resp = await fetch(`https://api.evoverses.com/metadata/evo/${tokenId}`, {
+  const resp = await fetch(`https://api.evoverses.com/metadata/evo/${tokenId}?raw=true`, {
     next: {
       tags: ['evo', tokenId],
       revalidate: 3_600,
     }
   })
   const metadata = await resp.json();
-  const egg = !!metadata.attributes.find((a: any) => a.value === "Egg");
+  const egg = "treated" in metadata;
   let evo;
   if (!egg) {
-    const sizeValue = metadata.attributes.find((a: any) => a.trait_type === "Size")?.value || 0
+    const sizeValue = metadata.size;
     const sizePct = sizeValue / 10;
     evo = {
       attributes: {
-        gender: Gender[metadata.attributes.find((a: any) => a.trait_type === "Gender").value],
-        rarity: Rarity[metadata.attributes.find((a: any) => a.trait_type === "Rarity").value],
-        primaryType: Type[metadata.attributes.find((a: any) => a.trait_type === "Primary Type").value],
-        secondaryType: Type[metadata.attributes.find((a: any) => a.trait_type === "Secondary Type")?.value || "None"],
-        nature: Nature[metadata.attributes.find((a: any) => a.trait_type === "Nature").value],
+        gender: metadata.gender,
+        chroma: metadata.chroma === null ? "None" : metadata.chroma,
+        primaryType: metadata.types.primary,
+        secondaryType: metadata.types.secondary === null ? "None" : metadata.types.secondary,
+        nature: metadata.nature,
         size: sizePct > 0 ? 10 + sizePct : sizePct,
       },
       breeds: {
-        total: metadata.attributes.find((a: any) => a.trait_type === "Total Breeds")?.value,
-        remaining: metadata.attributes.find((a: any) => a.trait_type === "Breeds Remaining")?.value,
-        lastBreedTime: metadata.attributes.find((a: any) => a.trait_type === "Last Breed Time")?.value || 0,
+        total: metadata.totalBreeds,
+        remaining: 5 - metadata.totalBreeds,
+        lastBreedTime: metadata.lastBreedTime ? Math.floor(Date.parse(metadata.lastBreedTime) / 1000) : 0,
       },
-      experience: metadata.attributes.find((a: any) => a.trait_type === "XP").value,
-      generation: metadata.attributes.find((a: any) => a.trait_type === "Generation").value,
+      experience: metadata.xp,
+      generation: metadata.generation,
       moves: { move0: 0, move1: 0, move2: 0, move3: 0 },
       owner: "",
-      species: Species[metadata.attributes.find((a: any) => a.trait_type === "Species").value],
+      species: metadata.species,
       stats: {
         health: 50,
-        attack: metadata.attributes.find((a: any) => a.trait_type === "Attack").value,
-        defense: metadata.attributes.find((a: any) => a.trait_type === "Defense").value,
-        special: metadata.attributes.find((a: any) => a.trait_type === "Special").value,
-        resistance: metadata.attributes.find((a: any) => a.trait_type === "Resistance").value,
-        speed: metadata.attributes.find((a: any) => a.trait_type === "Speed").value,
+        attack: metadata.attack,
+        defense: metadata.defense,
+        special: metadata.special,
+        resistance: metadata.resistance,
+        speed: metadata.speed,
       },
       tokenId: Number(tokenId)
     }
   } else {
     evo = {
       tokenId: Number(tokenId),
-      species: Species[metadata.attributes.find((a: any) => a.trait_type === "Species").value],
-      generation: metadata.attributes.find((a: any) => a.trait_type === "Generation").value,
+      species: metadata.species,
+      generation: metadata.generation,
       owner: "",
       parents: [0, 0],
-      treated: !!metadata.attributes.find((a: any) => a.value === "Treated"),
-      createdAt: metadata.attributes.find((a: any) => a.trait_type === "Created")?.value,
+      treated: metadata.treated,
+      attributes: {
+        chroma: "None",
+        primaryType: metadata.types.primary,
+        secondaryType: metadata.types.secondary === null ? "None" : metadata.types.secondary,
+      },
+      createdAt: Math.floor(Date.parse(metadata.createdAt) / 1000),
     }
-    if (evo.generation > 0) {
-      evo.parents = [
-        Number(metadata.attributes.find((a: any) => a.trait_type === "Parent 1").value.replace("#", '')),
-        Number(metadata.attributes.find((a: any) => a.trait_type === "Parent 2").value.replace("#", ''))
-      ]
+    if (evo.generation > 0 && metadata.parents && metadata.parents.length > 0) {
+      evo.parents = metadata.parents.map((p: any) => Number(p.tokenId));
     }
   }
 
-  const sizeMultiplier = 2;
+  const sizeMultiplier = 1;
   const baseUrl = req.url.split('/api')[0];
   const nunito = await fetch(
     new URL(`/fonts/Nunito.ttf`, baseUrl)
@@ -78,8 +79,8 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
   return new ImageResponse(
     (<EvoCardPng evo={evo as any} multiplier={sizeMultiplier} baseUrl={baseUrl} />),
     {
-      width: 236 * sizeMultiplier,
-      height: 342 * sizeMultiplier,
+      width: 512 * sizeMultiplier,
+      height: 725 * sizeMultiplier,
       fonts: [
         {
           name: 'Nunito',

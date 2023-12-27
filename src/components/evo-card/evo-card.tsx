@@ -1,19 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import breed from "@/assets/evo/breed_bg.svg";
-
-import nature from "@/assets/evo/nature_bg.svg";
-import { IEgg, IEvo, Nature, Rarity, Species, Type } from "@/components/evo-card/types";
-import {
-  getGenderImage,
-  getIDColor,
-  getLevelOfEvo,
-  getNameColor,
-  getNumberAvailableBreeds,
-  getRarityGemHeight,
-  getRarityGemWidth,
-  getTypeImage,
-  getTypes,
-} from "@/components/helpers";
+import EvoToken from "@/assets/images/evo-token.png";
+import { IEgg, IEvo } from "@/components/evo-card/types";
+import { getGenderImage, getIDColor, getLevelOfEvo, getTypeImage } from "@/components/helpers";
 
 import { GenItem } from "./GenItem";
 
@@ -24,549 +12,318 @@ export interface EvoCardProps {
   baseUrl?: string;
 }
 
-export const EvoCardPng = ({ multiplier = 2, evo, baseUrl = "http://localhost:3000" }: EvoCardProps) => {
-  const imageCDN = 'https://images.evoverses.com/card';
+const OldChromaMap: Record<string, string> = {
+  None: "Normal",
+  Chroma: "Chroma",
+  Super: "Epic",
+};
+
+export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:3000" }: EvoCardProps) => {
+  const imageCDN = "https://images.evoverses.com/card";
+  const rawCDN = "https://imagedelivery.net/rnUCH_14xCvfZoyELQslRQ";
   const egg: IEgg = evo as unknown as IEgg;
-  const isEgg = 'treated' in egg;
+  const isEgg = "treated" in egg;
   const ageSeconds = Math.floor(Date.now() / 1000) - egg?.createdAt;
   const percentComplete = ageSeconds * 100 / 28800;
   const ageDays = Math.floor(ageSeconds / 86400);
-  console.log(`${imageCDN}/background/${Type.toString(getTypes(egg.species)?.[0])}`)
-  if (isEgg) {
-    return (
-      <div
-        style={{
-          width: 236 * multiplier,
-          height: 342 * multiplier,
-          borderRadius: 10 * multiplier,
-          position: 'relative',
-          display: 'flex',
-        }}
-      >
-        <img
-          src={`${imageCDN}/background/${Type.toString(getTypes(egg.species)?.[0])}`}
-          style={{
-            width: 236 * multiplier,
-            height: 334 * multiplier,
-            borderRadius: 10 * multiplier,
-            position: 'absolute',
-            top: 0,
-            left: 0
-          }}
-          alt="background"
-        />
-        <img
-          src={`${imageCDN}/evo/${Species.toString(egg.species)}/${egg.generation === 0 ? egg.tokenId % 4 : "egg"}`}
-          style={{
-            position: 'absolute',
-            width: `${236 * multiplier}px`,
-            height: `${236 * multiplier}px`,
-            top: `${32 * multiplier}px`,
-            left: '0px'
-          }}
-          alt="egg image"
-        />
-        <img
-          style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}
-          src={`${imageCDN}/border/normal`}
-          alt="border"
-        />
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: getNameColor(Rarity.Normal),
-            textAlign: 'left',
-            fontWeight: '900',
-            fontSize: `${8 * multiplier}px`,
-            position: 'absolute',
-            top: `${38 * multiplier}px`,
-            left: `${10 * multiplier}px`
-          }}
-        >
-          {Species.toString(egg.species)}
-        </div>
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: getNameColor(Rarity.Normal),
-            textAlign: 'left',
-            fontWeight: '900',
-            fontSize: `${8 * multiplier}px`,
-            position: 'absolute',
-            top: `${53.1 * multiplier}px`,
-            left: `${10 * multiplier}px`
-          }}
-        >
-          Egg
-        </div>
-        {getTypes(egg.species).filter(t => t !== Type.None).map((t, i) => Number(t) > 0 && (
-          <img
-            key={`type-${t}`}
-            id={`type-${t}`}
-            src={`${baseUrl}${getTypeImage(t).src}`} alt="Species"
-            style={{
-              position: 'absolute',
-              width: `${9 * multiplier}px`,
-              height: `${9 * multiplier}px`,
-              top: `${39.5 * multiplier}px`,
-              left: `${(
-                74 * multiplier
-              ) + (
-                i * (
-                  5 * multiplier
-                )
-              )}px`,
-              display: 'flex'
-            }}
-          />
-        ))}
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: getIDColor(Rarity.Normal),
-            textAlign: 'left',
-            fontWeight: '400',
-            fontSize: `${6 * multiplier}px`,
-            position: 'absolute',
-            display: "flex",
-            bottom: `${2 * multiplier}px`,
-            left: `${10 * multiplier}px`
-          }}
-        >
-          #{egg.tokenId}
-        </div>
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: '#ffffff',
-            textAlign: 'right',
-            fontWeight: '900',
-            fontSize: `${8 * multiplier}px`,
-            position: 'absolute',
-            display: "flex",
-            top: `${306 * multiplier}px`,
-            right: `${32 * multiplier}px`
-          }}
-        >
-          Generation {egg.generation}
-        </div>
-        {egg.generation > 0 && (
-          <img
-            src={`${baseUrl}${getTypeImage(getTypes(egg.species)[0]).src}`}
-            style={{
-              position: 'absolute',
-              width: `${11 * multiplier}px`,
-              height: `${11 * multiplier}px`,
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: 'contain',
-              bottom: `${5 * multiplier}px`,
-              right: `${5 * multiplier}px`
-            }}
-            alt="type"
-          />
-        )}
-        <div
-          style={{
-            width: 236 * multiplier,
-            height: 334 * multiplier,
-            borderRadius: 10 * multiplier,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'absolute',
-            top: 8 * multiplier,
-            left: 0,
-          }}
-        >
-          <div
-            style={{
-              width: `${178 * multiplier}px`,
-              height: `${32 * multiplier}px`,
-              position: 'absolute',
-              backgroundColor: 'rgba(0,0,0,0.3)',
-              borderRadius: `${9 * multiplier}px`,
-              filter: `drop-shadow(0px ${4}px ${4}px rgba(0, 0, 0, 0.5)) drop-shadow(0px ${0}px ${15}px rgba(0, 0, 0, 0.69))`,
-              top: `${253 * multiplier}px`,
-              left: `${29 * multiplier}px`,
-              display: 'flex',
-              justifyItems: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                columnGap: `${4 * multiplier}px`,
-                width: '100%',
-                paddingTop: `${5 * multiplier}px`,
-                marginBottom: `${-3 * multiplier}px`
-              }}
-            >
-              <p
-                style={{
-                  textAlign: 'right',
-                  fontFamily: 'Nunito',
-                  fontWeight: 500,
-                  fontSize: `${6 * multiplier}px`,
-                  color: 'rgba(255,255,255, 1)',
-                  margin: 0,
-                  padding: 0
-                }}
-              >
-                {egg.generation > 0 ? <>Parents: {egg.parents.map(n => `#${n}`).join(' & ')}</> : 'Genesis'}
-              </p>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                columnGap: `${4 * multiplier}px`,
-                width: '100%',
-                marginTop: `${10 * multiplier}px`,
-                paddingLeft: `${8 * multiplier}px`,
-                paddingRight: `${8 * multiplier}px`,
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 1)',
-                  width: '100%',
-                  marginLeft: '16px',
-                  marginRight: '16px',
-                  height: '4px',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  display: 'flex',
-                }}
-              >
-                <div
-                  style={{
-                    backgroundColor: '#51FFFE',
-                    width: `${percentComplete > 100 ? 100 : percentComplete}%`,
-                    height: '100%'
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              width: `${84 * multiplier}px`,
-              height: `${16 * multiplier}px`,
-              position: 'absolute',
-              filter: `drop-shadow(0px ${4}px ${4}px rgba(0, 0, 0, 0.5)) drop-shadow(0px ${0}px ${15}px rgba(0, 0, 0, 0.69))`,
-              top: `${237.5 * multiplier}px`,
-              left: `${76 * multiplier}px`,
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <img src={`${baseUrl}${nature.src}`} alt="Nature BG" />
-            <p
-              style={{
-                textAlign: 'center',
-                fontFamily: 'Nunito',
-                fontWeight: 400,
-                fontSize: `${6 * multiplier}px`,
-                color: 'rgba(255,255,255,1)',
-                position: "absolute"
-              }}
-            >
-              Age: {ageDays} Day{ageDays === 1 ? '' : 's'}
-            </p>
-          </div>
-          <div
-            style={{
-              width: `${84 * multiplier}px`,
-              height: `${16 * multiplier}px`,
-              position: 'absolute',
-              filter: `drop-shadow(0px ${4}px ${4}px rgba(0, 0, 0, 0.5)) drop-shadow(0px ${0}px ${15}px rgba(0, 0, 0, 0.69))`,
-              top: `${284.8 * multiplier}px`,
-              left: `${76 * multiplier}px`,
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <img src={`${baseUrl}${breed.src}`} alt="breed-bg" style={{ position: "absolute" }} />
-            <p
-              style={{
-                textAlign: 'center',
-                fontFamily: 'Nunito',
-                fontWeight: 400,
-                fontSize: `${6 * multiplier}px`,
-                color: 'rgba(255,255,255,1)',
-                left: `${30 * multiplier}px`,
-                top: `${-1 * multiplier}px`
-              }}
-            >
-              {egg.treated ? 'Treated' : 'Untreated'}
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const characterUrl = `${imageCDN}/evo/${evo.species}/${isEgg
+    ? evo.generation === 0 ? evo.tokenId % 4 : "egg"
+    : OldChromaMap[evo.attributes.chroma]}`;
+
+  console.log(evo);
+  console.log(characterUrl);
   return (
     <div
+      id="container"
       style={{
-        width: 236 * multiplier,
-        height: 342 * multiplier,
-        borderRadius: 10 * multiplier,
-        position: 'relative',
-        display: 'flex',
+        width: 512 * multiplier,
+        height: 725 * multiplier,
+        borderRadius: 20 * multiplier,
+        position: "relative",
+        display: "flex",
       }}
     >
       <img
-        src={`${imageCDN}/background/${Type.toString(evo.attributes.primaryType)}`}
-        style={{ borderRadius: 10 * multiplier, position: 'absolute', top: 0, left: 0, width: '100%', height: "100%" }}
+        id="background"
+        src={`${imageCDN}/background/${evo.attributes.primaryType}`}
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: 30 * multiplier,
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
         alt="background"
       />
       <img
-        src={`${imageCDN}/evo/${Species.toString(evo.species)}/${Rarity[evo.attributes.rarity]}`}
+        id="evo"
+        src={characterUrl}
         style={{
-          position: 'absolute',
-          width: `${236 * multiplier}px`,
-          height: `${334 * multiplier}px`,
-          top: `${4 * multiplier}px`,
-          left: '0px'
+          position: "absolute",
+          width: `${512 * multiplier}px`,
+          height: `${(
+            isEgg ? 512 : 725
+          ) * multiplier}px`,
+          bottom: `${(
+            isEgg ? 240 : 80
+          ) * multiplier}px`,
         }}
-        alt="rarity jewel"
+        alt="evo image"
       />
       <img
+        id="border"
         style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0 }}
-        src={`${imageCDN}/border/${Rarity[evo.attributes.rarity]}`}
+        src={`${rawCDN}/card/border/${{
+          None: "silver",
+          Chroma: "purple",
+          Super: "gold",
+        }[isEgg ? "None" : String(evo.attributes.chroma)]}-metallic/4/public`}
         alt="border"
       />
-      <div
+      <img
+        id="logo"
+        src={`${baseUrl}${EvoToken.src}`}
+        alt="gender"
         style={{
-          width: 236 * multiplier,
-          height: 334 * multiplier,
-          borderRadius: 10 * multiplier,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute',
-          top: 8 * multiplier,
-          left: 0,
+          position: "absolute",
+          width: `${28 * multiplier}px`,
+          height: `${28 * multiplier}px`,
+          top: `${10 * multiplier}px`,
+          left: `${10 * multiplier}px`,
+        }}
+      />
+      <p
+        id="species"
+        style={{
+          fontFamily: "Nunito",
+          color: "#FFFFFF",
+          fontWeight: "900",
+          fontSize: `${16 * multiplier}px`,
+          position: "absolute",
+          top: `${35 * multiplier}px`,
+          left: `${32 * multiplier}px`,
         }}
       >
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: getNameColor(evo.attributes.rarity),
-            textAlign: 'left',
-            fontWeight: '900',
-            fontSize: `${8 * multiplier}px`,
-            position: 'absolute',
-            top: `${30 * multiplier}px`,
-            left: `${10 * multiplier}px`,
-          }}
-        >
-          {Species.toString(evo.species)}
-        </div>
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: getNameColor(evo.attributes.rarity),
-            textAlign: 'left',
-            fontWeight: '900',
-            fontSize: `${6 * multiplier}px`,
-            position: 'absolute',
-            top: `${46.6 * multiplier}px`,
-            left: `${10 * multiplier}px`,
-            display: 'flex'
-          }}
-        >
-          Level {getLevelOfEvo(evo)}
-        </div>
-        {getTypes(evo.species).map((t, i) => Number(t) > 0 && (
+        {isEgg && evo.generation === 0 ? "Genesis Unknown" : evo.species}
+      </p>
+      {[ evo.attributes.primaryType, evo.attributes.secondaryType ]
+        .filter(s => s !== "None")
+        .reverse()
+        .map((t, i, a) => (
           <img
             key={`type-${t}`}
             id={`type-${t}`}
-            src={`${baseUrl}${getTypeImage(t).src}`} alt="Species"
+            src={`${baseUrl}${getTypeImage(t).src}`}
+            alt="Species"
             style={{
-              position: 'absolute',
-              width: `${9 * multiplier}px`,
-              height: `${9 * multiplier}px`,
-              top: `${31.5 * multiplier}px`,
-              left: `${(
-                74 * multiplier
-              ) + (
-                i * (
-                  5 * multiplier
-                )
-              )}px`,
-              display: 'flex'
+              position: "absolute",
+              display: "flex",
+              width: `${18 * multiplier}px`,
+              height: `${18 * multiplier}px`,
+              top: `${54 * multiplier}px`,
+              left: a.length === 1 ? `${155 * multiplier}px` : `${(
+                i === 0 ? 162 : 148
+              ) * multiplier}px`,
             }}
           />
         ))}
+      {!isEgg && (
         <img
           src={`${baseUrl}${getGenderImage(evo.attributes.gender)}`}
           alt="gender"
           style={{
-            position: 'absolute',
-            width: `${8 * multiplier}px`,
-            height: `${8 * multiplier}px`,
-            top: `${32 * multiplier}px`,
-            left: `${63 * multiplier}px`
-          }}
-        />
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: getIDColor(evo.attributes.rarity),
-            textAlign: 'left',
-            fontWeight: '400',
-            fontSize: `${6 * multiplier}px`,
-            position: 'absolute',
-            top: `${325 * multiplier}px`,
-            left: `${10 * multiplier}px`,
-            display: "flex",
-          }}
-        >
-          #{evo.tokenId}
-        </div>
-        <div
-          style={{
-            fontFamily: 'Nunito',
-            color: '#ffffff',
-            textAlign: 'right',
-            fontWeight: '900',
-            fontSize: `${8 * multiplier}px`,
-            position: 'absolute',
-            top: `${306 * multiplier}px`,
-            right: `${32 * multiplier}px`,
-            display: "flex",
-          }}
-        >
-          Generation {evo.generation}
-        </div>
-        <img
-          src={`${baseUrl}${getTypeImage(evo?.attributes.primaryType).src}`}
-          style={{
-            position: 'absolute',
-            width: `${11 * multiplier}px`,
-            height: `${11 * multiplier}px`,
-            top: `${316.81 * multiplier}px`,
-            left: `${220 * multiplier}px`,
-            display: "flex",
-          }}
-          alt="Primary Type"
-        />
-        <div
-          style={{
-            width: `${178 * multiplier}px`,
-            height: `${32 * multiplier}px`,
-            position: 'absolute',
-            backgroundColor: 'rgba(0,0,0,0.3)',
-            borderRadius: `${9 * multiplier}px`,
-            filter: `drop-shadow(0px ${4}px ${4}px rgba(0, 0, 0, 0.5)) drop-shadow(0px ${0}px ${15}px rgba(0, 0, 0, 0.69))`,
-            top: `${253 * multiplier}px`,
-            left: `${29 * multiplier}px`,
-            display: 'flex',
-            justifyItems: 'center',
-            flexWrap: 'wrap',
-          }}
-        >
-          <GenItem multiplier={multiplier} genName="Hp" genValue={evo.stats.health} />
-          <GenItem multiplier={multiplier} genName="Def" genValue={evo.stats.defense} />
-          <GenItem multiplier={multiplier} genName="Sp. Def" genValue={evo.stats.resistance} />
-          <GenItem multiplier={multiplier} genName="Atk" genValue={evo.stats.attack} />
-          <GenItem multiplier={multiplier} genName="Sp. Atk" genValue={evo.stats.special} />
-          <GenItem multiplier={multiplier} genName="Speed" genValue={evo.stats.speed} />
-        </div>
-        <div
-          style={{
-            width: `${84 * multiplier}px`,
+            position: "absolute",
+            width: `${16 * multiplier}px`,
             height: `${16 * multiplier}px`,
-            position: 'absolute',
-            filter: `drop-shadow(0px ${4}px ${4}px rgba(0, 0, 0, 0.5)) drop-shadow(0px ${0}px ${15}px rgba(0, 0, 0, 0.69))`,
-            top: `${237.5 * multiplier}px`,
-            left: `${76 * multiplier}px`,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <img src={`${baseUrl}${nature.src}`} alt="Nature BG" />
-          <p
-            style={{
-              textAlign: 'center',
-              fontFamily: 'Nunito',
-              fontWeight: 400,
-              fontSize: `${6 * multiplier}px`,
-              color: 'rgba(255,255,255,1)',
-              position: "absolute"
-            }}
-          >
-            Nature: {Nature.toString(evo.attributes.nature)}
-          </p>
-        </div>
-        <div
-          style={{
-            width: `${84 * multiplier}px`,
-            height: `${16 * multiplier}px`,
-            position: 'absolute',
-            filter: `drop-shadow(0px ${4}px ${4}px rgba(0, 0, 0, 0.5)) drop-shadow(0px ${0}px ${15}px rgba(0, 0, 0, 0.69))`,
-            top: `${284.8 * multiplier}px`,
-            left: `${76 * multiplier}px`,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <img src={`${baseUrl}${breed.src}`} alt="breed-bg" style={{ position: "absolute" }} />
-          <p
-            style={{
-              textAlign: 'center',
-              fontFamily: 'Nunito',
-              fontWeight: 400,
-              fontSize: `${6 * multiplier}px`,
-              color: 'rgba(255,255,255,1)',
-              left: `${15 * multiplier}px`,
-
-            }}
-          >
-            Available Breeds: {getNumberAvailableBreeds(evo)}
-          </p>
-        </div>
-      </div>
-      {evo.attributes.rarity !== Rarity.Normal && (
-        <img
-          src={`${imageCDN}/rarity/${Rarity[evo.attributes.rarity]}`}
-          alt="Rarity"
-          style={{
-            position: 'absolute',
-            width: `${getRarityGemWidth(evo.attributes.rarity) * multiplier}px`,
-            height: `${getRarityGemHeight(evo.attributes.rarity) * multiplier}px`,
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'contain',
-            top: `${getRarityGemHeight(evo.attributes.rarity) * multiplier * -0.3 + 8 * multiplier}px`,
-            left: `${(
-              236 * multiplier / 2
-            ) - (
-              getRarityGemWidth(evo.attributes.rarity) * multiplier / 2
-            )}px`
+            top: `${56 * multiplier}px`,
+            left: `${120 * multiplier}px`,
           }}
         />
       )}
+      <p
+        id="level-info"
+        style={{
+          fontFamily: "Nunito",
+          color: "#FFFFFF",
+          fontWeight: "900",
+          fontSize: `${16 * multiplier}px`,
+          position: "absolute",
+          top: `${85 * multiplier}px`,
+          left: `${32 * multiplier}px`,
+        }}
+      >
+        {isEgg ? "Egg" : `Level ${getLevelOfEvo(evo)}`}
+      </p>
+      <img
+        id="info-overlay"
+        style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0, opacity: 0.8, filter: "invert(100%)" }}
+        src={`${rawCDN}/card/overlay/info-island/public`}
+        alt="info-overlay-bg"
+      />
+      <p
+        style={{
+          fontFamily: "Nunito",
+          fontWeight: 900,
+          color: "#FFF",
+          position: "absolute",
+          fontSize: `${16 * multiplier}px`,
+          left: "50%",
+          transform: "translateX(-50%)",
+          top: `${395 * multiplier}px`,
+        }}
+      >
+        {isEgg ? `Age: ${ageDays} Day${ageDays === 1 ? "" : "s"}` : evo.attributes.nature}
+      </p>
+      {isEgg ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: `${300 * multiplier}px`,
+            marginLeft: "auto",
+            marginRight: "auto",
+            top: `${65 * multiplier}px`,
+          }}
+        >
+          <p
+            style={{
+              textAlign: "center",
+              fontFamily: "Nunito",
+              fontWeight: 900,
+              fontSize: `${16 * multiplier}px`,
+              color: "rgba(255,255,255, 1)",
+              position: "absolute",
+              bottom: `${300 * multiplier}px`,
+              left: `50%`,
+              transform: `translateX(-50%)`,
+            }}
+          >
+            {egg.generation > 0 ? <>Parents: {egg.parents.map(n => `#${n}`).join(" & ")}</> : "Genesis"}
+          </p>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              maxWidth: `${300 * multiplier}px`,
+              marginLeft: "auto",
+              marginRight: "auto",
+              top: `${65 * multiplier}px`,
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 1)",
+                width: "100%",
+                marginLeft: "16px",
+                marginRight: "16px",
+                height: "4px",
+                borderRadius: "8px",
+                overflow: "hidden",
+                display: "flex",
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: "#51FFFE",
+                  width: `${percentComplete > 100 ? 100 : percentComplete}%`,
+                  height: "100%",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+      ) : (
+        <div
+          style={{
+            width: `${350 * multiplier}px`,
+            height: `${64 * multiplier}px`,
+            position: "absolute",
+            bottom: `${207.5 * multiplier}px`,
+            left: "50%",
+            transform: "translateX(-50%)",
+            paddingLeft: `${8 * multiplier}px`,
+            display: "flex",
+            justifyItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <GenItem multiplier={multiplier} genName="HP" genValue={evo.stats.health} />
+          <GenItem multiplier={multiplier} genName="ATK" genValue={evo.stats.attack} />
+          <GenItem multiplier={multiplier} genName="SP" genValue={evo.stats.special} />
+          <GenItem multiplier={multiplier} genName="DEF" genValue={evo.stats.defense} />
+          <GenItem multiplier={multiplier} genName="RES" genValue={evo.stats.resistance} />
+          <GenItem multiplier={multiplier} genName="SPD" genValue={evo.stats.speed} />
+        </div>
+      )}
+      <p
+        style={{
+          fontFamily: "Nunito",
+          fontWeight: 900,
+          position: "absolute",
+          fontSize: `${16 * multiplier}px`,
+          color: "#FFF",
+          left: `50%`,
+          transform: `translateX(-50%)`,
+          bottom: `${148 * multiplier}px`,
+        }}
+      >
+        {isEgg
+          ? egg.treated ? "Treated" : "Untreated"
+          : `${evo.generation === 0 ? "Total Breeds" : "Breeds Left"}: ${evo.generation === 0 ? evo.breeds.total : 5
+            - evo.breeds.total}`}
+      </p>
+      <p
+        style={{
+          fontFamily: "Nunito",
+          color: getIDColor(evo.attributes.chroma),
+          fontWeight: "900",
+          fontSize: `${16 * multiplier}px`,
+          position: "absolute",
+          bottom: `${83 * multiplier}px`,
+          right: `${32 * multiplier}px`,
+          display: "flex",
+        }}
+      >
+        #{evo.tokenId.toLocaleString("en-us")}
+      </p>
+      <p
+        style={{
+          fontFamily: "Nunito",
+          color: getIDColor(evo.attributes.chroma),
+          fontWeight: "900",
+          fontSize: `${16 * multiplier}px`,
+          position: "absolute",
+          bottom: `${37 * multiplier}px`,
+          right: `${32 * multiplier}px`,
+          display: "flex",
+        }}
+      >
+        Generation {evo.generation}
+      </p>
+      {evo.attributes.primaryType !== "None" && (
+        <img
+          src={`${baseUrl}${getTypeImage(evo.attributes.primaryType).src}`}
+          style={{
+            position: "absolute",
+            width: `${28 * multiplier}px`,
+            height: `${28 * multiplier}px`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "contain",
+            bottom: `${10 * multiplier}px`,
+            right: `${10 * multiplier}px`,
+          }}
+          alt="type"
+        />
+      )}
     </div>
-  )
+  );
 };

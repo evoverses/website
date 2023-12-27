@@ -1,23 +1,23 @@
-import { Rarity } from '@/components/evo-card/types';
+import { Chroma } from "@/components/evo-card/types";
 
-export const getNameColor = (rarity: Rarity) => {
-  switch (rarity) {
-    case Rarity.Epic:
+export const getNameColor = (chroma: string) => {
+  switch (chroma) {
+    case "Super":
       return '#2B3674';
-    case Rarity.Chroma:
+    case "Chroma":
       return '#FFFFFF';
-    case Rarity.Normal:
+    case "None":
     default:
-      return '#2B3674';
+      return "#FFFFFF";
   }
 };
-export const getIDColor = (rarity: Rarity) => {
-  switch (rarity) {
-    case Rarity.Epic:
-      return '#ffffffb5';
-    case Rarity.Chroma:
-      return '#ffffffb5';
-    case Rarity.Normal:
+export const getIDColor = (chroma: string) => {
+  switch (chroma) {
+    case "Super":
+      return "#FFFFFF";
+    case "Chroma":
+      return "#FFFFFF";
+    case "None":
     default:
       return 'rgba(0,0,0,1)';
   }

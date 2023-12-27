@@ -1,5 +1,6 @@
 import { Viewer, ViewerLoading } from "@/app/(authenticated)/assets/[collection_slug]/viewer";
 import EvoBannerOpensea from "@/assets/images/evo-banner-opensea.png";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCollection, getCollectionStats, getContract } from "@/lib/opensea";
 
 import { Metadata } from "next";
@@ -18,15 +19,20 @@ export const generateStaticParams = async () => {
 type Props = {
   params: {
     collection_slug: string;
+  },
+  searchParams: {
+    limit?: number;
+    offset?: number;
   }
 }
 
-const AssetPage = async ({ params: { collection_slug } }: Props) => {
+const AssetPage = async ({ params: { collection_slug }, searchParams: { limit = 50, offset = 0 } }: Props) => {
   const slug = `evoverses-${collection_slug}`;
   const [ collection, rawStats ] = await Promise.all([
     getCollection(slug),
     getCollectionStats(slug),
   ]);
+
   const contract = await getContract(collection.contracts[0].address, collection.contracts[0].chain);
   const name = collection.name.replace("EvoVerses", "").trim();
   const stats = [
@@ -59,9 +65,22 @@ const AssetPage = async ({ params: { collection_slug } }: Props) => {
         </div>
       </div>
       <div>
-        <Suspense fallback={<ViewerLoading />}>
-          <Viewer contract={contract} />
-        </Suspense>
+        <Tabs defaultValue="evo">
+          <TabsList className="grid w-full max-w-sm grid-cols-2 mx-auto">
+            <TabsTrigger value="evo">Evos</TabsTrigger>
+            <TabsTrigger value="egg">Eggs</TabsTrigger>
+          </TabsList>
+          <TabsContent value="evo">
+            <Suspense fallback={<ViewerLoading />}>
+              <Viewer contract={contract} limit={Number(limit)} offset={Number(offset)} collection="evo" />
+            </Suspense>
+          </TabsContent>
+          <TabsContent value="egg">
+            <Suspense fallback={<ViewerLoading />}>
+              <Viewer contract={contract} limit={Number(limit)} offset={Number(offset)} collection="egg" />
+            </Suspense>
+          </TabsContent>
+        </Tabs>
       </div>
     </main>
   );

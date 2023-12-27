@@ -1,5 +1,4 @@
-import { Gender } from '@/components/evo-card/types';
-import Male from '@/assets/evo/Male.svg';
-import Female from '@/assets/evo/Female.svg';
+import Female from "@/assets/evo/Female.svg";
+import Male from "@/assets/evo/Male.svg";
 
-export const getGenderImage = (gender: Gender) => gender === Gender.Male ? Male.src : Female.src;
+export const getGenderImage = (gender: string) => gender === "Male" ? Male.src : Female.src;
