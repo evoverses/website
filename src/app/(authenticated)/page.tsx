@@ -1,4 +1,3 @@
-import PardonOurDustAlert from "@/app/(authenticated)/temp-alert";
 import Logo from "@/app/icon.png";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
@@ -15,7 +14,6 @@ const Landing = () => {
   ];
   return (
     <main className="flex flex-grow flex-col items-center justify-around p-24 pb-4 px-4 sm:px-24">
-      <PardonOurDustAlert />
       <div className="flex flex-col text-center items-center">
         <Image
           src={Logo}

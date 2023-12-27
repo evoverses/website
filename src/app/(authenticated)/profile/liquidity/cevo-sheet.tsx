@@ -1,31 +1,31 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { cEvoContract } from "@/data/contracts";
 import { parseViemDetailedError } from "@/lib/viem";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { ChainButton } from "@/components/ui/chain-button";
 
 interface ClaimButtonProps {
   disabled?: boolean;
 }
 
-export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
+export const ClaimCEvoButton = ({disabled}: ClaimButtonProps) => {
   const router = useRouter();
-  const { address } = useAccount();
+  const {address} = useAccount();
 
-  const { config } = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     ...cEvoContract,
     functionName: "claimPending",
     chainId: 43_114,
     enabled: !disabled && !!address,
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  const {data, isError, error, write, reset} = useContractWrite(config);
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   useEffect(() => {
 
@@ -39,7 +39,7 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Claim completed successfully" });
+        toast({title: "Success!", description: "Claim completed successfully"});
         reset();
         router.refresh();
       } else {
@@ -53,9 +53,9 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isError, error, tx ]);
+  }, [isError, error, tx]);
 
   return (
-    <Button className="w-full font-bold" onClick={write} disabled={isError || disabled || !address}>Claim</Button>
+    <ChainButton className="w-full font-bold" onClick={write} disabled={isError || disabled}>Claim</ChainButton>
   );
 };

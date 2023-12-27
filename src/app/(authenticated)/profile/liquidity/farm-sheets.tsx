@@ -4,15 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
 import { investorContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
@@ -21,9 +12,17 @@ import { Pool } from "@/types/core";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
-import { useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import {
+  SmartDrawer,
+  SmartDrawerContent, SmartDrawerDescription, SmartDrawerFooter,
+  SmartDrawerHeader,
+  SmartDrawerTitle,
+  SmartDrawerTrigger
+} from "@/components/ui/smart-drawer";
+import { ChainButton } from "@/components/ui/chain-button";
 
-const FarmActions = [ "Deposit", "Withdraw", "Claim" ] as const;
+const FarmActions = ["Deposit", "Withdraw", "Claim"] as const;
 type FarmAction = typeof FarmActions[number];
 
 interface FarmSheetProps {
@@ -32,59 +31,59 @@ interface FarmSheetProps {
   disabled?: boolean
 }
 
-export const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetProps) => {
+export const FarmSheet = ({action = "Deposit", poolJson, disabled}: FarmSheetProps) => {
   const pool: Pool = JSON.parse(poolJson, bigIntJsonReviver);
-  const [ open, setOpen ] = useState<boolean>(false);
-  const [ value, setValue ] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string>("");
 
   const onOpenChange = (open: boolean) => {
     setOpen(open);
 
   };
 
-  const onValueChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  const onValueChange = ({target: {value}}: ChangeEvent<HTMLInputElement>) => {
     setValue(value);
   };
 
   return (
-    <Sheet onOpenChange={onOpenChange} open={open}>
-      <SheetTrigger asChild>
-        <Button className="w-full font-bold" disabled={disabled}>{action}</Button>
-      </SheetTrigger>
-      <SheetContent side="bottom">
-        <SheetHeader className="sm:text-center">
-          <SheetTitle>{action} {action === "Claim" ? "Rewards" : "Liquidity"}</SheetTitle>
+    <SmartDrawer onOpenChange={onOpenChange} open={open}>
+      <SmartDrawerTrigger asChild>
+        <ChainButton className="w-full font-bold" disabled={disabled}>{action}</ChainButton>
+      </SmartDrawerTrigger>
+      <SmartDrawerContent>
+        <SmartDrawerHeader className="sm:text-center">
+          <SmartDrawerTitle>{action} {action === "Claim" ? "Rewards" : "Liquidity"}</SmartDrawerTitle>
           {action === "Claim" && (
-            <SheetDescription>
+            <SmartDrawerDescription>
               If you claim now, you will receive:
-              <br />
+              <br/>
               ~{(
               Number(pool.earned) / 1e18
             ).toLocaleString()} EVO
-            </SheetDescription>
+            </SmartDrawerDescription>
           )}
           {action === "Deposit" && (
-            <SheetDescription>
+            <SmartDrawerDescription>
               EvoVerses currently has deposit fees minimized. Once fee reflection features are released, this is
               subject to change.
-              <Separator className="my-2" />
+              <Separator className="my-2"/>
               Deposit fee: {Number(pool.depFee) / 100}%
-            </SheetDescription>
+            </SmartDrawerDescription>
           )}
           {action === "Withdraw" && (
-            <SheetDescription>
+            <SmartDrawerDescription>
               EvoVerses utilizes LP withdrawal fees as a disincentive for short term farming and selling.
-              <Separator className="my-2" />
+              <Separator className="my-2"/>
               Current fee: {Number(pool.withdrawFee) / 100}%
               {pool.nextWithdrawFee > 0 && (
                 <>
-                  <br />
+                  <br/>
                   Next fee: {pool.nextWithdrawFee}% (in {Math.floor(pool.nextSecondsRemaining / 60 / 60)} hours)
                 </>
               )}
-            </SheetDescription>
+            </SmartDrawerDescription>
           )}
-        </SheetHeader>
+        </SmartDrawerHeader>
         {action === "Claim" && (
           <div className="grid w-full max-w-sm items-center gap-1.5 py-2 mx-auto"></div>
         )}
@@ -94,7 +93,7 @@ export const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetP
               {pool.t0Symbol} / {pool.t1Symbol}
             </Label>
             <div className="flex w-full max-w-sm items-center space-x-2">
-              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange} />
+              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange}/>
               <Button onClick={() => setValue(formatEther(pool.remainBalance))}>Max</Button>
             </div>
             <Label> Balance: {formatEther(pool.remainBalance)}</Label>
@@ -106,13 +105,13 @@ export const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetP
               {pool.t0Symbol} / {pool.t1Symbol}
             </Label>
             <div className="flex w-full max-w-sm items-center space-x-2">
-              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange} />
+              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange}/>
               <Button onClick={() => setValue(formatEther(pool.balance))}>Max</Button>
             </div>
             <Label> Balance: {formatEther(pool.balance)}</Label>
           </div>
         )}
-        <SheetFooter className="sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto">
+        <SmartDrawerFooter className="sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto">
           {action === "Claim" && (
             <ClaimButton
               poolId={pool.pid}
@@ -139,9 +138,9 @@ export const FarmSheet = ({ action = "Deposit", poolJson, disabled }: FarmSheetP
               close={() => setOpen(false)}
             />
           )}
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </SmartDrawerFooter>
+      </SmartDrawerContent>
+    </SmartDrawer>
   );
 };
 
@@ -153,19 +152,19 @@ interface ClaimButtonProps {
   close: () => void,
 }
 
-const ClaimButton = ({ poolId, enabled, open, close }: ClaimButtonProps) => {
+const ClaimButton = ({poolId, enabled, open, close}: ClaimButtonProps) => {
   const router = useRouter();
-  const { config } = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     ...investorContract,
     functionName: "claimReward",
-    args: [ poolId ],
+    args: [poolId],
     chainId: 43_114,
     enabled,
   });
 
-  const { data, error, isError, write, reset } = useContractWrite(config);
+  const {data, error, isError, write, reset} = useContractWrite(config);
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   useEffect(() => {
     if (!open) {
@@ -181,7 +180,7 @@ const ClaimButton = ({ poolId, enabled, open, close }: ClaimButtonProps) => {
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Claim completed successfully" });
+        toast({title: "Success!", description: "Claim completed successfully"});
         close();
         reset();
         router.refresh();
@@ -195,10 +194,10 @@ const ClaimButton = ({ poolId, enabled, open, close }: ClaimButtonProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, isError, error, tx ]);
+  }, [open, isError, error, tx]);
 
   return (
-    <Button onClick={write} disabled={isError}>Claim</Button>
+    <ChainButton onClick={write} disabled={isError}>Claim</ChainButton>
   );
 };
 
@@ -210,21 +209,21 @@ interface DepositButtonProps {
   close: () => void,
 }
 
-const DepositButton = ({ poolId, max, value, open, close }: DepositButtonProps) => {
+const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) => {
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { config } = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     ...investorContract,
     functionName: "deposit",
-    args: [ poolId, valueBigInt ],
+    args: [poolId, valueBigInt],
     chainId: 43_114,
     enabled: validAmount,
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  const {data, isError, error, write, reset} = useContractWrite(config);
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   useEffect(() => {
     if (!open) {
@@ -240,7 +239,7 @@ const DepositButton = ({ poolId, max, value, open, close }: DepositButtonProps) 
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Deposit completed successfully" });
+        toast({title: "Success!", description: "Deposit completed successfully"});
         close();
         reset();
         router.refresh();
@@ -255,10 +254,10 @@ const DepositButton = ({ poolId, max, value, open, close }: DepositButtonProps) 
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, isError, error, tx ]);
+  }, [open, isError, error, tx]);
 
   return (
-    <Button onClick={write} disabled={isError || !validAmount}>Deposit</Button>
+    <ChainButton onClick={write} disabled={isError || !validAmount}>Deposit</ChainButton>
   );
 };
 
@@ -270,23 +269,22 @@ interface WithdrawButtonProps {
   close: () => void,
 }
 
-const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps) => {
+const WithdrawButton = ({poolId, max, value, open, close}: WithdrawButtonProps) => {
   const router = useRouter();
-  const { chain } = useNetwork();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
 
-  const { config } = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     ...investorContract,
     functionName: "withdraw",
-    args: [ poolId, valueBigInt ],
+    args: [poolId, valueBigInt],
     chainId: 43_114,
     enabled: validAmount,
   });
 
-  const { data, error, isError, write, reset } = useContractWrite(config);
+  const {data, error, isError, write, reset} = useContractWrite(config);
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   useEffect(() => {
     if (!open) {
@@ -302,7 +300,7 @@ const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Withdrawal completed successfully" });
+        toast({title: "Success!", description: "Withdrawal completed successfully"});
         close();
         reset();
         router.refresh();
@@ -316,9 +314,9 @@ const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, isError, error, tx ]);
+  }, [open, isError, error, tx]);
 
   return (
-    <Button onClick={write} disabled={isError || !validAmount}>Withdraw</Button>
+    <ChainButton onClick={write} disabled={isError || !validAmount}>Withdraw</ChainButton>
   );
 };

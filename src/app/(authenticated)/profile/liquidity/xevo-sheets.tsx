@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
 import { evoContract, xEvoContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
@@ -12,8 +11,16 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
 import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { ChainButton } from "@/components/ui/chain-button";
+import {
+  SmartDrawer,
+  SmartDrawerContent, SmartDrawerFooter,
+  SmartDrawerHeader,
+  SmartDrawerTitle,
+  SmartDrawerTrigger
+} from "@/components/ui/smart-drawer";
 
-const xevoActions = [ "Deposit", "Withdraw" ] as const;
+const xevoActions = ["Deposit", "Withdraw"] as const;
 type XEvoAction = typeof xevoActions[number];
 
 interface XEvoSheetProps {
@@ -22,34 +29,34 @@ interface XEvoSheetProps {
   disabled?: boolean
 }
 
-export const XEvoSheet = ({ action = "Deposit", json, disabled }: XEvoSheetProps) => {
+export const XEvoSheet = ({action = "Deposit", json, disabled}: XEvoSheetProps) => {
   const data = JSON.parse(json, bigIntJsonReviver);
-  const [ open, setOpen ] = useState<boolean>(false);
-  const [ value, setValue ] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string>("");
 
   const onOpenChange = (open: boolean) => {
     setOpen(open);
 
   };
 
-  const onValueChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+  const onValueChange = ({target: {value}}: ChangeEvent<HTMLInputElement>) => {
     setValue(value);
   };
 
   return (
-    <Sheet onOpenChange={onOpenChange} open={open}>
-      <SheetTrigger asChild>
-        <Button className="w-full font-bold" disabled={disabled}>{action}</Button>
-      </SheetTrigger>
-      <SheetContent side="bottom">
-        <SheetHeader className="sm:text-center">
-          <SheetTitle>{action} {action === "Deposit" ? "EVO" : "xEVO"}</SheetTitle>
-        </SheetHeader>
+    <SmartDrawer onOpenChange={onOpenChange} open={open}>
+      <SmartDrawerTrigger asChild>
+        <ChainButton className="w-full font-bold" disabled={disabled}>{action}</ChainButton>
+      </SmartDrawerTrigger>
+      <SmartDrawerContent>
+        <SmartDrawerHeader className="sm:text-center">
+          <SmartDrawerTitle>{action} {action === "Deposit" ? "EVO" : "xEVO"}</SmartDrawerTitle>
+        </SmartDrawerHeader>
 
         {action === "Deposit" && (
           <div className="grid w-full max-w-sm items-center gap-1.5 py-4 mx-auto">
             <div className="flex w-full max-w-sm items-center space-x-2">
-              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange} />
+              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange}/>
               <Button onClick={() => setValue(formatEther(data.evoUserBalance))}>Max</Button>
             </div>
             <Label> Balance: {formatEther(data.evoUserBalance)}</Label>
@@ -58,13 +65,13 @@ export const XEvoSheet = ({ action = "Deposit", json, disabled }: XEvoSheetProps
         {action === "Withdraw" && (
           <div className="grid w-full max-w-sm items-center gap-1.5 py-4 mx-auto">
             <div className="flex w-full max-w-sm items-center space-x-2">
-              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange} />
+              <Input type="number" id="amount" placeholder="0" value={value} onChange={onValueChange}/>
               <Button onClick={() => setValue(formatEther(data.xEvoUserBalance))}>Max</Button>
             </div>
             <Label> Balance: {formatEther(data.xEvoUserBalance)}</Label>
           </div>
         )}
-        <SheetFooter className="sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto">
+        <SmartDrawerFooter className="sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto">
           {action === "Deposit" && (
             <DepositButton
               value={value}
@@ -81,9 +88,9 @@ export const XEvoSheet = ({ action = "Deposit", json, disabled }: XEvoSheetProps
               close={() => setOpen(false)}
             />
           )}
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </SmartDrawerFooter>
+      </SmartDrawerContent>
+    </SmartDrawer>
   );
 };
 
@@ -95,48 +102,48 @@ interface DepositButtonProps {
   close: () => void,
 }
 
-const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
+const DepositButton = ({max, value, open, close}: DepositButtonProps) => {
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { address } = useAccount();
+  const {address} = useAccount();
 
-  const { data: allowance, refetch } = useContractRead({
+  const {data: allowance, refetch} = useContractRead({
     ...evoContract,
     functionName: "allowance",
-    args: [ address || "0x0", xEvoContract.address ],
+    args: [address || "0x0", xEvoContract.address],
     enabled: !!address,
   })
 
   const isAllowed = BigInt(allowance || 0) >= parseEther("100000000");
 
-  const { config: approveConfig } = usePrepareContractWrite({
+  const {config: approveConfig} = usePrepareContractWrite({
     ...evoContract,
     functionName: "approve",
-    args: [ xEvoContract.address, parseEther("500000000") ],
+    args: [xEvoContract.address, parseEther("500000000")],
     chainId: 43_114,
     enabled: !isAllowed,
   });
 
-  const { data: approveData, write: approveWrite } = useContractWrite(approveConfig);
+  const {data: approveData, write: approveWrite} = useContractWrite(approveConfig);
 
-  const { data: approveTx } = useWaitForTransaction({
+  const {data: approveTx} = useWaitForTransaction({
     hash: approveData?.hash,
     chainId: 43_114,
     confirmations: 1,
   });
 
-  const { config } = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     ...xEvoContract,
     functionName: "deposit",
-    args: [ valueBigInt ],
+    args: [valueBigInt],
     chainId: 43_114,
     enabled: validAmount && isAllowed,
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  const {data, isError, error, write, reset} = useContractWrite(config);
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   useEffect(() => {
     if (!open) {
@@ -152,7 +159,7 @@ const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Deposit completed successfully" });
+        toast({title: "Success!", description: "Deposit completed successfully"});
         close();
         reset();
         router.refresh();
@@ -171,15 +178,15 @@ const DepositButton = ({  max, value, open, close }: DepositButtonProps) => {
       refetch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, isError, error, tx, allowance, isAllowed, approveTx ]);
+  }, [open, isError, error, tx, allowance, isAllowed, approveTx]);
 
   if (!isAllowed) {
     return (
-      <Button onClick={approveWrite} >Approve</Button>
+      <ChainButton onClick={approveWrite}>Approve</ChainButton>
     )
   }
   return (
-    <Button onClick={write} disabled={isError || !validAmount}>Deposit</Button>
+    <ChainButton onClick={write} disabled={isError || !validAmount}>Deposit</ChainButton>
   );
 };
 
@@ -190,21 +197,21 @@ interface WithdrawButtonProps {
   close: () => void,
 }
 
-const WithdrawButton = ({ max, value, open, close }: WithdrawButtonProps) => {
+const WithdrawButton = ({max, value, open, close}: WithdrawButtonProps) => {
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { config } = usePrepareContractWrite({
+  const {config} = usePrepareContractWrite({
     ...xEvoContract,
     functionName: "withdraw",
-    args: [ valueBigInt ],
+    args: [valueBigInt],
     chainId: 43_114,
     enabled: validAmount,
   });
 
-  const { data, error, isError, write, reset } = useContractWrite(config);
+  const {data, error, isError, write, reset} = useContractWrite(config);
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   useEffect(() => {
     if (!open) {
@@ -220,7 +227,7 @@ const WithdrawButton = ({ max, value, open, close }: WithdrawButtonProps) => {
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Withdrawal completed successfully" });
+        toast({title: "Success!", description: "Withdrawal completed successfully"});
         close();
         reset();
         router.refresh();
@@ -234,9 +241,9 @@ const WithdrawButton = ({ max, value, open, close }: WithdrawButtonProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, isError, error, tx ]);
+  }, [open, isError, error, tx]);
 
   return (
-    <Button onClick={write} disabled={isError || !validAmount}>Withdraw</Button>
+    <ChainButton onClick={write} disabled={isError || !validAmount}>Withdraw</ChainButton>
   );
 };
