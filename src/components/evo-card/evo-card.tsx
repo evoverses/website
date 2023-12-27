@@ -30,8 +30,6 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
     ? evo.generation === 0 ? evo.tokenId % 4 : "egg"
     : OldChromaMap[evo.attributes.chroma]}`;
 
-  console.log(evo);
-  console.log(characterUrl);
   return (
     <div
       id="container"
@@ -157,7 +155,14 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
       </p>
       <img
         id="info-overlay"
-        style={{ position: "absolute", top: 0, left: 0, bottom: 0, right: 0, opacity: 0.8, filter: "invert(100%)" }}
+        style={{
+          position: "absolute",
+          width: `${512 * multiplier}px`,
+          height: `${725 * multiplier}`,
+          top: `${60 * multiplier}px`,
+          opacity: 0.8,
+          filter: "invert(100%)",
+        }}
         src={`${rawCDN}/card/overlay/info-island/public`}
         alt="info-overlay-bg"
       />
@@ -170,7 +175,7 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
           fontSize: `${16 * multiplier}px`,
           left: "50%",
           transform: "translateX(-50%)",
-          top: `${395 * multiplier}px`,
+          bottom: `${215 * multiplier}px`,
         }}
       >
         {isEgg ? `Age: ${ageDays} Day${ageDays === 1 ? "" : "s"}` : evo.attributes.nature}
@@ -197,7 +202,7 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
               fontSize: `${16 * multiplier}px`,
               color: "rgba(255,255,255, 1)",
               position: "absolute",
-              bottom: `${300 * multiplier}px`,
+              bottom: `${230 * multiplier}px`,
               left: `50%`,
               transform: `translateX(-50%)`,
             }}
@@ -214,7 +219,7 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
               maxWidth: `${300 * multiplier}px`,
               marginLeft: "auto",
               marginRight: "auto",
-              top: `${65 * multiplier}px`,
+              top: `${135 * multiplier}px`,
             }}
           >
             <div
@@ -246,7 +251,7 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
             width: `${350 * multiplier}px`,
             height: `${64 * multiplier}px`,
             position: "absolute",
-            bottom: `${207.5 * multiplier}px`,
+            bottom: `${148 * multiplier}px`,
             left: "50%",
             transform: "translateX(-50%)",
             paddingLeft: `${8 * multiplier}px`,
@@ -272,7 +277,7 @@ export const EvoCardPng = ({ multiplier = 1, evo, baseUrl = "http://localhost:30
           color: "#FFF",
           left: `50%`,
           transform: `translateX(-50%)`,
-          bottom: `${148 * multiplier}px`,
+          bottom: `${88 * multiplier}px`,
         }}
       >
         {isEgg
