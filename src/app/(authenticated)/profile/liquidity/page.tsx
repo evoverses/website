@@ -1,6 +1,5 @@
 import { CEvoCard, PoolCard, XEvoCard } from "@/app/(authenticated)/profile/liquidity/cards";
 import { Separator } from "@/components/ui/separator";
-import { Web3Button } from "@web3modal/react";
 
 const LiquidityPage = async () => {
   return (
@@ -13,7 +12,7 @@ const LiquidityPage = async () => {
       </div>
       <Separator />
       <div className="mx-auto">
-        <Web3Button icon="hide" avatar="show" balance="show" />
+        <w3m-button size="sm" />
       </div>
       <div className="flex flex-wrap gap-4 items-stretch justify-center w-full pb-6">
         <PoolCard />

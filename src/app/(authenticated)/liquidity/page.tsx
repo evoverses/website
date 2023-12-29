@@ -2,7 +2,6 @@ import { CEvoCard, PoolCard, XEvoCard } from "@/app/(authenticated)/profile/liqu
 import { AccountProvider } from "@/components/providers";
 import { Separator } from "@/components/ui/separator";
 import { getAccountCookie } from "@/lib/cookies/account";
-import { Web3Button } from "@web3modal/react";
 
 // This page is here solely for those who think they are somehow elite anonymous hackers -.-
 
@@ -20,7 +19,7 @@ const LiquidityPage = async () => {
         </div>
         <Separator />
         <div className="mx-auto" suppressHydrationWarning>
-          <Web3Button icon="hide" avatar="show" balance="show" />
+          <w3m-button size="sm" />
         </div>
         <div className="flex flex-wrap gap-4 items-stretch justify-center w-full pb-6">
           <PoolCard />

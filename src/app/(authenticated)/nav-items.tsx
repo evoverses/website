@@ -12,11 +12,9 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
-import { Web3Button } from "@web3modal/react";
 import { Session } from "next-auth";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ComponentPropsWithoutRef, ElementRef, forwardRef, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 
@@ -139,17 +137,4 @@ export const ModeButton = () => {
       <span className="sr-only">Toggle theme</span>
     </Button>
   );
-};
-export const WalletButton = () => {
-  const pathName = usePathname();
-  return pathName.startsWith("/profile") ? (
-    <>
-      <div className="hidden md:block">
-        <Web3Button icon="hide" avatar="show" balance="show" />
-      </div>
-      <div className="md:hidden">
-        <Web3Button icon="hide" />
-      </div>
-    </>
-  ) : null;
 };
