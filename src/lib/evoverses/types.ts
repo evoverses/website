@@ -32,7 +32,9 @@ export type CollectionItemEvo = {
   resistance: number,
   speed: number,
   size: number,
-  xp: number
+  xp: number,
+  children: number[],
+  types: { primary: string, secondary: string | null },
 }
 
 export type CollectionItemsResponse = {

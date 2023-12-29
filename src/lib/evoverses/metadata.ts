@@ -1,4 +1,4 @@
-import { CollectionItemsResponse, CollectionMetadata } from "@/lib/evoverses/types";
+import { CollectionItemEvo, CollectionItemsResponse, CollectionMetadata } from "@/lib/evoverses/types";
 import { cache } from "react";
 
 const baseUrl = new URL("https://api.evoverses.com/v1/metadata/");
@@ -37,4 +37,17 @@ export const getCollectionItems = cache(async (
   }
 
   return await resp.json() as CollectionItemsResponse;
+});
+
+export const getCollectionItem = cache(async (collection: "evo" | "egg" = "evo", tokenId: string) => {
+  const url = new URL(`${collection}/${tokenId}`, baseUrl);
+  url.searchParams.set("raw", "true");
+  const resp = await fetch(url, {
+    next: { revalidate: 600 },
+  });
+  if (!resp.ok) {
+    throw new Error(`Failed to get Evo collection items: ${resp.statusText}`);
+  }
+
+  return await resp.json() as CollectionItemEvo;
 });
