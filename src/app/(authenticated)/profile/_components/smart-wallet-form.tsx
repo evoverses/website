@@ -1,8 +1,13 @@
-import CreateAccountButton from "@/app/(authenticated)/profile/_components/create-account-button";
+import {
+  CreateAccountButton,
+  SmartWalletUpdater,
+} from "@/app/(authenticated)/profile/_components/create-account-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
+import { getAccountCookie } from "@/lib/cookies/account";
 import { getEvoBalance, getGasBalance, isAccountCreated, predictAccountAddress } from "@/lib/evoverses/engine";
+import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { CheckIcon, ExclamationTriangleIcon, HomeIcon } from "@radix-ui/react-icons";
 import { IconProps } from "@radix-ui/react-icons/dist/types";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
@@ -31,9 +36,11 @@ const AccountCard = ({ title, description, icon: Icon }: AccountCardProps) => {
 
 type SmartWalletFormProps = {
   accountId: string;
+  userReadOnlyData: UserReadOnlyData;
 }
 
-const SmartWalletForm = async ({ accountId }: SmartWalletFormProps) => {
+const SmartWalletForm = async ({ accountId, userReadOnlyData }: SmartWalletFormProps) => {
+  const accountCookie = getAccountCookie();
   const [ address, created ] = await Promise.all([
     predictAccountAddress(accountId),
     isAccountCreated(accountId),
@@ -43,7 +50,7 @@ const SmartWalletForm = async ({ accountId }: SmartWalletFormProps) => {
     getEvoBalance(address),
   ]);
 
-  return created ? (
+  return created ? userReadOnlyData.wallets.managed === address ? (
     <div className="flex flex-wrap gap-4">
       <AccountCard title="Account Status" description="Healthy" icon={CheckIcon} />
       <AccountCard title="Smart Wallet" description={`${address.slice(0, 4)}...${address.slice(-6)}`} icon={HomeIcon} />
@@ -59,6 +66,13 @@ const SmartWalletForm = async ({ accountId }: SmartWalletFormProps) => {
       />
     </div>
   ) : (
+    <SmartWalletUpdater
+      created={created}
+      accountId={accountId}
+      address={address}
+      userReadOnlyData={userReadOnlyData}
+    />
+  ) : (
     <Alert variant="warning" className="flex justify-between items-center">
       <ExclamationTriangleIcon className="h-4 w-4" />
       <div>
@@ -67,7 +81,7 @@ const SmartWalletForm = async ({ accountId }: SmartWalletFormProps) => {
           Looks like you haven&apos;t created your backend smart account yet!
         </AlertDescription>
       </div>
-      <CreateAccountButton accountId={accountId} />
+      <CreateAccountButton accountId={accountId} address={address} userReadOnlyData={userReadOnlyData} />
     </Alert>
   );
 };

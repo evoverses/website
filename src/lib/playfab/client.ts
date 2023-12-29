@@ -1,10 +1,43 @@
-import { BASE_URL, CLIENT_URL, headers } from "@/lib/playfab/common";
-import { PlayFab } from "@/lib/playfab/types";
 import "server-only";
+import { CLIENT_URL, headers } from "@/lib/playfab/common";
+import { PlayFab } from "@/lib/playfab/types";
 import { Provider } from "@/types/auth";
 import AccountInfoResponse = PlayFab.Client.Account.Responses.AccountInfoResponse;
 import CombinedInfoResponse = PlayFab.Client.Account.Responses.CombinedInfoResponse;
 import LoginResponse = PlayFab.Client.Auth.LoginResponse;
+
+const InfoRequestParameters = {
+  GetCharacterInventories: true,
+  GetCharacterList: true,
+  GetPlayerProfile: true,
+  GetPlayerStatistics: true,
+  GetTitleData: true,
+  GetUserAccountInfo: true,
+  GetUserData: true,
+  GetUserInventory: true,
+  GetUserReadOnlyData: true,
+  GetUserVirtualCurrency: true,
+  ProfileConstraints: {
+    ShowAvatarUrl: true,
+    ShowBannedUntil: true,
+    ShowCampaignAttributions: true,
+    ShowContactEmailAddresses: true,
+    ShowCreated: true,
+    ShowDisplayName: true,
+    ShowExperimentVariants: true,
+    ShowLastLogin: true,
+    ShowLinkedAccounts: true,
+    ShowLocations: true,
+    ShowMemberships: false,
+    ShowOrigination: true,
+    ShowPushNotificationRegistrations: true,
+    ShowStatistics: true,
+    ShowTags: true,
+    ShowTotalValueToDateInUsd: true,
+    ShowValuesToDate: true,
+    ShowVirtualCurrencyBalances: false,
+  },
+};
 
 export const loginWithSocialAuth = (provider: Provider, access_token?: string) => {
   switch (provider) {
@@ -27,13 +60,16 @@ export const loginWithGoogle = async (access_token?: string) => {
     SetEmail: true,
     AccessToken: access_token,
     CreateAccount: true,
+    InfoRequestParameters,
   });
   const resp = await fetch(url, { method: "POST", headers: { ...headers }, body });
   if (!resp.ok) {
+    console.error(await resp.text());
     throw new Error(`Login Failed: ${resp.statusText}`);
   }
   const loginResponse = await resp.json() as LoginResponse;
   return loginResponse.data;
+
 };
 
 export const loginWithDiscord = async (access_token?: string) => {
@@ -44,15 +80,15 @@ export const loginWithDiscord = async (access_token?: string) => {
     IdToken: access_token,
     TitleId: process.env.PLAYFAB_TITLE_ID,
     CreateAccount: true,
+    InfoRequestParameters,
   });
   const resp = await fetch(url, { method: "POST", headers: { ...headers }, body });
   if (!resp.ok) {
-    console.log(resp);
+    console.error(await resp.text());
     throw new Error(`Login Failed: ${resp.statusText}`);
   }
 
   const loginResponse = await resp.json() as LoginResponse;
-  console.log(loginResponse);
   return loginResponse.data;
 };
 
@@ -67,7 +103,7 @@ export const loginWithTwitch = async (access_token?: string) => {
 
   const resp = await fetch(url, { method: "POST", headers: { ...headers }, body });
   if (!resp.ok) {
-    console.log(resp);
+    console.error(await resp.text());
     throw new Error(`Login Failed: ${resp.statusText}`);
   }
 
@@ -90,14 +126,8 @@ export const linkSocialAuth = async (provider: Provider, sessionTicket: string, 
 
 export const linkTwitch = async (sessionTicket: string, access_token?: string) => {
   const url = new URL("LinkTwitch", CLIENT_URL);
-  console.log("Calling LinkTwitch");
-  console.log("URL:", url.toString());
+
   const body = JSON.stringify({ AccessToken: access_token });
-  console.log("Body:", body);
-  console.log("Headers:", {
-    ...headers,
-    "X-Authorization": sessionTicket,
-  });
   const resp = await fetch(url, {
     method: "POST",
     headers: {
@@ -108,8 +138,7 @@ export const linkTwitch = async (sessionTicket: string, access_token?: string) =
   });
 
   if (!resp.ok) {
-    console.log(resp);
-    console.log(await resp.text());
+    console.error(await resp.text());
     throw new Error(`Link Failed: ${resp.statusText}`);
   }
 };
@@ -130,8 +159,7 @@ export const linkGoogle = async (sessionTicket: string, access_token?: string) =
   });
 
   if (!resp.ok) {
-    console.log(resp);
-    console.log(await resp.text());
+    console.error(await resp.text());
     throw new Error(`Link Failed: ${resp.statusText}`);
   }
 };
@@ -184,7 +212,6 @@ export const getPlayFabIDFromTwitchID = async (id: string, sessionTicket: string
     throw new Error(`Get TwitchId Failed: ${resp.statusText}`);
   }
   const data = await resp.json() as { data: { Data: { TwitchId: string, PlayFabId: string }[] } };
-  console.log(JSON.stringify(data, null, 2));
   return data.data.Data.length === 0 ? undefined : data.data.Data[0].PlayFabId;
 };
 
@@ -207,43 +234,10 @@ export const getAccountInfo = async (id: string, clientSessionTicket: string) =>
   return data.data.AccountInfo;
 };
 
-export const getCombinedPlayerInfo = async (playFabId: string, clientSessionTicket: string) => {
+export const getCombinedPlayerInfo = async (clientSessionTicket: string) => {
   const url = new URL("GetPlayerCombinedInfo", CLIENT_URL);
 
-  const body = JSON.stringify({
-    InfoRequestParameters: {
-      GetCharacterInventories: true,
-      GetCharacterList: true,
-      GetPlayerProfile: true,
-      GetPlayerStatistics: true,
-      GetTitleData: true,
-      GetUserAccountInfo: true,
-      GetUserData: true,
-      GetUserInventory: true,
-      GetUserReadOnlyData: true,
-      GetUserVirtualCurrency: true,
-      ProfileConstraints: {
-        ShowAvatarUrl: true,
-        ShowBannedUntil: true,
-        ShowCampaignAttributions: true,
-        ShowContactEmailAddresses: true,
-        ShowCreated: true,
-        ShowDisplayName: true,
-        ShowExperimentVariants: true,
-        ShowLastLogin: true,
-        ShowLinkedAccounts: true,
-        ShowLocations: true,
-        ShowMemberships: false,
-        ShowOrigination: true,
-        ShowPushNotificationRegistrations: true,
-        ShowStatistics: true,
-        ShowTags: true,
-        ShowTotalValueToDateInUsd: true,
-        ShowValuesToDate: true,
-        ShowVirtualCurrencyBalances: false,
-      },
-    },
-  });
+  const body = JSON.stringify({ InfoRequestParameters });
   const resp = await fetch(url, {
     method: "POST",
     headers: {
@@ -257,20 +251,4 @@ export const getCombinedPlayerInfo = async (playFabId: string, clientSessionTick
   }
   const json = await resp.json() as CombinedInfoResponse;
   return json.data.InfoResultPayload;
-};
-
-export const getBackendEntityKey = async () => {
-  const url = new URL("/Authentication/GetEntityToken", BASE_URL);
-  const body = JSON.stringify({ Entity: { Id: process.env.PLAYFAB_TITLE_ID, type: "title" } });
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      ...headers,
-      "X-SecretKey": process.env.PLAYFAB_SECRET_KEY!,
-    },
-    body,
-  });
-  const json = await resp.json() as { data: { EntityToken: string } };
-  console.log("JSON", json);
-  return json.data.EntityToken;
 };

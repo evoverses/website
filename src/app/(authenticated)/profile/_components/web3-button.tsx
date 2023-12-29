@@ -1,12 +1,14 @@
 "use client";
+import { updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { typedData } from "@/data/viem/signature";
 import { getCsrfToken } from "@/lib/auth";
-import { linkWallet } from "@/lib/playfab/actions";
+import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { cn } from "@/lib/utils";
 import { IAccountCookie } from "@/types/cookies";
-import { Session } from "next-auth";
+import { Address } from "abitype";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { recoverTypedDataAddress, verifyTypedData } from "viem";
@@ -14,17 +16,18 @@ import { recoverTypedDataAddress, verifyTypedData } from "viem";
 import { useAccount, useWalletClient } from "wagmi";
 
 type LinkWalletButtonProps = {
-  session: Session | null,
-  accountCookie: IAccountCookie,
-  disabled?: boolean,
+  playFabId: string;
+  accountCookie: IAccountCookie
+  readOnlyData: UserReadOnlyData;
   className?: string
 }
 
-export const LinkWalletButton = ({ session, disabled, accountCookie, className }: LinkWalletButtonProps) => {
+export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnlyData }: LinkWalletButtonProps) => {
+  const router = useRouter();
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const [ mounted, setMounted ] = useState(false);
-
+  const isConnected = readOnlyData.wallets.connected.includes(address as Address);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -71,10 +74,15 @@ export const LinkWalletButton = ({ session, disabled, accountCookie, className }
       if (!valid) {
         throw new Error("Invalid signature");
       }
-      const sessionTicket = (
-        session as any
-      ).playFab.SessionTicket;
-      await linkWallet(address, sessionTicket);
+      const newReadOnlyData = {
+        ...readOnlyData,
+        wallets: {
+          ...readOnlyData.wallets,
+          connected: [ ...readOnlyData.wallets.connected.filter(a => a !== address), address ],
+        },
+      };
+      await updateUserReadOnlyDataAction(playFabId, newReadOnlyData);
+      router.refresh();
 
     } catch (error) {
       toast({
@@ -88,12 +96,17 @@ export const LinkWalletButton = ({ session, disabled, accountCookie, className }
   return mounted ? (
     <Button
       type="button"
-      disabled={disabled}
       className={cn(className)}
       onClick={onClick}
-      // disabled={!isConnected || isConnected && added}
+      disabled={!readOnlyData.wallets.managed || isConnected}
     >
-      {accountCookie.loggedIn ? disabled ? "Linked" : "Link" : "Wallet Not Connected"}
+      {accountCookie.loggedIn
+        ? readOnlyData.wallets.managed
+          ? isConnected
+            ? "Linked"
+            : "Link"
+          : "No Smart Account"
+        : "Wallet Not Connected"}
     </Button>
   ) : (
     <Button disabled className={cn(className)}>

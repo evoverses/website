@@ -8,7 +8,8 @@ import { Icons } from "@/components/ui/icons";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { getAccountCookie } from "@/lib/cookies/account";
-import { getAccountInfo, getCombinedPlayerInfo } from "@/lib/playfab";
+import { getAccountInfo, getCombinedPlayerInfo } from "@/lib/playfab/client";
+import { getUserReadOnlyData } from "@/lib/playfab/helpers";
 import { cn } from "@/lib/utils";
 import { Provider } from "@/types/auth";
 import { CheckIcon } from "@radix-ui/react-icons";
@@ -47,8 +48,9 @@ const AccountPage = async () => {
   if (!session) {
     return null;
   }
+
   const account = await getAccountInfo(session.playFab.PlayFabId, session.playFab.SessionTicket);
-  const combined = await getCombinedPlayerInfo(session.playFab.PlayFabId, session.playFab.SessionTicket);
+  const combined = await getCombinedPlayerInfo(session.playFab.SessionTicket);
   return (
     <main className="space-y-6">
       <div>
@@ -58,14 +60,14 @@ const AccountPage = async () => {
         </p>
       </div>
       <Separator />
-      <SmartWalletForm accountId={session.playFab.PlayFabId} />
-      <ProfileForm account={account} session={session} accountCookie={accountCookie} />
+      <SmartWalletForm accountId={session.playFab.PlayFabId} userReadOnlyData={getUserReadOnlyData(combined)} />
+      <ProfileForm account={account} session={session} accountCookie={accountCookie} combined={combined} />
       <div className="grid gap-2">
         <Label htmlFor="buttons">Connections</Label>
         <div className="flex flex-wrap gap-2">
           {Object.entries(connections).map(([ name, { Icon, disabled } ]) => {
             const action = linkAccount.bind(null, name.toLowerCase() as Provider);
-            const linked = combined.PlayerProfile.LinkedAccounts.some((account) => account.Platform.toLowerCase()
+            const linked = combined.PlayerProfile.LinkedAccounts.some((la) => la.Platform.toLowerCase()
               .includes(name.toLowerCase()));
             return (
               <form action={action} key={name}>

@@ -8,6 +8,7 @@ export namespace PlayFab {
     Id: string;
     Type: string;
   };
+
   export namespace Client {
 
     export namespace Account {
@@ -177,6 +178,13 @@ export namespace PlayFab {
         CharacterType: string;
       }
 
+      export type PlayerProfileLinkedAccount = {
+        Email: string;
+        Platform: LoginIdentityProvider;
+        PlatformUserId: string;
+        Username: string;
+      };
+
       export type PlayerProfile = {
         AdCampaignAttributions: {
           AttributedAt: string;
@@ -194,12 +202,7 @@ export namespace PlayFab {
         DisplayName: string;
         ExperimentVariants: any[];
         LastLogin: string;
-        LinkedAccounts: {
-          Email: string;
-          Platform: LoginIdentityProvider;
-          PlatformUserId: string;
-          Username: string;
-        }[];
+        LinkedAccounts: PlayerProfileLinkedAccount[];
         Locations: {
           City: string;
           ContinentCode: string;
@@ -259,31 +262,33 @@ export namespace PlayFab {
             AccountInfo: AccountInfo;
           }
         }
+        export type InfoResultPayload = {
+          AccountInfo: AccountInfo;
+          CharacterInventories: CharacterInventory[];
+          CharacterList: Character[];
+          PlayerProfile: PlayerProfile;
+          PlayerStatistics: {
+            StatisticName: string;
+            Value: number;
+            Version: number;
+          }[];
+          TitleData: Record<string, string>;
+          UserData: Record<string, UserDataRecord>;
+          UserDataVersion: number;
+          UserInventory: ItemInstance[];
+          UserReadOnlyData: Record<string, UserDataRecord>;
+          UserReadOnlyDataVersion: number;
+          UserVirtualCurrency: Record<string, number>;
+          UserVirtualCurrencyRechargeTimes: {
+            RechargeMax: number;
+            RechargeTime: string;
+            SecondsToRecharge: number;
+          };
+        };
+
         export type CombinedInfoResponse = ResponseBase & {
           data: {
-            InfoResultPayload: {
-              AccountInfo: AccountInfo;
-              CharacterInventories: CharacterInventory[];
-              CharacterList: Character[];
-              PlayerProfile: PlayerProfile;
-              PlayerStatistics: {
-                StatisticName: string;
-                Value: number;
-                Version: number;
-              }[];
-              TitleData: Record<string, string>;
-              UserData: UserDataRecord;
-              UserDataVersion: number;
-              UserInventory: ItemInstance[];
-              UserReadOnlyData: UserDataRecord;
-              UserReadOnlyDataVersion: number;
-              UserVirtualCurrency: Record<string, number>;
-              UserVirtualCurrencyRechargeTimes: {
-                RechargeMax: number;
-                RechargeTime: string;
-                SecondsToRecharge: number;
-              };
-            }
+            InfoResultPayload: InfoResultPayload;
             PlayFabId: string;
           }
         }
@@ -311,6 +316,7 @@ export namespace PlayFab {
               TypeString: string;
             }
           };
+          InfoResultPayload: Account.Responses.InfoResultPayload;
           TreatmentAssignment: {
             Variants: any[];
             Variables: any[];

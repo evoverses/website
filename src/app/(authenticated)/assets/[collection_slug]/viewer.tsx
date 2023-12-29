@@ -50,9 +50,6 @@ export const Viewer = async ({ contract, limit, offset, collection }: ViewerProp
   const data = await getCollectionItems(collection, limit, offset);
   const totalPages = Math.ceil(data.total / limit);
   const currentPage = Math.ceil(offset / limit) + 1;
-  if (collection === "egg") {
-    console.log(data);
-  }
   return (
     <div className="flex flex-col">
       <div className="flex max-h-fit space-x-2 justify-end pb-4">

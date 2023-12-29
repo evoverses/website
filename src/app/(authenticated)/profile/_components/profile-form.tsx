@@ -1,5 +1,6 @@
 "use client";
 
+import { updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
 import { LinkWalletButton } from "@/app/(authenticated)/profile/_components/web3-button";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -7,25 +8,33 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { updateUserTitleDisplayName } from "@/lib/playfab/actions";
+import { getUserReadOnlyData } from "@/lib/playfab/helpers";
 import { PlayFab } from "@/lib/playfab/types";
 import { IAccountCookie } from "@/types/cookies";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Address } from "abitype";
 import { Session } from "next-auth";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import InfoResultPayload = PlayFab.Client.Account.Responses.InfoResultPayload;
 
 const profileFormSchema = z.object({
   username: z
-    .string()
-    .min(3, {
-      message: "Username must be at least 3 characters.",
+    .string({
+      description: "This is your public display name. It can be your real name or a pseudonym. You can only change this once every 30 days.",
     })
-    .max(16, {
-      message: "Username must not be longer than 16 characters.",
-    }),
-  email: z.string().email().optional(),
-  wallet: z.string().min(42).max(42).optional(),
+    .min(3, { message: "Username must be at least 3 characters." })
+    .max(16, { message: "Username must not be longer than 16 characters." }),
+  email: z
+    .string({ description: "Your verified email addresses are managed by your connected accounts" })
+    .email({ message: "Email must be a valid email address." })
+    .optional(),
+  wallet: z
+    .string({ description: "Connecting your wallet allows you to buy, sell, and trade NFTs." })
+    .min(42, { message: "Wallet address must be 42 characters long in the form of 0x..." })
+    .max(42, { message: "Wallet address must be 42 characters long in the form of 0x..." })
+    .optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -34,8 +43,10 @@ export type ProfileFormProps = {
   account: PlayFab.Client.Account.AccountInfo;
   session: Session;
   accountCookie: IAccountCookie;
+  combined: InfoResultPayload
 }
-export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProps) => {
+export const ProfileForm = ({ account, session, accountCookie, combined }: ProfileFormProps) => {
+  const readOnlyData = getUserReadOnlyData(combined);
   const emails = [
     account.PrivateInfo?.Email,
     account.GoogleInfo?.GoogleEmail,
@@ -44,7 +55,7 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
   const defaultValues: Partial<ProfileFormValues> = {
     username: account.TitleInfo.DisplayName,
     email: account.PrivateInfo?.Email,
-    wallet: account.CustomIdInfo?.CustomId,
+    wallet: readOnlyData.wallets.primary,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -52,17 +63,25 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
     defaultValues,
     mode: "onChange",
   });
-
+  const { isValid, dirtyFields, isDirty } = form.formState;
   const onSubmit = async (data: ProfileFormValues) => {
-    await updateUserTitleDisplayName(data.username,
-      (
-        session as any
-      ).playFab.SessionTicket,
-    );
+    if (data.username !== account.TitleInfo.DisplayName) {
+      await updateUserTitleDisplayName(data.username, session.playFab.SessionTicket);
+    }
+    if (data.wallet !== readOnlyData.wallets.primary) {
+      await updateUserReadOnlyDataAction(account.PlayFabId, {
+        ...readOnlyData,
+        wallets: {
+          ...readOnlyData.wallets,
+          primary: data.wallet as Address,
+        },
+      });
+    }
     toast({
       title: "Success!",
       description: "Your profile has been updated.",
     });
+    form.reset();
   };
 
   return (
@@ -91,7 +110,12 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
           render={({ field }) => (
             <FormItem>
               <FormLabel>Contact Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={emails.length === 0}
+                {...field}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a verified email to display" />
@@ -117,22 +141,30 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
             <FormItem>
               <FormLabel>Primary Wallet</FormLabel>
               <div className="flex">
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={readOnlyData.wallets.connected.length === 0}
+                >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a connected wallet" />
+                      <SelectValue
+                        placeholder={readOnlyData.wallets.connected.length === 0
+                          ? "You have no connected wallets"
+                          : "Select a connected wallet"}
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {account.CustomIdInfo?.CustomId && (
-                      <SelectItem value={account.CustomIdInfo.CustomId}>{account.CustomIdInfo.CustomId}</SelectItem>
-                    )}
+                    {readOnlyData.wallets.connected.map(wallet => (
+                      <SelectItem key={wallet} value={wallet}>{wallet}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <LinkWalletButton
-                  disabled={!!account.CustomIdInfo?.CustomId}
-                  session={session}
+                  playFabId={account.PlayFabId}
                   accountCookie={accountCookie}
+                  readOnlyData={readOnlyData}
                   className="ml-2"
                 />
               </div>
@@ -144,7 +176,7 @@ export const ProfileForm = ({ account, session, accountCookie }: ProfileFormProp
           )}
         />
         <Button
-          disabled={!form.formState.dirtyFields.username || !form.formState.isValid}
+          disabled={!isValid || !isDirty}
           type="submit"
         >
           Update profile

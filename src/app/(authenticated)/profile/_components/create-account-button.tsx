@@ -1,14 +1,25 @@
 "use client";
 
-import { createAccountAction } from "@/app/(authenticated)/profile/_components/actions";
+import { createAccountAction, updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Icons } from "@/components/ui/icons";
 import { toast } from "@/components/ui/use-toast";
+import { UserReadOnlyData } from "@/lib/playfab/helpers";
+import { Address } from "abitype";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { FaSpinner } from "react-icons/fa";
 
-const CreateAccountButton = ({ accountId }: { accountId: string }) => {
+type CreateAccountButtonProps = {
+  accountId: string;
+  address: Address
+  userReadOnlyData: UserReadOnlyData;
+  created?: boolean;
+}
+
+export const CreateAccountButton = ({ accountId, address, userReadOnlyData }: CreateAccountButtonProps) => {
   const router = useRouter();
   const form = useForm({
     mode: "onSubmit",
@@ -17,6 +28,8 @@ const CreateAccountButton = ({ accountId }: { accountId: string }) => {
   const onClick = async () => {
     try {
       await createAccountAction(accountId);
+      const newReadOnlyData = { ...userReadOnlyData, wallets: { ...userReadOnlyData.wallets, managed: address } };
+      await updateUserReadOnlyDataAction(accountId, newReadOnlyData);
       await new Promise((resolve) => setTimeout(resolve, 5000));
       toast({
         title: "Success",
@@ -40,6 +53,33 @@ const CreateAccountButton = ({ accountId }: { accountId: string }) => {
         </Button>
       </form>
     </Form>
+  );
+};
+
+export const SmartWalletUpdater = ({ accountId, address, userReadOnlyData, created }: CreateAccountButtonProps) => {
+  useEffect(() => {
+    if (created && userReadOnlyData.wallets.managed !== address) {
+      const newReadOnlyData = { ...userReadOnlyData, wallets: { ...userReadOnlyData.wallets, managed: address } };
+      updateUserReadOnlyDataAction(accountId, newReadOnlyData).then(() => {
+        toast({
+          title: "Success",
+          description: "Your account has been updated!",
+        });
+      }).catch((e) => {
+        toast({
+          title: "Error",
+          description: `There was an error updating your account. ${e}`,
+          variant: "destructive",
+        });
+      });
+    }
+  }, [ created, userReadOnlyData, accountId, address ]);
+
+  return (
+    <div className="flex justify-center items-center space-x-4">
+      <span>Updating account</span>
+      <FaSpinner className="w-10 h-10 animate-spin" />
+    </div>
   );
 };
 

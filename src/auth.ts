@@ -1,7 +1,7 @@
 import "server-only";
 import authConfig from "@/auth.config";
 import { setAccountCookieSessionTicket } from "@/lib/cookies/account";
-import { getPlayFabIDFromSocialLoginID, linkSocialAuth, loginWithSocialAuth } from "@/lib/playfab";
+import { getPlayFabIDFromSocialLoginID, linkSocialAuth, loginWithSocialAuth } from "@/lib/playfab/client";
 import { Provider } from "@/types/auth";
 // import PlayFabAdapter from "@/lib/playfab-adapter";
 import NextAuth from "next-auth";
@@ -24,9 +24,7 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
             user.id,
             session.playFab.SessionTicket,
           );
-          console.log("PlayFabID:", playFabID);
           if (!playFabID) {
-            console.log("Linking Account:", account.provider, user.id, session.playFab.SessionTicket);
             await linkSocialAuth(account.provider as Provider, session.playFab.SessionTicket, account.access_token);
           }
         }

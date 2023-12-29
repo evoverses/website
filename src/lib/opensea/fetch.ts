@@ -196,7 +196,6 @@ export const getNftEvents = cache(async (
       url.searchParams.append("event_type", et);
     }
   }
-  console.log(url.toString());
   if (!resp.ok) {
     throw new Error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
   }

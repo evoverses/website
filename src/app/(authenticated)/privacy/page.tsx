@@ -14,7 +14,6 @@ const Page = () => {
     js.id = "termly-jssdk";
     js.src = "https://app.termly.io/embed-policy.min.js";
     tjs.parentNode?.insertBefore(js, tjs);
-    console.log(document.getElementsByTagName("iframe"));
   }, []);
 
   return (

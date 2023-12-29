@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { getAccountCookie } from "@/lib/cookies/account";
-import { getAccountInfo } from "@/lib/playfab";
+import { getAccountInfo } from "@/lib/playfab/client";
 import { Address } from "abitype";
 
 export const getWallet = async () => {

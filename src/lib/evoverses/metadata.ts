@@ -27,11 +27,7 @@ export const getCollectionItems = cache(async (
   if (offset !== 0) {
     url.searchParams.set("offset", offset.toString());
   }
-  const resp = await fetch(url, {
-    next: {
-      revalidate: 600,
-    },
-  });
+  const resp = await fetch(url, { next: { revalidate: 600 } });
   if (!resp.ok) {
     throw new Error(`Failed to get Evo collection items: ${resp.statusText}`);
   }
