@@ -50,7 +50,7 @@ const SmartWalletForm = async ({ accountId, userReadOnlyData }: SmartWalletFormP
     getEvoBalance(address),
   ]);
 
-  return created ? userReadOnlyData.wallets.managed === address ? (
+  return created ? userReadOnlyData?.wallets?.managed === address ? (
     <div className="flex flex-wrap gap-4">
       <AccountCard title="Account Status" description="Healthy" icon={CheckIcon} />
       <AccountCard title="Smart Wallet" description={`${address.slice(0, 4)}...${address.slice(-6)}`} icon={HomeIcon} />
