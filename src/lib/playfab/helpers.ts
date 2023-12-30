@@ -23,18 +23,18 @@ export type UserReadOnlyData = {
 export type AnyUserData = UserData | UserReadOnlyData;
 
 const defaultReadOnlyData: UserReadOnlyData = {
-      wallets: {
-        connected: [],
-      },
-    }
+  wallets: {
+    connected: [],
+  },
+};
 const defaultData: UserData = {
-      account: {
-        title: "",
-        avatar: 0,
-        level: 1,
-        frame: 0,
-      },
-    }
+  account: {
+    title: "",
+    avatar: 0,
+    level: 1,
+    frame: 0,
+  },
+};
 const parseData = (data: Record<string, UserDataRecord>) => {
   const parsed = Object.entries(data).reduce((acc, [ key, value ]) => {
     acc[key] = JSON.parse(value.Value);
@@ -49,7 +49,9 @@ const getUserDataParsed = (info: InfoResultPayload, readOnly?: boolean) => {
     return readOnly ? defaultReadOnlyData : defaultData;
   }
   const parsed = parseData(data);
-  return readOnly ? {...defaultReadOnlyData, ...parsed} as UserReadOnlyData : {...defaultData, ...parsed} as UserData;
+  return readOnly
+    ? { ...defaultReadOnlyData, ...parsed } as UserReadOnlyData
+    : { ...defaultData, ...parsed } as UserData;
 };
 
 export const getUserData = (info: InfoResultPayload) => getUserDataParsed(info, false) as UserData;

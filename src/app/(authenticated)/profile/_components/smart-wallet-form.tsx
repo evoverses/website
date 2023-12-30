@@ -5,7 +5,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
-import { getAccountCookie } from "@/lib/cookies/account";
 import { getEvoBalance, getGasBalance, isAccountCreated, predictAccountAddress } from "@/lib/evoverses/engine";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { CheckIcon, ExclamationTriangleIcon, HomeIcon } from "@radix-ui/react-icons";
@@ -40,7 +39,6 @@ type SmartWalletFormProps = {
 }
 
 const SmartWalletForm = async ({ accountId, userReadOnlyData }: SmartWalletFormProps) => {
-  const accountCookie = getAccountCookie();
   const [ address, created ] = await Promise.all([
     predictAccountAddress(accountId),
     isAccountCreated(accountId),
