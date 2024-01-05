@@ -21,7 +21,7 @@ import { Pool } from "@/types/core";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 
 const FarmActions = [ "Deposit", "Withdraw", "Claim" ] as const;
 type FarmAction = typeof FarmActions[number];
@@ -272,8 +272,10 @@ interface WithdrawButtonProps {
 
 const WithdrawButton = ({ poolId, max, value, open, close }: WithdrawButtonProps) => {
   const router = useRouter();
+  const { chain } = useNetwork();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
+
   const { config } = usePrepareContractWrite({
     ...investorContract,
     functionName: "withdraw",
