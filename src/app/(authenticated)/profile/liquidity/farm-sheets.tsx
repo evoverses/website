@@ -12,7 +12,7 @@ import { Pool } from "@/types/core";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { formatEther, parseEther } from "viem";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import {
   SmartDrawer,
   SmartDrawerContent,
@@ -23,6 +23,8 @@ import {
   SmartDrawerTrigger
 } from "@/components/ui/smart-drawer";
 import { ChainButton } from "@/components/ui/chain-button";
+import { Address } from "abitype";
+import { LpTokenABI } from "@/assets/abi/lp-token";
 
 const FarmActions = ["Deposit", "Withdraw", "Claim"] as const;
 type FarmAction = typeof FarmActions[number];
@@ -127,6 +129,7 @@ export const FarmSheet = ({action = "Deposit", poolJson, disabled}: FarmSheetPro
               poolId={pool.pid}
               value={value}
               max={pool.remainBalance}
+              lpToken={pool.token}
               open={action === "Deposit" && open}
               close={() => setOpen(false)}
             />
@@ -207,20 +210,46 @@ interface DepositButtonProps {
   poolId: bigint,
   max: bigint,
   value: string,
+  lpToken: string,
   open?: boolean,
   close: () => void,
 }
 
-const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) => {
+const DepositButton = ({poolId, max, value, lpToken, open, close}: DepositButtonProps) => {
   const router = useRouter();
+  const { address } = useAccount();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
+
+  const { data: allowance = 0n, refetch } = useContractRead({
+    address: lpToken as Address,
+    abi: LpTokenABI,
+    functionName: "allowance",
+    args: [address || "0x", investorContract.address],
+    chainId: 43_114,
+    enabled: validAmount,
+  })
+
+  const hasAllowance = allowance >= BigInt(1_000_000_000 * 1e18);
+
+  const { config: approveConfig } = usePrepareContractWrite({
+    address: lpToken as Address,
+    abi: LpTokenABI,
+    functionName: "approve",
+    args: [investorContract.address, BigInt(100_000_000_000 * 1e18)],
+    chainId: 43_114,
+    enabled: !hasAllowance
+  })
+
+  const { data: approveTx, write: approveWrite } = useContractWrite(approveConfig);
+  const { data: approveResult } = useWaitForTransaction({ hash: approveTx?.hash, chainId: 43_114, confirmations: 1  })
+
   const {error: prepareError, config} = usePrepareContractWrite({
     ...investorContract,
     functionName: "deposit",
     args: [poolId, valueBigInt],
     chainId: 43_114,
-    enabled: validAmount,
+    enabled: validAmount && hasAllowance,
   });
 
   const {data, isError, error, write, reset} = useContractWrite(config);
@@ -228,8 +257,11 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
   const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   const onClick = () => {
+    if (approveWrite) {
+      return approveWrite();
+    }
     if (write) {
-      write();
+      return write();
     } else {
       toast({
         variant: "destructive",
@@ -238,9 +270,13 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
       })
     }
   }
+
   useEffect(() => {
     if (!open) {
       reset();
+    }
+    if (!hasAllowance && approveResult?.status === "success") {
+      refetch()
     }
     if (isError) {
       toast({
@@ -267,10 +303,12 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, isError, error, tx]);
+  }, [open, isError, error, tx, approveResult, hasAllowance]);
 
   return (
-    <ChainButton onClick={onClick} disabled={isError || !validAmount}>Deposit</ChainButton>
+    <ChainButton onClick={onClick} disabled={isError || !validAmount}>
+      {hasAllowance ? "Deposit" : "Approve"}
+    </ChainButton>
   );
 };
 
