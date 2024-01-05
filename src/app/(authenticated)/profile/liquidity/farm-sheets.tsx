@@ -225,6 +225,17 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
 
   const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
+  const onClick = () => {
+    if (write) {
+      write();
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error ? `${error}` : validAmount ? "Unknown Error" : "Invalid amount"
+      })
+    }
+  }
   useEffect(() => {
     if (!open) {
       reset();
@@ -257,7 +268,7 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
   }, [open, isError, error, tx]);
 
   return (
-    <ChainButton onClick={write} disabled={isError || !validAmount}>Deposit</ChainButton>
+    <ChainButton onClick={onClick} disabled={isError || !validAmount}>Deposit</ChainButton>
   );
 };
 
