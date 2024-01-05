@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { formatEther } from "viem";
 
-const CardBase = ({ title, children, className }: { title: string, children: React.ReactNode; className?: string }) => {
+const CardBase = ({title, children, className}: { title: string, children: React.ReactNode; className?: string }) => {
   return (
     <Card>
       <CardHeader className="text-center">{title}</CardHeader>
@@ -24,7 +24,7 @@ const CardBase = ({ title, children, className }: { title: string, children: Rea
   );
 };
 export const CEvoCard = async () => {
-  const { address } = getAccountCookie();
+  const {address} = getAccountCookie();
   const data = await getcEVOData(address);
 
   const totalDisbursement = Number(formatEther(data.disbursements.reduce((a, c) => a + c.amount, 0n)));
@@ -95,7 +95,7 @@ export const CEvoCard = async () => {
             </TableBody>
           </Table>
           <div className="flex pt-2 space-x-2">
-            <ClaimCEvoButton disabled={Number(formatEther(data.pending)) === 0} />
+            <ClaimCEvoButton disabled={Number(formatEther(data.pending)) === 0}/>
           </div>
         </TabsContent>
       </Tabs>
@@ -103,7 +103,7 @@ export const CEvoCard = async () => {
   );
 };
 export const XEvoCard = async () => {
-  const { address, loggedIn } = getAccountCookie();
+  const {address, loggedIn} = getAccountCookie();
   const data = await getxEVOData(address);
   const currentSharesRaw = data.xEvoUserBalance > 0
     ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100
@@ -186,7 +186,7 @@ export const XEvoCard = async () => {
   );
 };
 export const PoolCard = async () => {
-  const { address, loggedIn } = getAccountCookie();
+  const {address, loggedIn} = getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
   return (
@@ -232,61 +232,77 @@ export const PoolCard = async () => {
               <TableRow>
                 <TableCell>Deposited</TableCell>
                 <TableCell>
-                  {pool.balance > 0 && Number(pool.balance) / 1e18 < 0.001
-                    ? "< 0.001"
-                    : (
-                      Number(pool.balance) / 1e18
-                    ).toLocaleString()} LP
+                  {pool.balance > 0
+                    ? Number(pool.balance) / 1e18 < 0.001
+                      ? "< 0.001"
+                      : (
+                        Number(pool.balance) / 1e18
+                      ).toLocaleString()
+                    : "0"} LP
                 </TableCell>
                 <TableCell>
-                  {pool.balanceUsd > 0 && pool.balanceUsd < 0.01
-                    ? "< $0.01"
-                    : `$${pool.remainBalanceUsd.toLocaleString()}`} USD
+                  {pool.balanceUsd > 0
+                    ? pool.balanceUsd < 0.01
+                      ? "< $0.01"
+                      : `$${pool.remainBalanceUsd.toLocaleString()}`
+                    : "0"} USD
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>{pool.t0Symbol}</TableCell>
                 <TableCell>
-                  {pool.token0Balance > 0 && Number(pool.token0Balance) / 1e18 < 0.001
-                    ? "< 0.001"
-                    : (
-                      Number(pool.token0Balance) / 1e18
-                    ).toLocaleString()} {pool.t0Symbol}
+                  {pool.token0Balance > 0
+                    ? Number(pool.token0Balance) / 1e18 < 0.001
+                      ? "< 0.001"
+                      : (
+                        Number(pool.token0Balance) / 1e18
+                      ).toLocaleString()
+                    : "0"} {pool.t0Symbol}
                 </TableCell>
                 <TableCell>
-                  {pool.token0BalanceUSD > 0 && pool.token0BalanceUSD < 0.01
-                    ? "< $0.01"
-                    : `$${pool.token0BalanceUSD.toLocaleString()}`} USD
+                  {pool.token0BalanceUSD > 0
+                    ? pool.token0BalanceUSD < 0.01
+                      ? "< $0.01"
+                      : `$${pool.token0BalanceUSD.toLocaleString()}`
+                    : "0"} USD
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>{pool.t1Symbol}</TableCell>
                 <TableCell>
-                  {pool.token1Balance > 0 && Number(pool.token1Balance) / 1e18 < 0.001
-                    ? "< 0.001"
-                    : (
-                      Number(pool.token1Balance) / 1e18
-                    ).toLocaleString()} {pool.t1Symbol}
+                  {pool.token1Balance > 0
+                    ? Number(pool.token1Balance) / 1e18 < 0.001
+                      ? "< 0.001"
+                      : (
+                        Number(pool.token1Balance) / 1e18
+                      ).toLocaleString()
+                    : "0"} {pool.t1Symbol}
                 </TableCell>
                 <TableCell>
-                  {pool.token1BalanceUSD > 0 && pool.token1BalanceUSD < 0.01
-                    ? "< $0.01"
-                    : `$${pool.token1BalanceUSD.toLocaleString()}`} USD
+                  {pool.token1BalanceUSD > 0
+                    ? pool.token1BalanceUSD < 0.01
+                      ? "< $0.01"
+                      : `$${pool.token1BalanceUSD.toLocaleString()}`
+                    : "0"} USD
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Unclaimed Rewards</TableCell>
                 <TableCell>
-                  {pool.earned > 0 && Number(pool.earned) / 1e18 < 0.001
-                    ? "< 0.001"
-                    : (
-                      Number(pool.earned) / 1e18
-                    ).toLocaleString()} EVO
+                  {pool.earned > 0
+                    ? Number(pool.earned) / 1e18 < 0.001
+                      ? "< 0.001"
+                      : (
+                        Number(pool.earned) / 1e18
+                      ).toLocaleString()
+                    : "0"} EVO
                 </TableCell>
                 <TableCell>
-                  {pool.earnedUSD > 0 && pool.earnedUSD < 0.01
-                    ? "< $0.01"
-                    : `$${pool.earnedUSD.toLocaleString()}`} USD</TableCell>
+                  {pool.earnedUSD > 0
+                    ? pool.earnedUSD < 0.01
+                      ? "< $0.01"
+                      : `$${pool.earnedUSD.toLocaleString()}`
+                    : "0"} USD</TableCell>
               </TableRow>
             </TableBody>
           </Table>
