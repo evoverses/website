@@ -189,6 +189,7 @@ export const PoolCard = async () => {
   const {address, loggedIn} = getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
+  console.log(pools)
   return (
     <CardBase title={pool.name}>
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
@@ -251,38 +252,38 @@ export const PoolCard = async () => {
               <TableRow>
                 <TableCell>{pool.t0Symbol}</TableCell>
                 <TableCell>
-                  {pool.token0Balance > 0
-                    ? Number(pool.token0Balance) / 1e18 < 0.001
+                  {pool.token0DivBalance > 0
+                    ? Number(pool.token0DivBalance) / 1e18 < 0.001
                       ? "< 0.001"
                       : (
-                        Number(pool.token0Balance) / 1e18
+                        Number(pool.token0DivBalance) / 1e18
                       ).toLocaleString()
                     : "0"} {pool.t0Symbol}
                 </TableCell>
                 <TableCell>
-                  {pool.token0BalanceUSD > 0
-                    ? pool.token0BalanceUSD < 0.01
+                  {pool.token0DivBalanceUSD > 0
+                    ? pool.token0DivBalanceUSD < 0.01
                       ? "< $0.01"
-                      : `$${pool.token0BalanceUSD.toLocaleString()}`
+                      : `$${pool.token0DivBalanceUSD.toLocaleString()}`
                     : "0"} USD
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>{pool.t1Symbol}</TableCell>
                 <TableCell>
-                  {pool.token1Balance > 0
-                    ? Number(pool.token1Balance) / 1e18 < 0.001
+                  {pool.token1DivBalance > 0
+                    ? Number(pool.token1DivBalance) / 1e18 < 0.001
                       ? "< 0.001"
                       : (
-                        Number(pool.token1Balance) / 1e18
+                        Number(pool.token1DivBalance) / 1e18
                       ).toLocaleString()
                     : "0"} {pool.t1Symbol}
                 </TableCell>
                 <TableCell>
-                  {pool.token1BalanceUSD > 0
-                    ? pool.token1BalanceUSD < 0.01
+                  {pool.token1DivBalanceUSD > 0
+                    ? pool.token1DivBalanceUSD < 0.01
                       ? "< $0.01"
-                      : `$${pool.token1BalanceUSD.toLocaleString()}`
+                      : `$${pool.token1DivBalanceUSD.toLocaleString()}`
                     : "0"} USD
                 </TableCell>
               </TableRow>

@@ -15,7 +15,9 @@ import { formatEther, parseEther } from "viem";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import {
   SmartDrawer,
-  SmartDrawerContent, SmartDrawerDescription, SmartDrawerFooter,
+  SmartDrawerContent,
+  SmartDrawerDescription,
+  SmartDrawerFooter,
   SmartDrawerHeader,
   SmartDrawerTitle,
   SmartDrawerTrigger
@@ -232,7 +234,7 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
       toast({
         variant: "destructive",
         title: "Error",
-        description: error ? `${error}` : prepareError ? `${prepareError}`: validAmount ? "Unknown Error" : "Invalid amount"
+        description: error ? `${error}` : prepareError ? `${prepareError}` : validAmount ? "Unknown Error" : "Invalid amount"
       })
     }
   }

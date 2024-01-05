@@ -33,15 +33,11 @@ export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, n
 
 export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
   const pair = await fetchPairDataOf("0x42006Ab57701251B580bDFc24778C43c9ff589A1");
-
+  console.log(pair)
   const now = BigInt(Math.floor(Date.now() / 1000));
-  const [ poolLength, getMultiplier, rewardPerSecond, lockPercentage, evoBalance ] = await client.multicall({
+  const [ poolLength ] = await client.multicall({
     contracts: [
-      { ...investorContract, functionName: "poolLength" },
-      { ...investorContract, functionName: "getMultiplier", args: [ now - 1n, now ] },
-      { ...investorContract, functionName: "REWARD_PER_SECOND" },
-      { ...investorContract, functionName: "getLockPercentage", args: [ now - 1n, now ] },
-      { ...evoContract, functionName: "balanceOf", args: [ address ] },
+      { ...investorContract, functionName: "poolLength" }
     ],
     allowFailure: false,
   });
@@ -94,10 +90,15 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
       const aprEmissionRate = Number(emissionRate) / 1e18 * 86_400 * 365;
       const apr = aprEmissionRate * Number(pair.priceUsd) / Number(pair.liquidity.usd) * 100;
       const ratio = Number(remainBalance) / Number(totalSupply);
+      const divRatio = Number(amount) / Number(totalSupply);
       const token0Balance = Number(_reserve0) * ratio;
       const token1Balance = Number(_reserve1) * ratio;
-      const token0BalanceUSD = token0Balance / Number(t0Decimals) * Number(pair.priceUsd);
-      const token1BalanceUSD = token1Balance / Number(t1Decimals) * Number(pair.priceUsd);
+      const token0BalanceUSD = token0Balance / (10**t0Decimals) * Number(pair.priceUsd);
+      const token1BalanceUSD = token1Balance / (10**t1Decimals) * Number(pair.priceUsd) / Number(pair.priceNative);
+      const token0DivBalance = Number(_reserve0) * divRatio;
+      const token1DivBalance = Number(_reserve1) * divRatio;
+      const token0DivBalanceUSD = token0DivBalance / (10**t0Decimals) * Number(pair.priceUsd);
+      const token1DivBalanceUSD = token1DivBalance / (10**t1Decimals) * Number(pair.priceUsd) / Number(pair.priceNative);
       return {
         name,
         earned: pendingRewards,
@@ -122,6 +123,10 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
         token1Balance,
         token0BalanceUSD,
         token1BalanceUSD,
+        token0DivBalance,
+        token1DivBalance,
+        token0DivBalanceUSD,
+        token1DivBalanceUSD,
         token: lpToken,
         lastTime: BigInt(lastTime),
         depFee,
