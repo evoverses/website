@@ -221,7 +221,7 @@ const DepositButton = ({poolId, max, value, lpToken, open, close}: DepositButton
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
 
-  const { data: allowance = 0n, refetch } = useContractRead({
+  const { data: allowance , refetch } = useContractRead({
     address: lpToken as Address,
     abi: LpTokenABI,
     functionName: "allowance",
@@ -230,7 +230,7 @@ const DepositButton = ({poolId, max, value, lpToken, open, close}: DepositButton
     enabled: validAmount,
   })
 
-  const hasAllowance = allowance >= BigInt(1_000_000_000 * 1e18);
+  const hasAllowance = (allowance || 0n) >= BigInt(1_000_000_000 * 1e18);
 
   const { config: approveConfig } = usePrepareContractWrite({
     address: lpToken as Address,
@@ -257,7 +257,7 @@ const DepositButton = ({poolId, max, value, lpToken, open, close}: DepositButton
   const {data: tx} = useWaitForTransaction({hash: data?.hash, chainId: 43_114, confirmations: 1});
 
   const onClick = () => {
-    if (approveWrite) {
+    if (!hasAllowance && approveWrite) {
       return approveWrite();
     }
     if (write) {
