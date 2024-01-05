@@ -213,7 +213,7 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const {config} = usePrepareContractWrite({
+  const {error: prepareError, config} = usePrepareContractWrite({
     ...investorContract,
     functionName: "deposit",
     args: [poolId, valueBigInt],
@@ -232,7 +232,7 @@ const DepositButton = ({poolId, max, value, open, close}: DepositButtonProps) =>
       toast({
         variant: "destructive",
         title: "Error",
-        description: error ? `${error}` : validAmount ? "Unknown Error" : "Invalid amount"
+        description: error ? `${error}` : prepareError ? `${prepareError}`: validAmount ? "Unknown Error" : "Invalid amount"
       })
     }
   }
