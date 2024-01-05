@@ -33,7 +33,6 @@ export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, n
 
 export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
   const pair = await fetchPairDataOf("0x42006Ab57701251B580bDFc24778C43c9ff589A1");
-  console.log(pair)
   const now = BigInt(Math.floor(Date.now() / 1000));
   const [ poolLength ] = await client.multicall({
     contracts: [
@@ -86,7 +85,7 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
         });
       const name = `${t0Symbol} / ${t1Symbol}`;
       const lastTime = address ? lastWithdrawTime > firstDepositTime ? lastWithdrawTime : firstDepositTime : 0;
-      const [ withdrawFee, nextWithdrawFee, nextSecondsRemaining ] = findWithdrawFee(timeDelta);
+      const [ withdrawFee, nextWithdrawFee, nextSecondsRemaining ] = findWithdrawFee(now - timeDelta);
       const aprEmissionRate = Number(emissionRate) / 1e18 * 86_400 * 365;
       const apr = aprEmissionRate * Number(pair.priceUsd) / Number(pair.liquidity.usd) * 100;
       const ratio = Number(remainBalance) / Number(totalSupply);

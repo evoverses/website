@@ -49,6 +49,7 @@ export const FarmSheet = ({action = "Deposit", poolJson, disabled}: FarmSheetPro
     setValue(value);
   };
 
+  const nextFeeHours = pool.nextSecondsRemaining / 60 / 60;
   return (
     <SmartDrawer onOpenChange={onOpenChange} open={open}>
       <SmartDrawerTrigger asChild>
@@ -78,11 +79,11 @@ export const FarmSheet = ({action = "Deposit", poolJson, disabled}: FarmSheetPro
             <SmartDrawerDescription>
               EvoVerses utilizes LP withdrawal fees as a disincentive for short term farming and selling.
               <Separator className="my-2"/>
-              Current fee: {Number(pool.withdrawFee) / 100}%
+              Current fee: {pool.withdrawFee}%
               {pool.nextWithdrawFee > 0 && (
                 <>
                   <br/>
-                  Next fee: {pool.nextWithdrawFee}% (in {Math.floor(pool.nextSecondsRemaining / 60 / 60)} hours)
+                  Next fee: {pool.nextWithdrawFee}% (in {nextFeeHours > 1 ? Math.floor(nextFeeHours) + " hours" : Math.floor(nextFeeHours * 60) + " Minutes"})
                 </>
               )}
             </SmartDrawerDescription>

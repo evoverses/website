@@ -189,7 +189,7 @@ export const PoolCard = async () => {
   const {address, loggedIn} = getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
-  console.log(pools)
+
   return (
     <CardBase title={pool.name}>
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
