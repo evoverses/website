@@ -1,8 +1,10 @@
 "use client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import { useTheme } from "next-themes";
+import { Address } from "abitype";
+// import { useTheme } from "next-themes";
 import { PropsWithChildren } from "react";
-import { Address, WagmiConfig } from "wagmi";
+import { WagmiConfig as WagmiProvider } from "wagmi";
 import { avalanche } from "wagmi/chains";
 
 const avvyDomainsResolver: Address = "0x40b0DC99681Db9703939bd62D76F4D448ab0fdE";
@@ -53,15 +55,17 @@ createWeb3Modal({
   },
 });
 
-
+const queryClient = new QueryClient();
 
 const Web3Provider = ({ children }: PropsWithChildren) => {
-  const { resolvedTheme } = useTheme();
+  // const { resolvedTheme } = useTheme();
   return (
     <>
-      <WagmiConfig config={wagmiConfig}>
-        {children}
-      </WagmiConfig>
+      <WagmiProvider config={wagmiConfig as any}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </WagmiProvider>
     </>
   );
 };

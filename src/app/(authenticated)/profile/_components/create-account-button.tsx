@@ -4,13 +4,13 @@ import { createAccountAction, updateUserReadOnlyDataAction } from "@/app/(authen
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Icons } from "@/components/ui/icons";
-import { toast } from "@/components/ui/use-toast";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaSpinner } from "react-icons/fa";
+import { toast } from "sonner";
 
 type CreateAccountButtonProps = {
   accountId: string;
@@ -31,17 +31,10 @@ export const CreateAccountButton = ({ accountId, address, userReadOnlyData }: Cr
       const newReadOnlyData = { ...userReadOnlyData, wallets: { ...userReadOnlyData.wallets, managed: address } };
       await updateUserReadOnlyDataAction(accountId, newReadOnlyData);
       await new Promise((resolve) => setTimeout(resolve, 5000));
-      toast({
-        title: "Success",
-        description: "Your account has been created!",
-      });
+      toast.success("Your account has been created!");
       router.refresh();
     } catch (e) {
-      toast({
-        title: "Error",
-        description: `There was an error creating your account. ${e}`,
-        variant: "destructive",
-      });
+      toast.error(`There was an error creating your account. ${e}`);
     }
   };
 
@@ -61,16 +54,9 @@ export const SmartWalletUpdater = ({ accountId, address, userReadOnlyData, creat
     if (created && userReadOnlyData.wallets.managed !== address) {
       const newReadOnlyData = { ...userReadOnlyData, wallets: { ...userReadOnlyData.wallets, managed: address } };
       updateUserReadOnlyDataAction(accountId, newReadOnlyData).then(() => {
-        toast({
-          title: "Success",
-          description: "Your account has been updated!",
-        });
+        toast.success("Your account has been updated!");
       }).catch((e) => {
-        toast({
-          title: "Error",
-          description: `There was an error updating your account. ${e}`,
-          variant: "destructive",
-        });
+        toast.error(`There was an error updating your account. ${e}`);
       });
     }
   }, [ created, userReadOnlyData, accountId, address ]);

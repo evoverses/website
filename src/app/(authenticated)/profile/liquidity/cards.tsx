@@ -1,35 +1,55 @@
 import { getcEVOData, getPoolData, getxEVOData } from "@/app/(authenticated)/profile/_components/fetch";
-import { ClaimCEvoButton } from "@/app/(authenticated)/profile/liquidity/cevo-sheet";
-import { FarmSheet } from "@/app/(authenticated)/profile/liquidity/farm-sheets";
-import { XEvoSheet } from "@/app/(authenticated)/profile/liquidity/xevo-sheets";
+import {
+  BankSmartDrawer,
+  ClaimCEvoButton,
+  FarmSmartDrawer,
+} from "@/app/(authenticated)/profile/liquidity/smart-drawers";
+import { AddToWalletButton } from "@/components/buttons/add-to-wallet-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cEvoContract, xEvoContract } from "@/data/contracts";
 import { getAccountCookie } from "@/lib/cookies/account";
 
 import { bigIntJsonReplacer } from "@/lib/node";
 import { cn } from "@/lib/utils";
+import { Address } from "abitype";
 import Link from "next/link";
+import { ComponentProps, ReactNode } from "react";
 import { formatEther } from "viem";
 
-const CardBase = ({title, children, className}: { title: string, children: React.ReactNode; className?: string }) => {
+type CardBaseProps = {
+  title: string;
+  token?: ComponentProps<typeof AddToWalletButton>
+  className?: string;
+  children?: ReactNode;
+};
+
+const CardBase = ({ title, token, className, children }: CardBaseProps) => {
   return (
     <Card>
-      <CardHeader className="text-center">{title}</CardHeader>
+      <CardHeader className="text-center relative">
+        {title}
+        {token && <AddToWalletButton {...token} className="absolute right-8 top-1/2 -translate-y-1/2" />}
+      </CardHeader>
       <CardContent className={cn(className)}>
         {children}
       </CardContent>
     </Card>
   );
 };
-export const CEvoCard = async () => {
-  const {address} = getAccountCookie();
+
+const VestingCard = async () => {
+  const { address } = getAccountCookie();
   const data = await getcEVOData(address);
 
   const totalDisbursement = Number(formatEther(data.disbursements.reduce((a, c) => a + c.amount, 0n)));
   return (
-    <CardBase title="cEVO">
+    <CardBase
+      title="cEVO"
+      token={{ address: cEvoContract.address, image: "https://evoverses.com/EVO.png", symbol: "cEVO" }}
+    >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">
           <TabsTrigger value="overview" className="w-full">Overview</TabsTrigger>
@@ -95,15 +115,16 @@ export const CEvoCard = async () => {
             </TableBody>
           </Table>
           <div className="flex pt-2 space-x-2">
-            <ClaimCEvoButton disabled={Number(formatEther(data.pending)) === 0}/>
+            <ClaimCEvoButton disabled={Number(formatEther(data.pending)) === 0} />
           </div>
         </TabsContent>
       </Tabs>
     </CardBase>
   );
 };
-export const XEvoCard = async () => {
-  const {address, loggedIn} = getAccountCookie();
+
+const BankCard = async () => {
+  const { address, loggedIn } = getAccountCookie();
   const data = await getxEVOData(address);
   const currentSharesRaw = data.xEvoUserBalance > 0
     ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100
@@ -114,7 +135,10 @@ export const XEvoCard = async () => {
   const currentBalance = currentBalanceRaw > 0 && Number(currentBalanceRaw.toFixed(4)) === 0 ? "< 0.0001" : Number(
     currentBalanceRaw.toFixed(4));
   return (
-    <CardBase title="xEVO">
+    <CardBase
+      title="xEVO"
+      token={{ address: xEvoContract.address, image: "https://evoverses.com/EVO.png", symbol: "xEVO" }}
+    >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">
           <TabsTrigger value="overview" className="w-full">Overview</TabsTrigger>
@@ -169,12 +193,12 @@ export const XEvoCard = async () => {
             </TableBody>
           </Table>
           <div className="flex pt-2 space-x-2">
-            <XEvoSheet
+            <BankSmartDrawer
               action="Deposit"
               json={JSON.stringify(data, bigIntJsonReplacer)}
               disabled={!loggedIn || Number(data.evoUserBalance) === 0}
             />
-            <XEvoSheet
+            <BankSmartDrawer
               action="Withdraw"
               json={JSON.stringify(data, bigIntJsonReplacer)}
               disabled={!loggedIn || Number(data.xEvoUserBalance) === 0}
@@ -185,13 +209,17 @@ export const XEvoCard = async () => {
     </CardBase>
   );
 };
-export const PoolCard = async () => {
-  const {address, loggedIn} = getAccountCookie();
+
+const FarmCard = async () => {
+  const { address, loggedIn } = getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
 
   return (
-    <CardBase title={pool.name}>
+    <CardBase
+      title={pool.name}
+      token={{ address: pool.token as Address, symbol: `${pool.name}` }}
+    >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">
           <TabsTrigger value="overview" className="w-full">Overview</TabsTrigger>
@@ -308,17 +336,17 @@ export const PoolCard = async () => {
             </TableBody>
           </Table>
           <div className="flex pt-2 space-x-2">
-            <FarmSheet
+            <FarmSmartDrawer
               action="Claim"
               poolJson={JSON.stringify(pool, bigIntJsonReplacer)}
               disabled={!loggedIn || Number(pool.earned) === 0}
             />
-            <FarmSheet
+            <FarmSmartDrawer
               action="Deposit"
               poolJson={JSON.stringify(pool, bigIntJsonReplacer)}
               disabled={!loggedIn || Number(pool.remainBalance) === 0}
             />
-            <FarmSheet
+            <FarmSmartDrawer
               action="Withdraw"
               poolJson={JSON.stringify(pool, bigIntJsonReplacer)}
               disabled={!loggedIn || Number(pool.balance) === 0}
@@ -329,3 +357,5 @@ export const PoolCard = async () => {
     </CardBase>
   );
 };
+
+export { BankCard, FarmCard, VestingCard };

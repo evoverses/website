@@ -12,7 +12,6 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { toast } from "@/components/ui/use-toast";
 import { evoContract } from "@/data/contracts";
 import { ERC20TokenBalance } from "@/lib/glacier/types";
 import { parseViemDetailedError } from "@/lib/viem";
@@ -20,6 +19,7 @@ import { UploadIcon } from "@radix-ui/react-icons";
 import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 
@@ -106,25 +106,17 @@ const DepositButton = ({ managedWallet, max, value, open, close }: DepositButton
       reset();
     }
     if (isError) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: parseViemDetailedError(error)?.details || "There was a problem with your request.",
-      });
+      toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
       reset();
     }
     if (tx) {
       if (tx.status === "success") {
-        toast({ title: "Success!", description: "Deposit completed successfully" });
+        toast.success("Deposit completed successfully");
         close();
         reset();
         router.refresh();
       } else {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: parseViemDetailedError(error)?.details || "There was a problem with your request.",
-        });
+        toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
         reset();
 
       }

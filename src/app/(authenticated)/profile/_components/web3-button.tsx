@@ -1,7 +1,6 @@
 "use client";
 import { updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 import { typedData } from "@/data/viem/signature";
 import { getCsrfToken } from "@/lib/auth";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
@@ -11,6 +10,7 @@ import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
+import { toast } from "sonner";
 import { recoverTypedDataAddress, verifyTypedData } from "viem";
 
 import { useAccount, useWalletClient } from "wagmi";
@@ -85,11 +85,7 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
       router.refresh();
 
     } catch (error) {
-      toast({
-        title: "Error",
-        description: `${error}`,
-        variant: "destructive",
-      });
+      toast.error(`${error}`);
     }
   };
 

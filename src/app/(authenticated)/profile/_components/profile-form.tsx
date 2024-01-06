@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
 import { updateUserTitleDisplayName } from "@/lib/playfab/actions";
 import { getUserReadOnlyData } from "@/lib/playfab/helpers";
 import { PlayFab } from "@/lib/playfab/types";
@@ -16,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Address } from "abitype";
 import { Session } from "next-auth";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 import InfoResultPayload = PlayFab.Client.Account.Responses.InfoResultPayload;
 
@@ -77,10 +77,7 @@ export const ProfileForm = ({ account, session, accountCookie, combined }: Profi
         },
       });
     }
-    toast({
-      title: "Success!",
-      description: "Your profile has been updated.",
-    });
+    toast.success("Your profile has been updated.");
     form.reset();
   };
 

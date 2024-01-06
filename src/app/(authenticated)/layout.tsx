@@ -1,7 +1,6 @@
 import Navbar from "@/app/(authenticated)/navbar";
-
 import { GlobalProvider } from "@/components/providers";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import "@/styles/aggregated.css";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
