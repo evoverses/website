@@ -60,7 +60,10 @@ export const Viewer = async ({ nfts, sort, order }: ViewerProps) => {
       {nfts.map(nft => (
         <Card key={nft.identifier} className="flex flex-row w-[350px]">
           <Image
-            src={nft.image_url}
+            src={process.env.NODE_ENV === "development" ? nft.image_url.replace(
+              "https://evoverses.com",
+              "http://localhost:3000",
+            ) : nft.image_url}
             alt={nft.identifier}
             width={512}
             height={725}

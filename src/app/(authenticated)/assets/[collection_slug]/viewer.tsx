@@ -105,7 +105,9 @@ export const Viewer = async ({ contract, limit, offset, collection }: ViewerProp
         {data.items.map(nft => (
           <Card key={nft.tokenId} className="flex flex-row w-[350px]">
             <Image
-              src={`https://evoverses.com/api/images/evo/${nft.tokenId}`}
+              src={`http${process.env.NODE_ENV === "development"
+                ? "://localhost:3000"
+                : "s://evoverses.com"}/api/images/evo/${nft.tokenId}`}
               alt={`${nft.species} #${nft.tokenId}`}
               width={512}
               height={725}
