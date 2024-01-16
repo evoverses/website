@@ -124,6 +124,7 @@ export const Viewer = async ({ contract, limit, offset, collection }: ViewerProp
               <CardFooter>
                 <Link
                   href={`/assets/${contract.collection.replace("evoverses-", "")}/${nft.tokenId.toString()}`}
+                  prefetch={false}
                   legacyBehavior
                 >
                   <Button className="w-full font-bold">
