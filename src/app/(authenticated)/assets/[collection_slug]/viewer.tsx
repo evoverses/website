@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCollectionItems } from "@/lib/evoverses/metadata";
+import { getShimmer } from "@/lib/evoverses/svgs";
 import { OpenSeaAPI } from "@/lib/opensea";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,11 +105,13 @@ export const Viewer = async ({ contract, limit, offset, collection }: ViewerProp
         {data.items.map(nft => (
           <Card key={nft.tokenId} className="flex flex-row w-[350px]">
             <Image
-              src={`https://evoverses.com/api/images/evo/${nft.tokenId.toString()}`}
-              alt={`${nft.species} #${nft.tokenId.toString()}`}
-              width={472}
-              height={684}
-              unoptimized className="w-40"
+              src={`https://evoverses.com/api/images/evo/${nft.tokenId}`}
+              alt={`${nft.species} #${nft.tokenId}`}
+              width={512}
+              height={725}
+              unoptimized
+              className="w-40 min-w-[160px]"
+              placeholder={getShimmer(512, 725)}
             />
             <div className="flex flex-col w-full">
               <CardHeader className="pr-2">

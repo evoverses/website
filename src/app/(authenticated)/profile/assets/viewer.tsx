@@ -81,7 +81,11 @@ export const Viewer = async ({ nfts, sort, order }: ViewerProps) => {
                   <span>Sell</span>
                 </Link>
               </Button>
-              <Link href={`/assets/${nft.collection.replace("evoverses-", "")}/${nft.identifier}`} legacyBehavior>
+              <Link
+                href={`/assets/${nft.collection.replace("evoverses-", "")}/${nft.identifier}`}
+                legacyBehavior
+                prefetch={false}
+              >
                 <Button className="w-full font-bold">
                   Details
                 </Button>

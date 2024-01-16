@@ -49,6 +49,18 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
         revalidate: 43_200,
       },
     });
+    if (!resp.ok) {
+      console.log(
+        `Failed to fetch metadata for tokenId ${tokenId}. Original URL:`,
+        req.url,
+        "Error:",
+        resp.status,
+        resp.text(),
+      );
+      return new Response(`Failed to generate the image: Failed to fetch metadata for tokenId ${tokenId}`, {
+        status: 500,
+      });
+    }
     const metadata = await resp.json();
 
     const evo = "treated" in metadata ? metadata as RawEvo : metadata as RawEvoEgg;
