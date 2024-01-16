@@ -1,3 +1,6 @@
+import Female from "@/assets/evo/Female.svg";
+import Male from "@/assets/evo/Male.svg";
+
 import CAir from "@/assets/evo/types/Colored_Air_Type_Circle.svg";
 import CBug from "@/assets/evo/types/Colored_Bug_Type_Circle.svg";
 import CCorrupt from "@/assets/evo/types/Colored_Corrupt_Type_Circle.svg";
@@ -11,7 +14,7 @@ import CMonster from "@/assets/evo/types/Colored_Monster_Type_Circle.svg";
 import CPlant from "@/assets/evo/types/Colored_Plant_Type_Circle.svg";
 import CWater from "@/assets/evo/types/Colored_Water_Type_Circle.svg";
 
-export const getTypeImage = (type: string) => {
+export const getElementSvg = (type: string) => {
   switch (type) {
     case "Monster":
       return CMonster;
@@ -41,3 +44,4 @@ export const getTypeImage = (type: string) => {
       return '';
   }
 };
+export const getGenderImage = (gender: string) => gender === "Male" ? Male.src : Female.src;

@@ -1,13 +1,10 @@
-import { CEvoCard, PoolCard, XEvoCard } from "@/app/(authenticated)/profile/liquidity/cards";
+import { BankCard, FarmCard, VestingCard } from "@/app/(authenticated)/profile/liquidity/cards";
 import { AccountProvider } from "@/components/providers";
 import { Separator } from "@/components/ui/separator";
-import { getAccountCookie } from "@/lib/cookies/account";
 
 // This page is here solely for those who think they are somehow elite anonymous hackers -.-
 
 const LiquidityPage = async () => {
-  const accountCookie = getAccountCookie();
-
   return (
     <AccountProvider>
       <main className="flex flex-col h-full space-y-6">
@@ -22,9 +19,9 @@ const LiquidityPage = async () => {
           <w3m-button size="sm" />
         </div>
         <div className="flex flex-wrap gap-4 items-stretch justify-center w-full pb-6">
-          <PoolCard />
-          <XEvoCard />
-          <CEvoCard />
+          <FarmCard />
+          <BankCard />
+          <VestingCard />
         </div>
       </main>
     </AccountProvider>

@@ -30,9 +30,9 @@ const NftPage = async ({ params: { collection_slug, token_id } }: { params: Reco
     getCollectionItem(collection_slug as any, token_id),
     getEvoHistory(token_id),
   ]);
-  const egg = "treated" in item;
+  const isEgg = "treated" in item;
 
-  const nextBreed = Date.now() - Date.parse(item.lastBreedTime) > 604_800_000
+  const nextBreed = isEgg ? "" : Date.now() - Date.parse(item.lastBreedTime) > 604_800_000
     ? "Ready"
     : Math.floor((
     Date.parse(item.lastBreedTime) + 604_800_000
@@ -40,15 +40,15 @@ const NftPage = async ({ params: { collection_slug, token_id } }: { params: Reco
 
   const breedBaseCost = 250;
   const genBreedBaseCost = breedBaseCost * 2 ** item.generation;
-  const breedCost = item.generation === 0 && item.totalBreeds >= 5 ? 2_500 : genBreedBaseCost
+  const breedCost = isEgg ? 0 : item.generation === 0 && item.totalBreeds >= 5 ? 2_500 : genBreedBaseCost
     + genBreedBaseCost
     * item.totalBreeds;
   return (
     <div className="py-4 px-2.5 sm:p-24 space-y-8">
       <section className="flex flex-col sm:flex-row items-center text-center">
         <div className="w-full pb-4 sm:pb-0">
-          <h1>{egg && item.generation === 0 ? "Genesis" : item.species}{egg ? " Egg" : ""} #{item.tokenId}</h1>
-          {egg ? (
+          <h1>{isEgg && item.generation === 0 ? "Genesis" : item.species}{isEgg ? " Egg" : ""} #{item.tokenId}</h1>
+          {isEgg ? (
             <h3>Gen {item.generation}</h3>
           ) : (
             <h3>Level {item.xp + 1} | Gen {item.generation}</h3>
@@ -66,21 +66,21 @@ const NftPage = async ({ params: { collection_slug, token_id } }: { params: Reco
         />
       </section>
       {(
-        !egg || item.generation > 0
+        !isEgg || item.generation > 0
       ) && (
         <section className="space-y-2">
           <h2>Attributes</h2>
           <div className="flex flex-wrap gap-4 pt-2 justify-around">
-            <NFTAttribute name="Gender" value={egg ? "Unknown" : item.gender} />
-            <NFTAttribute name="Nature" value={egg ? "Unknown" : item.nature} />
+            <NFTAttribute name="Gender" value={isEgg ? "Unknown" : item.gender} />
+            <NFTAttribute name="Nature" value={isEgg ? "Unknown" : item.nature} />
             <NFTAttribute name="Primary Type" value={item.types.primary} />
             <NFTAttribute name="Secondary Type" value={item.types.secondary} />
-            <NFTAttribute name="Rarity" value={egg ? "Unknown" : item.rarity} />
-            <NFTAttribute name="Chroma" value={egg ? "Unknown" : item.chroma} />
+            <NFTAttribute name="Rarity" value={isEgg ? "Unknown" : item.rarity} />
+            <NFTAttribute name="Chroma" value={isEgg ? "Unknown" : item.chroma} />
           </div>
         </section>
       )}
-      {!egg && (
+      {!isEgg && (
         <>
           <section className="space-y-2">
             <h2>Stats</h2>
