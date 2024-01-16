@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCollectionItems } from "@/lib/evoverses/metadata";
-import { getShimmer } from "@/lib/evoverses/svgs";
 import { OpenSeaAPI } from "@/lib/opensea";
 import Image from "next/image";
 import Link from "next/link";
@@ -113,7 +112,7 @@ export const Viewer = async ({ contract, limit, offset, collection }: ViewerProp
               height={725}
               unoptimized
               className="w-40 min-w-[160px]"
-              placeholder={getShimmer(512, 725)}
+              // placeholder={getShimmer(512, 725)}
             />
             <div className="flex flex-col w-full">
               <CardHeader className="pr-2">
