@@ -1,6 +1,7 @@
 import { LimitSelect } from "@/app/(authenticated)/assets/[slug]/limit-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Icons } from "@/components/ui/icons";
 import {
   Pagination,
   PaginationContent,
@@ -15,6 +16,7 @@ import { getCollectionItems } from "@/lib/evoverses/metadata";
 import { Slug } from "@/types/core";
 import Image from "next/image";
 import Link from "next/link";
+import { SiOpensea } from "react-icons/si";
 
 export const ViewerLoading = () => {
   return (
@@ -118,7 +120,39 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
               </CardHeader>
               <CardContent className="flex-grow">
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex flex-col gap-2">
+                <div className="flex w-full font-bold justify-between">
+                  <Link
+                    href={`https://joepegs.com/item/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
+                    prefetch={false}
+                    legacyBehavior
+                    referrerPolicy="no-referrer"
+                  >
+                    <Button className="px-2 bg-[#8473fe] hover:bg-[#423980]">
+                      <Icons.joePegs className="w-6 h-6" />
+                    </Button>
+                  </Link>
+                  <Link
+                    href={`https://avax.hyperspace.xyz/collection/avax/evoverses?tokenAddress=0x4151b8afa10653d304fdac9a781afccd45ec164c_${nft.tokenId.toString()}`}
+                    prefetch={false}
+                    legacyBehavior
+                    referrerPolicy="no-referrer"
+                  >
+                    <Button className="px-2 text-white bg-slate-700 hover:bg-slate-800 ">
+                      <Icons.hyperspace className="w-6 h-6" />
+                    </Button>
+                  </Link>
+                  <Link
+                    href={`https://opensea.io/assets/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
+                    prefetch={false}
+                    legacyBehavior
+                    referrerPolicy="no-referrer"
+                  >
+                    <Button className="px-2 bg-blue-600 hover:bg-blue-700">
+                      <SiOpensea className="w-6 h-6" />
+                    </Button>
+                  </Link>
+                </div>
                 <Link
                   href={`/assets/${slug}/${nft.tokenId.toString()}`}
                   prefetch={false}

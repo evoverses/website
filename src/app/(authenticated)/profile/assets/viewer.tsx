@@ -2,6 +2,7 @@ import { SortOption, SortOrder } from "@/app/(authenticated)/profile/assets/view
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getShimmer } from "@/lib/evoverses/svgs";
 import { OpenSeaAPI } from "@/lib/opensea";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +37,7 @@ type ViewerProps = {
   order: SortOrder
 }
 
-export const Viewer = async ({ nfts, sort, order }: ViewerProps) => {
+export const Viewer = ({ nfts, sort, order }: ViewerProps) => {
   if (sort === "id") {
     order === "asc"
       ? nfts.sort((a, b) => Number(a.identifier) - Number(b.identifier))
@@ -68,7 +69,7 @@ export const Viewer = async ({ nfts, sort, order }: ViewerProps) => {
             height={725}
             unoptimized
             className="w-40 min-w-[160px]"
-            // placeholder={getShimmer(512, 725)}
+            placeholder={getShimmer(512, 725)}
           />
           <div className="flex flex-col w-full">
             <CardHeader className="pr-2">
