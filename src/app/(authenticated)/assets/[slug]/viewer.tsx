@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCollectionItems } from "@/lib/evoverses/metadata";
+import { getShimmer } from "@/lib/evoverses/svgs";
 import { Slug } from "@/types/core";
 import Image from "next/image";
 import Link from "next/link";
@@ -112,7 +113,7 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
               height={725}
               unoptimized
               className="w-40 min-w-[160px]"
-              // placeholder={getShimmer(512, 725)}
+              placeholder={getShimmer(512, 725)}
             />
             <div className="flex flex-col w-full">
               <CardHeader className="pr-2">
@@ -127,6 +128,7 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                     prefetch={false}
                     legacyBehavior
                     referrerPolicy="no-referrer"
+                    target="_blank"
                   >
                     <Button className="px-2 bg-[#8473fe] hover:bg-[#423980]">
                       <Icons.joePegs className="w-6 h-6" />
@@ -137,6 +139,7 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                     prefetch={false}
                     legacyBehavior
                     referrerPolicy="no-referrer"
+                    target="_blank"
                   >
                     <Button className="px-2 text-white bg-slate-700 hover:bg-slate-800 ">
                       <Icons.hyperspace className="w-6 h-6" />
@@ -147,6 +150,7 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                     prefetch={false}
                     legacyBehavior
                     referrerPolicy="no-referrer"
+                    target="_blank"
                   >
                     <Button className="px-2 bg-blue-600 hover:bg-blue-700">
                       <SiOpensea className="w-6 h-6" />
