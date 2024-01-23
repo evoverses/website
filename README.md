@@ -1,37 +1,35 @@
+# EvoVerses Website
 
-## EvoVerses Website
+## Contributing
 
-Readme is a WIP
+### Environment Variables
 
-Components to be built:
-
-1. **Profile**  
-   Create a player profile linked to wallet that includes  
-   a. Username - possibly optional link to discord?  
-   b. Asset summary, inc.:  
-    &emsp;  i.    wallet tokens, EVO, USDC, etc and USD or local currency value  
-    &emsp;  ii.   Qty Evos owned, list by Generation IE 12 Gen0, 18 Gen1, 6 Gen2  
-    &emsp;  iii.  Eggs to be hatched  
-    &emsp;  iv.   Other TBC  
-   c. Matches played/won/lost  
-   d. Player XP/rank  
-
-2. **Banking**  
-   all banking functionality  
-   a. Director TBC  
-   b. Manager  
-   c. Investor  
-   d. Supervisor  
-     
-4. **Inventory Page**  
-   a. Complete sortable inventory of all player assets with multiple views (eg Cards, List (aka Cajun's PC)  
-   b. API to opensea and tradescrow  
-
-5. **Breeding & Hatching & Evolving**  
-   Interfaces for breeding, hatching & Evolving activities  
-
-6. **Evo University**  
-   a. Evopedia  
-   b. Charts and tables showing effectiveness etc.  
-   c. Archive (as inventory above but all available Evos)  
-   d. Evo Coach forum  
+| Variable                             |     Purpose      | Required |
+|--------------------------------------|:----------------:|:--------:|
+| VERCEL_URL                           |      Static      |    ➖     |
+| NEXT_PUBLIC_VERCEL_URL               |      Static      |    ➖     |
+| AUTH_URL                             |  AuthJS - Core   |    ➖     |
+| NEXT_PUBLIC_AUTH_URL                 |  AuthJS - Core   |    ➖     |
+| AUTH_SECRET                          |  AuthJS - Core   |    ✅     |
+| AUTH_REDIRECT_PROXY_URL              |  AuthJS - Core   |    ✅     |
+| AUTH_GOOGLE_ID                       | AuthJS - Google  |    ✅     |
+| AUTH_GOOGLE_SECRET                   | AuthJS - Google  |    ✅     |
+| AUTH_GITHUB_ID                       | AuthJS - Github  |    ❌     |
+| AUTH_GITHUB_SECRET                   | AuthJS - Github  |    ❌     |
+| AUTH_DISCORD_ID                      | AuthJS - Discord |    ❌     |
+| AUTH_DISCORD_SECRET                  | AuthJS - Discord |    ❌     |
+| DISCORD_GUILD_ID                     | AuthJS - Discord |    ❌     |
+| AUTH_TWITCH_ID                       | AuthJS - Twitch  |    ❌     |
+| AUTH_TWITCH_SECRET                   | AuthJS - Twitch  |    ❌     |
+| AUTH_EPIC_ID                         |  AuthJS - Epic   |    ❌     |
+| AUTH_EPIC_SECRET                     |  AuthJS - Epic   |    ❌     |
+| PLAYFAB_TITLE_ID                     |     PlayFab      |    ✅     |
+| PLAYFAB_SECRET_KEY                   |     PlayFab      |    ❌     |
+| OPENSEA_API_KEY                      |     OpenSea      |    ✅     |
+| WALLETCONNECT_PROJECT_ID             |  WalletConnect   |    ✅     |
+| NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID |  WalletConnect   |    ➖     |
+| DATABASE_URL                         |     Postgres     |    ❌     |
+| ENGINE_ACCESS_TOKEN                  |       API        |    ❌     |
+| ENGINE_BASE_URL                      |       API        |    ❌     |
+| ENGINE_FACTORY_MANAGER               |       API        |    ❌     |
+| ENGINE_ACCOUNT_FACTORY               |       API        |    ❌     |

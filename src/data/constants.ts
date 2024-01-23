@@ -8,3 +8,5 @@ export const DefaultAccountCookie: IAccountCookie = {
   loggedIn: false,
   sessionTicket: "",
 };
+
+export const DEV_MODE = process.env.NODE_ENV === "development";

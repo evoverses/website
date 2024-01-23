@@ -13,6 +13,7 @@ import { getUserReadOnlyData } from "@/lib/playfab/helpers";
 import { cn } from "@/lib/utils";
 import { Provider } from "@/types/auth";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { Suspense } from "react";
 
 const connections: Record<string, { Icon: any, disabled?: boolean }> = {
   Google: {
@@ -60,7 +61,9 @@ const AccountPage = async () => {
         </p>
       </div>
       <Separator />
-      <SmartWalletForm accountId={session.playFab.PlayFabId} userReadOnlyData={getUserReadOnlyData(combined)} />
+      <Suspense>
+        <SmartWalletForm accountId={session.playFab.PlayFabId} userReadOnlyData={getUserReadOnlyData(combined)} />
+      </Suspense>
       <ProfileForm account={account} session={session} accountCookie={accountCookie} combined={combined} />
       <div className="grid gap-2">
         <Label htmlFor="buttons">Connections</Label>

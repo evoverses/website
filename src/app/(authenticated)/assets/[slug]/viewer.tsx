@@ -126,7 +126,6 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                   <Link
                     href={`https://joepegs.com/item/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
                     prefetch={false}
-                    legacyBehavior
                     referrerPolicy="no-referrer"
                     target="_blank"
                   >
@@ -137,7 +136,6 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                   <Link
                     href={`https://avax.hyperspace.xyz/collection/avax/evoverses?tokenAddress=0x4151b8afa10653d304fdac9a781afccd45ec164c_${nft.tokenId.toString()}`}
                     prefetch={false}
-                    legacyBehavior
                     referrerPolicy="no-referrer"
                     target="_blank"
                   >
@@ -148,7 +146,6 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                   <Link
                     href={`https://opensea.io/assets/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
                     prefetch={false}
-                    legacyBehavior
                     referrerPolicy="no-referrer"
                     target="_blank"
                   >

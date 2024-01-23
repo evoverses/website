@@ -9,17 +9,30 @@ import { Slug } from "@/types/core";
 import { cache } from "react";
 
 const baseUrl = new URL("https://api.evoverses.com/v1/metadata/");
-export const getCollectionMetadata = cache(async (slug: Slug) => {
-  const resp = await fetch(`https://api.evoverses.com/v1/metadata/collection/${slug}`, {
+export const getCollectionMetadata = cache(async (slug: Slug): Promise<CollectionMetadata> => {
+  const resp = await fetch(`https://api.evoverses.com/metadata/collection/${slug}`, {
     next: {
       revalidate: 600,
     },
   });
   if (!resp.ok) {
-    throw new Error(`Failed to get Evo collection metadata: ${resp.statusText}`);
+    console.error(`Failed to get Evo collection metadata: ${resp.statusText}`);
+    return {
+      address: "0x4151b8afa10653d304FdAc9a781AFccd45EC164c",
+      bannerImage: "",
+      collaborators: [],
+      createdAt: "",
+      description: "Evos are powerful 3D monsters that roam the world with unique abilities and are prone to fights!",
+      externalLink: "",
+      id: 0,
+      image: "",
+      name: "Evos",
+      updatedAt: "",
+
+    };
   }
 
-  return await resp.json() as CollectionMetadata;
+  return await resp.json();
 });
 
 export const getCollectionItems = cache(async (
