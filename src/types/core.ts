@@ -40,3 +40,5 @@ export interface Pool {
   pid: bigint
   gas: bigint
 }
+
+export type Slug = "evo" | "egg";

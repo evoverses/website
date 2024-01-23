@@ -5,11 +5,12 @@ import {
   RawEvo,
   RawEvoEgg,
 } from "@/lib/evoverses/types";
+import { Slug } from "@/types/core";
 import { cache } from "react";
 
 const baseUrl = new URL("https://api.evoverses.com/v1/metadata/");
-export const getCollectionMetadata = cache(async (collection: "evo" | "egg") => {
-  const resp = await fetch("https://api.evoverses.com/v1/metadata/collection/evo", {
+export const getCollectionMetadata = cache(async (slug: Slug) => {
+  const resp = await fetch(`https://api.evoverses.com/v1/metadata/collection/${slug}`, {
     next: {
       revalidate: 600,
     },
@@ -22,11 +23,11 @@ export const getCollectionMetadata = cache(async (collection: "evo" | "egg") => 
 });
 
 export const getCollectionItems = cache(async (
-  collection: "evo" | "egg" = "evo",
+  slug: Slug = "evo",
   limit: number = 50,
   offset: number = 0,
 ) => {
-  const url = new URL(collection, baseUrl);
+  const url = new URL(slug, baseUrl);
   if (limit !== 50) {
     url.searchParams.set("limit", limit.toString());
   }
@@ -38,7 +39,7 @@ export const getCollectionItems = cache(async (
     throw new Error(`Failed to get Evo collection items: ${resp.statusText}`);
   }
   const json = await resp.json();
-  return collection === "evo" ? json as EvoCollectionResponse : json as EvoEggCollectionResponse;
+  return slug === "evo" ? json as EvoCollectionResponse : json as EvoEggCollectionResponse;
 });
 
 export const getCollectionItem = cache(async (collection: "evo" | "egg" = "evo", tokenId: string) => {

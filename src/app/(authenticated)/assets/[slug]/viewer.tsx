@@ -1,4 +1,4 @@
-import { LimitSelect } from "@/app/(authenticated)/assets/[collection_slug]/limit-select";
+import { LimitSelect } from "@/app/(authenticated)/assets/[slug]/limit-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,10 +12,9 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCollectionItems } from "@/lib/evoverses/metadata";
-import { OpenSeaAPI } from "@/lib/opensea";
+import { Slug } from "@/types/core";
 import Image from "next/image";
 import Link from "next/link";
-import Contract = OpenSeaAPI.NFTs.Contract;
 
 export const ViewerLoading = () => {
   return (
@@ -40,14 +39,13 @@ export const ViewerLoading = () => {
 };
 
 interface ViewerProps {
-  contract: Contract,
+  slug: Slug,
   limit: number,
-  offset: number,
-  collection: "evo" | "egg",
+  offset: number
 }
 
-export const Viewer = async ({ contract, limit, offset, collection }: ViewerProps) => {
-  const data = await getCollectionItems(collection, limit, offset);
+export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
+  const data = await getCollectionItems(slug, limit, offset);
   const totalPages = Math.ceil(data.total / limit);
   const currentPage = Math.ceil(offset / limit) + 1;
   return (
@@ -122,7 +120,7 @@ export const Viewer = async ({ contract, limit, offset, collection }: ViewerProp
               </CardContent>
               <CardFooter>
                 <Link
-                  href={`/assets/${contract.collection.replace("evoverses-", "")}/${nft.tokenId.toString()}`}
+                  href={`/assets/${slug}/${nft.tokenId.toString()}`}
                   prefetch={false}
                   legacyBehavior
                 >

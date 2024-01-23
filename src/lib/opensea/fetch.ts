@@ -162,13 +162,25 @@ export const refreshNftMetadata = cache(async (address: Address, chain: Chain, i
   return resp.ok;
 });
 
-export const getCollectionStats = cache(async (collection: string) => {
+export const getCollectionStats = cache(async (collection: string): Promise<CollectionStatsResponse> => {
   const url = new URL(`collections/${collection}/stats`, BASE_URL);
   const resp = await fetch(url, options);
   if (!resp.ok) {
-    throw new Error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
+    console.error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
+    return {
+      intervals: [],
+      total: {
+        volume: 0,
+        sales: 0,
+        average_price: 0,
+        num_owners: 0,
+        market_cap: 0,
+        floor_price: 0,
+        floor_price_symbol: "AVAX",
+      },
+    };
   }
-  return await resp.json() as CollectionStatsResponse;
+  return resp.json();
 });
 
 export const getNftEvents = cache(async (
