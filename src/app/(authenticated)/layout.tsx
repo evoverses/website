@@ -87,10 +87,10 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: PropsWithChildren) => {
   return (
     <html lang="en" className={nunito.variable} suppressHydrationWarning>
-      <body className="font-nunito">
+      <body className="flex flex-col font-nunito min-h-[100dvh]">
         <GlobalProvider>
           <Navbar />
-          <div className="flex min-h-screen flex-col pt-16">
+          <div className="flex flex-grow flex-col pt-16">
             {children}
           </div>
         </GlobalProvider>

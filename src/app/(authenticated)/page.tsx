@@ -20,14 +20,15 @@ const Landing = () => {
   return (
     <main className="flex flex-grow flex-col items-center justify-around p-4 sm:px-24">
       <div className="flex flex-col text-center items-center">
-        <Image
-          src={Logo}
-          alt="EvoVerses"
-          className="w-[128px] h-[128px] sm:h-[256px] sm:w-[256px]"
-          width={256}
-          height={256}
-        />
-        <h1 className="pb-2">EvoVerses</h1>
+        <div className="flex text-center items-center">
+          <Image
+            src={Logo}
+            alt="EvoVerses"
+            className="w-[128px] h-[128px] sm:h-[256px] sm:w-[256px]"
+            width={256}
+            height={256}
+          />
+        </div>
         <h4>A 3D monster battling game bringing Web2 and Web3 together in one platform.</h4>
       </div>
       <Carousel className="w-full max-w-xs sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl">
