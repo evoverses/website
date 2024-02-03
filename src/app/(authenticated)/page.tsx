@@ -15,7 +15,6 @@ const links = [
   { name: "GitHub", icon: GitHubLogoIcon, href: "https://evoverses.com/github" },
 ];
 
-
 const Landing = () => {
 
   return (
@@ -45,23 +44,27 @@ const Landing = () => {
         <CarouselPrevious className="max-sm:-left-0" />
         <CarouselNext className="max-sm:-right-0" />
       </Carousel>
-      <div className="flex flex-col lg:flex-row gap-4">
-        {marketplaces.map(({ name, icon: Icon, href, className }, key) => (
-          <Button key={key} variant="outline" size="lg" asChild>
-            <Link href={href} referrerPolicy="no-referrer" target="_blank" prefetch={false}>
-              <Icon className={cn("h-5 w-5 mr-2", className)} /> Buy on {name}
-            </Link>
-          </Button>
-        ))}
-      </div>
-      <div className="flex space-x-4">
-        {links.map(({ name, icon: Icon, href }, key) => (
-          <Button key={key} variant="outline" asChild>
-            <Link href={href} target="_blank" prefetch={false}>
-              <Icon className="h-4 w-4 mr-2" /> {name}
-            </Link>
-          </Button>
-        ))}
+      <div className="flex flex-col gap-4 md:items-center xl:w-full xl:flex-row xl:justify-between xl:max-w-5xl">
+        <div className="flex justify-between md:gap-4">
+          {marketplaces.map(({ name, icon: Icon, href, className }, key) => (
+            <Button key={key} variant="outline" size="lg" className="px-2 md:px-4 lg:px-8" asChild>
+              <Link href={href} referrerPolicy="no-referrer" target="_blank" prefetch={false}>
+                <Icon className={cn("h-5 w-5 mr-2", className)} />
+                <span className="hidden md:inline-flex">Buy on&nbsp;</span>
+                {name}
+              </Link>
+            </Button>
+          ))}
+        </div>
+        <div className="flex space-x-4">
+          {links.map(({ name, icon: Icon, href }, key) => (
+            <Button key={key} variant="outline" asChild>
+              <Link href={href} target="_blank" prefetch={false}>
+                <Icon className="h-4 w-4 mr-2" /> {name}
+              </Link>
+            </Button>
+          ))}
+        </div>
       </div>
     </main>
   );
