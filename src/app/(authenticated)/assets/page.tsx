@@ -1,12 +1,13 @@
 import FeaturedTrainer from "@/assets/images/featured-trainer.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { marketplaces } from "@/data/links";
 import { getCollection } from "@/lib/opensea";
+import { cn } from "@/lib/utils";
 
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { SiOpensea } from "react-icons/si";
 
 export const metadata: Metadata = {
   title: "Assets",
@@ -41,12 +42,17 @@ const AssetsPage = async () => {
                 <CardTitle>{name}</CardTitle>
                 <CardDescription>{collection.description}</CardDescription>
               </CardHeader>
-              <CardFooter className="space-x-2">
-                <Link href={collection.opensea_url} target="_blank">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    <SiOpensea className="w-6 h-6" />
-                  </Button>
-                </Link>
+              <CardFooter className="flex flex-col gap-2">
+                <div className="w-full flex gap-2">
+                  {marketplaces.map(({ icon: Icon, href, buttonClassName }, key) => (
+                    <Button key={key} className={cn("w-full", buttonClassName)} asChild>
+                      <Link href={href} referrerPolicy="no-referrer" target="_blank" prefetch={false}>
+                        <Icon className={cn("h-6 w-6")} />
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+
                 <Link href={`/assets/${collection.collection.replace("evoverses-", "")}`} legacyBehavior>
                   <Button className="w-full font-bold">
                     Explore {name}
@@ -59,7 +65,7 @@ const AssetsPage = async () => {
         {comingSoonCollections.map(collection => {
           const name = collection.name.replace("EvoVerses", "").trim();
           return (
-            <Card key={collection.collection} className="w-[350px]">
+            <Card key={collection.collection} className="w-[350px] flex flex-col">
               <Image
                 className="rounded-t-xl"
                 src={collection.image_url}
@@ -71,9 +77,9 @@ const AssetsPage = async () => {
                 <CardTitle>{name}s</CardTitle>
                 <CardDescription>{collection.description}</CardDescription>
               </CardHeader>
-              <CardFooter>
+              <CardFooter className="mt-auto">
                 <Button disabled className="w-full font-bold">
-                  Coming Soon!
+                  Mint Coming Soon!
                 </Button>
               </CardFooter>
             </Card>

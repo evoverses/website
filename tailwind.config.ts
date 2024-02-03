@@ -58,6 +58,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          opensea: "#2081e2",
+          hyperspace: "#e84241",
+          avalanche: "#e84241",
+          joepegs: "#8473ff",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

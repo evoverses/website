@@ -10,6 +10,8 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useMounted } from "@/lib/hooks/useMounted";
 import { cn } from "@/lib/utils";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Session } from "next-auth";
@@ -103,10 +105,17 @@ const NavItems = ({ navItems, session }: NavItemsProps) => {
 export default NavItems;
 export const ModeButton = () => {
   const { theme, setTheme } = useTheme();
+  const mounted = useMounted();
   const system = !theme || theme === "system";
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : theme === "light" ? "system" : "dark");
   };
+
+  if (!mounted) {
+    return (
+      <Skeleton className="w-[36px] h-[36px] border border-input shadow-sm" />
+    );
+  }
   return (
     <Button variant="outline" size="icon" onClick={toggleTheme}>
       {system ? (

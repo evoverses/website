@@ -1,8 +1,8 @@
 'use client';
 import { Button } from "@/components/ui/button";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { ComponentProps } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
-import { useWeb3Modal } from "@web3modal/wagmi/react"
 
 const ChainButton = (props: ComponentProps<typeof Button>) => {
   const { isConnected } = useAccount();
