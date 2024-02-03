@@ -18,7 +18,7 @@ const links = [
 const Landing = () => {
 
   return (
-    <main className="flex flex-grow flex-col items-center justify-around gap-4 p-4 sm:px-24">
+    <main className="flex flex-grow flex-col items-center justify-around p-4 sm:px-24">
       <div className="flex flex-col text-center items-center">
         <Image
           src={Logo}
