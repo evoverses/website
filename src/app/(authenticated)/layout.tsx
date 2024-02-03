@@ -1,4 +1,5 @@
 import Navbar from "@/app/(authenticated)/navbar";
+import { TrainerMintSmartDrawer } from "@/app/(authenticated)/trainer-mint-alert-button";
 import { GlobalProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import "@/styles/aggregated.css";
@@ -90,7 +91,8 @@ const RootLayout = ({ children }: PropsWithChildren) => {
       <body className="flex flex-col font-nunito min-h-[100dvh]">
         <GlobalProvider>
           <Navbar />
-          <div className="flex flex-grow flex-col pt-16">
+          <div className="flex flex-grow flex-col pt-16 relative">
+            <TrainerMintSmartDrawer />
             {children}
           </div>
         </GlobalProvider>

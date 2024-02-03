@@ -29,7 +29,7 @@ export const navigation: NavItem[] = [
 const Navbar = async () => {
   const session = await auth();
   return (
-    <div className="border-b fixed w-full bg-background">
+    <div className="border-b fixed w-full bg-background z-20">
       <div className="flex h-16 items-center px-4">
         <Link href="/">
           <Image src={Logo} alt="EvoVerses" width={48} height={48} />

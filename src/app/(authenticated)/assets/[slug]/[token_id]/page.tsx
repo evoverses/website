@@ -1,5 +1,6 @@
 import { AssetHistory, SnowtraceLink } from "@/app/(authenticated)/assets/[slug]/[token_id]/history";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BASE_URL } from "@/data/constants";
 import { getCollectionItem } from "@/lib/evoverses/metadata";
 import { getEvoHistory } from "@/lib/subsquid";
 import { cn } from "@/lib/utils";
@@ -24,10 +25,10 @@ const NFTAttribute = ({ name, value, display, className }: NFTAttributeProps) =>
   );
 };
 
-const NftPage = async ({ params: { collection_slug, token_id } }: { params: Record<string, string> }) => {
-
+const NftPage = async ({ params: { slug: in_slug, token_id } }: { params: Record<string, string> }) => {
+  const slug = in_slug === "egg" ? "evo" : "evo";
   const [ item, history ] = await Promise.all([
-    getCollectionItem(collection_slug as any, token_id),
+    getCollectionItem(slug as any, token_id),
     getEvoHistory(token_id),
   ]);
   const isEgg = "treated" in item;
@@ -61,7 +62,7 @@ const NftPage = async ({ params: { collection_slug, token_id } }: { params: Reco
           )}
         </div>
         <Image
-          src={`https://evoverses.com/api/images/${collection_slug}/${token_id}`}
+          src={`${BASE_URL}/api/images/${slug}/${token_id}`}
           alt={item.species} width={512} height={725} unoptimized className="w-60"
         />
       </section>
@@ -113,7 +114,7 @@ const NftPage = async ({ params: { collection_slug, token_id } }: { params: Reco
       <section className="space-y-4">
         <h2>History</h2>
         <Suspense fallback={<div>Loading...</div>}>
-          <AssetHistory slug={collection_slug} tokenId={token_id} />
+          <AssetHistory slug={slug} tokenId={token_id} />
         </Suspense>
       </section>
     </div>

@@ -12,6 +12,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BASE_URL } from "@/data/constants";
 import { getCollectionItems } from "@/lib/evoverses/metadata";
 import { getShimmer } from "@/lib/evoverses/svgs";
 import { Slug } from "@/types/core";
@@ -105,9 +106,7 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
         {data.items.map(nft => (
           <Card key={nft.tokenId} className="flex flex-row w-[350px]">
             <Image
-              src={`http${process.env.NODE_ENV === "development"
-                ? "://localhost:3000"
-                : "s://evoverses.com"}/api/images/evo/${nft.tokenId}`}
+              src={`${BASE_URL}/api/images/evo/${nft.tokenId}`}
               alt={`${nft.species} #${nft.tokenId}`}
               width={512}
               height={725}

@@ -8,7 +8,7 @@ import {
 import { Slug } from "@/types/core";
 import { cache } from "react";
 
-const baseUrl = new URL("https://api.evoverses.com/v1/metadata/");
+const baseUrl = new URL("https://api.evoverses.com/metadata/");
 export const getCollectionMetadata = cache(async (slug: Slug): Promise<CollectionMetadata> => {
   const resp = await fetch(`https://api.evoverses.com/metadata/collection/${slug}`, {
     next: {
@@ -58,6 +58,7 @@ export const getCollectionItems = cache(async (
 export const getCollectionItem = cache(async (collection: "evo" | "egg" = "evo", tokenId: string) => {
   const url = new URL(`${collection}/${tokenId}`, baseUrl);
   url.searchParams.set("raw", "true");
+  console.log(url.toString());
   const resp = await fetch(url, {
     next: { revalidate: 600 },
   });

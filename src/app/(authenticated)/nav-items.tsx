@@ -104,11 +104,11 @@ const NavItems = ({ navItems, session }: NavItemsProps) => {
 
 export default NavItems;
 export const ModeButton = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
   const system = !theme || theme === "system";
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : theme === "light" ? "system" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   if (!mounted) {

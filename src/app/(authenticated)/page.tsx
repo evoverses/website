@@ -1,4 +1,4 @@
-import Logo from "@/app/icon.png";
+import Logo from "@/assets/images/logo-text.png";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Icons } from "@/components/ui/icons";
@@ -18,17 +18,15 @@ const links = [
 const Landing = () => {
 
   return (
-    <main className="flex flex-grow flex-col items-center justify-around p-4 sm:px-24">
+    <main className="flex flex-grow flex-col items-center justify-around p-4 pt-0 sm:px-24">
       <div className="flex flex-col text-center items-center">
-        <div className="flex text-center items-center">
-          <Image
-            src={Logo}
-            alt="EvoVerses"
-            className="w-[128px] h-[128px] sm:h-[256px] sm:w-[256px]"
-            width={256}
-            height={256}
-          />
-        </div>
+        <Image
+          src={Logo}
+          alt="EvoVerses"
+          className="w-[256px] h-[256px] sm:h-[256px] sm:w-[256px]"
+          width={3840}
+          height={3840}
+        />
         <h4>A 3D monster battling game bringing Web2 and Web3 together in one platform.</h4>
       </div>
       <Carousel className="w-full max-w-xs sm:max-w-md md:max-w-xl lg:max-w-3xl xl:max-w-5xl">
