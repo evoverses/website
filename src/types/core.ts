@@ -1,4 +1,6 @@
+import { IconProps } from "@radix-ui/react-icons/dist/types";
 import { Address } from "abitype";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export type Addressish = Address | string | undefined | null;
 
@@ -42,3 +44,5 @@ export interface Pool {
 }
 
 export type Slug = "evo" | "egg";
+
+export type RadixUIIcon = ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;

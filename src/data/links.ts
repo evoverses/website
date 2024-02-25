@@ -1,7 +1,20 @@
 import { Icons } from "@/components/ui/icons";
+import { evoContract } from "@/data/contracts";
+import { RadixUIIcon } from "@/types/core";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { IconType } from "react-icons";
+import { FaDiscord } from "react-icons/fa";
 import { SiOpensea } from "react-icons/si";
 
-export const marketplaces = [
+type LinkData = {
+  name: string,
+  icon: IconType | RadixUIIcon,
+  href: string,
+  className?: string,
+  buttonClassName?: string,
+}
+
+export const marketplaces: LinkData[] = [
   {
     name: "Hyperspace",
     icon: Icons.hyperspace,
@@ -24,4 +37,38 @@ export const marketplaces = [
     className: "text-brand-opensea",
     buttonClassName: "bg-brand-opensea hover:bg-brand-opensea/80",
   },
-];
+] as const;
+
+export const socialMedia: LinkData[] = [
+  {
+    name: "Discord",
+    icon: FaDiscord,
+    href: "https://evoverses.com/discord",
+    className: "text-brand-discord",
+    buttonClassName: "bg-brand-discord hover:bg-brand-discord/80",
+  },
+  {
+    name: "Twitter",
+    icon: Icons.x,
+    href: "https://evoverses.com/twitter",
+    className: "text-white",
+    buttonClassName: "bg-white hover:bg-white/80",
+  },
+  {
+    name: "GitHub",
+    icon: GitHubLogoIcon,
+    href: "https://evoverses.com/github",
+    className: "text-white",
+    buttonClassName: "bg-white hover:bg-white/80",
+  },
+] as const;
+
+export const exchanges: LinkData[] = [
+  {
+    name: "Trader Joe",
+    icon: Icons.joePegs,
+    href: `https://traderjoexyz.com/avalanche/trade?outputCurrency=${evoContract.address}`,
+    className: "text-brand-discord",
+    buttonClassName: "bg-brand-discord hover:bg-brand-discord/80",
+  },
+] as const;

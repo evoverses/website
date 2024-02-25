@@ -67,6 +67,7 @@ const config: Config = {
           hyperspace: "#e84241",
           avalanche: "#e84241",
           joepegs: "#8473ff",
+          discord: "#7289da",
         },
       },
       borderRadius: {
