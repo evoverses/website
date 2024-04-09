@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatEther, parseEther } from "viem";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 type DepositEvoSmartDrawerProps = {
   balance: ERC20TokenBalance;
@@ -86,20 +86,24 @@ interface DepositButtonProps {
 }
 
 const DepositButton = ({ managedWallet, max, value, open, close }: DepositButtonProps) => {
+  // noinspection DuplicatedCode
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { config } = usePrepareContractWrite({
+  const { isSuccess: isSimulateSuccess } = useSimulateContract({
     ...evoContract,
     functionName: "transfer",
     args: [ managedWallet, valueBigInt ],
     chainId: 43_114,
-    enabled: validAmount,
+    query: {
+      enabled: validAmount,
+    },
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  // noinspection DuplicatedCode
+  const { data, isError, error, writeContract, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
     if (!open) {
@@ -125,6 +129,16 @@ const DepositButton = ({ managedWallet, max, value, open, close }: DepositButton
   }, [ open, isError, error, tx ]);
 
   return (
-    <Button onClick={write} disabled={isError || !validAmount}>Deposit</Button>
+    <Button
+      onClick={() => writeContract({
+        ...evoContract,
+        functionName: "transfer",
+        args: [ managedWallet, valueBigInt ],
+        chainId: 43_114,
+      })}
+      disabled={isError || !validAmount || !isSimulateSuccess}
+    >
+      Deposit
+    </Button>
   );
 };

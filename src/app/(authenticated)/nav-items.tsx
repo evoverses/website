@@ -71,13 +71,7 @@ const NavItems = ({ navItems, session }: NavItemsProps) => {
           <NavigationMenuContent>
             <ul className="grid grid-cols-1 m-0 ml-4 mb-1 w-[200px] list-none">
               {navItems.filter(i => !i.authRequired || !!session).map(({ name, href, description }, key) => (
-                <ListItem
-                  key={key}
-                  title={name}
-                  href={href}
-                >
-                  {description}
-                </ListItem>
+                <ListItem key={key} title={name} href={href}>{description}</ListItem>
               ))}
             </ul>
           </NavigationMenuContent>

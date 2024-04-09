@@ -1,5 +1,6 @@
 import { BankCard, FarmCard, VestingCard } from "@/app/(authenticated)/profile/liquidity/cards";
-import { AccountProvider } from "@/components/providers";
+
+import { AccountProvider } from "@/components/providers/account-provider";
 import { Separator } from "@/components/ui/separator";
 
 // This page is here solely for those who think they are somehow elite anonymous hackers -.-

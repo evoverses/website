@@ -29,7 +29,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatEther } from "viem";
-import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useAccount, useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 interface ClaimButtonProps {
   disabled?: boolean;
@@ -39,16 +39,18 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
   const router = useRouter();
   const { address } = useAccount();
 
-  const { config } = usePrepareContractWrite({
+  const { isSuccess: isSimulateSuccess } = useSimulateContract({
     ...cEvoContract,
     functionName: "claimPending",
     chainId: 43_114,
-    enabled: !disabled && !!address,
+    query: {
+      enabled: !disabled && !!address,
+    },
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  const { data, isError, error, writeContract, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
 
@@ -71,7 +73,17 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
   }, [ isError, error, tx ]);
 
   return (
-    <ChainButton className="w-full font-bold" onClick={write} disabled={isError || disabled}>Claim</ChainButton>
+    <ChainButton
+      className="w-full font-bold"
+      onClick={() => writeContract({
+        ...cEvoContract,
+        functionName: "claimPending",
+        chainId: 43_114,
+      })}
+      disabled={isError || disabled || !isSimulateSuccess}
+    >
+      Claim
+    </ChainButton>
   );
 };
 

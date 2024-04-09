@@ -41,7 +41,7 @@ const CardBase = ({ title, token, className, children }: CardBaseProps) => {
 };
 
 const VestingCard = async () => {
-  const { address } = getAccountCookie();
+  const { address } = await getAccountCookie();
   const data = await getcEVOData(address);
 
   const totalDisbursement = Number(formatEther(data.disbursements.reduce((a, c) => a + c.amount, 0n)));
@@ -124,7 +124,7 @@ const VestingCard = async () => {
 };
 
 const BankCard = async () => {
-  const { address, loggedIn } = getAccountCookie();
+  const { address, loggedIn } = await getAccountCookie();
   const data = await getxEVOData(address);
   const currentSharesRaw = data.xEvoUserBalance > 0
     ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100
@@ -211,7 +211,7 @@ const BankCard = async () => {
 };
 
 const FarmCard = async () => {
-  const { address, loggedIn } = getAccountCookie();
+  const { address, loggedIn } = await getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
 

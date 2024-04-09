@@ -24,6 +24,7 @@ export const navigation: NavItem[] = [
     comingSoon: true,
   },
   { name: "Docs", href: "https://docs.evoverses.com", description: "Everything you need to know about EvoVerses" },
+  { name: "Liquidity", href: "/liquidity", description: "Quick wallet-only access to liquidity management" },
 ];
 
 const Navbar = async () => {

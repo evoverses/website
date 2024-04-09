@@ -1,5 +1,6 @@
 import { AccountNavigation } from "@/app/(authenticated)/profile/_components/navigation";
-import { AccountProvider } from "@/components/providers";
+
+import { AccountProvider } from "@/components/providers/account-provider";
 import { Separator } from "@/components/ui/separator";
 import { PropsWithChildren } from "react";
 

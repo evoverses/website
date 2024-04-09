@@ -7,7 +7,13 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { parseEther } from "viem";
-import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 
 interface FarmClaimButtonProps {
   poolId: bigint,
@@ -18,17 +24,19 @@ interface FarmClaimButtonProps {
 
 const FarmClaimButton = ({ poolId, enabled, open, close }: FarmClaimButtonProps) => {
   const router = useRouter();
-  const { config } = usePrepareContractWrite({
+  const { isSuccess } = useSimulateContract({
     ...investorContract,
     functionName: "claimReward",
     args: [ poolId ],
     chainId: 43_114,
-    enabled,
+    query: {
+      enabled,
+    },
   });
 
-  const { data, error, isError, write, reset } = useContractWrite(config);
+  const { data, error, isError, writeContract, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
     if (!open) {
@@ -53,7 +61,17 @@ const FarmClaimButton = ({ poolId, enabled, open, close }: FarmClaimButtonProps)
   }, [ open, isError, error, tx ]);
 
   return (
-    <ChainButton onClick={write} disabled={isError}>Claim</ChainButton>
+    <ChainButton
+      onClick={() => writeContract({
+        ...investorContract,
+        functionName: "claimReward",
+        args: [ poolId ],
+        chainId: 43_114,
+      })}
+      disabled={!isSuccess}
+    >
+      Claim
+    </ChainButton>
   );
 };
 
@@ -72,49 +90,74 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, open, close }: Deposit
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
 
-  const { data: allowance, refetch } = useContractRead({
+  const { data: allowance, refetch } = useReadContract({
     address: lpToken as Address,
     abi: LpTokenABI,
     functionName: "allowance",
     args: [ address || "0x", investorContract.address ],
     chainId: 43_114,
-    enabled: validAmount,
+    query: {
+      enabled: validAmount,
+    },
   });
 
   const hasAllowance = (
     allowance || 0n
   ) >= BigInt(1_000_000_000 * 1e18);
 
-  const { config: approveConfig } = usePrepareContractWrite({
+  const { isSuccess: isApproveSimulateSuccess } = useSimulateContract({
     address: lpToken as Address,
     abi: LpTokenABI,
     functionName: "approve",
     args: [ investorContract.address, BigInt(100_000_000_000 * 1e18) ],
     chainId: 43_114,
-    enabled: !hasAllowance,
+    query: {
+      enabled: !hasAllowance,
+    },
   });
 
-  const { data: approveTx, write: approveWrite } = useContractWrite(approveConfig);
-  const { data: approveResult } = useWaitForTransaction({ hash: approveTx?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: approveHash, writeContract: writeApprove } = useWriteContract();
+  const { data: approveResult } = useWaitForTransactionReceipt({
+    hash: approveHash,
+    chainId: 43_114,
+    confirmations: 1,
+  });
 
-  const { error: prepareError, config } = usePrepareContractWrite({
+  const { error: prepareError, isSuccess: isDepositSimulateSuccess } = useSimulateContract({
     ...investorContract,
     functionName: "deposit",
     args: [ poolId, valueBigInt ],
     chainId: 43_114,
-    enabled: validAmount && hasAllowance,
+    query: {
+      enabled: validAmount && hasAllowance,
+    },
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  const { data: depositHash, isError, error, writeContract: writeDeposit, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({
+    hash: depositHash,
+    chainId: 43_114,
+    confirmations: 1,
+  });
 
   const onClick = () => {
-    if (!hasAllowance && approveWrite) {
-      return approveWrite();
+    if (!hasAllowance && isApproveSimulateSuccess) {
+      return writeApprove({
+        address: lpToken as Address,
+        abi: LpTokenABI,
+        functionName: "approve",
+        args: [ investorContract.address, BigInt(100_000_000_000 * 1e18) ],
+        chainId: 43_114,
+      });
     }
-    if (write) {
-      return write();
+    if (hasAllowance && isDepositSimulateSuccess) {
+      return writeDeposit({
+        ...investorContract,
+        functionName: "deposit",
+        args: [ poolId, valueBigInt ],
+        chainId: 43_114,
+      });
     } else {
       toast.error(error
         ? `${error}`
@@ -133,6 +176,7 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, open, close }: Deposit
     if (!hasAllowance && approveResult?.status === "success") {
       refetch();
     }
+    // noinspection DuplicatedCode
     if (isError) {
       toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
       reset();
@@ -172,17 +216,20 @@ const FarmWithdrawButton = ({ poolId, max, value, open, close }: FarmWithdrawBut
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
 
-  const { config } = usePrepareContractWrite({
+  const { isSuccess: isWithdrawSimulateSuccess } = useSimulateContract({
     ...investorContract,
     functionName: "withdraw",
     args: [ poolId, valueBigInt ],
     chainId: 43_114,
-    enabled: validAmount,
+    query: {
+      enabled: validAmount,
+    },
   });
 
-  const { data, error, isError, write, reset } = useContractWrite(config);
+  // noinspection DuplicatedCode
+  const { data, error, isError, writeContract, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
     if (!open) {
@@ -207,7 +254,16 @@ const FarmWithdrawButton = ({ poolId, max, value, open, close }: FarmWithdrawBut
   }, [ open, isError, error, tx ]);
 
   return (
-    <ChainButton onClick={write} disabled={isError || !validAmount}>Withdraw</ChainButton>
+    <ChainButton
+      onClick={() => writeContract({
+        ...investorContract,
+        functionName: "withdraw",
+        args: [ poolId, valueBigInt ],
+        chainId: 43_114,
+      })}
+      disabled={isError || !validAmount || !isWithdrawSimulateSuccess}
+    >Withdraw
+    </ChainButton>
   );
 };
 
@@ -224,44 +280,51 @@ const BankDepositButton = ({ max, value, open, close }: BankDepositButtonProps) 
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
   const { address } = useAccount();
 
-  const { data: allowance, refetch } = useContractRead({
+  const { data: allowance, refetch } = useReadContract({
     ...evoContract,
     functionName: "allowance",
     args: [ address || "0x0", xEvoContract.address ],
-    enabled: !!address,
+    query: {
+      enabled: !!address,
+    },
   });
 
   const isAllowed = BigInt(allowance || 0) >= parseEther("100000000");
 
-  const { config: approveConfig } = usePrepareContractWrite({
+  const { isSuccess: isApproveSimulateSuccess } = useSimulateContract({
     ...evoContract,
     functionName: "approve",
     args: [ xEvoContract.address, parseEther("500000000") ],
     chainId: 43_114,
-    enabled: !isAllowed,
+    query: {
+      enabled: !isAllowed,
+    },
   });
 
-  const { data: approveData, write: approveWrite } = useContractWrite(approveConfig);
+  const { data: approveHash, writeContract: writeApprove } = useWriteContract();
 
-  const { data: approveTx } = useWaitForTransaction({
-    hash: approveData?.hash,
+  const { data: approveTx } = useWaitForTransactionReceipt({
+    hash: approveHash,
     chainId: 43_114,
     confirmations: 1,
   });
 
-  const { config } = usePrepareContractWrite({
+  const { isSuccess: isDepositSimulateSuccess } = useSimulateContract({
     ...xEvoContract,
     functionName: "deposit",
     args: [ valueBigInt ],
     chainId: 43_114,
-    enabled: validAmount && isAllowed,
+    query: {
+      enabled: validAmount && isAllowed && isApproveSimulateSuccess,
+    },
   });
 
-  const { data, isError, error, write, reset } = useContractWrite(config);
+  const { data: depositHash, isError, error, writeContract: writeDeposit, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({ hash: depositHash, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
+    // noinspection DuplicatedCode
     if (!open) {
       reset();
     }
@@ -289,11 +352,30 @@ const BankDepositButton = ({ max, value, open, close }: BankDepositButtonProps) 
 
   if (!isAllowed) {
     return (
-      <ChainButton onClick={approveWrite}>Approve</ChainButton>
+      <ChainButton
+        onClick={() => writeApprove({
+          ...xEvoContract,
+          functionName: "approve",
+          args: [ xEvoContract.address, parseEther("500000000") ],
+          chainId: 43_114,
+        })}
+      >
+        Approve
+      </ChainButton>
     );
   }
   return (
-    <ChainButton onClick={write} disabled={isError || !validAmount}>Deposit</ChainButton>
+    <ChainButton
+      onClick={() => writeDeposit({
+        ...xEvoContract,
+        functionName: "deposit",
+        args: [ valueBigInt ],
+        chainId: 43_114,
+      })}
+      disabled={isError || !validAmount || !isDepositSimulateSuccess}
+    >
+      Deposit
+    </ChainButton>
   );
 };
 
@@ -308,17 +390,20 @@ const BankWithdrawButton = ({ max, value, open, close }: BankWithdrawButtonProps
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { config } = usePrepareContractWrite({
+  const { isSuccess } = useSimulateContract({
     ...xEvoContract,
     functionName: "withdraw",
     args: [ valueBigInt ],
     chainId: 43_114,
-    enabled: validAmount,
+    query: {
+      enabled: validAmount,
+    },
   });
 
-  const { data, error, isError, write, reset } = useContractWrite(config);
+  // noinspection DuplicatedCode
+  const { data, error, isError, writeContract, reset } = useWriteContract();
 
-  const { data: tx } = useWaitForTransaction({ hash: data?.hash, chainId: 43_114, confirmations: 1 });
+  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
     if (!open) {
@@ -343,7 +428,17 @@ const BankWithdrawButton = ({ max, value, open, close }: BankWithdrawButtonProps
   }, [ open, isError, error, tx ]);
 
   return (
-    <ChainButton onClick={write} disabled={isError || !validAmount}>Withdraw</ChainButton>
+    <ChainButton
+      onClick={() => writeContract({
+        ...xEvoContract,
+        functionName: "withdraw",
+        args: [ valueBigInt ],
+        chainId: 43_114,
+      })}
+      disabled={isError || !validAmount || !isSuccess}
+    >
+      Withdraw
+    </ChainButton>
   );
 };
 

@@ -3,10 +3,9 @@ import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/dat
 import { fetchPairDataOf } from "@/lib/dexscreener";
 import { client } from "@/lib/viem";
 import { Pool } from "@/types/core";
-import { erc20ABI } from "@wagmi/core";
 import { Address } from "abitype";
 import { cache } from "react";
-import { formatEther } from "viem";
+import { erc20Abi, formatEther } from "viem";
 
 export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, number ] => {
   timeDelta = Number(timeDelta);
@@ -40,15 +39,18 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
     ],
     allowFailure: false,
   });
+
   const gas = await client.getBalance({ address })
   const poolIds = Array.from({ length: Number(poolLength) }, (_, i) => BigInt(i));
   return Promise.all(
     poolIds.filter(id => id !== 1n).map(async poolId => {
+      // noinspection JSUnusedLocalSymbols
       const [ lpToken, allocPoint, lastRewardTime, accGovTokenPerShare ] = await client.readContract({
         ...investorContract,
         functionName: "poolInfo",
         args: [ poolId ],
       });
+      // noinspection JSUnusedLocalSymbols
       const [
         [ amount, rewardDebt, rewardDebtAtTime, lastWithdrawTime, firstDepositTime, userTimeDelta, lastDepositTime ],
         emissionRate, totalSupply, contBalance, timeDelta, remainBalance, pendingRewards, depFee, token0,
@@ -74,12 +76,12 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
       const [ t0Symbol, t0Decimals, t0WalletBalance, t1Symbol, t1Decimals, t1WalletBalance ] = await client.multicall(
         {
           contracts: [
-            { address: token0, abi: erc20ABI, functionName: "symbol" },
-            { address: token0, abi: erc20ABI, functionName: "decimals" },
-            { address: token0, abi: erc20ABI, functionName: "balanceOf", args: [ address ] },
-            { address: token1, abi: erc20ABI, functionName: "symbol" },
-            { address: token1, abi: erc20ABI, functionName: "decimals" },
-            { address: token1, abi: erc20ABI, functionName: "balanceOf", args: [ address ] },
+            { address: token0, abi: erc20Abi, functionName: "symbol" },
+            { address: token0, abi: erc20Abi, functionName: "decimals" },
+            { address: token0, abi: erc20Abi, functionName: "balanceOf", args: [ address ] },
+            { address: token1, abi: erc20Abi, functionName: "symbol" },
+            { address: token1, abi: erc20Abi, functionName: "decimals" },
+            { address: token1, abi: erc20Abi, functionName: "balanceOf", args: [ address ] },
           ],
           allowFailure: false,
         });
