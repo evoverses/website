@@ -1,4 +1,4 @@
-import { getcEVOData, getPoolData, getxEVOData } from "@/app/(authenticated)/profile/_components/fetch";
+import { getcEVOData, getEVOData, getPoolData, getxEVOData } from "@/app/(authenticated)/profile/_components/fetch";
 import {
   BankSmartDrawer,
   ClaimCEvoButton,
@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cEvoContract, xEvoContract } from "@/data/contracts";
-import { getAccountCookie } from "@/lib/cookies/account";
+
+import { getAccountCookie } from "@/lib/cookies/account.server";
 
 import { bigIntJsonReplacer } from "@/lib/node";
 import { cn } from "@/lib/utils";
@@ -41,8 +42,8 @@ const CardBase = ({ title, token, className, children }: CardBaseProps) => {
 };
 
 const VestingCard = async () => {
-  const { address } = await getAccountCookie();
-  const data = await getcEVOData(address);
+  const { address } = getAccountCookie();
+  const [ data, evoData ] = await Promise.all([ getcEVOData(address), await getEVOData(address) ]);
 
   const totalDisbursement = Number(formatEther(data.disbursements.reduce((a, c) => a + c.amount, 0n)));
   return (
@@ -77,6 +78,15 @@ const VestingCard = async () => {
                   {Math.floor((
                     Date.now() / 1000 - 1681860918
                   ) / 60 / 60 / 24)} / 365
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="flex flex-col">
+                  <span>Unclaimed</span>
+                  <span>(Global)</span>
+                </TableCell>
+                <TableCell>
+                  {Number(Number(formatEther(evoData.locked)).toFixed(3)).toLocaleString()} EVO
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -124,7 +134,7 @@ const VestingCard = async () => {
 };
 
 const BankCard = async () => {
-  const { address, loggedIn } = await getAccountCookie();
+  const { address, loggedIn } = getAccountCookie();
   const data = await getxEVOData(address);
   const currentSharesRaw = data.xEvoUserBalance > 0
     ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100
@@ -211,7 +221,8 @@ const BankCard = async () => {
 };
 
 const FarmCard = async () => {
-  const { address, loggedIn } = await getAccountCookie();
+  const { address, loggedIn } = getAccountCookie();
+  console.log("Farm Card:", address, loggedIn);
   const pools = await getPoolData(address);
   const pool = pools[0];
 

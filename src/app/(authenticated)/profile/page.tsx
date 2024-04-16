@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { getAccountCookie } from "@/lib/cookies/account";
+
+import { getAccountCookie } from "@/lib/cookies/account.server";
 import { getAccountInfo, getCombinedPlayerInfo } from "@/lib/playfab/client";
 import { getUserReadOnlyData } from "@/lib/playfab/helpers";
 import { cn } from "@/lib/utils";

@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
 import { evoContract } from "@/data/contracts";
-import { getAccountCookie } from "@/lib/cookies/account";
+
+import { getAccountCookie } from "@/lib/cookies/account.server";
 import { getEvoBalance, getGasBalance, isAccountCreated, predictAccountAddress } from "@/lib/evoverses/engine";
 import { getERC20Balance } from "@/lib/glacier/glacier";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";

@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
-import { getAccountCookie } from "@/lib/cookies/account";
+
+import { getAccountCookie } from "@/lib/cookies/account.server";
 import { getAccountInfo } from "@/lib/playfab/client";
 import { Address } from "abitype";
 

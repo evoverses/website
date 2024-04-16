@@ -29,6 +29,11 @@ const nextConfig = {
       },
     ];
   },
+  headers: async () => (
+    [
+      { source: "/.well-known/did.json", headers: [ { key: "Access-Control-Allow-Origin", value: "*" } ] },
+    ]
+  ),
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;

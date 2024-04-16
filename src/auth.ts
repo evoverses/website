@@ -1,6 +1,6 @@
 import "server-only";
 import authConfig from "@/auth.config";
-import { setAccountCookieSessionTicket } from "@/lib/cookies/account";
+import { setAccountCookieSessionTicketAction } from "@/lib/cookies/account.actions";
 import { getPlayFabIDFromSocialLoginID, linkSocialAuth, loginWithSocialAuth } from "@/lib/playfab/client";
 import { Provider } from "@/types/auth";
 // import PlayFabAdapter from "@/lib/playfab-adapter";
@@ -63,7 +63,7 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
       if (trigger === "signIn" || trigger === "signUp") {
         if (account) {
           const playFab = await loginWithSocialAuth(account.provider as Provider, account.access_token);
-          await setAccountCookieSessionTicket(playFab.SessionTicket);
+          await setAccountCookieSessionTicketAction(playFab.SessionTicket);
           return {
             ...token,
             id: user.id,
