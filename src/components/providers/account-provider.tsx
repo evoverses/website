@@ -1,6 +1,7 @@
 "use client";
 import AccountCookieManager from "@/components/providers/account-cookie-manager";
 import Web3Provider from "@/components/providers/web3-provider";
+import type { IAccountCookie } from "@/types/cookies";
 import { config, projectId } from "@/wagmi.config";
 import type { Token } from "@web3modal/core";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
@@ -33,10 +34,15 @@ createWeb3Modal({
   },
 });
 
-export const AccountProvider = ({ initialState, children }: PropsWithChildren<{ initialState?: State }>) => {
+type AccountProviderProps = {
+  accountCookie?: IAccountCookie;
+  initialState?: State
+}
+
+export const AccountProvider = ({ initialState, accountCookie, children }: PropsWithChildren<AccountProviderProps>) => {
   return (
     <Web3Provider initialState={initialState}>
-      <AccountCookieManager />
+      <AccountCookieManager accountCookie={accountCookie} />
       {children}
     </Web3Provider>
   );
