@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 
-export const revalidate = false;
+export const dynamic = "force-static";
 
 const Page = () => {
 
@@ -16,6 +16,7 @@ const Page = () => {
     tjs.parentNode?.insertBefore(js, tjs);
   }, []);
 
+  // noinspection HtmlUnknownAttribute
   return (
     <>
       <div
