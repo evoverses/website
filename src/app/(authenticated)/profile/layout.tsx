@@ -1,11 +1,7 @@
 import { AccountNavigation } from "@/app/(authenticated)/profile/_components/navigation";
-
 import { AccountProvider } from "@/components/providers/account-provider";
 import { Separator } from "@/components/ui/separator";
-import { config } from "@/wagmi.config";
-import { headers } from "next/headers";
 import { PropsWithChildren } from "react";
-import { cookieToInitialState } from "wagmi";
 
 const navigation = [
   {
@@ -31,9 +27,8 @@ const navigation = [
 ];
 
 const Layout = ({ children }: PropsWithChildren) => {
-  const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
-    <AccountProvider initialState={initialState}>
+    <AccountProvider>
       <div className="flex flex-col flex-grow space-y-6 px-4 sm:px-10 pt-6">
         <div className="space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight border-b-0">Profile</h2>
