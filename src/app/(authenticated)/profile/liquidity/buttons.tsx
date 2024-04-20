@@ -362,7 +362,7 @@ const BankDepositButton = ({ max, value = "0.0", open, close }: BankDepositButto
             checked={approveUnlimited}
             onCheckedChange={() => setApproveUnlimited(!approveUnlimited)}
           />
-          <Label htmlFor="airplane-mode">Unlimited Approval</Label>
+          <Label htmlFor="unlimited-approval">Unlimited Approval</Label>
         </div>
         <ChainButton
           onClick={() => writeApprove({
