@@ -1,12 +1,14 @@
 import { LpTokenABI } from "@/assets/abi/lp-token";
 import { ChainButton } from "@/components/ui/chain-button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { parseViemDetailedError } from "@/lib/viem";
 import { Address } from "abitype";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { parseEther } from "viem";
+import { maxUint256, parseEther } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -274,13 +276,14 @@ interface BankDepositButtonProps {
   close: () => void,
 }
 
-const BankDepositButton = ({ max, value, open, close }: BankDepositButtonProps) => {
+const BankDepositButton = ({ max, value = "0.0", open, close }: BankDepositButtonProps) => {
   const router = useRouter();
-  const valueBigInt = parseEther(value || "0.0");
+  const valueBigInt = parseEther(value);
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
   const { address } = useAccount();
+  const [ approveUnlimited, setApproveUnlimited ] = useState(false);
 
-  const { data: allowance, refetch } = useReadContract({
+  const { data: allowance = 0n, refetch } = useReadContract({
     ...evoContract,
     functionName: "allowance",
     args: [ address || "0x0", xEvoContract.address ],
@@ -289,12 +292,12 @@ const BankDepositButton = ({ max, value, open, close }: BankDepositButtonProps) 
     },
   });
 
-  const isAllowed = BigInt(allowance || 0) >= parseEther("100000000");
+  const isAllowed = allowance >= valueBigInt;
 
   const { isSuccess: isApproveSimulateSuccess } = useSimulateContract({
     ...evoContract,
     functionName: "approve",
-    args: [ xEvoContract.address, parseEther("500000000") ],
+    args: [ xEvoContract.address, approveUnlimited ? maxUint256 : valueBigInt ],
     chainId: 43_114,
     query: {
       enabled: !isAllowed,
@@ -352,16 +355,26 @@ const BankDepositButton = ({ max, value, open, close }: BankDepositButtonProps) 
 
   if (!isAllowed) {
     return (
-      <ChainButton
-        onClick={() => writeApprove({
-          ...xEvoContract,
-          functionName: "approve",
-          args: [ xEvoContract.address, parseEther("500000000") ],
-          chainId: 43_114,
-        })}
-      >
-        Approve
-      </ChainButton>
+      <>
+        <div className="flex items-center gap-2 max-sm:mx-auto">
+          <Switch
+            id="unlimited-approval"
+            checked={approveUnlimited}
+            onCheckedChange={() => setApproveUnlimited(!approveUnlimited)}
+          />
+          <Label htmlFor="airplane-mode">Unlimited Approval</Label>
+        </div>
+        <ChainButton
+          onClick={() => writeApprove({
+            ...evoContract,
+            functionName: "approve",
+            args: [ xEvoContract.address, approveUnlimited ? maxUint256 : valueBigInt ],
+            chainId: 43_114,
+          })}
+        >
+          Approve
+        </ChainButton>
+      </>
     );
   }
   return (

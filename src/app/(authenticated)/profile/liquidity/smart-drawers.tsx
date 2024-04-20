@@ -263,7 +263,7 @@ const BankSmartDrawer = ({ action = "Deposit", json, disabled }: XEvoSheetProps)
             <Label> Balance: {formatEther(data.xEvoUserBalance)}</Label>
           </div>
         )}
-        <SmartDrawerFooter className="sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto">
+        <SmartDrawerFooter className="gap-4 sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto sm:space-x-0">
           {action === "Deposit" && (
             <BankDepositButton
               value={value}

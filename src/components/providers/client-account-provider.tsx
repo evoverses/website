@@ -39,11 +39,13 @@ type AccountProviderProps = {
   initialState?: State
 }
 
-export const ClientAccountProvider = ({
-                                        initialState,
-                                        accountCookie,
-                                        children,
-                                      }: PropsWithChildren<AccountProviderProps>) => {
+export const ClientAccountProvider = (
+  {
+    initialState,
+    accountCookie,
+    children,
+  }: PropsWithChildren<AccountProviderProps>,
+) => {
   return (
     <Web3Provider initialState={initialState}>
       <AccountCookieManager accountCookie={accountCookie} />

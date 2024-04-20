@@ -222,7 +222,6 @@ const BankCard = async () => {
 
 const FarmCard = async () => {
   const { address, loggedIn } = getAccountCookie();
-  console.log("Farm Card:", address, loggedIn);
   const pools = await getPoolData(address);
   const pool = pools[0];
 
