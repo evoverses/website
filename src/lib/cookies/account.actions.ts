@@ -1,21 +1,11 @@
 "use server";
 
 import { DefaultAccountCookie } from "@/data/constants";
+import { makeAccountCookie } from "@/lib/cookies/account.middleware";
 import { getAccountCookie } from "@/lib/cookies/account.server";
 import { IAccountCookie } from "@/types/cookies";
 import { Address } from "abitype";
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
-
-const makeAccountCookie = (accountCookie: IAccountCookie): ResponseCookie => {
-  return {
-    name: "ev-account",
-    value: btoa(JSON.stringify(accountCookie)),
-    httpOnly: true,
-    path: "/",
-    maxAge: 86_400,
-  };
-};
 
 /** Set the current address of the account in cookieStore
  *
