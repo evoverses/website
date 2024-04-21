@@ -23,10 +23,10 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
         return NextResponse.redirect(new URL("/signup", request.nextUrl.toString()));
       }
     } else {
-      if (!/^\/((signout).*)/i.test(request.nextUrl.pathname)
-        && new Date(request.auth.playFab.EntityToken.TokenExpiration)
-        < new Date()) {
-        return NextResponse.redirect(new URL("/signout", request.nextUrl.toString()));
+      if (new Date(request.auth.playFab.EntityToken.TokenExpiration) < new Date()) {
+        if (!/^\/((signout).*)/i.test(request.nextUrl.pathname)) {
+          return NextResponse.redirect(new URL("/signout", request.nextUrl.toString()));
+        }
       }
       if (/^\/((sign(up|in)).*)/i.test(request.nextUrl.pathname)) {
         return NextResponse.redirect(new URL("/profile", request.nextUrl.toString()));
