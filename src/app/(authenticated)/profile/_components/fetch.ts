@@ -188,19 +188,24 @@ export const getcEVOData = cache(async (address: Address = "0x000000000000000000
 });
 
 export const getEVOData = cache(async (address: Address = "0x0000000000000000000000000000000000000000") => {
-  const [ totalSupply, balance, locked ] = await client.multicall({
+  const [ totalSupply, balance, locked, burned, cap ] = await client.multicall({
     contracts: [
       { ...evoContract, functionName: "totalSupply" },
       { ...evoContract, functionName: "balanceOf", args: [ address ] },
       { ...evoContract, functionName: "balanceOf", args: [ cEvoContract.address ] },
+      { ...evoContract, functionName: "totalBurned" },
+      { ...evoContract, functionName: "cap" },
     ],
     allowFailure: false,
   });
 
   // const pair = await fetchPairDataOf(evoContract.address);
   return {
+    cap,
     totalSupply,
-    balance,
+    burned,
     locked,
+    circulating: totalSupply - burned - locked,
+    balance,
   };
 });

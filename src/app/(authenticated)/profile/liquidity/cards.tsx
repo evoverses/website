@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 
 import { getAccountCookie } from "@/lib/cookies/account.server";
+import { fetchPriceOf } from "@/lib/dexscreener";
 
 import { bigIntJsonReplacer } from "@/lib/node";
 import { cn } from "@/lib/utils";
@@ -46,7 +47,7 @@ const CardBase = ({ title, token, revoke, className, children }: PropsWithChildr
 
 const VestingCard = async () => {
   const { address } = getAccountCookie();
-  const [ data, evoData ] = await Promise.all([ getcEVOData(address), await getEVOData(address) ]);
+  const [ data, evoData ] = await Promise.all([ getcEVOData(address), getEVOData(address) ]);
 
   const totalDisbursement = Number(formatEther(data.disbursements.reduce((a, c) => a + c.amount, 0n)));
   return (
@@ -159,8 +160,9 @@ const BankCard = async () => {
         </TabsList>
         <TabsContent value="overview">
           <Table>
-            <TableCaption>xEVO is your bank holdings. The amount of EVO will increase proportional to the xEVO
-              multiplier.</TableCaption>
+            <TableCaption>
+              xEVO is your bank holdings. The amount of EVO will increase proportional to the xEVO multiplier.
+            </TableCaption>
             <TableBody>
               <TableRow>
                 <TableCell>Multiplier</TableCell>
@@ -375,8 +377,54 @@ const FarmCard = async () => {
   );
 };
 
-const EvoCard = () => {
-  return null;
+const EvoCard = async () => {
+  const { address } = getAccountCookie();
+  const [ data, price ] = await Promise.all([ getEVOData(address), fetchPriceOf(evoContract.address) ]);
+
+  return (
+    <CardBase
+      title="EVO"
+      token={{ address: evoContract.address, image: "https://evoverses.com/EVO.png", symbol: "EVO" }}
+      className="pb-4"
+    >
+      <Table className="w-[300px] sm:w-[400px]">
+        <TableBody>
+          <TableRow>
+            <TableCell>FDV</TableCell>
+            <TableCell>${Number(price * Number(formatEther(data.cap))).toLocaleString()} USD</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Market Cap</TableCell>
+            <TableCell>${Number(price * Number(formatEther(data.totalSupply))).toLocaleString()} USD</TableCell>
+          </TableRow>
+          <TableRow className="border-b-4 border-b-black dark:border-b-white">
+            <TableCell>Current Price</TableCell>
+            <TableCell>${price} USD</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Total Capacity</TableCell>
+            <TableCell>{Number(formatEther(data.cap)).toLocaleString()} EVO</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Total Supply</TableCell>
+            <TableCell>{Number(formatEther(data.totalSupply)).toLocaleString()} EVO</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Total Burned</TableCell>
+            <TableCell>{Number(formatEther(data.burned)).toLocaleString()} EVO</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Total Locked</TableCell>
+            <TableCell>{Number(formatEther(data.locked)).toLocaleString()} EVO</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Circulating Supply</TableCell>
+            <TableCell>{Number(formatEther(data.circulating)).toLocaleString()} EVO</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </CardBase>
+  );
 };
 EvoCard.displayName = "EvoCard";
 
