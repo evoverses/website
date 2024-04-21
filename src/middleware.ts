@@ -24,7 +24,7 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
       }
     } else {
       if (new Date(request.auth.playFab.EntityToken.TokenExpiration) < new Date()) {
-        return NextResponse.redirect(new URL("/api/auth/signout", request.nextUrl.toString()));
+        return NextResponse.redirect(new URL("/signout", request.nextUrl.toString()));
       }
       if (/^\/((sign(up|in)).*)/i.test(request.nextUrl.pathname)) {
         return NextResponse.redirect(new URL("/profile", request.nextUrl.toString()));
