@@ -12,7 +12,6 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
   pages: {
     signIn: "/signin",
     error: "/signin",
-    signOut: "/signout",
   },
   session: { strategy: "jwt" },
   callbacks: {
