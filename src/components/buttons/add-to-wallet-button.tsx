@@ -39,7 +39,7 @@ const AddToWalletButton = ({ address, symbol, decimals = 18, image, className }:
 
   return (
     <button onClick={onClick} className={className}>
-      <FaWallet className="w-4 h-4" />
+      <FaWallet className="w-6 h-6" />
     </button>
   );
 };

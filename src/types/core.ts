@@ -32,7 +32,7 @@ export interface Pool {
   token1DivBalance: number
   token0DivBalanceUSD: number
   token1DivBalanceUSD: number
-  token: string
+  token: Address;
   lastTime: bigint
   depFee: bigint
   withdrawFee: number

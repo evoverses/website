@@ -1,4 +1,4 @@
-import { BankCard, FarmCard, VestingCard } from "@/app/(authenticated)/profile/liquidity/cards";
+import { BankCard, EvoCard, FarmCard, VestingCard } from "@/app/(authenticated)/profile/liquidity/cards";
 
 import { Separator } from "@/components/ui/separator";
 
@@ -18,6 +18,7 @@ const LiquidityPage = async () => {
         <w3m-button size="sm" />
       </div>
       <div className="flex flex-wrap gap-4 items-stretch justify-center w-full pb-6">
+        <EvoCard />
         <FarmCard />
         <BankCard />
         <VestingCard />

@@ -3,36 +3,39 @@ import {
   BankSmartDrawer,
   ClaimCEvoButton,
   FarmSmartDrawer,
+  RevokeSmartDrawer,
 } from "@/app/(authenticated)/profile/liquidity/smart-drawers";
 import { AddToWalletButton } from "@/components/buttons/add-to-wallet-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cEvoContract, xEvoContract } from "@/data/contracts";
+import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 
 import { getAccountCookie } from "@/lib/cookies/account.server";
 
 import { bigIntJsonReplacer } from "@/lib/node";
 import { cn } from "@/lib/utils";
-import { Address } from "abitype";
 import Link from "next/link";
-import { ComponentProps, ReactNode } from "react";
+import { ComponentProps, type PropsWithChildren } from "react";
 import { formatEther } from "viem";
 
 type CardBaseProps = {
   title: string;
+  revoke?: ComponentProps<typeof RevokeSmartDrawer>;
   token?: ComponentProps<typeof AddToWalletButton>
   className?: string;
-  children?: ReactNode;
 };
 
-const CardBase = ({ title, token, className, children }: CardBaseProps) => {
+const CardBase = ({ title, token, revoke, className, children }: PropsWithChildren<CardBaseProps>) => {
   return (
     <Card>
       <CardHeader className="text-center relative">
-        {title}
-        {token && <AddToWalletButton {...token} className="absolute right-8 top-1/2 -translate-y-1/2" />}
+        <div className="text-center relative">
+          {revoke && <RevokeSmartDrawer {...revoke} className="absolute left-1" />}
+          {title}
+          {token && <AddToWalletButton {...token} className="absolute right-1" />}
+        </div>
       </CardHeader>
       <CardContent className={cn(className)}>
         {children}
@@ -75,9 +78,7 @@ const VestingCard = async () => {
                   <span>(LP Rewards)</span>
                 </TableCell>
                 <TableCell>
-                  {Math.floor((
-                    Date.now() / 1000 - 1681860918
-                  ) / 60 / 60 / 24)} / 365
+                  365 / 365
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -101,9 +102,7 @@ const VestingCard = async () => {
               <TableRow>
                 <TableCell>Days Elapsed</TableCell>
                 <TableCell>
-                  {Math.floor((
-                    Date.now() / 1000 - 1681860918
-                  ) / 60 / 60 / 24)} / 365
+                  365 / 365
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -148,6 +147,10 @@ const BankCard = async () => {
     <CardBase
       title="xEVO"
       token={{ address: xEvoContract.address, image: "https://evoverses.com/EVO.png", symbol: "xEVO" }}
+      revoke={{
+        token: { address: evoContract.address, symbol: "EVO" },
+        contract: { address: xEvoContract.address, name: "xEVO" },
+      }}
     >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">
@@ -228,7 +231,11 @@ const FarmCard = async () => {
   return (
     <CardBase
       title={pool.name}
-      token={{ address: pool.token as Address, symbol: `${pool.name}` }}
+      token={{ address: pool.token, symbol: pool.name }}
+      revoke={{
+        token: { address: pool.token, symbol: pool.name },
+        contract: { address: investorContract.address, name: "Investor" },
+      }}
     >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">
@@ -368,4 +375,9 @@ const FarmCard = async () => {
   );
 };
 
-export { BankCard, FarmCard, VestingCard };
+const EvoCard = () => {
+  return null;
+};
+EvoCard.displayName = "EvoCard";
+
+export { BankCard, FarmCard, VestingCard, EvoCard };

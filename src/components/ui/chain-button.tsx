@@ -2,9 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { ComponentProps } from "react";
+import { FaCheck, FaSpinner } from "react-icons/fa";
 import { useAccount, useSwitchChain } from "wagmi";
 
-const ChainButton = (props: ComponentProps<typeof Button>) => {
+type ChainButtonProps = ComponentProps<typeof Button> & { loading?: boolean, success?: boolean };
+const ChainButton = ({ loading, success, children, ...props }: ChainButtonProps) => {
   const { isConnected, chain } = useAccount();
   const { open } = useWeb3Modal();
 
@@ -17,7 +19,11 @@ const ChainButton = (props: ComponentProps<typeof Button>) => {
   }
 
   return (
-    <Button {...props} />
+    <Button {...props}>
+      {loading ? <FaSpinner className="animate-spin h-5 w-5 mr-2" /> : null}
+      {success && <FaCheck className="h-5 w-5 mr-2" />}
+      {children}
+    </Button>
   )
 }
 ChainButton.displayName = "ChainButton";

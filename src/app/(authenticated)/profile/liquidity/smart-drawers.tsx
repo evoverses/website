@@ -21,15 +21,25 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { cEvoContract } from "@/data/contracts";
+import { cEvoContract, evoContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
+import { cn } from "@/lib/utils";
 import { parseViemDetailedError } from "@/lib/viem";
 import { Pool } from "@/types/core";
+import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
+import { TbCloudCancel } from "react-icons/tb";
 import { toast } from "sonner";
-import { formatEther } from "viem";
-import { useAccount, useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { formatEther, maxUint256 } from "viem";
+import {
+  BaseError,
+  useAccount,
+  useReadContract,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 
 interface ClaimButtonProps {
   disabled?: boolean;
@@ -152,9 +162,6 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
             </SmartDrawerDescription>
           )}
         </SmartDrawerHeader>
-        {action === "Claim" && (
-          <div className="grid w-full max-w-sm items-center gap-1.5 py-2 mx-auto"></div>
-        )}
         {action === "Deposit" && (
           <div className="grid w-full max-w-sm items-center gap-1.5 py-4 mx-auto">
             <Label htmlFor="amount">
@@ -179,7 +186,7 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
             <Label> Balance: {formatEther(pool.balance)}</Label>
           </div>
         )}
-        <SmartDrawerFooter className="sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto">
+        <SmartDrawerFooter className="gap-4 sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto sm:space-x-0">
           {action === "Claim" && (
             <FarmClaimButton
               poolId={pool.pid}
@@ -286,4 +293,88 @@ const BankSmartDrawer = ({ action = "Deposit", json, disabled }: XEvoSheetProps)
   );
 };
 
-export { BankSmartDrawer, FarmSmartDrawer };
+type RevokeButtonProps = {
+  token: { address: Address, symbol: string };
+  contract: { address: Address, name: string };
+  className?: string;
+}
+
+const RevokeSmartDrawer = ({ token, contract, className }: RevokeButtonProps) => {
+  const { address } = useAccount();
+  const [ open, setOpen ] = useState<boolean>(false);
+  const onOpenChange = (open: boolean) => {
+    setOpen(open);
+
+  };
+
+  const { data = 0n } = useReadContract({
+    abi: evoContract.abi,
+    address: token.address,
+    functionName: "allowance",
+    args: [ address!, contract.address ],
+    chainId: 43_114,
+    query: {
+      enabled: !!address,
+    },
+  });
+
+  const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
+  const { isPending: isLoading, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+    chainId: 43_114,
+    confirmations: 1,
+  });
+
+  const isWaiting = !!hash && isLoading;
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+      toast.success("Revoked successfully!");
+      reset();
+    }
+    if (error) {
+      toast.error((
+        error as BaseError
+      ).shortMessage || error.message);
+      reset();
+    }
+  }, [ isSuccess, reset, error ]);
+
+  const currentAllowance = data === maxUint256 ? "unlimited" : Number(formatEther(data)).toLocaleString();
+
+  return (
+    <SmartDrawer onOpenChange={onOpenChange} open={open}>
+      <SmartDrawerTrigger className={cn({ hidden: data === 0n }, className)}>
+        <TbCloudCancel className="w-6 h-6" />
+      </SmartDrawerTrigger>
+      <SmartDrawerContent>
+        <SmartDrawerHeader className="sm:text-center">
+          <SmartDrawerTitle>Revoke Allowance</SmartDrawerTitle>
+        </SmartDrawerHeader>
+        <span className="px-4 text-center">
+          Revoking allowance will set your {token.symbol} allowance from {currentAllowance} to 0 for
+          the {contract.name} contract. Are you sure?
+        </span>
+        <SmartDrawerFooter className="gap-4 sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto sm:space-x-0">
+          <ChainButton
+            onClick={() => writeContract({
+              abi: evoContract.abi,
+              address: token.address,
+              functionName: "approve",
+              args: [ contract.address, 0n ],
+              chainId: 43_114,
+            })}
+            disabled={isPending || isWaiting || isSuccess}
+            className="font-bold"
+            success={isSuccess}
+            loading={isWaiting || isPending}
+          >
+            Revoke{isSuccess && "d"}
+          </ChainButton>
+        </SmartDrawerFooter>
+      </SmartDrawerContent>
+    </SmartDrawer>
+  );
+};
+export { BankSmartDrawer, FarmSmartDrawer, RevokeSmartDrawer };

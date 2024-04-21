@@ -9,7 +9,6 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
     const connection = wagmiState.connections.get(wagmiState.current);
     if (connection && connection.accounts.length > 0) {
       const address = connection.accounts[0];
-      console.log(address);
       const accountCookie = getMiddlewareAccountCookie(request.cookies);
       if (address !== accountCookie.address) {
         const response = NextResponse.next();
