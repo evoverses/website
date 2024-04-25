@@ -124,7 +124,7 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
   return (
     <SmartDrawer onOpenChange={onOpenChange} open={open}>
       <SmartDrawerTrigger asChild>
-        <ChainButton className="w-full font-bold" disabled={disabled}>{action}</ChainButton>
+        <ChainButton className="w-full font-bold">{action}</ChainButton>
       </SmartDrawerTrigger>
       <SmartDrawerContent>
         <SmartDrawerHeader className="sm:text-center">
@@ -190,9 +190,9 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
           {action === "Claim" && (
             <FarmClaimButton
               poolId={pool.pid}
-              enabled={pool.earned > 0}
               open={action === "Claim" && open}
               close={() => setOpen(false)}
+              disabled={pool.earned === 0n || disabled}
             />
           )}
           {action === "Deposit" && (
@@ -203,6 +203,7 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
               lpToken={pool.token}
               open={action === "Deposit" && open}
               close={() => setOpen(false)}
+              disabled={disabled}
             />
           )}
           {action === "Withdraw" && (
@@ -212,6 +213,7 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
               max={pool.balance}
               open={action === "Withdraw" && open}
               close={() => setOpen(false)}
+              disabled={disabled}
             />
           )}
         </SmartDrawerFooter>

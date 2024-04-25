@@ -1,4 +1,5 @@
 import { BankCard, EvoCard, FarmCard, VestingCard } from "@/app/(authenticated)/profile/liquidity/cards";
+import { WalletButton } from "@/components/buttons/wallet-button";
 
 import { Separator } from "@/components/ui/separator";
 
@@ -14,8 +15,8 @@ const LiquidityPage = async () => {
         </p>
       </div>
       <Separator />
-      <div className="mx-auto" suppressHydrationWarning>
-        <w3m-button size="sm" />
+      <div className="flex flex-col items-center">
+        <WalletButton className="w-fit" />
       </div>
       <div className="flex flex-wrap gap-4 items-stretch justify-center w-full pb-6">
         <EvoCard />

@@ -134,7 +134,7 @@ const VestingCard = async () => {
 };
 
 const BankCard = async () => {
-  const { address, loggedIn } = getAccountCookie();
+  const { address } = getAccountCookie();
   const data = await getxEVOData(address);
   const currentSharesRaw = data.xEvoUserBalance > 0
     ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100
@@ -211,12 +211,12 @@ const BankCard = async () => {
             <BankSmartDrawer
               action="Deposit"
               json={JSON.stringify(data, bigIntJsonReplacer)}
-              disabled={!loggedIn || Number(data.evoUserBalance) === 0}
+              disabled={Number(data.evoUserBalance) === 0}
             />
             <BankSmartDrawer
               action="Withdraw"
               json={JSON.stringify(data, bigIntJsonReplacer)}
-              disabled={!loggedIn || Number(data.xEvoUserBalance) === 0}
+              disabled={Number(data.xEvoUserBalance) === 0}
             />
           </div>
         </TabsContent>
@@ -226,7 +226,7 @@ const BankCard = async () => {
 };
 
 const FarmCard = async () => {
-  const { address, loggedIn } = getAccountCookie();
+  const { address } = getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
 
@@ -358,17 +358,17 @@ const FarmCard = async () => {
             <FarmSmartDrawer
               action="Claim"
               poolJson={JSON.stringify(pool, bigIntJsonReplacer)}
-              disabled={!loggedIn || Number(pool.earned) === 0}
+              disabled={Number(pool.earned) === 0}
             />
             <FarmSmartDrawer
               action="Deposit"
               poolJson={JSON.stringify(pool, bigIntJsonReplacer)}
-              disabled={!loggedIn || Number(pool.remainBalance) === 0}
+              disabled={Number(pool.remainBalance) === 0}
             />
             <FarmSmartDrawer
               action="Withdraw"
               poolJson={JSON.stringify(pool, bigIntJsonReplacer)}
-              disabled={!loggedIn || Number(pool.balance) === 0}
+              disabled={Number(pool.balance) === 0}
             />
           </div>
         </TabsContent>

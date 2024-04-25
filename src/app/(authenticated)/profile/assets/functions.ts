@@ -12,8 +12,8 @@ export const getWallet = async () => {
     wallet = data.CustomIdInfo?.CustomId as Address || "" as Address;
   }
   if (!wallet) {
-    const { address, loggedIn } = getAccountCookie();
-    if (loggedIn) {
+    const { address, connected } = getAccountCookie();
+    if (connected) {
       wallet = address;
     }
   }

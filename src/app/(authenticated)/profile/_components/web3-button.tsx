@@ -72,6 +72,7 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
         signature: signature,
       });
       if (!valid) {
+        // noinspection ExceptionCaughtLocallyJS
         throw new Error("Invalid signature");
       }
       const newReadOnlyData = {
@@ -96,7 +97,7 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
       onClick={onClick}
       disabled={!readOnlyData.wallets.managed || isConnected}
     >
-      {accountCookie.loggedIn
+      {accountCookie.connected
         ? readOnlyData.wallets.managed
           ? isConnected
             ? "Linked"

@@ -1,8 +1,8 @@
 "use server";
 
-import { DefaultAccountCookie } from "@/data/constants";
 import { makeAccountCookie } from "@/lib/cookies/account.middleware";
 import { getAccountCookie } from "@/lib/cookies/account.server";
+import { getAddressSafe } from "@/lib/viem";
 import { IAccountCookie } from "@/types/cookies";
 import { Address } from "abitype";
 import { cookies } from "next/headers";
@@ -14,18 +14,21 @@ import { cookies } from "next/headers";
  * @returns {Promise<void>} - void
  */
 export const setAccountCookieAddressAction = async (address: Address): Promise<void> => {
-  cookies().set(makeAccountCookie({
-    ...getAccountCookie(),
-    address,
-    loggedIn: address !== DefaultAccountCookie.address,
-  }));
+  if (getAddressSafe(address) && getAccountCookie().address !== address) {
+    cookies().set(makeAccountCookie({
+      ...getAccountCookie(),
+      address,
+    }));
+  }
 };
 
 export const setAccountCookieSessionTicketAction = async (sessionTicket: string): Promise<void> => {
-  cookies().set(makeAccountCookie({
-    ...getAccountCookie(),
-    sessionTicket,
-  }));
+  if (sessionTicket !== getAccountCookie().sessionTicket) {
+    cookies().set(makeAccountCookie({
+      ...getAccountCookie(),
+      sessionTicket,
+    }));
+  }
 };
 
 /** Get the account cookie via a server action

@@ -14,12 +14,12 @@ import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteCont
 
 interface FarmClaimButtonProps {
   poolId: bigint,
-  enabled?: boolean,
+  disabled?: boolean,
   open?: boolean,
   close: () => void,
 }
 
-const FarmClaimButton = ({ poolId, open, close }: FarmClaimButtonProps) => {
+const FarmClaimButton = ({ poolId, open, close, disabled }: FarmClaimButtonProps) => {
   const router = useRouter();
 
   const { data: hash, error, isError, writeContract, isPending, reset } = useWriteContract();
@@ -49,6 +49,7 @@ const FarmClaimButton = ({ poolId, open, close }: FarmClaimButtonProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, isSuccess, reset ]);
 
+  // noinspection OverlyComplexBooleanExpressionJS
   return (
     <ChainButton
       onClick={() => writeContract({
@@ -57,7 +58,7 @@ const FarmClaimButton = ({ poolId, open, close }: FarmClaimButtonProps) => {
         args: [ poolId ],
         chainId: 43_114,
       })}
-      disabled={isPending || isWaiting || isSuccess}
+      disabled={isPending || isWaiting || isSuccess || disabled}
       loading={isPending || isWaiting}
       success={isSuccess}
     >
@@ -73,9 +74,10 @@ interface DepositButtonProps {
   lpToken: string,
   open?: boolean,
   close: () => void,
+  disabled?: boolean
 }
 
-const FarmDepositButton = ({ poolId, max, value, lpToken, open, close }: DepositButtonProps) => {
+const FarmDepositButton = ({ poolId, max, value, lpToken, open, close, disabled }: DepositButtonProps) => {
   const router = useRouter();
   const { address = DeadBeef } = useAccount();
   const valueBigInt = parseEther(value || "0.0");
@@ -132,6 +134,7 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, open, close }: Deposit
   }, [ open, isError, error, isSuccess, isAllowed, reset, refetch, max ]);
 
   if (!isAllowed) {
+    // noinspection OverlyComplexBooleanExpressionJS
     return (
       <>
         <div className="flex items-center gap-2 max-sm:mx-auto">
@@ -150,7 +153,7 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, open, close }: Deposit
             args: [ investorContract.address, approveUnlimited ? maxUint256 : valueBigInt ],
             chainId: 43_114,
           })}
-          disabled={isPending || isWaiting || approveUnlimited ? false : !validAmount}
+          disabled={disabled || isPending || isWaiting || approveUnlimited ? false : !validAmount}
           loading={isPending || isWaiting}
           success={isSuccess}
         >
@@ -183,9 +186,10 @@ interface FarmWithdrawButtonProps {
   value: string,
   open?: boolean,
   close: () => void,
+  disabled?: boolean
 }
 
-const FarmWithdrawButton = ({ poolId, max, value, open, close }: FarmWithdrawButtonProps) => {
+const FarmWithdrawButton = ({ poolId, max, value, open, close, disabled }: FarmWithdrawButtonProps) => {
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
@@ -216,6 +220,7 @@ const FarmWithdrawButton = ({ poolId, max, value, open, close }: FarmWithdrawBut
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ open, isError, error, isSuccess, reset ]);
 
+  // noinspection OverlyComplexBooleanExpressionJS
   return (
     <ChainButton
       onClick={() => writeContract({
@@ -224,7 +229,7 @@ const FarmWithdrawButton = ({ poolId, max, value, open, close }: FarmWithdrawBut
         args: [ poolId, valueBigInt ],
         chainId: 43_114,
       })}
-      disabled={!validAmount || isPending || isWaiting}
+      disabled={!validAmount || isPending || isWaiting || disabled}
       loading={isPending || isWaiting}
       success={isSuccess}
     >

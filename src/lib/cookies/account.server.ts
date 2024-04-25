@@ -1,5 +1,5 @@
 import "server-only";
-import { DefaultAccountCookie } from "@/data/constants";
+import { DeadBeef } from "@/data/constants";
 import { getAddressSafe } from "@/lib/viem";
 import { IAccountCookie } from "@/types/cookies";
 import { cookies } from "next/headers";
@@ -11,13 +11,18 @@ import { cookies } from "next/headers";
  */
 export const getAccountCookie = (): IAccountCookie => {
   const accountCookie = cookies().get("ev-account");
+  // noinspection DuplicatedCode
   if (accountCookie) {
     const cookie = JSON.parse(atob(accountCookie.value));
-    if (process.env.IMPERSONATE === "true" && getAddressSafe(process.env.IMPERSONATE_ADDRESS) && cookie.loggedIn) {
+    if (process.env.IMPERSONATE === "true" && getAddressSafe(process.env.IMPERSONATE_ADDRESS)) {
       cookie.address = process.env.IMPERSONATE_ADDRESS;
     }
-    return { ...DefaultAccountCookie, ...cookie };
+    const merged = { address: DeadBeef, sessionTicket: "", ...cookie };
+    if (!getAddressSafe(merged.address)) {
+      merged.address = DeadBeef;
+    }
+    return { ...merged, loggedIn: merged.sessionTicket?.length > 0, connected: merged.address !== DeadBeef };
   }
 
-  return DefaultAccountCookie;
+  return { address: DeadBeef, sessionTicket: "", loggedIn: false, connected: false };
 };

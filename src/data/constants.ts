@@ -1,11 +1,10 @@
-import { IAccountCookie } from "@/types/cookies";
+import { type IStoredAccountCookie } from "@/types/cookies";
 import { Address } from "abitype";
 
 export const DeadBeef: Address = "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF";
 
-export const DefaultAccountCookie: IAccountCookie = {
+export const DefaultAccountCookie: IStoredAccountCookie = {
   address: DeadBeef,
-  loggedIn: false,
   sessionTicket: "",
 };
 
