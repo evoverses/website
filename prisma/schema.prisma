@@ -13,46 +13,125 @@ datasource db {
 model Evo {
   id            Int          @id @default(autoincrement())
   tokenId       BigInt       @unique
-  gender        Gender
+  gender        Gender       @default(Unknown)
   generation    Int
-  nature        Nature
-  rarity        Rarity
-  species       Species
+  nature        Nature       @default(Unknown)
+  rarity        Rarity       @default(Unknown)
+  chroma        Chroma?
+  species       Species      @default(Unknown)
   types         SpeciesTypes @relation(fields: [species], references: [species])
-  totalBreeds   Int
+  totalBreeds   Int          @default(0)
+  children      Egg[]
   lastBreedTime DateTime?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  attack        Int
-  special       Int
-  defense       Int
-  resistance    Int
-  speed         Int
-  size          Int
+  attack        Int          @default(0)
+  special       Int          @default(0)
+  defense       Int          @default(0)
+  resistance    Int          @default(0)
+  speed         Int          @default(0)
+  size          Float        @default(0)
   xp            Int          @default(0)
+
+  @@map("evos")
 }
 
 model Egg {
-  id         Int      @id @default(autoincrement())
-  tokenId    BigInt   @unique
-  species    Species
+  id         Int          @id @default(autoincrement())
+  tokenId    BigInt       @unique
+  species    Species      @default(Unknown)
+  types      SpeciesTypes @relation(fields: [species], references: [species])
   generation Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  parent1Id  BigInt?
-  parent2Id  BigInt?
-  treated    Boolean  @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  hatchedAt  DateTime?
+  treated    Boolean      @default(false)
+  parents    Evo[]
+
+  @@map("eggs")
 }
 
 model SpeciesTypes {
-  id        Int     @id @default(autoincrement())
-  species   Species @unique
-  primary   Type
-  secondary Type
+  id        Int      @id @default(autoincrement())
+  species   Species  @unique
+  primary   Element
+  secondary Element?
   evos      Evo[]
+  eggs      Egg[]
+
+  @@map("species_types")
 }
 
-enum Type {
+model Collection {
+  id            Int      @id @default(autoincrement())
+  address       String   @unique @db.Char(42)
+  name          String
+  description   String
+  image         String   @default("")
+  bannerImage   String   @default("")
+  externalLink  String   @default("")
+  collaborators String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("collections")
+}
+
+model Trainer {
+  id          Int                @id @default(autoincrement())
+  tokenId     BigInt             @unique
+  name        String
+  gender      Gender             @default(Unknown)
+  rarity      Rarity             @default(Unknown)
+  attuned     Element            @default(None)
+  expert      Nature             @default(Unknown)
+  specialty   Species            @default(Unknown)
+  hairStyle   TrainerHairStyle   @default(Unknown)
+  hairColor   TrainerAccentColor @default(Unknown)
+  eyeColor    TrainerAccentColor @default(Unknown)
+  top         TrainerTop         @default(Unknown)
+  topColor    TrainerAccentColor @default(Unknown)
+  bottom      TrainerBottom      @default(Unknown)
+  bottomColor TrainerAccentColor @default(Unknown)
+  bonuses     BonusesOnTrainer[]
+
+  @@map("trainers")
+}
+
+model TrainerBonus {
+  id       Int                @id @default(autoincrement())
+  bonus    Bonus
+  discount Float              @default(0.0)
+  species  Species?
+  nature   Nature?
+  element  Element?
+  trainers BonusesOnTrainer[]
+
+  @@unique([bonus, discount, species, nature, element], map: "trainer_bonus_unique")
+  @@map("trainer_bonuses")
+}
+
+model BonusesOnTrainer {
+  bonusId   Int
+  trainerId Int
+  bonus     TrainerBonus @relation(fields: [bonusId], references: [id])
+  trainer   Trainer      @relation(fields: [trainerId], references: [id])
+
+  @@unique([bonusId, trainerId], map: "bonus_id_trainer_id_unique")
+  @@map("bonus_on_trainer")
+}
+
+enum Bonus {
+  None
+  BreederDiscount
+  VendorDiscount
+  LastChance
+  SpeciesSpecialist
+  NatureExpert
+  ElementAttuned
+}
+
+enum Element {
   None
   Water
   Fire
@@ -68,10 +147,20 @@ enum Type {
   Monster
 }
 
-enum Rarity {
-  Normal
+enum Chroma {
+  None
   Chroma
+  Super
+}
+
+enum Rarity {
+  Unknown
+  Common
+  Uncommon
+  Rare
   Epic
+  Legendary
+  Unique
 }
 
 enum Species {
@@ -185,10 +274,10 @@ enum Species {
   Rhinurak
   Trizorak
   Kaos
-  Bird01
-  Bird02
-  Fish1geo
-  Fish2geo
+  Hidden1
+  Hidden2
+  Hidden3
+  Hidden4
   Cephlare
   Cephalopot
   Krakenoa
@@ -203,17 +292,24 @@ enum Species {
   Sauderon
   Ayacinth
   Zhytrous
-  CuerpoHeraldo
+  Khadmon
   Pikrel
   Puffel
+  Bird01
+  Bird02
+  Fish1geo
+  Fish2geo
+  CuerpoHeraldo
 }
 
 enum Gender {
+  Unknown
   Male
   Female
 }
 
 enum Nature {
+  Unknown
   Dauntless
   Executive
   Restless
@@ -235,4 +331,48 @@ enum Nature {
   Curious
   Discrete
   Loyal
+}
+
+enum TrainerAccentColor {
+  Unknown
+  Blue
+  Green
+  Pink
+  Red
+  Yellow
+}
+
+enum TrainerSkinTone {
+  Unknown
+  Chocolate
+  Coffee
+  Desert
+  Mediterranean
+  Pale
+  Pasty
+  SunBurnt
+}
+
+enum TrainerHairStyle {
+  Unknown
+  Emo
+  Ahoge
+  MediumPixiBangs
+  LongWithBangs
+}
+
+enum TrainerTop {
+  Unknown
+  ShirtWithTankTop
+  MaleTankTop
+  FemaleTankTop
+  SleevelessTurtleneck
+}
+
+enum TrainerBottom {
+  Unknown
+  CargoShorts
+  DressPants
+  SkirtWithStockings
+  RunningShorts
 }

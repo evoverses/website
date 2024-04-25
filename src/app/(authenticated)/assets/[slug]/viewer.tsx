@@ -15,8 +15,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { BASE_URL } from "@/data/constants";
 import { evoNftContract } from "@/data/contracts";
-import { getCollectionItems } from "@/lib/evoverses/metadata";
+// import { getCollectionItems } from "@/lib/evoverses/metadata";
 import { getShimmer } from "@/lib/evoverses/svgs";
+import { getCollectionItemsLocal } from "@/lib/prisma/server";
 import { cn } from "@/lib/utils";
 import { Slug } from "@/types/core";
 import type { Address } from "abitype";
@@ -56,7 +57,7 @@ interface ViewerProps {
 }
 
 export const Viewer = async ({ slug, limit, offset, sort, order, owner }: ViewerProps) => {
-  const data = await getCollectionItems(slug, limit, offset, owner);
+  const data = await getCollectionItemsLocal(slug, owner, limit, offset);
   const totalPages = Math.ceil(data.total / limit);
   const currentPage = Math.ceil(offset / limit) + 1;
 

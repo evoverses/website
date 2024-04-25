@@ -46,7 +46,6 @@ export const getCollectionItems = cache(async <TCollectionType = RawEvo>(
   if (owner) {
     url.searchParams.set("owner", owner);
   }
-  console.log(url.toString());
   const resp = await fetch(url, { next: { revalidate: 600 } });
   if (!resp.ok) {
     throw new Error(`Failed to get Evo collection items: ${resp.statusText}`);
