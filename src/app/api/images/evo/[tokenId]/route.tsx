@@ -58,7 +58,7 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
         req.url,
         "Error:",
         resp.status,
-        resp.text(),
+        await resp.text(),
       );
       return new Response(`Failed to generate the image: Failed to fetch metadata for tokenId ${tokenId}`, {
         status: 500,
