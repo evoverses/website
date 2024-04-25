@@ -41,7 +41,7 @@ export const getOwnedNftIds = cache(async (contract: Address, wallet: Address) =
   while (nextPageToken !== undefined) {
     const resp = await listErc721(contract, wallet, nextPageToken);
     nextPageToken = resp.nextPageToken;
-    nfts.push(...resp.erc721TokenBalances);
+    nfts.push(...resp.erc721TokenBalances.filter(t => t.tokenId.length < 10));
   }
   return nfts.map(nft => Number(nft.tokenId));
 });
