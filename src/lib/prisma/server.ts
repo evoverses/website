@@ -19,29 +19,41 @@ export const getCollectionItemsLocal = cache(async (
   let body;
   switch (collection.toLowerCase()) {
     case "evo":
-      return {
-        items: await prisma.evo.findMany({
-          skip: offset,
-          take: limit,
-          where,
-        }),
-        total: await prisma.evo.count(owner ? { where } : undefined),
-      };
+      try {
+        return {
+          items: await prisma.evo.findMany({
+            skip: offset,
+            take: limit,
+            where,
+          }),
+          total: await prisma.evo.count(owner ? { where } : undefined),
+        };
+      } catch (e: any) {
+        console.error(JSON.stringify(e));
+        return { items: [], total: 0 };
+      }
+
     case "egg":
-      return {
-        items: await prisma.egg.findMany({
-          skip: offset,
-          take: limit,
-          where: { ...where, hatchedAt: null },
-        }),
-        total: await prisma.egg.count({
-          where: {
-            hatchedAt: null, ...(
-              owner ? where : {}
-            ),
-          },
-        }),
-      };
+      try {
+        return {
+          items: await prisma.egg.findMany({
+            skip: offset,
+            take: limit,
+            where: { ...where, hatchedAt: null },
+          }),
+          total: await prisma.egg.count({
+            where: {
+              hatchedAt: null, ...(
+                owner ? where : {}
+              ),
+            },
+          }),
+        };
+      } catch (e: any) {
+        console.error(JSON.stringify(e));
+        return { items: [], total: 0 };
+      }
+
     default:
       throw new Error("Invalid collection");
   }
