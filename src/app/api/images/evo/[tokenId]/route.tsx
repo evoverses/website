@@ -44,6 +44,9 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
   try {
     const tokenId = params.tokenId.replace(/[^0-9]/g, "");
     const resp = await fetch(`${baseApiUrl}/metadata/evo/${tokenId}?raw=true`, {
+      headers: {
+        "x-api-key": process.env.EVOVERSES_API_KEY!,
+      },
       next: {
         tags: [ "evo", tokenId ],
         revalidate: 43_200,
