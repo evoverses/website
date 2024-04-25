@@ -64,6 +64,9 @@ type CollectionResponseBase = {
   total: number
 }
 
+export type CollectionResponse<TCollectionType = RawEvo> = CollectionResponseBase & {
+  items: TCollectionType[]
+}
 export type EvoCollectionResponse = CollectionResponseBase & {
   items: RawEvo[]
 }

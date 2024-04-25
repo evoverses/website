@@ -1,4 +1,4 @@
-import { ERC20TokenBalance, ListERC20BalancesResponse } from "@/lib/glacier/types";
+import { ERC20TokenBalance, ListERC20BalancesResponse, type ListERC721BalancesResponse } from "@/lib/glacier/types";
 import { Address } from "abitype";
 import { cache } from "react";
 
@@ -34,3 +34,36 @@ export const getERC20Balance = cache(async (contractAddress: Address, wallet: Ad
   const data = await resp.json() as ListERC20BalancesResponse;
   return data.erc20TokenBalances[0];
 });
+
+export const getOwnedNftIds = cache(async (contract: Address, wallet: Address) => {
+  let nextPageToken: string | undefined = "";
+  const nfts = [];
+  while (nextPageToken !== undefined) {
+    const resp = await listErc721(contract, wallet, nextPageToken);
+    nextPageToken = resp.nextPageToken;
+    nfts.push(...resp.erc721TokenBalances);
+  }
+  return nfts.map(nft => Number(nft.tokenId));
+});
+const listErc721 = async (
+  contract: Address,
+  wallet: Address,
+  pageToken: string | undefined = undefined,
+): Promise<ListERC721BalancesResponse> => {
+  const url = new URL(`addresses/${wallet}/balances:listErc721`, BASE_AVAX_URL);
+  url.searchParams.set("pageSize", "100");
+  url.searchParams.set("contractAddresses", contract);
+  if (pageToken) {
+    url.searchParams.set("pageToken", pageToken);
+  }
+  const resp = await fetch(url);
+
+  if (!resp.ok) {
+    console.error("Error fetching ERC721 balance", resp.status, await resp.text());
+    return {
+      erc721TokenBalances: [],
+      nextPageToken: undefined,
+    };
+  }
+  return resp.json();
+};

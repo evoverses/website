@@ -5,11 +5,13 @@ import { getAccountInfo } from "@/lib/playfab/client";
 import { Address } from "abitype";
 
 export const getWallet = async () => {
-  let wallet = "";
+  let wallet: Address | undefined;
   const session: any = await auth();
   if (session) {
     const data = await getAccountInfo(session.playFab.PlayFabId, session.playFab.SessionTicket);
-    wallet = data.CustomIdInfo?.CustomId as Address || "" as Address;
+    if (data.CustomIdInfo?.CustomId) {
+      wallet = data.CustomIdInfo.CustomId as Address;
+    }
   }
   if (!wallet) {
     const { address, connected } = getAccountCookie();
@@ -17,5 +19,5 @@ export const getWallet = async () => {
       wallet = address;
     }
   }
-  return wallet as Address;
+  return wallet;
 };

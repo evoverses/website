@@ -1,4 +1,5 @@
 import { LimitSelect } from "@/app/(authenticated)/assets/[slug]/limit-select";
+import { SortOption, SortOrder } from "@/app/(authenticated)/profile/assets/viewer-components";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
@@ -13,9 +14,12 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BASE_URL } from "@/data/constants";
+import { evoNftContract } from "@/data/contracts";
 import { getCollectionItems } from "@/lib/evoverses/metadata";
 import { getShimmer } from "@/lib/evoverses/svgs";
+import { cn } from "@/lib/utils";
 import { Slug } from "@/types/core";
+import type { Address } from "abitype";
 import Image from "next/image";
 import Link from "next/link";
 import { SiOpensea } from "react-icons/si";
@@ -43,20 +47,42 @@ export const ViewerLoading = () => {
 };
 
 interface ViewerProps {
-  slug: Slug,
-  limit: number,
-  offset: number
+  slug: Slug;
+  limit: number;
+  offset: number;
+  sort?: SortOption;
+  order?: SortOrder;
+  owner?: Address;
 }
 
-export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
-  const data = await getCollectionItems(slug, limit, offset);
+export const Viewer = async ({ slug, limit, offset, sort, order, owner }: ViewerProps) => {
+  const data = await getCollectionItems(slug, limit, offset, owner);
   const totalPages = Math.ceil(data.total / limit);
   const currentPage = Math.ceil(offset / limit) + 1;
+
+  //if (sort === "id") {
+  //  order === "asc"
+  //    ? nfts.sort((a, b) => Number(a.tokenId) - Number(b.tokenId))
+  //    : nfts.sort((a, b) => Number(b.tokenId) - Number(a.tokenId));
+  //} else if (sort === "species") {
+  //  order === "asc"
+  //    ? nfts.sort((a, b) => a.species.localeCompare(b.species))
+  //    : nfts.sort((a, b) => b.species.localeCompare(a.species));
+  //} else if (sort === "rarity") {
+//
+  //} else if (sort === "level") {
+//
+  //} else if (sort === "gender") {
+//
+  //} else if (sort === "stats") {
+//
+  //}
+
   return (
     <div className="flex flex-col">
       <div className="flex max-h-fit space-x-2 justify-end pb-4">
         <div>
-          <Pagination>
+          <Pagination className={cn({ hidden: totalPages === 0 })}>
             <PaginationContent>
               <PaginationPrevious disabled={offset === 0} href={{ query: { limit: limit, offset: offset - limit } }} />
               {currentPage > 2 && (
@@ -83,7 +109,7 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
                     {page}
                   </PaginationLink>
                 ))}
-              {currentPage < totalPages - 1 && (
+              {totalPages > 5 && currentPage < totalPages - 1 && (
                 <>
                   <PaginationItem>
                     <PaginationEllipsis />
@@ -121,38 +147,50 @@ export const Viewer = async ({ slug, limit, offset }: ViewerProps) => {
               <CardContent className="flex-grow">
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
-                <div className="flex w-full font-bold justify-between">
-                  <Link
-                    href={`https://joepegs.com/item/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
-                    prefetch={false}
-                    referrerPolicy="no-referrer"
-                    target="_blank"
-                  >
-                    <Button className="px-2 bg-[#8473fe] hover:bg-[#423980]">
-                      <Icons.joePegs className="w-6 h-6" />
-                    </Button>
-                  </Link>
-                  <Link
-                    href={`https://avax.hyperspace.xyz/collection/avax/evoverses?tokenAddress=0x4151b8afa10653d304fdac9a781afccd45ec164c_${nft.tokenId.toString()}`}
-                    prefetch={false}
-                    referrerPolicy="no-referrer"
-                    target="_blank"
-                  >
-                    <Button className="px-2 text-white bg-slate-700 hover:bg-slate-800 ">
-                      <Icons.hyperspace className="w-6 h-6" />
-                    </Button>
-                  </Link>
-                  <Link
-                    href={`https://opensea.io/assets/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
-                    prefetch={false}
-                    referrerPolicy="no-referrer"
-                    target="_blank"
-                  >
-                    <Button className="px-2 bg-blue-600 hover:bg-blue-700">
-                      <SiOpensea className="w-6 h-6" />
-                    </Button>
-                  </Link>
-                </div>
+                {owner ? (
+                  <Button className="w-full font-bold" asChild>
+                    <Link
+                      href={`https://opensea.io/assets/avalanche/${evoNftContract.address}/${nft.tokenId}`}
+                      target="_blank"
+                    >
+                      <SiOpensea className="w-5 h-5 mr-2" />
+                      <span>Sell</span>
+                    </Link>
+                  </Button>
+                ) : (
+                  <div className="flex w-full font-bold justify-between">
+                    <Link
+                      href={`https://joepegs.com/item/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
+                      prefetch={false}
+                      referrerPolicy="no-referrer"
+                      target="_blank"
+                    >
+                      <Button className="px-2 bg-[#8473fe] hover:bg-[#423980]">
+                        <Icons.joePegs className="w-6 h-6" />
+                      </Button>
+                    </Link>
+                    <Link
+                      href={`https://avax.hyperspace.xyz/collection/avax/evoverses?tokenAddress=0x4151b8afa10653d304fdac9a781afccd45ec164c_${nft.tokenId.toString()}`}
+                      prefetch={false}
+                      referrerPolicy="no-referrer"
+                      target="_blank"
+                    >
+                      <Button className="px-2 text-white bg-slate-700 hover:bg-slate-800 ">
+                        <Icons.hyperspace className="w-6 h-6" />
+                      </Button>
+                    </Link>
+                    <Link
+                      href={`https://opensea.io/assets/avalanche/0x4151b8afa10653d304fdac9a781afccd45ec164c/${nft.tokenId.toString()}`}
+                      prefetch={false}
+                      referrerPolicy="no-referrer"
+                      target="_blank"
+                    >
+                      <Button className="px-2 bg-blue-600 hover:bg-blue-700">
+                        <SiOpensea className="w-6 h-6" />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
                 <Link
                   href={`/assets/${slug}/${nft.tokenId.toString()}`}
                   prefetch={false}

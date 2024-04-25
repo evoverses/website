@@ -1,11 +1,6 @@
-import {
-  CollectionMetadata,
-  EvoCollectionResponse,
-  EvoEggCollectionResponse,
-  RawEvo,
-  RawEvoEgg,
-} from "@/lib/evoverses/types";
+import { CollectionMetadata, type CollectionResponse, RawEvo, RawEvoEgg } from "@/lib/evoverses/types";
 import { Slug } from "@/types/core";
+import type { Address } from "abitype";
 import { cache } from "react";
 
 const baseUrl = new URL("https://api.evoverses.com/metadata/");
@@ -35,10 +30,11 @@ export const getCollectionMetadata = cache(async (slug: Slug): Promise<Collectio
   return await resp.json();
 });
 
-export const getCollectionItems = cache(async (
+export const getCollectionItems = cache(async <TCollectionType = RawEvo>(
   slug: Slug = "evo",
   limit: number = 50,
   offset: number = 0,
+  owner: Address | undefined = undefined,
 ) => {
   const url = new URL(slug, baseUrl);
   if (limit !== 50) {
@@ -47,12 +43,16 @@ export const getCollectionItems = cache(async (
   if (offset !== 0) {
     url.searchParams.set("offset", offset.toString());
   }
+  if (owner) {
+    url.searchParams.set("owner", owner);
+  }
+  console.log(url.toString());
   const resp = await fetch(url, { next: { revalidate: 600 } });
   if (!resp.ok) {
     throw new Error(`Failed to get Evo collection items: ${resp.statusText}`);
   }
   const json = await resp.json();
-  return slug === "evo" ? json as EvoCollectionResponse : json as EvoEggCollectionResponse;
+  return json as CollectionResponse<TCollectionType>;
 });
 
 export const getCollectionItem = cache(async (collection: "evo" | "egg" = "evo", tokenId: string) => {

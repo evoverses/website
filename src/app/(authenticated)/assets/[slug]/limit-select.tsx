@@ -12,7 +12,7 @@ export const LimitSelect = ({ limit = 50 }: { limit: number }) => {
     router.push(`${path}?${newParams.toString()}`);
   };
   return (
-    <Select onValueChange={onValueChange}>
+    <Select defaultValue={limit.toString()} onValueChange={onValueChange}>
       <SelectTrigger className="w-[80px]">
         <SelectValue defaultValue={limit.toString()} />
       </SelectTrigger>

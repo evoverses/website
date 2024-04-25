@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "raw.seadn.io" },
+      { protocol: "https", hostname: "i.seadn.io" },
     ],
   },
   redirects: () => {
@@ -27,6 +28,7 @@ const nextConfig = {
         source: "/docs/:category(general|tokenomics|the-game|intellectual-property)/:path*",
         destination: "https://docs.evoverses.com/:category/:path*",
       },
+      { source: "/profile/assets", destination: "/profile/assets/evos" },
     ];
   },
   headers: async () => (
