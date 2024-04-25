@@ -1,6 +1,7 @@
 "use client";
 import { updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
 import { Button } from "@/components/ui/button";
+import { ChainButton } from "@/components/ui/chain-button";
 import { typedData } from "@/data/viem/signature";
 import { getCsrfToken } from "@/lib/auth";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
@@ -91,7 +92,7 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
   };
 
   return mounted ? (
-    <Button
+    <ChainButton
       type="button"
       className={cn(className)}
       onClick={onClick}
@@ -104,7 +105,7 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
             : "Link"
           : "No Smart Account"
         : "Wallet Not Connected"}
-    </Button>
+    </ChainButton>
   ) : (
     <Button disabled className={cn(className)}>
       <AiOutlineLoading />
