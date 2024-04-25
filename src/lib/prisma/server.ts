@@ -14,7 +14,7 @@ export const getCollectionItemsLocal = cache(async (
   const where: any = {};
   if (owner) {
     const ids = await getOwnedNftIds(evoNftContract.address, owner);
-    where.tokenId = { in: ids.map(i => BigInt(i)) };
+    where.tokenId = { in: ids.map(i => i.toString()) };
   }
   let body;
   switch (collection.toLowerCase()) {
