@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import EvoToken from "@/assets/images/evo-token.png";
 import { getLevelOfEvo } from "@/lib/evoverses/math";
+import { getCollectionItem } from "@/lib/evoverses/metadata";
 import { getElementSvg, getGenderImage } from "@/lib/evoverses/svgs";
 import { RawEvo, RawEvoEgg, StatAbbrev } from "@/lib/evoverses/types";
-import { getCollectionItem } from "@/lib/prisma/server";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
@@ -42,29 +42,7 @@ export const GET = async (req: NextRequest, { params }: { params: { tokenId: str
   }
   try {
     const tokenId = params.tokenId.replace(/[^0-9]/g, "");
-    // const resp = await fetch(`${baseApiUrl}/metadata/evo/${tokenId}?raw=true`, {
-    //   headers: {
-    //     "x-api-key": process.env.EVOVERSES_API_KEY!,
-    //   },
-    //   next: {
-    //     tags: [ "evo", tokenId ],
-    //     revalidate: 43_200,
-    //   },
-    // });
-    // if (!resp.ok) {
-    //   console.log(
-    //     `Failed to fetch metadata for tokenId ${tokenId}. Original URL:`,
-    //     req.url,
-    //     "Error:",
-    //     resp.status,
-    //     await resp.text(),
-    //   );
-    //   return new Response(`Failed to generate the image: Failed to fetch metadata for tokenId ${tokenId}`, {
-    //     status: 500,
-    //   });
-    // }
-    // const metadata = await resp.json();
-    const metadata = await getCollectionItem("evo", Number(tokenId), true);
+    const metadata = await getCollectionItem("evo", tokenId);
     // @ts-ignore
     const evo = "treated" in metadata ? metadata as RawEvo : metadata as RawEvoEgg;
     const isEgg = "treated" in evo;

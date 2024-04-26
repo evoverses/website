@@ -13,11 +13,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BASE_URL } from "@/data/constants";
 import { evoNftContract } from "@/data/contracts";
-// import { getCollectionItems } from "@/lib/evoverses/metadata";
+import { getCollectionItems } from "@/lib/evoverses/metadata";
 import { getShimmer } from "@/lib/evoverses/svgs";
-import { getCollectionItemsLocal } from "@/lib/prisma/server";
 import { cn } from "@/lib/utils";
 import { Slug } from "@/types/core";
 import type { Address } from "abitype";
@@ -57,7 +55,7 @@ interface ViewerProps {
 }
 
 export const Viewer = async ({ slug, limit, offset, sort, order, owner }: ViewerProps) => {
-  const data = await getCollectionItemsLocal(slug, owner, limit, offset);
+  const data = await getCollectionItems(slug, limit, offset, owner);
   const totalPages = Math.ceil(data.total / limit);
   const currentPage = Math.ceil(offset / limit) + 1;
 
@@ -85,10 +83,14 @@ export const Viewer = async ({ slug, limit, offset, sort, order, owner }: Viewer
         <div>
           <Pagination className={cn({ hidden: totalPages === 0 })}>
             <PaginationContent>
-              <PaginationPrevious disabled={offset === 0} href={{ query: { limit: limit, offset: offset - limit } }} />
+              <PaginationPrevious
+                disabled={offset === 0}
+                href={{ query: { limit: limit, offset: offset - limit } }}
+                prefetch={false}
+              />
               {currentPage > 2 && (
                 <>
-                  <PaginationLink href={{ query: { limit: limit, offset: 0 } }}>1</PaginationLink>
+                  <PaginationLink href={{ query: { limit: limit, offset: 0 } }} prefetch={false}>1</PaginationLink>
                   <PaginationItem>
                     <PaginationEllipsis />
                   </PaginationItem>
@@ -106,6 +108,7 @@ export const Viewer = async ({ slug, limit, offset, sort, order, owner }: Viewer
                     key={page}
                     isActive={page === currentPage}
                     href={{ query: { limit: limit, offset: page * limit - limit } }}
+                    prefetch={false}
                   >
                     {page}
                   </PaginationLink>
@@ -115,7 +118,10 @@ export const Viewer = async ({ slug, limit, offset, sort, order, owner }: Viewer
                   <PaginationItem>
                     <PaginationEllipsis />
                   </PaginationItem>
-                  <PaginationLink href={{ query: { limit: limit, offset: totalPages * limit - limit } }}>
+                  <PaginationLink
+                    href={{ query: { limit: limit, offset: totalPages * limit - limit } }}
+                    prefetch={false}
+                  >
                     {totalPages}
                   </PaginationLink>
                 </>
@@ -123,6 +129,7 @@ export const Viewer = async ({ slug, limit, offset, sort, order, owner }: Viewer
               <PaginationNext
                 disabled={currentPage === totalPages}
                 href={{ query: { limit: limit, offset: offset + limit } }}
+                prefetch={false}
               />
             </PaginationContent>
           </Pagination>
@@ -131,13 +138,13 @@ export const Viewer = async ({ slug, limit, offset, sort, order, owner }: Viewer
       </div>
       <div className="flex gap-2 flex-wrap justify-around w-full">
         {data.items.map(nft => (
-          <Card key={nft.tokenId} className="flex flex-row w-[350px]">
+          <Card key={nft.tokenId + limit + offset} className="flex flex-row w-[350px]">
             <Image
-              src={`${BASE_URL}/api/images/evo/${nft.tokenId}`}
+              key={nft.tokenId + limit + offset}
+              src={`/api/images/evo/${nft.tokenId}`}
               alt={`${nft.species} #${nft.tokenId}`}
               width={512}
               height={725}
-              unoptimized
               className="w-40 min-w-[160px]"
               placeholder={getShimmer(512, 725)}
             />
