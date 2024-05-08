@@ -1,6 +1,6 @@
 export interface TokenResponse {
   schemaVersion: string
-  pairs: Pair[]
+  pairs: Pair[] | null;
 }
 
 export interface Pair {

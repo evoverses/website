@@ -9,19 +9,24 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, InfoCircledIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 
 const TrainerMintSmartDrawer = () => {
-
+  const [ visible, setVisible ] = useState<boolean>(true);
+  if (!visible) {
+    return null;
+  }
   return (
     <SmartDrawer>
       <SmartDrawerTrigger asChild>
         <Button
           variant="info"
-          className="absolute right-0 translate-y-1/2 rounded-l-full rounded-r-none flex content-center"
+          className="absolute right-0 translate-y-1/2 rounded-l-full rounded-r-none flex content-center pr-2"
         >
           <InfoCircledIcon className="h-6 w-6 mr-2" />
           <span className="font-black">Trainers are minting soon!</span>
+          <Cross1Icon className="h-6 w-6 ml-2 opacity-40 hover:opacity-100" onClick={() => setVisible(false)} />
           <div className="w-full animation-pulse absolute right-0 translate-y-1/2 rounded-l-full rounded-r-noneh h-10 -z-[1]" />
         </Button>
       </SmartDrawerTrigger>

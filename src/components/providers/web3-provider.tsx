@@ -1,17 +1,15 @@
 "use client";
+import QueryProvider from "@/components/providers/query-provider";
 import { config } from "@/wagmi.config";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 import { type State, WagmiProvider } from "wagmi";
-
-const queryClient = new QueryClient();
 
 const Web3Provider = ({ initialState, children }: PropsWithChildren<{ initialState?: State }>) => {
   return (
     <WagmiProvider config={config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>
+      <QueryProvider>
         {children}
-      </QueryClientProvider>
+      </QueryProvider>
     </WagmiProvider>
   );
 };

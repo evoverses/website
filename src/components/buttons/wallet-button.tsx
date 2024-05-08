@@ -10,13 +10,13 @@ import Image from "next/image";
 import { type ComponentProps, useEffect, useState } from "react";
 import { FaSpinner, FaWallet } from "react-icons/fa";
 import { formatEther } from "viem";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useEnsName, useReadContract } from "wagmi";
 
 const WalletButton = ({ className, ...props }: ComponentProps<typeof Button>) => {
   const { address = DeadBeef, status } = useAccount();
   const { open } = useWeb3Modal();
   const [ rendered, setRendered ] = useState(false);
-
+  const shortAddress = address === DeadBeef ? "" : address.slice(0, 4) + "..." + address.slice(-4);
   useEffect(() => {
     setRendered(true);
     return () => {
@@ -31,6 +31,15 @@ const WalletButton = ({ className, ...props }: ComponentProps<typeof Button>) =>
     args: [ address ],
     query: {
       enabled: status === "connected",
+    },
+  });
+
+  const { data: dnsName } = useEnsName({
+    address,
+    chainId: 43_114,
+    scopeKey: "ens",
+    query: {
+      enabled: status === "connected" && address !== DeadBeef,
     },
   });
   if (!rendered) {
@@ -54,9 +63,10 @@ const WalletButton = ({ className, ...props }: ComponentProps<typeof Button>) =>
             <span>{Number(formatEther(balance)).toLocaleString()}</span>
           </div>
           <span>|</span>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center group">
             <FaWallet className="w-5 h-5" />
-            <span>{address?.slice(0, 4)}...{address?.slice(-4)}</span>
+            <span className="group-hover:hidden w-20">{dnsName || shortAddress}</span>
+            <span className="hidden group-hover:block w-20">{shortAddress}</span>
           </div>
         </Button>
       );

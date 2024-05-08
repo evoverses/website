@@ -1,7 +1,6 @@
+import { SnowtraceLink } from "@/components/buttons/snowtrace-link-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getEvoHistory } from "@/lib/subsquid";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 
 type EventsProps = {
   slug: string;
@@ -48,16 +47,3 @@ export const AssetHistory = async ({ slug, tokenId }: EventsProps) => {
     </Table>
   );
 };
-
-export const SnowtraceLink = ({ bytes, type = "address" }: { bytes: string, type?: "tx" | "address" }) => (
-  <Link
-    href={`https://43114.snowtrace.io/${type}/${bytes}`}
-    prefetch={false}
-    target="_blank"
-    rel="nofollow noreferrer"
-    className="flex items-center"
-  >
-    {bytes.slice(0, type === "tx" ? 6 : 8)}...{bytes.slice(type === "tx" ? -6 : -4)}
-    <ExternalLinkIcon className="inline-block w-4 h-4 ml-1" />
-  </Link>
-);

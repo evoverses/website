@@ -1,4 +1,5 @@
-import { AssetHistory, SnowtraceLink } from "@/app/(authenticated)/assets/[slug]/[token_id]/history";
+import { AssetHistory } from "@/app/(authenticated)/assets/[slug]/[token_id]/history";
+import { SnowtraceLink } from "@/components/buttons/snowtrace-link-button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BASE_URL } from "@/data/constants";
 import { getCollectionItem } from "@/lib/evoverses/metadata";

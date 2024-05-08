@@ -3,7 +3,7 @@ import { Address } from "abitype";
 import { cookieStorage, type CreateConfigParameters, createStorage } from "wagmi";
 import { avalanche as avalancheBase, type Chain } from "wagmi/chains";
 
-const avvyDomainsResolver: Address = "0x40b0DC99681Db9703939bd62D76F4D448ab0fdE";
+const avvyDomainsResolver: Address = "0x24DFa1455A75f64800BFdB2447958D2B632b94f6";
 
 const avalanche: Chain = {
   ...avalancheBase,
