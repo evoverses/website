@@ -13,7 +13,7 @@ import { Cross1Icon, InfoCircledIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
 const TrainerMintSmartDrawer = () => {
-  const [ visible, setVisible ] = useState<boolean>(true);
+  const [ visible, setVisible ] = useState<boolean>(false);
   if (!visible) {
     return null;
   }
