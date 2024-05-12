@@ -12,7 +12,7 @@ export type EvoAnimationProgress = {
   death: boolean
 }
 
-export const inProgress: Species[] = [ "Tamandu" ];
+export const inProgress: Species[] = [ "Skycyx" ];
 export const data: EvoAnimationProgress[] = [
   {
     id: 1,
@@ -479,12 +479,12 @@ export const data: EvoAnimationProgress[] = [
   {
     id: 66,
     idle: true,
-    attack: false,
-    dash: false,
-    backUp: false,
-    hit: false,
-    death: false,
-    special: false,
+    attack: true,
+    dash: true,
+    backUp: true,
+    hit: true,
+    death: true,
+    special: true,
     species: "Tamandu",
   },
   {
