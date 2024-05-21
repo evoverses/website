@@ -46,3 +46,8 @@ export interface Pool {
 export type Slug = "evo" | "egg";
 
 export type RadixUIIcon = ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;
+
+export type WithError<T> = T & { error?: string };
+
+export type ErrorPageError = Error & { digest?: string };
+export type ErrorPageProps = { error: ErrorPageError, reset: () => void }

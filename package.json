@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:spotlight": "npx @spotlightjs/spotlight",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -31,6 +32,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-toggle": "^1.0.3",
+    "@sentry/nextjs": "^8.2.1",
     "@tanstack/react-query": "^5.29.0",
     "@tanstack/react-table": "^8.16.0",
     "@tanstack/react-virtual": "^3.5.0",
@@ -70,6 +72,7 @@
     "@types/node": "20.10.3",
     "@types/react": "18.2.41",
     "@types/react-dom": "18.2.17",
-    "prisma": "^5.13.0"
+    "prisma": "^5.13.0",
+    "@spotlightjs/spotlight": "^1.2.17"
   }
 }
