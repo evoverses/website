@@ -1,6 +1,5 @@
 import type { Pair, TokenResponse } from "@/types/dexscreener";
 import type { Address } from "abitype";
-import { toast } from "sonner";
 
 const fallbackPairs: Pair[] = [
   {
@@ -36,13 +35,11 @@ export const fetchPairDataOf = async (address: string) => {
   if (resp.ok) {
     const data: TokenResponse = await resp.json();
     if (data.pairs === null) {
-      toast.error("Error finding pair");
       console.error("No matching DexScreener pairs for", address);
     } else {
       pairs = data.pairs;
     }
   } else {
-    toast.error("Error fetching pair");
     console.error("Error fetching", address, "from DexScreener");
   }
 
