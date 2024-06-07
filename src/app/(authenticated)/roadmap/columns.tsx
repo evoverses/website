@@ -1,5 +1,5 @@
 "use client";
-import { type EvoAnimationProgress, inProgress } from "@/app/(authenticated)/roadmap/data";
+import { type EvoAnimationProgress, groups, inProgress } from "@/app/(authenticated)/roadmap/data";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 import { ColumnDef } from "@tanstack/react-table";
@@ -20,7 +20,9 @@ export const columns: ColumnDef<EvoAnimationProgress>[] = [
         ? "Complete"
         : inProgress.includes(row.species)
           ? "In Progress"
-          : statuses.some(Boolean) ? "Backlog" : "Not Started";
+          : groups[groups.indexOf(inProgress) + 1].includes(row.species)
+            ? "Up Next"
+            : statuses.some(Boolean) ? "Backlog" : "Not Started";
     },
     sortingFn: (a, b) => {
       const getWorth = (status: string) => status === "Complete" ? 3 : status === "In Progress" ? 2 : status

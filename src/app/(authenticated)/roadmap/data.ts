@@ -14,7 +14,7 @@ export type EvoAnimationProgress = {
   death: boolean
 }
 
-const groups: Species[][] = [
+export const groups: Species[][] = [
   [ "Tamandu", "Skycyx" ],
   [ "Ruard", "Dhaek", "Nythe", "Struthor", "Geckaiba" ],
   [ "Shazark", "Sunopendra", "Hikarul", "Aubelyon", "Kaos" ],
