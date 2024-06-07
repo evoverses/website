@@ -12,7 +12,18 @@ export type EvoAnimationProgress = {
   death: boolean
 }
 
-export const inProgress: Species[] = [ "Skycyx" ];
+const doneData = {
+  idle: true,
+  attack: true,
+  dash: true,
+  backUp: true,
+  hit: true,
+  death: true,
+  special: true,
+};
+
+export const inProgress: Species[] = [ "Ruard", "Dhaek", "Nythe", "Struthor", "Geckaiba" ];
+
 export const data: EvoAnimationProgress[] = [
   {
     id: 1,
@@ -214,13 +225,7 @@ export const data: EvoAnimationProgress[] = [
   },
   {
     id: 26,
-    idle: true,
-    attack: false,
-    dash: false,
-    backUp: false,
-    hit: false,
-    death: false,
-    special: false,
+    ...doneData,
     species: "Skycyx",
   },
   {
@@ -478,13 +483,7 @@ export const data: EvoAnimationProgress[] = [
   },
   {
     id: 66,
-    idle: true,
-    attack: true,
-    dash: true,
-    backUp: true,
-    hit: true,
-    death: true,
-    special: true,
+    ...doneData,
     species: "Tamandu",
   },
   {
@@ -567,12 +566,12 @@ export const data: EvoAnimationProgress[] = [
   {
     id: 83,
     idle: true,
-    attack: true,
-    dash: true,
-    backUp: true,
-    hit: true,
-    death: true,
-    special: true,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Ruard",
   },
   {
@@ -611,12 +610,12 @@ export const data: EvoAnimationProgress[] = [
   {
     id: 89,
     idle: true,
-    attack: true,
-    dash: true,
-    backUp: true,
-    hit: true,
-    death: true,
-    special: true,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Dhaek",
   },
   {
@@ -633,12 +632,12 @@ export const data: EvoAnimationProgress[] = [
   {
     id: 93,
     idle: true,
-    attack: true,
-    dash: true,
-    backUp: true,
-    hit: true,
-    death: true,
-    special: true,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Nythe",
   },
   {
@@ -676,13 +675,13 @@ export const data: EvoAnimationProgress[] = [
   },
   {
     id: 102,
-    idle: true,
-    attack: true,
-    dash: true,
-    backUp: true,
-    hit: true,
-    death: true,
-    special: true,
+    idle: false,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Struthor",
   },
   {
@@ -742,13 +741,13 @@ export const data: EvoAnimationProgress[] = [
   },
   {
     id: 122,
-    idle: true,
-    attack: true,
-    dash: true,
-    backUp: true,
-    hit: true,
-    death: true,
-    special: true,
+    idle: false,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Geckaiba",
   },
   {
