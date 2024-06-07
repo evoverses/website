@@ -25,8 +25,8 @@ export const columns: ColumnDef<EvoAnimationProgress>[] = [
             : statuses.some(Boolean) ? "Backlog" : "Not Started";
     },
     sortingFn: (a, b) => {
-      const getWorth = (status: string) => status === "Complete" ? 3 : status === "In Progress" ? 2 : status
-      === "Backlog" ? 1 : 0;
+      const getWorth = (status: string) => status === "Complete" ? 4 : status === "Up Next" ? 3 : status
+      === "In Progress" ? 2 : status === "Backlog" ? 1 : 0;
       const av = getWorth(a.getValue("status"));
       const bv = getWorth(b.getValue("status"));
       return av === bv ? 0 : av > bv ? 1 : -1;
