@@ -1,5 +1,7 @@
 import type { Species } from "@/lib/evoverses/types";
 
+const currentGroup = 1;
+
 export type EvoAnimationProgress = {
   id: number
   species: Species
@@ -12,17 +14,24 @@ export type EvoAnimationProgress = {
   death: boolean
 }
 
-const doneData = {
-  idle: true,
-  attack: true,
-  dash: true,
-  backUp: true,
-  hit: true,
-  death: true,
-  special: true,
-};
+const groups: Species[][] = [
+  [ "Tamandu", "Skycyx" ],
+  [ "Ruard", "Dhaek", "Nythe", "Struthor", "Geckaiba" ],
+  [ "Shazark", "Sunopendra", "Hikarul", "Aubelyon", "Kaos" ],
+  [ "Onydae", "Mobyd", "Ghorgon", "Nymphel", "Cyarabat" ],
+  [ "Eulocelus", "Venuserpien", "Methyst", "Tytan", "Moffunap" ],
+  [ "Nissel", "Finantis", "Carcoid", "Allacrow", "Fayde" ],
+  [ "Karoite", "Nuvea", "Ainepolux", "Morphee", "Vulpyro" ],
+  [ "Hodeon", "Kitsul", "Rattuos", "Tokaleaf", "Flint" ],
+  [ "Lumi", "Droserace", "Clocarstone", "Fugush", "Obsy" ],
+  [ "Gwenbee", "Uzumebach", "Metheo", "Meissa", "Athel" ],
+  [ "Mellio", "Ryomizu", "Beldar", "Lounn", "Fluozacil" ],
+  [ "Kapryno", "Firemon", "Kerval", "Espyke", "Gemarites" ],
+  [ "Arnoriel", "Adhamandra", "Obryos", "Krokon", "Yotnar" ],
+  [ "Jokull", "Caerthos", "Istral", "Cyzorak", "Lamphal", "Sauderon" ],
+];
 
-export const inProgress: Species[] = [ "Ruard", "Dhaek", "Nythe", "Struthor", "Geckaiba" ];
+export const inProgress: Species[] = groups[currentGroup];
 
 export const data: EvoAnimationProgress[] = [
   {
@@ -225,7 +234,13 @@ export const data: EvoAnimationProgress[] = [
   },
   {
     id: 26,
-    ...doneData,
+    idle: true,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Skycyx",
   },
   {
@@ -483,7 +498,13 @@ export const data: EvoAnimationProgress[] = [
   },
   {
     id: 66,
-    ...doneData,
+    idle: true,
+    attack: false,
+    dash: false,
+    backUp: false,
+    hit: false,
+    death: false,
+    special: false,
     species: "Tamandu",
   },
   {
@@ -761,4 +782,18 @@ export const data: EvoAnimationProgress[] = [
     special: false,
     species: "Sauderon",
   },
-];
+].map(e => {
+  if (groups.indexOf(groups.find(g => g.includes(e.species as Species))!) < currentGroup) {
+    return {
+      ...e,
+      idle: true,
+      attack: true,
+      dash: true,
+      backUp: true,
+      hit: true,
+      death: true,
+      special: true,
+    } as EvoAnimationProgress;
+  }
+  return e as EvoAnimationProgress;
+});
