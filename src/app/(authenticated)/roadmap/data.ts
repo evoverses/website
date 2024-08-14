@@ -1,6 +1,6 @@
 import type { Species } from "@/lib/evoverses/types";
 
-const currentGroup = 2;
+const currentGroup = 3;
 
 export type EvoAnimationProgress = {
   id: number
