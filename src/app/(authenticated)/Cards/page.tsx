@@ -74,7 +74,7 @@ const Cards = () => {
                 </div>
                 <button
                     onClick={handleGoClick}
-                    className="px-6 py-2 bg-green-500 text-bold rounded hover:bg-blue-600"
+                    className="px-6 py-2 bg-green-500 text-bold rounded hover:bg-green-600"
                 >
                     Go
                 </button>
