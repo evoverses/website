@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 
 import { getAccountCookie } from "@/lib/cookies/account.server";
 import { getAccountInfo } from "@/lib/playfab/client";
-import { Address } from "abitype";
+import { Address } from "thirdweb";
 
 export const getWallet = async () => {
   let wallet: Address | undefined;
@@ -14,7 +14,7 @@ export const getWallet = async () => {
     }
   }
   if (!wallet) {
-    const { address, connected } = getAccountCookie();
+    const { address, connected } = await getAccountCookie();
     if (connected) {
       wallet = address;
     }

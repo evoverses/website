@@ -4,7 +4,6 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const nextConfig = {
   experimental: {
     webpackBuildWorker: true,
-    instrumentationHook: true,
   },
   images: {
     remotePatterns: [
@@ -83,6 +82,10 @@ const sentryNextConfig = withSentryConfig(
     // https://docs.sentry.io/product/crons/
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
+
+    sourcemaps: {
+      deleteSourcemapsAfterUpload: true,
+    },
   },
 );
 

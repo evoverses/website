@@ -21,25 +21,29 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { cEvoContract, evoContract } from "@/data/contracts";
+import { cEvoContract, chain, evoContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
 import { cn } from "@/lib/utils";
 import { parseViemDetailedError } from "@/lib/viem";
+import { client } from "@/thirdweb.config";
+import { claimPending } from "@/thirdweb/43114/0x7b5501109c2605834f7a4153a75850db7521c37e";
 import { Pool } from "@/types/core";
-import { Address } from "abitype";
+import { BaseError } from "abitype";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { TbCloudCancel } from "react-icons/tb";
 import { toast } from "sonner";
-import { formatEther, maxUint256 } from "viem";
+import type { Address } from "thirdweb";
+import { allowance, approve } from "thirdweb/extensions/erc20";
 import {
-  BaseError,
-  useAccount,
+  useActiveAccount,
+  useActiveWalletConnectionStatus,
   useReadContract,
-  useSimulateContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+  useSendTransaction,
+  useSimulateTransaction,
+  useWaitForReceipt,
+} from "thirdweb/react";
+import { formatEther, maxUint256 } from "viem";
 
 interface ClaimButtonProps {
   disabled?: boolean;
@@ -47,20 +51,23 @@ interface ClaimButtonProps {
 
 export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
   const router = useRouter();
-  const { address } = useAccount();
+  const connectionStatus = useActiveWalletConnectionStatus();
 
-  const { isSuccess: isSimulateSuccess } = useSimulateContract({
-    ...cEvoContract,
-    functionName: "claimPending",
-    chainId: 43_114,
-    query: {
-      enabled: !disabled && !!address,
-    },
+  const { mutate: simulateTransaction, isSuccess: isSimulateSuccess } = useSimulateTransaction();
+
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    reset,
+  } = useSendTransaction();
+
+  const { isSuccess, isPending: isLoading, isFetched } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
-
-  const { data, isError, error, writeContract, reset } = useWriteContract();
-
-  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
 
@@ -68,8 +75,8 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
       toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
       reset();
     }
-    if (tx) {
-      if (tx.status === "success") {
+    if (!isLoading && isFetched) {
+      if (isSuccess) {
         toast.success("Claim completed successfully");
         reset();
         router.refresh();
@@ -80,16 +87,22 @@ export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isError, error, tx ]);
+  }, [ isError, error, isSuccess, isFetched ]);
+
+  useEffect(() => {
+    if (connectionStatus === "connected") {
+
+    }
+    simulateTransaction({
+      transaction: claimPending({ contract: cEvoContract }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ connectionStatus ]);
 
   return (
     <ChainButton
       className="w-full font-bold"
-      onClick={() => writeContract({
-        ...cEvoContract,
-        functionName: "claimPending",
-        chainId: 43_114,
-      })}
+      onClick={() => writeContract(claimPending({ contract: cEvoContract }))}
       disabled={isError || disabled || !isSimulateSuccess}
     >
       Claim
@@ -302,32 +315,35 @@ type RevokeButtonProps = {
 }
 
 const RevokeSmartDrawer = ({ token, contract, className }: RevokeButtonProps) => {
-  const { address } = useAccount();
+  const { address } = useActiveAccount() ?? {};
   const [ open, setOpen ] = useState<boolean>(false);
   const onOpenChange = (open: boolean) => {
     setOpen(open);
 
   };
 
-  const { data = 0n } = useReadContract({
-    abi: evoContract.abi,
-    address: token.address,
-    functionName: "allowance",
-    args: [ address!, contract.address ],
-    chainId: 43_114,
-    query: {
-      enabled: !!address,
-    },
+  const { data = 0n } = useReadContract(allowance, {
+    contract: evoContract,
+    spender: contract.address,
+    owner: address!,
   });
 
-  const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isPending: isLoading, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-    chainId: 43_114,
-    confirmations: 1,
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    isPending,
+    mutate: writeContract,
+    reset,
+  } = useSendTransaction();
+
+  const { isSuccess, isPending: isLoading, isFetched } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
 
-  const isWaiting = !!hash && isLoading;
+  const isWaiting = !!transactionHash && isLoading;
 
   useEffect(() => {
     if (isSuccess) {
@@ -360,13 +376,7 @@ const RevokeSmartDrawer = ({ token, contract, className }: RevokeButtonProps) =>
         </span>
         <SmartDrawerFooter className="gap-4 sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto sm:space-x-0">
           <ChainButton
-            onClick={() => writeContract({
-              abi: evoContract.abi,
-              address: token.address,
-              functionName: "approve",
-              args: [ contract.address, 0n ],
-              chainId: 43_114,
-            })}
+            onClick={() => writeContract(approve({ contract: evoContract, spender: contract.address, amountWei: 0n }))}
             disabled={isPending || isWaiting || isSuccess}
             className="font-bold"
             success={isSuccess}

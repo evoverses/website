@@ -1,7 +1,7 @@
 import "server-only";
 import { evoContract } from "@/data/contracts";
-import { Address } from "abitype";
 import { cache } from "react";
+import { Address } from "thirdweb";
 import { toHex } from "viem";
 
 const BASE_URL = process.env.ENGINE_BASE_URL;

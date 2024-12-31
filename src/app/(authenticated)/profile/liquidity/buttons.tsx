@@ -3,14 +3,22 @@ import { ChainButton } from "@/components/ui/chain-button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { DeadBeef } from "@/data/constants";
-import { evoContract, investorContract, xEvoContract } from "@/data/contracts";
+import { chain, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { parseViemDetailedError } from "@/lib/viem";
-import { Address } from "abitype";
+import { client } from "@/thirdweb.config";
+import { deposit, withdraw } from "@/thirdweb/43114/0x693e07bf86367adf8051926f66321fa9e8ebffb4";
+import {
+  claimReward,
+  deposit as investorDeposit,
+  withdraw as investorWithdraw,
+} from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { type Address, getContract } from "thirdweb";
+import { allowance as getAllowance, approve } from "thirdweb/extensions/erc20";
+import { useActiveAccount, useReadContract, useSendTransaction, useWaitForReceipt } from "thirdweb/react";
 import { maxUint256, parseEther } from "viem";
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 interface FarmClaimButtonProps {
   poolId: bigint,
@@ -22,15 +30,22 @@ interface FarmClaimButtonProps {
 const FarmClaimButton = ({ poolId, open, close, disabled }: FarmClaimButtonProps) => {
   const router = useRouter();
 
-  const { data: hash, error, isError, writeContract, isPending, reset } = useWriteContract();
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    isPending,
+    reset,
+  } = useSendTransaction();
 
-  const { isSuccess, isPending: isLoading } = useWaitForTransactionReceipt({
-    hash,
-    chainId: 43_114,
-    confirmations: 1,
+  const { isSuccess, isPending: isLoading } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
 
-  const isWaiting = !!hash && isLoading;
+  const isWaiting = !!transactionHash && isLoading;
 
   useEffect(() => {
     if (!open) {
@@ -52,12 +67,7 @@ const FarmClaimButton = ({ poolId, open, close, disabled }: FarmClaimButtonProps
   // noinspection OverlyComplexBooleanExpressionJS
   return (
     <ChainButton
-      onClick={() => writeContract({
-        ...investorContract,
-        functionName: "claimReward",
-        args: [ poolId ],
-        chainId: 43_114,
-      })}
+      onClick={() => writeContract(claimReward({ contract: investorContract, pid: poolId }))}
       disabled={isPending || isWaiting || isSuccess || disabled}
       loading={isPending || isWaiting}
       success={isSuccess}
@@ -79,33 +89,35 @@ interface DepositButtonProps {
 
 const FarmDepositButton = ({ poolId, max, value, lpToken, open, close, disabled }: DepositButtonProps) => {
   const router = useRouter();
-  const { address = DeadBeef } = useAccount();
+  const { address = DeadBeef } = useActiveAccount() ?? {};
   const valueBigInt = parseEther(value || "0.0");
   const [ approveUnlimited, setApproveUnlimited ] = useState(false);
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-
-  const { data: allowance = 0n, refetch } = useReadContract({
-    address: lpToken as Address,
-    abi: LpTokenABI,
-    functionName: "allowance",
-    args: [ address, investorContract.address ],
-    chainId: 43_114,
-    query: {
-      enabled: validAmount,
-    },
+  const contract = getContract({ client, abi: LpTokenABI, address: lpToken, chain });
+  const { data: allowance = 0n, refetch } = useReadContract(getAllowance, {
+    contract,
+    owner: address,
+    spender: investorContract.address,
   });
 
   const isAllowed = allowance > 0n && allowance >= valueBigInt;
 
-  const { data: hash, isError, error, writeContract, isPending, reset } = useWriteContract();
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    isPending,
+    reset,
+  } = useSendTransaction();
 
-  const { isSuccess, isPending: isLoading } = useWaitForTransactionReceipt({
-    hash,
-    chainId: 43_114,
-    confirmations: 1,
+  const { isSuccess, isPending: isLoading } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
 
-  const isWaiting = !!hash && isLoading;
+  const isWaiting = !!transactionHash && isLoading;
 
   useEffect(() => {
     if (!open) {
@@ -146,13 +158,11 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, open, close, disabled 
           <Label htmlFor="unlimited-approval">Unlimited Approval</Label>
         </div>
         <ChainButton
-          onClick={() => writeContract({
-            address: lpToken as Address,
-            abi: LpTokenABI,
-            functionName: "approve",
-            args: [ investorContract.address, approveUnlimited ? maxUint256 : valueBigInt ],
-            chainId: 43_114,
-          })}
+          onClick={() => writeContract(approve({
+            contract: contract,
+            spender: investorContract.address,
+            amountWei: approveUnlimited ? maxUint256 : valueBigInt,
+          }))}
           disabled={disabled || isPending || isWaiting || approveUnlimited ? false : !validAmount}
           loading={isPending || isWaiting}
           success={isSuccess}
@@ -165,12 +175,7 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, open, close, disabled 
 
   return (
     <ChainButton
-      onClick={() => writeContract({
-        ...investorContract,
-        functionName: "deposit",
-        args: [ poolId, valueBigInt ],
-        chainId: 43_114,
-      })}
+      onClick={() => writeContract(investorDeposit({ contract: investorContract, pid: poolId, amount: valueBigInt }))}
       disabled={isPending || isWaiting || !validAmount}
       loading={isPending || isWaiting}
       success={isSuccess}
@@ -194,14 +199,22 @@ const FarmWithdrawButton = ({ poolId, max, value, open, close, disabled }: FarmW
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
 
-  const { data: hash, error, isError, isPending, writeContract, reset } = useWriteContract();
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    isPending,
+    reset,
+  } = useSendTransaction();
 
-  const { isSuccess, isPending: isLoading } = useWaitForTransactionReceipt({
-    hash,
-    chainId: 43_114,
-    confirmations: 1,
+  const { isSuccess, isPending: isLoading } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
-  const isWaiting = !!hash && isLoading;
+
+  const isWaiting = !!transactionHash && isLoading;
 
   useEffect(() => {
     if (!open) {
@@ -223,12 +236,7 @@ const FarmWithdrawButton = ({ poolId, max, value, open, close, disabled }: FarmW
   // noinspection OverlyComplexBooleanExpressionJS
   return (
     <ChainButton
-      onClick={() => writeContract({
-        ...investorContract,
-        functionName: "withdraw",
-        args: [ poolId, valueBigInt ],
-        chainId: 43_114,
-      })}
+      onClick={() => writeContract(investorWithdraw({ contract: investorContract, pid: poolId, amount: valueBigInt }))}
       disabled={!validAmount || isPending || isWaiting || disabled}
       loading={isPending || isWaiting}
       success={isSuccess}
@@ -249,28 +257,33 @@ const BankDepositButton = ({ max, value = "0.0", open, close }: BankDepositButto
   const router = useRouter();
   const valueBigInt = parseEther(value);
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { address } = useAccount();
+  const { address } = useActiveAccount() ?? {};
   const [ approveUnlimited, setApproveUnlimited ] = useState(false);
 
-  const { data: allowance = 0n, refetch } = useReadContract({
-    ...evoContract,
-    functionName: "allowance",
-    args: [ address!, xEvoContract.address ],
-    query: {
-      enabled: !!address,
-    },
+  const { data: allowance = 0n, refetch } = useReadContract(getAllowance, {
+    contract: evoContract,
+    owner: address!,
+    spender: xEvoContract.address,
   });
 
   const isAllowed = allowance > 0n && allowance >= valueBigInt;
 
-  const { data: hash, isError, error, writeContract, isPending, reset } = useWriteContract();
-  const { isPending: isLoading, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-    chainId: 43_114,
-    confirmations: 1,
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    isPending,
+    reset,
+  } = useSendTransaction();
+
+  const { isSuccess, isPending: isLoading } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
 
-  const isWaiting = !!hash && isLoading;
+  const isWaiting = !!transactionHash && isLoading;
 
   useEffect(() => {
     // noinspection DuplicatedCode
@@ -308,12 +321,11 @@ const BankDepositButton = ({ max, value = "0.0", open, close }: BankDepositButto
           <Label htmlFor="unlimited-approval">Unlimited Approval</Label>
         </div>
         <ChainButton
-          onClick={() => writeContract({
-            ...evoContract,
-            functionName: "approve",
-            args: [ xEvoContract.address, approveUnlimited ? maxUint256 : valueBigInt ],
-            chainId: 43_114,
-          })}
+          onClick={() => writeContract(approve({
+            contract: evoContract,
+            spender: xEvoContract.address,
+            amountWei: valueBigInt,
+          }))}
           disabled={isPending || isSuccess || isWaiting}
           success={isSuccess}
           loading={isWaiting || isPending}
@@ -325,12 +337,7 @@ const BankDepositButton = ({ max, value = "0.0", open, close }: BankDepositButto
   }
   return (
     <ChainButton
-      onClick={() => writeContract({
-        ...xEvoContract,
-        functionName: "deposit",
-        args: [ valueBigInt ],
-        chainId: 43_114,
-      })}
+      onClick={() => writeContract(deposit({ contract: xEvoContract, amount: valueBigInt }))}
       disabled={isPending || !validAmount || isSuccess}
       loading={isWaiting || isPending}
       success={isSuccess}
@@ -352,14 +359,22 @@ const BankWithdrawButton = ({ max, value, open, close }: BankWithdrawButtonProps
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
 
-  const { data: hash, error, isError, isPending, writeContract, reset } = useWriteContract();
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    isPending,
+    reset,
+  } = useSendTransaction();
 
-  const { isSuccess, isPending: isLoading } = useWaitForTransactionReceipt({
-    hash,
-    chainId: 43_114,
-    confirmations: 1,
+  const { isSuccess, isPending: isLoading } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
-  const isWaiting = !!hash && isLoading;
+
+  const isWaiting = !!transactionHash && isLoading;
 
   useEffect(() => {
     if (!open) {
@@ -380,12 +395,7 @@ const BankWithdrawButton = ({ max, value, open, close }: BankWithdrawButtonProps
 
   return (
     <ChainButton
-      onClick={() => writeContract({
-        ...xEvoContract,
-        functionName: "withdraw",
-        args: [ valueBigInt ],
-        chainId: 43_114,
-      })}
+      onClick={() => writeContract(withdraw({ contract: xEvoContract, amount: valueBigInt }))}
       disabled={isPending || !validAmount || isWaiting}
       loading={isPending || isWaiting}
       success={isSuccess}

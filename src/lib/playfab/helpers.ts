@@ -1,5 +1,5 @@
 import { PlayFab } from "@/lib/playfab/types";
-import { Address } from "abitype";
+import { Address } from "thirdweb";
 import InfoResultPayload = PlayFab.Client.Account.Responses.InfoResultPayload;
 import UserDataRecord = PlayFab.Client.Account.UserDataRecord;
 

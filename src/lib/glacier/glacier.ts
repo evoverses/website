@@ -1,6 +1,6 @@
 import { ERC20TokenBalance, ListERC20BalancesResponse, type ListERC721BalancesResponse } from "@/lib/glacier/types";
-import { Address } from "abitype";
 import { cache } from "react";
+import { Address } from "thirdweb";
 
 const BASE_URL = new URL("https://glacier-api.avax.network/v1/");
 const BASE_AVAX_URL = new URL("chains/43114/", BASE_URL);

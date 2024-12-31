@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Icons } from "@/components/ui/icons";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
-import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaSpinner } from "react-icons/fa";
 import { toast } from "sonner";
+import { Address } from "thirdweb";
 
 type CreateAccountButtonProps = {
   accountId: string;

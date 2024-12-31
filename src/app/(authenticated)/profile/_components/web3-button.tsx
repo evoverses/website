@@ -7,14 +7,13 @@ import { getCsrfToken } from "@/lib/auth";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { cn } from "@/lib/utils";
 import { IAccountCookie } from "@/types/cookies";
-import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { toast } from "sonner";
+import { Address } from "thirdweb";
+import { useActiveAccount } from "thirdweb/react";
 import { recoverTypedDataAddress, verifyTypedData } from "viem";
-
-import { useAccount, useWalletClient } from "wagmi";
 
 type LinkWalletButtonProps = {
   playFabId: string;
@@ -25,16 +24,15 @@ type LinkWalletButtonProps = {
 
 export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnlyData }: LinkWalletButtonProps) => {
   const router = useRouter();
-  const { address } = useAccount();
-  const { data: walletClient } = useWalletClient();
+  const account = useActiveAccount();
   const [ mounted, setMounted ] = useState(false);
-  const isConnected = readOnlyData.wallets.connected.includes(address as Address);
+  const isConnected = readOnlyData.wallets.connected.includes(account?.address as Address);
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const onClick = async () => {
-    if (!walletClient || !address) {
+    if (!account) {
       return window.alert("Wallet not connected");
     }
     const nonce = await getCsrfToken();
@@ -42,13 +40,12 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
       return window.alert("Nonce not found");
     }
     try {
-      const signature = await walletClient.signTypedData({
-        account: walletClient.account,
+      const signature = await account.signTypedData({
         domain: typedData.domain,
         types: typedData.types,
         primaryType: typedData.primaryType,
         message: {
-          from: { wallet: address!, nonce },
+          from: { wallet: account.address, nonce },
           contents: typedData.contents,
         },
       });
@@ -58,14 +55,14 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
         types: typedData.types,
         primaryType: typedData.primaryType,
         message: {
-          from: { wallet: address, nonce },
+          from: { wallet: account.address, nonce },
           contents: typedData.contents,
         },
         signature,
       });
 
       const valid = await verifyTypedData({
-        address,
+        address: account.address,
         domain: typedData.domain,
         types: typedData.types,
         primaryType: typedData.primaryType,
@@ -80,7 +77,8 @@ export const LinkWalletButton = ({ playFabId, accountCookie, className, readOnly
         ...readOnlyData,
         wallets: {
           ...readOnlyData.wallets,
-          connected: [ ...readOnlyData.wallets.connected.filter(a => a !== address), address ],
+          connected: [ ...readOnlyData.wallets.connected.filter(a => a !== account.address) as Address[],
+            account.address as Address ],
         },
       };
       await updateUserReadOnlyDataAction(playFabId, newReadOnlyData);

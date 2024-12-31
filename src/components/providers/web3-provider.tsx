@@ -1,17 +1,14 @@
 "use client";
-import QueryProvider from "@/components/providers/query-provider";
-import { config } from "@/wagmi.config";
 import type { PropsWithChildren } from "react";
-import { type State, WagmiProvider } from "wagmi";
+import { ThirdwebProvider as ThirdwebReactProvider } from "thirdweb/react";
 
-const Web3Provider = ({ initialState, children }: PropsWithChildren<{ initialState?: State }>) => {
+const ThirdwebProvider = ({ children }: Readonly<PropsWithChildren>) => {
   return (
-    <WagmiProvider config={config} initialState={initialState}>
-      <QueryProvider>
-        {children}
-      </QueryProvider>
-    </WagmiProvider>
+    <ThirdwebReactProvider>
+      {children}
+    </ThirdwebReactProvider>
   );
-};
+}
+ThirdwebProvider.displayName = "ThirdwebProviderWrapper";
 
-export default Web3Provider;
+export { ThirdwebProvider };

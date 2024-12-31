@@ -12,10 +12,10 @@ import { PlayFab } from "@/lib/playfab/types";
 import { IAccountCookie } from "@/types/cookies";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Address } from "abitype";
 import { Session } from "next-auth";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Address } from "thirdweb";
 import * as z from "zod";
 import InfoResultPayload = PlayFab.Client.Account.Responses.InfoResultPayload;
 

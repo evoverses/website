@@ -31,7 +31,9 @@ const getCardBorder = (evo: RawEvo | RawEvoEgg) => {
   return `${baseImageApiUrl}/card/border/${color}-metallic/4`;
 };
 
-export const GET = async (req: NextRequest, { params }: { params: { tokenId: string | string[] | undefined } }) => {
+export const GET = async (
+  req: NextRequest, context: { params: Promise<{ tokenId: string | string[] | undefined }> }) => {
+  const params = await context.params;
   if (!params.tokenId) {
     console.log("No tokenId. Original URL:", req.url);
     return new Response(`Failed to generate the image: No tokenId`, { status: 500 });

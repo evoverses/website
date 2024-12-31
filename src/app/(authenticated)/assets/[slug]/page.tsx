@@ -17,17 +17,16 @@ export const generateStaticParams = async () => {
 };
 
 type Props = {
-  params: {
-    slug: Slug;
-  },
-  searchParams: {
+  params: Promise<{ slug: Slug }>,
+  searchParams: Promise<{
     limit?: number;
     offset?: number;
-  }
+  }>
 }
 
-const AssetPage = ({ params: { slug }, searchParams: { limit = 50, offset = 0 } }: Props) => {
-
+const AssetPage = async ({ params, searchParams }: Props) => {
+  const { limit = 50, offset = 0 } = await searchParams;
+  const { slug } = await params;
   return (
     <main className="flex flex-col w-full p-4 sm:p-24 space-y-10">
       <Suspense fallback={<span>Loading</span>}>

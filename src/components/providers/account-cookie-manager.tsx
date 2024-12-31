@@ -3,12 +3,13 @@
 import { DeadBeef } from "@/data/constants";
 import type { IAccountCookie } from "@/types/cookies";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useEffect, useMemo } from "react";
+import { useActiveAccount } from "thirdweb/react";
 
 const AccountCookieManager = ({ accountCookie: { address: cookieAddress } }: { accountCookie: IAccountCookie }) => {
   const router = useRouter();
-  const { address = DeadBeef } = useAccount();
+  const account = useActiveAccount();
+  const address = useMemo(() => account?.address ?? DeadBeef, [ account ]);
 
   useEffect(() => {
     if (String(cookieAddress).toLowerCase() !== String(address).toLowerCase()) {

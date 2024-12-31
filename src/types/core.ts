@@ -1,6 +1,6 @@
 import { IconProps } from "@radix-ui/react-icons/dist/types";
-import { Address } from "abitype";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { Address } from "thirdweb";
 
 export type Addressish = Address | string | undefined | null;
 

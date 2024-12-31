@@ -19,6 +19,7 @@ import { bigIntJsonReplacer } from "@/lib/node";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ComponentProps, type PropsWithChildren } from "react";
+import type { Address } from "thirdweb";
 import { formatEther } from "viem";
 
 type CardBaseProps = {
@@ -46,14 +47,14 @@ const CardBase = ({ title, token, revoke, className, children }: PropsWithChildr
 };
 
 const VestingCard = async () => {
-  const { address } = getAccountCookie();
+  const { address } = await getAccountCookie();
   const [ data, evoData ] = await Promise.all([ getcEVOData(address), getEVOData(address) ]);
 
   const totalDisbursement = Number(formatEther(data.disbursements.reduce((a, c) => a + c.amount, 0n)));
   return (
     <CardBase
       title="cEVO"
-      token={{ address: cEvoContract.address, image: "https://evoverses.com/EVO.png", symbol: "cEVO" }}
+      token={{ address: cEvoContract.address as Address, image: "https://evoverses.com/EVO.png", symbol: "cEVO" }}
     >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">
@@ -134,7 +135,7 @@ const VestingCard = async () => {
 };
 
 const BankCard = async () => {
-  const { address } = getAccountCookie();
+  const { address } = await getAccountCookie();
   const data = await getxEVOData(address);
   const currentSharesRaw = data.xEvoUserBalance > 0
     ? Number(data.xEvoUserBalance) / Number(data.xEvoTotalSupply) * 100
@@ -226,7 +227,7 @@ const BankCard = async () => {
 };
 
 const FarmCard = async () => {
-  const { address } = getAccountCookie();
+  const { address } = await getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
 
@@ -378,7 +379,7 @@ const FarmCard = async () => {
 };
 
 const EvoCard = async () => {
-  const { address } = getAccountCookie();
+  const { address } = await getAccountCookie();
   const [ data, price ] = await Promise.all([ getEVOData(address), fetchPriceOf(evoContract.address) ]);
 
   return (

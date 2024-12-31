@@ -45,7 +45,7 @@ const connections: Record<string, { Icon: any, disabled?: boolean }> = {
   },
 };
 const AccountPage = async () => {
-  const accountCookie = getAccountCookie();
+  const accountCookie = await getAccountCookie();
   const session = await auth();
   if (!session) {
     return null;

@@ -1,10 +1,10 @@
 import { LpTokenABI } from "@/assets/abi/lp-token";
-import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
+import { asSimpleContract, cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { fetchPairDataOf } from "@/lib/dexscreener";
 import { client } from "@/lib/viem";
 import { Pool } from "@/types/core";
-import { Address } from "abitype";
 import { cache } from "react";
+import { Address } from "thirdweb";
 import { erc20Abi, formatEther } from "viem";
 
 export const findWithdrawFee = (timeDelta: bigint | number): [ number, number, number ] => {
@@ -35,7 +35,7 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const [ poolLength ] = await client.multicall({
     contracts: [
-      { ...investorContract, functionName: "poolLength" }
+      { ...asSimpleContract(investorContract), functionName: "poolLength" },
     ],
     allowFailure: false,
   });
@@ -46,7 +46,8 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
     poolIds.filter(id => id !== 1n).map(async poolId => {
       // noinspection JSUnusedLocalSymbols
       const [ lpToken, allocPoint, lastRewardTime, accGovTokenPerShare ] = await client.readContract({
-        ...investorContract,
+        address: investorContract.address,
+        abi: investorContract.abi,
         functionName: "poolInfo",
         args: [ poolId ],
       });
@@ -58,14 +59,14 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
       ] = await client.multicall(
         {
           contracts: [
-            { ...investorContract, functionName: "userInfo", args: [ poolId, address ] },
-            { ...investorContract, functionName: "getNewRewardPerSecond", args: [ poolId ] },
+            { ...asSimpleContract(investorContract), functionName: "userInfo", args: [ poolId, address ] },
+            { ...asSimpleContract(investorContract), functionName: "getNewRewardPerSecond", args: [ poolId ] },
             { address: lpToken, abi: LpTokenABI, functionName: "totalSupply" },
             { address: lpToken, abi: LpTokenABI, functionName: "balanceOf", args: [ investorContract.address ] },
-            { ...investorContract, functionName: "userDelta", args: [ poolId ] },
+            { ...asSimpleContract(investorContract), functionName: "userDelta", args: [ poolId ] },
             { address: lpToken, abi: LpTokenABI, functionName: "balanceOf", args: [ address ] },
-            { ...investorContract, functionName: "pendingReward", args: [ poolId, address ] },
-            { ...investorContract, functionName: "USER_DEP_FEE" },
+            { ...asSimpleContract(investorContract), functionName: "pendingReward", args: [ poolId, address ] },
+            { ...asSimpleContract(investorContract), functionName: "USER_DEP_FEE" },
             { address: lpToken, abi: LpTokenABI, functionName: "token0" },
             { address: lpToken, abi: LpTokenABI, functionName: "token1" },
             { address: lpToken, abi: LpTokenABI, functionName: "getReserves" },
@@ -128,7 +129,7 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
         token1DivBalance,
         token0DivBalanceUSD,
         token1DivBalanceUSD,
-        token: lpToken,
+        token: lpToken as Address,
         lastTime: BigInt(lastTime),
         depFee,
         withdrawFee,
@@ -144,10 +145,10 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
 export const getxEVOData = cache(async (address: Address = "0x0000000000000000000000000000000000000000") => {
   const [ xEvoTotalSupply, xEvoEvoBalance, xEvoUserBalance, evoUserBalance ] = await client.multicall({
     contracts: [
-      { ...xEvoContract, functionName: "totalSupply" },
-      { ...evoContract, functionName: "balanceOf", args: [ xEvoContract.address ] },
-      { ...xEvoContract, functionName: "balanceOf", args: [ address ] },
-      { ...evoContract, functionName: "balanceOf", args: [ address ] },
+      { ...asSimpleContract(xEvoContract), functionName: "totalSupply" },
+      { ...asSimpleContract(evoContract), functionName: "balanceOf", args: [ xEvoContract.address ] },
+      { ...asSimpleContract(xEvoContract), functionName: "balanceOf", args: [ address ] },
+      { ...asSimpleContract(evoContract), functionName: "balanceOf", args: [ address ] },
     ],
     allowFailure: false,
   });
@@ -165,10 +166,10 @@ export const getxEVOData = cache(async (address: Address = "0x000000000000000000
 export const getcEVOData = cache(async (address: Address = "0x0000000000000000000000000000000000000000") => {
   const [ disbursements, balance, pending, selfDisbursementArray ] = await client.multicall({
     contracts: [
-      { ...cEvoContract, functionName: "disbursementsOf", args: [ address ] },
-      { ...cEvoContract, functionName: "balanceOf", args: [ address ] },
-      { ...cEvoContract, functionName: "pendingOf", args: [ address ] },
-      { ...cEvoContract, functionName: "selfDisbursement", args: [ address ] },
+      { ...asSimpleContract(cEvoContract), functionName: "disbursementsOf", args: [ address ] },
+      { ...asSimpleContract(cEvoContract), functionName: "balanceOf", args: [ address ] },
+      { ...asSimpleContract(cEvoContract), functionName: "pendingOf", args: [ address ] },
+      { ...asSimpleContract(cEvoContract), functionName: "selfDisbursement", args: [ address ] },
     ],
     allowFailure: false,
   });
@@ -190,11 +191,11 @@ export const getcEVOData = cache(async (address: Address = "0x000000000000000000
 export const getEVOData = cache(async (address: Address = "0x0000000000000000000000000000000000000000") => {
   const [ totalSupply, balance, locked, burned, cap ] = await client.multicall({
     contracts: [
-      { ...evoContract, functionName: "totalSupply" },
-      { ...evoContract, functionName: "balanceOf", args: [ address ] },
-      { ...evoContract, functionName: "balanceOf", args: [ cEvoContract.address ] },
-      { ...evoContract, functionName: "totalBurned" },
-      { ...evoContract, functionName: "cap" },
+      { ...asSimpleContract(evoContract), functionName: "totalSupply" },
+      { ...asSimpleContract(evoContract), functionName: "balanceOf", args: [ address ] },
+      { ...asSimpleContract(evoContract), functionName: "balanceOf", args: [ cEvoContract.address ] },
+      { ...asSimpleContract(evoContract), functionName: "totalBurned" },
+      { ...asSimpleContract(evoContract), functionName: "cap" },
     ],
     allowFailure: false,
   });

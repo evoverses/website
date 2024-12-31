@@ -16,6 +16,7 @@ import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { CheckIcon, DownloadIcon, ExclamationTriangleIcon, HomeIcon } from "@radix-ui/react-icons";
 import { IconProps } from "@radix-ui/react-icons/dist/types";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
+import type { Address } from "thirdweb";
 
 type AccountCardProps = {
   title: string;
@@ -51,7 +52,7 @@ type SmartWalletFormProps = {
 }
 
 const SmartWalletForm = async ({ accountId, userReadOnlyData }: SmartWalletFormProps) => {
-  const accountCookie = getAccountCookie();
+  const accountCookie = await getAccountCookie();
   const [ address, created ] = await Promise.all([
     predictAccountAddress(accountId),
     isAccountCreated(accountId),
@@ -59,7 +60,7 @@ const SmartWalletForm = async ({ accountId, userReadOnlyData }: SmartWalletFormP
   const [ gasBalance, evoBalance, accountEvoBalance ] = await Promise.all([
     getGasBalance(address),
     getEvoBalance(address),
-    getERC20Balance(evoContract.address, accountCookie.address),
+    getERC20Balance(evoContract.address as Address, accountCookie.address),
   ]);
 
   return created ? userReadOnlyData?.wallets?.managed === address ? (

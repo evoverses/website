@@ -7,7 +7,7 @@ import { Provider } from "@/types/auth";
 import NextAuth from "next-auth";
 
 // noinspection JSUnusedLocalSymbols
-export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAuth({
+export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   pages: {
     signIn: "/signin",
@@ -21,7 +21,7 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update } = NextAu
         if (session !== null) {
           const playFabID = await getPlayFabIDFromSocialLoginID(
             account.provider as Provider,
-            user.id,
+            user.id!,
             session.playFab.SessionTicket,
           );
           if (!playFabID) {

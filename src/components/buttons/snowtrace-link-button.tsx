@@ -1,26 +1,20 @@
 "use client";
-import { config } from "@/wagmi.config";
+import { client } from "@/thirdweb.config";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import type { Address } from "abitype";
 import Link from "next/link";
-import { useEnsName } from "wagmi";
+import { useEnsName } from "thirdweb/react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 
 export const SnowtraceLink = ({ bytes, type = "address" }: { bytes: string, type?: "tx" | "address" }) => {
   const shortBytes = bytes ? bytes.slice(0, type === "tx" ? 6 : 8) + "..." + bytes.slice(type === "tx" ? -6 : -4) : "";
   const { data: ensName } = useEnsName({
-    config,
+    client,
     address: bytes as Address,
-    chainId: 43_114,
-    scopeKey: bytes,
-    query: {
-      enabled: type === "address",
-      staleTime: 3_600_000, // 1 hour
-    },
   });
   return (
     <Link
-      href={`https://43114.snowtrace.io/${type}/${bytes}`}
+      href={`https://snowscan.xyz/${type}/${bytes}`}
       prefetch={false}
       target="_blank"
       rel="nofollow noreferrer"

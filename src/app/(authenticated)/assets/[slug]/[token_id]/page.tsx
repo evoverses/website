@@ -26,7 +26,8 @@ const NFTAttribute = ({ name, value, display, className }: NFTAttributeProps) =>
   );
 };
 
-const NftPage = async ({ params: { slug: in_slug, token_id } }: { params: Record<string, string> }) => {
+const NftPage = async ({ params }: { params: Promise<Record<string, string>> }) => {
+  const { slug: in_slug, token_id } = await params;
   const slug = in_slug === "egg" ? "evo" : "evo";
   const [ item, history ] = await Promise.all([
     getCollectionItem(slug as any, token_id),

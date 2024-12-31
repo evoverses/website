@@ -1,21 +1,28 @@
 'use client';
 import { Button } from "@/components/ui/button";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { chain } from "@/data/contracts";
+import { client } from "@/thirdweb.config";
 import { ComponentProps } from "react";
 import { FaCheck, FaSpinner } from "react-icons/fa";
-import { useAccount, useSwitchChain } from "wagmi";
+import {
+  useActiveWalletChain,
+  useActiveWalletConnectionStatus,
+  useConnectModal,
+  useSwitchActiveWalletChain,
+} from "thirdweb/react";
 
 type ChainButtonProps = ComponentProps<typeof Button> & { loading?: boolean, success?: boolean };
 const ChainButton = ({ loading, success, children, ...props }: ChainButtonProps) => {
-  const { isConnected, chain } = useAccount();
-  const { open } = useWeb3Modal();
+  const status = useActiveWalletConnectionStatus();
+  const activeChain = useActiveWalletChain();
+  const switchChain = useSwitchActiveWalletChain();
+  const { connect } = useConnectModal();
 
-  const { switchChain } = useSwitchChain();
-  if (!isConnected) {
-    return <Button {...props} onClick={() => open({ view: "Connect" })}>Connect</Button>
+  if (status !== "connected") {
+    return <Button {...props} onClick={() => connect({ chain, client })}>Connect</Button>;
   }
-  if (chain?.id !== 43_114) {
-    return <Button {...props} onClick={() => switchChain({ chainId: 43_114 })}>Switch Network</Button>;
+  if (activeChain?.id !== chain.id) {
+    return <Button {...props} onClick={() => switchChain(chain)}>Switch Network</Button>;
   }
 
   return (

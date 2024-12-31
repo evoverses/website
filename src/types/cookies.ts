@@ -1,4 +1,4 @@
-import { Address } from "abitype";
+import { Address } from "thirdweb";
 
 export type PropsWithAddress<T = {}> = T & { address?: Address }
 

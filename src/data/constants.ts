@@ -1,5 +1,5 @@
 import { type IStoredAccountCookie } from "@/types/cookies";
-import { Address } from "abitype";
+import { Address } from "thirdweb";
 
 export const DeadBeef: Address = "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF";
 

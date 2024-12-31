@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { Address } from "abitype";
+import { Address } from "thirdweb";
 
 export type CollectionMetadata = {
   id: number

@@ -1,5 +1,5 @@
-import { Address } from "abitype";
 import { cache } from "react";
+import { Address } from "thirdweb";
 
 const SQUID_URL = new URL("https://squid.subsquid.io/ownership/v/v1/graphql");
 const method = "POST";

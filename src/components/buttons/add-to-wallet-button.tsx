@@ -1,10 +1,9 @@
 "use client";
 
-import { Address } from "abitype";
 import { FaWallet } from "react-icons/fa";
 import { toast } from "sonner";
-import { watchAsset } from "viem/actions";
-import { useAccount, useWalletClient } from "wagmi";
+import { Address } from "thirdweb";
+import { useActiveAccount, useActiveWalletConnectionStatus } from "thirdweb/react";
 
 type AddToWalletButtonProps = {
   address: Address;
@@ -15,18 +14,18 @@ type AddToWalletButtonProps = {
 }
 
 const AddToWalletButton = ({ address, symbol, decimals = 18, image, className }: AddToWalletButtonProps) => {
-  const { isConnected } = useAccount();
-  const { data: client } = useWalletClient();
+  const status = useActiveWalletConnectionStatus();
+  const account = useActiveAccount();
 
-  if (!isConnected) {
+  if (status !== "connected") {
     return null;
   }
 
   const onClick = async () => {
-    if (!client) {
+    if (!account?.watchAsset) {
       return;
     }
-    const watchAssetPromise = watchAsset(client, {
+    const watchAssetPromise = account.watchAsset({
       type: "ERC20",
       options: { address, symbol, decimals, image },
     });

@@ -9,9 +9,10 @@ import { cookies } from "next/headers";
  * @function getAccountCookie
  * @returns {IAccountCookie} - TradeCookie
  */
-export const getAccountCookie = (): IAccountCookie => {
-  const accountCookie = cookies().get("ev-account");
+export const getAccountCookie = async (): Promise<IAccountCookie> => {
+  const cookiesList = await cookies();
   // noinspection DuplicatedCode
+  const accountCookie = cookiesList.get("ev-account");
   if (accountCookie) {
     const cookie = JSON.parse(atob(accountCookie.value));
     if (process.env.IMPERSONATE === "true" && getAddressSafe(process.env.IMPERSONATE_ADDRESS)) {

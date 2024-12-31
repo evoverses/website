@@ -12,16 +12,18 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { evoContract } from "@/data/contracts";
+import { chain, evoContract } from "@/data/contracts";
 import { ERC20TokenBalance } from "@/lib/glacier/types";
 import { parseViemDetailedError } from "@/lib/viem";
+import { client } from "@/thirdweb.config";
 import { UploadIcon } from "@radix-ui/react-icons";
-import { Address } from "abitype";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Address } from "thirdweb";
+import { transfer } from "thirdweb/extensions/erc20";
+import { useSendTransaction, useWaitForReceipt } from "thirdweb/react";
 import { formatEther, parseEther } from "viem";
-import { useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 type DepositEvoSmartDrawerProps = {
   balance: ERC20TokenBalance;
@@ -90,20 +92,21 @@ const DepositButton = ({ managedWallet, max, value, open, close }: DepositButton
   const router = useRouter();
   const valueBigInt = parseEther(value || "0.0");
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const { isSuccess: isSimulateSuccess } = useSimulateContract({
-    ...evoContract,
-    functionName: "transfer",
-    args: [ managedWallet, valueBigInt ],
-    chainId: 43_114,
-    query: {
-      enabled: validAmount,
-    },
+
+  const {
+    data: { transactionHash } = { transactionHash: "" as Address },
+    error,
+    isError,
+    mutate: writeContract,
+    isPending,
+    reset,
+  } = useSendTransaction();
+
+  const { isSuccess, isPending: isLoading } = useWaitForReceipt({
+    client,
+    transactionHash,
+    chain,
   });
-
-  // noinspection DuplicatedCode
-  const { data, isError, error, writeContract, reset } = useWriteContract();
-
-  const { data: tx } = useWaitForTransactionReceipt({ hash: data, chainId: 43_114, confirmations: 1 });
 
   useEffect(() => {
     if (!open) {
@@ -113,8 +116,8 @@ const DepositButton = ({ managedWallet, max, value, open, close }: DepositButton
       toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
       reset();
     }
-    if (tx) {
-      if (tx.status === "success") {
+    if (!isPending && !isLoading) {
+      if (isSuccess) {
         toast.success("Deposit completed successfully");
         close();
         reset();
@@ -126,17 +129,12 @@ const DepositButton = ({ managedWallet, max, value, open, close }: DepositButton
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, isError, error, tx ]);
+  }, [ open, isError, error, transactionHash ]);
 
   return (
     <Button
-      onClick={() => writeContract({
-        ...evoContract,
-        functionName: "transfer",
-        args: [ managedWallet, valueBigInt ],
-        chainId: 43_114,
-      })}
-      disabled={isError || !validAmount || !isSimulateSuccess}
+      onClick={() => writeContract(transfer({ contract: evoContract, to: managedWallet, amountWei: valueBigInt }))}
+      disabled={isError || !validAmount}
     >
       Deposit
     </Button>

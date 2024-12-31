@@ -1,15 +1,11 @@
 import { ClientAccountProvider } from "@/components/providers/client-account-provider";
 import { getAccountCookie } from "@/lib/cookies/account.server";
-import { config } from "@/wagmi.config";
-import { headers } from "next/headers";
-import { PropsWithChildren } from "react";
-import { cookieToInitialState } from "wagmi";
+import { type PropsWithChildren } from "react";
 
-const AccountProvider = ({ children }: PropsWithChildren) => {
-  const initialState = cookieToInitialState(config, headers().get("cookie"));
-  const accountCookie = getAccountCookie();
+const AccountProvider = async ({ children }: PropsWithChildren) => {
+  const accountCookie = await getAccountCookie();
   return (
-    <ClientAccountProvider initialState={initialState} accountCookie={accountCookie}>
+    <ClientAccountProvider accountCookie={accountCookie}>
       {children}
     </ClientAccountProvider>
   );

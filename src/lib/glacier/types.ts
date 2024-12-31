@@ -1,4 +1,4 @@
-import { Address } from "abitype";
+import { Address } from "thirdweb";
 
 type ERCTokenBalance = {
   ercType: string;

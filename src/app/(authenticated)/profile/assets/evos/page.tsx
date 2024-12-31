@@ -7,26 +7,19 @@ import { Slug } from "@/types/core";
 import { Suspense } from "react";
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: Slug;
-  },
-  searchParams: {
+  }>,
+  searchParams: Promise<{
     limit?: number;
     offset?: number;
     sort?: SortOption;
     order?: SortOrder;
-  }
+  }>
 }
 
-const ProfileEvoAssetsPage = async (
-  {
-    searchParams: {
-      limit = 50,
-      offset = 0,
-      sort = "id",
-      order = "desc",
-    },
-  }: Props) => {
+const ProfileEvoAssetsPage = async ({ searchParams }: Props) => {
+  const { limit = 50, offset = 0, sort = "id", order = "desc" } = await searchParams;
   const wallet = await getWallet();
   console.log(wallet);
   return (

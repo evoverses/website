@@ -11,8 +11,9 @@ export const linkAccount = async (provider: Provider) => {
   if (session !== null) {
     switch (provider) {
       case "twitch":
-      case "google":
-        cookies().set({
+      case "google": {
+        const cookieStore = await cookies();
+        cookieStore.set({
           name: "link-provider",
           value: JSON.stringify({
             provider,
@@ -20,6 +21,9 @@ export const linkAccount = async (provider: Provider) => {
           }),
         });
         await signIn(provider);
+        break;
+      }
+
 
       // await linkTwitch(session.playFab.SessionTicket, session.account.access_token);
     }
