@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 const Cards = () => {
     const [tokenId, setTokenId] = useState("123"); // Default tokenId
