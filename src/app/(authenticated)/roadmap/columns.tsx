@@ -1,10 +1,8 @@
 "use client";
-import { type EvoAnimationProgress, groups, inProgress } from "@/app/(authenticated)/roadmap/data";
+import { animations, type EvoAnimationProgress, groups, inProgress } from "@/app/(authenticated)/roadmap/data";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 import { ColumnDef } from "@tanstack/react-table";
-
-const animations = [ "idle", "attack", "dash", "backUp", "hit", "death", "special" ];
 
 export const columns: ColumnDef<EvoAnimationProgress>[] = [
   {
@@ -15,7 +13,7 @@ export const columns: ColumnDef<EvoAnimationProgress>[] = [
     accessorKey: "status",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     accessorFn: (row) => {
-      const statuses = animations.map(a => row[a as keyof EvoAnimationProgress]);
+      const statuses = animations.map(a => row[a]);
       return statuses.every(Boolean)
         ? "Complete"
         : inProgress.includes(row.species)
@@ -25,12 +23,16 @@ export const columns: ColumnDef<EvoAnimationProgress>[] = [
             : statuses.some(Boolean) ? "Backlog" : "Not Started";
     },
     sortingFn: (a, b) => {
-      const getWorth = (status: string) => status === "Complete" ? 4 : status === "Up Next" ? 3 : status
-      === "In Progress" ? 2 : status === "Backlog" ? 1 : 0;
+      const getWorth = (status: string) => status === "Complete" ? 0 : status === "Up Next" ? 3 : status
+      === "In Progress" ? 4 : status === "Backlog" ? 2 : 1;
       const av = getWorth(a.getValue("status"));
       const bv = getWorth(b.getValue("status"));
       return av === bv ? 0 : av > bv ? 1 : -1;
     },
+  },
+  {
+    accessorKey: "group",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Group" />,
   },
   ...animations.map(k => (
     {

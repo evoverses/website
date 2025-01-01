@@ -1,35 +1,94 @@
 "use client";
 
+import { animations } from "@/app/(authenticated)/roadmap/data";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import {
   ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table";
-import { type HTMLAttributes, useState } from "react";
+import { type HTMLAttributes, useEffect, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
 interface DataTableProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
+const defaultSortState = [ { id: "status", desc: true }, { id: "group", desc: false } ];
+const defaultCompactColumnVisibility = animations.reduce((o, a) => (
+  { ...o, [a]: false }
+), {});
+
 export const DataTable = <TData, TValue>({ columns, data, className, ...props }: DataTableProps<TData, TValue>) => {
-  const [ sorting, setSorting ] = useState<SortingState>([]);
+  const wide = useMediaQuery("(min-width: 1024px)");
+  const [ columnFilters, setColumnFilters ] = useState<ColumnFiltersState>([]);
+  const [ columnVisibility, setColumnVisibility ] = useState<VisibilityState>({});
+  const [ sorting, setSorting ] = useState<SortingState>(defaultSortState);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    state: { sorting },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting, columnFilters, columnVisibility },
   });
 
+  useEffect(() => {
+    table.setColumnVisibility(wide ? {} : defaultCompactColumnVisibility);
+  }, [ wide, table ]);
   return (
     <div className={cn("", className)} {...props} >
+      <div className="flex lg:justify-between gap-4 p-4">
+        <Input
+          placeholder="Filter species..."
+          value={(
+            table.getColumn("species")?.getFilterValue() as string
+          ) ?? ""}
+          onChange={event => table.getColumn("species")?.setFilterValue(event.target.value)}
+          className="w-full max-w-[10rem]"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">Columns</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter(column => column.getCanHide())
+              .map(column => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={column.toggleVisibility}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -40,10 +99,7 @@ export const DataTable = <TData, TValue>({ columns, data, className, ...props }:
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -74,11 +130,6 @@ export const DataTable = <TData, TValue>({ columns, data, className, ...props }:
           </TableBody>
         </Table>
       </div>
-      {/*<DataTablePagination*/}
-      {/*  table={table}*/}
-      {/*  disableInteraction*/}
-      {/*  className="border p-2 sticky bottom-0 bg-background"*/}
-      {/*/>*/}
     </div>
   );
 };
