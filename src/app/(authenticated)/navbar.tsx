@@ -1,7 +1,7 @@
 import NavItems, { ModeButton } from "@/app/(authenticated)/nav-items";
 import Logo from "@/app/icon.png";
-import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { getAccountCookie } from "@/lib/cookies/account.server";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,7 +28,7 @@ export const navigation: NavItem[] = [
 ];
 
 const Navbar = async () => {
-  const session = await auth();
+  const accountCookie = await getAccountCookie();
   return (
     <div className="border-b fixed w-full bg-background z-20">
       <div className="flex h-16 items-center px-4">
@@ -36,20 +36,15 @@ const Navbar = async () => {
           <Image src={Logo} alt="EvoVerses" width={48} height={48} />
         </Link>
         <nav className="items-center ml-2 sm:space-x-4 sm:mx-6 lg:space-x-6">
-          <NavItems navItems={navigation} session={session} />
+          <NavItems navItems={navigation} isConnected={accountCookie.connected} />
         </nav>
         <div className="ml-auto flex items-center space-x-4">
           {/*<WalletButton />*/}
-          {!session && (
+          {!accountCookie.connected && (
             <div className="flex space-x-2">
-              <Button variant="ghost" className="font-bold hidden sm:block" asChild>
+              <Button className="px-2 sm:px-4 font-bold" asChild>
                 <Link href="/signin">
                   Sign In
-                </Link>
-              </Button>
-              <Button className="px-2 sm:px-4 font-bold" asChild>
-                <Link href="/signup">
-                  Create Account
                 </Link>
               </Button>
             </div>

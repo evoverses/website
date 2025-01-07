@@ -6,6 +6,7 @@ import {
   FarmClaimButton,
   FarmDepositButton,
   FarmWithdrawButton,
+  RevokeApprovalButton,
 } from "@/app/(authenticated)/profile/liquidity/buttons";
 import { Button } from "@/components/ui/button";
 import { ChainButton } from "@/components/ui/chain-button";
@@ -21,94 +22,17 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { cEvoContract, chain, evoContract } from "@/data/contracts";
 import { bigIntJsonReviver } from "@/lib/node";
 import { cn } from "@/lib/utils";
-import { parseViemDetailedError } from "@/lib/viem";
-import { client } from "@/thirdweb.config";
-import { claimPending } from "@/thirdweb/43114/0x7b5501109c2605834f7a4153a75850db7521c37e";
+import { chain, client } from "@/thirdweb.config";
 import { Pool } from "@/types/core";
-import { BaseError } from "abitype";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { TbCloudCancel } from "react-icons/tb";
-import { toast } from "sonner";
 import type { Address } from "thirdweb";
-import { allowance, approve } from "thirdweb/extensions/erc20";
-import {
-  useActiveAccount,
-  useActiveWalletConnectionStatus,
-  useReadContract,
-  useSendTransaction,
-  useSimulateTransaction,
-  useWaitForReceipt,
-} from "thirdweb/react";
+import type { ThirdwebContract } from "thirdweb/contract";
+import { allowance } from "thirdweb/extensions/erc20";
+import { TokenName, TokenProvider, TokenSymbol, useActiveAccount, useReadContract } from "thirdweb/react";
 import { formatEther, maxUint256 } from "viem";
-
-interface ClaimButtonProps {
-  disabled?: boolean;
-}
-
-export const ClaimCEvoButton = ({ disabled }: ClaimButtonProps) => {
-  const router = useRouter();
-  const connectionStatus = useActiveWalletConnectionStatus();
-
-  const { mutate: simulateTransaction, isSuccess: isSimulateSuccess } = useSimulateTransaction();
-
-  const {
-    data: { transactionHash } = { transactionHash: "" as Address },
-    error,
-    isError,
-    mutate: writeContract,
-    reset,
-  } = useSendTransaction();
-
-  const { isSuccess, isPending: isLoading, isFetched } = useWaitForReceipt({
-    client,
-    transactionHash,
-    chain,
-  });
-
-  useEffect(() => {
-
-    if (isError) {
-      toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
-      reset();
-    }
-    if (!isLoading && isFetched) {
-      if (isSuccess) {
-        toast.success("Claim completed successfully");
-        reset();
-        router.refresh();
-      } else {
-        toast.error(parseViemDetailedError(error)?.details || "There was a problem with your request.");
-        reset();
-
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isError, error, isSuccess, isFetched ]);
-
-  useEffect(() => {
-    if (connectionStatus === "connected") {
-
-    }
-    simulateTransaction({
-      transaction: claimPending({ contract: cEvoContract }),
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ connectionStatus ]);
-
-  return (
-    <ChainButton
-      className="w-full font-bold"
-      onClick={() => writeContract(claimPending({ contract: cEvoContract }))}
-      disabled={isError || disabled || !isSimulateSuccess}
-    >
-      Claim
-    </ChainButton>
-  );
-};
 
 const FarmActions = [ "Deposit", "Withdraw", "Claim" ] as const;
 type FarmAction = typeof FarmActions[number];
@@ -121,13 +45,7 @@ interface FarmSheetProps {
 
 const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetProps) => {
   const pool: Pool = JSON.parse(poolJson, bigIntJsonReviver);
-  const [ open, setOpen ] = useState<boolean>(false);
   const [ value, setValue ] = useState<string>("");
-
-  const onOpenChange = (open: boolean) => {
-    setOpen(open);
-
-  };
 
   const onValueChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     setValue(value);
@@ -135,7 +53,7 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
 
   const nextFeeHours = pool.nextSecondsRemaining / 60 / 60;
   return (
-    <SmartDrawer onOpenChange={onOpenChange} open={open}>
+    <SmartDrawer>
       <SmartDrawerTrigger asChild>
         <ChainButton className="w-full font-bold">{action}</ChainButton>
       </SmartDrawerTrigger>
@@ -203,8 +121,6 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
           {action === "Claim" && (
             <FarmClaimButton
               poolId={pool.pid}
-              open={action === "Claim" && open}
-              close={() => setOpen(false)}
               disabled={pool.earned === 0n || disabled}
             />
           )}
@@ -214,8 +130,6 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
               value={value}
               max={pool.remainBalance}
               lpToken={pool.token}
-              open={action === "Deposit" && open}
-              close={() => setOpen(false)}
               disabled={disabled}
             />
           )}
@@ -224,8 +138,6 @@ const FarmSmartDrawer = ({ action = "Deposit", poolJson, disabled }: FarmSheetPr
               poolId={pool.pid}
               value={value}
               max={pool.balance}
-              open={action === "Withdraw" && open}
-              close={() => setOpen(false)}
               disabled={disabled}
             />
           )}
@@ -246,20 +158,14 @@ interface XEvoSheetProps {
 
 const BankSmartDrawer = ({ action = "Deposit", json, disabled }: XEvoSheetProps) => {
   const data = JSON.parse(json, bigIntJsonReviver);
-  const [ open, setOpen ] = useState<boolean>(false);
   const [ value, setValue ] = useState<string>("");
-
-  const onOpenChange = (open: boolean) => {
-    setOpen(open);
-
-  };
 
   const onValueChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     setValue(value);
   };
 
   return (
-    <SmartDrawer onOpenChange={onOpenChange} open={open}>
+    <SmartDrawer>
       <SmartDrawerTrigger asChild>
         <ChainButton className="w-full font-bold" disabled={disabled}>{action}</ChainButton>
       </SmartDrawerTrigger>
@@ -290,16 +196,12 @@ const BankSmartDrawer = ({ action = "Deposit", json, disabled }: XEvoSheetProps)
             <BankDepositButton
               value={value}
               max={data.evoUserBalance}
-              open={action === "Deposit" && open}
-              close={() => setOpen(false)}
             />
           )}
           {action === "Withdraw" && (
             <BankWithdrawButton
               value={value}
               max={data.xEvoUserBalance}
-              open={action === "Withdraw" && open}
-              close={() => setOpen(false)}
             />
           )}
         </SmartDrawerFooter>
@@ -308,61 +210,25 @@ const BankSmartDrawer = ({ action = "Deposit", json, disabled }: XEvoSheetProps)
   );
 };
 
-type RevokeButtonProps = {
-  token: { address: Address, symbol: string };
-  contract: { address: Address, name: string };
+type RevokeSmartDrawerProps = {
+  contract: ThirdwebContract<any, Address>;
+  spender: Address;
   className?: string;
 }
 
-const RevokeSmartDrawer = ({ token, contract, className }: RevokeButtonProps) => {
+const RevokeSmartDrawer = ({ contract, spender, className }: RevokeSmartDrawerProps) => {
   const { address } = useActiveAccount() ?? {};
-  const [ open, setOpen ] = useState<boolean>(false);
-  const onOpenChange = (open: boolean) => {
-    setOpen(open);
-
-  };
 
   const { data = 0n } = useReadContract(allowance, {
-    contract: evoContract,
-    spender: contract.address,
+    contract,
+    spender,
     owner: address!,
   });
-
-  const {
-    data: { transactionHash } = { transactionHash: "" as Address },
-    error,
-    isError,
-    isPending,
-    mutate: writeContract,
-    reset,
-  } = useSendTransaction();
-
-  const { isSuccess, isPending: isLoading, isFetched } = useWaitForReceipt({
-    client,
-    transactionHash,
-    chain,
-  });
-
-  const isWaiting = !!transactionHash && isLoading;
-
-  useEffect(() => {
-    if (isSuccess) {
-      setOpen(false);
-      toast.success("Revoked successfully!");
-      reset();
-    }
-    if (error) {
-      toast.error((
-        error as BaseError
-      ).shortMessage || error.message);
-      reset();
-    }
-  }, [ isSuccess, reset, error ]);
 
   const currentAllowance = data === maxUint256 ? "unlimited" : Number(formatEther(data)).toLocaleString();
 
   return (
-    <SmartDrawer onOpenChange={onOpenChange} open={open}>
+    <SmartDrawer>
       <SmartDrawerTrigger className={cn({ hidden: data === 0n }, className)}>
         <TbCloudCancel className="w-6 h-6" />
       </SmartDrawerTrigger>
@@ -370,20 +236,14 @@ const RevokeSmartDrawer = ({ token, contract, className }: RevokeButtonProps) =>
         <SmartDrawerHeader className="sm:text-center">
           <SmartDrawerTitle>Revoke Allowance</SmartDrawerTitle>
         </SmartDrawerHeader>
-        <span className="px-4 text-center">
-          Revoking allowance will set your {token.symbol} allowance from {currentAllowance} to 0 for
-          the {contract.name} contract. Are you sure?
-        </span>
+        <TokenProvider address={contract.address} client={client} chain={chain}>
+          <span className="px-4 text-center">
+            Revoking allowance will set your <TokenSymbol /> allowance from {currentAllowance} to 0 for
+            the <TokenName /> contract. Are you sure?
+          </span>
+        </TokenProvider>
         <SmartDrawerFooter className="gap-4 sm:justify-center sm:flex-col sm:max-w-lg sm:mx-auto sm:space-x-0">
-          <ChainButton
-            onClick={() => writeContract(approve({ contract: evoContract, spender: contract.address, amountWei: 0n }))}
-            disabled={isPending || isWaiting || isSuccess}
-            className="font-bold"
-            success={isSuccess}
-            loading={isWaiting || isPending}
-          >
-            Revoke{isSuccess && "d"}
-          </ChainButton>
+          <RevokeApprovalButton contract={contract} spender={spender} />
         </SmartDrawerFooter>
       </SmartDrawerContent>
     </SmartDrawer>

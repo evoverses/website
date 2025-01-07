@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { chain, evoContract, evoNftContract } from "@/data/contracts";
-import { client, recommendedWallets, wallets } from "@/thirdweb.config";
+import { evoContract, evoNftContract } from "@/data/contracts";
+import { appMetadata, chain, client, walletConnect, wallets } from "@/thirdweb.config";
+import { auth } from "@/thirdweb/siwe";
 import type { ComponentProps } from "react";
 import type { Address } from "thirdweb";
 import { ConnectButton } from "thirdweb/react";
@@ -13,19 +14,15 @@ const WalletButton = ({ className, ...props }: ComponentProps<typeof Button>) =>
   return (
     <ConnectButton
       client={client}
-      recommendedWallets={recommendedWallets}
       wallets={wallets}
       chain={chain}
-      appMetadata={{
-        name: "EvoVerses",
-        url: "https://evoverses.com",
-        description: "A 3D monster battling game bringing Web2 and Web3 together in one platform.",
-        logoUrl: "https://evoverses.com/EVO.png",
-      }}
+      auth={auth}
+      appMetadata={appMetadata}
       connectModal={{
         size: small ? "compact" : "wide",
         showThirdwebBranding: false,
-        privacyPolicyUrl: "https://evoverses.com/privacy",
+        privacyPolicyUrl: "/privacy",
+        termsOfServiceUrl: "/terms",
       }}
       detailsButton={{
         displayBalanceToken: {
@@ -63,9 +60,7 @@ const WalletButton = ({ className, ...props }: ComponentProps<typeof Button>) =>
       supportedNFTs={{
         [chain.id]: [ evoNftContract.address as Address ],
       }}
-      walletConnect={{
-        projectId: process.env.NEXT_PUBLIC_THIRDWEB_PROJECT_ID,
-      }}
+      walletConnect={walletConnect}
     />
   );
 };

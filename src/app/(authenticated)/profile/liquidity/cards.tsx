@@ -1,7 +1,7 @@
 import { getcEVOData, getEVOData, getPoolData, getxEVOData } from "@/app/(authenticated)/profile/_components/fetch";
+import { ClaimCEvoButton } from "@/app/(authenticated)/profile/liquidity/buttons";
 import {
   BankSmartDrawer,
-  ClaimCEvoButton,
   FarmSmartDrawer,
   RevokeSmartDrawer,
 } from "@/app/(authenticated)/profile/liquidity/smart-drawers";
@@ -17,9 +17,11 @@ import { fetchPriceOf } from "@/lib/dexscreener";
 
 import { bigIntJsonReplacer } from "@/lib/node";
 import { cn } from "@/lib/utils";
+import { chain, client } from "@/thirdweb.config";
 import Link from "next/link";
 import { ComponentProps, type PropsWithChildren } from "react";
-import type { Address } from "thirdweb";
+import { type Address, getContract } from "thirdweb";
+import { AccountBalance, AccountProvider } from "thirdweb/react";
 import { formatEther } from "viem";
 
 type CardBaseProps = {
@@ -142,16 +144,14 @@ const BankCard = async () => {
     : 0;
   const currentShares = currentSharesRaw > 0 && Number(currentSharesRaw.toFixed(4)) === 0 ? "< 0.0001" : Number(
     currentSharesRaw.toFixed(4));
-  const currentBalanceRaw = Number(formatEther(data.xEvoUserBalance));
-  const currentBalance = currentBalanceRaw > 0 && Number(currentBalanceRaw.toFixed(4)) === 0 ? "< 0.0001" : Number(
-    currentBalanceRaw.toFixed(4));
+
   return (
     <CardBase
       title="xEVO"
       token={{ address: xEvoContract.address, image: "https://evoverses.com/EVO.png", symbol: "xEVO" }}
       revoke={{
-        token: { address: evoContract.address, symbol: "EVO" },
-        contract: { address: xEvoContract.address, name: "xEVO" },
+        contract: evoContract,
+        spender: xEvoContract.address,
       }}
     >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
@@ -186,27 +186,33 @@ const BankCard = async () => {
         </TabsContent>
         <TabsContent value="account">
           <Table>
-            <TableCaption>
-              xEVO is your bank holdings. The amount of EVO will increase proportional to the xEVO multiplier.
-            </TableCaption>
-            <TableBody>
-              <TableRow>
-                <TableCell>Multiplier</TableCell>
-                <TableCell>{Number(data.multiplier)}x</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Current Balance</TableCell>
-                <TableCell>{currentBalance} xEVO</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Available To Deposit</TableCell>
-                <TableCell>{Number(formatEther(data.evoUserBalance)).toLocaleString()} EVO</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Current Share %</TableCell>
-                <TableCell>{currentShares}%</TableCell>
-              </TableRow>
-            </TableBody>
+            <AccountProvider address={address} client={client}>
+              <TableCaption>
+                xEVO is your bank holdings. The amount of EVO will increase proportional to the xEVO multiplier.
+              </TableCaption>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Multiplier</TableCell>
+                  <TableCell>{Number(data.multiplier)}x</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Current Balance</TableCell>
+                  <TableCell>
+                    <AccountBalance chain={chain} tokenAddress={xEvoContract.address} />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Available To Deposit</TableCell>
+                  <TableCell>
+                    <AccountBalance chain={chain} tokenAddress={evoContract.address} />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Current Share %</TableCell>
+                  <TableCell>{currentShares}%</TableCell>
+                </TableRow>
+              </TableBody>
+            </AccountProvider>
           </Table>
           <div className="flex pt-2 space-x-2">
             <BankSmartDrawer
@@ -230,15 +236,12 @@ const FarmCard = async () => {
   const { address } = await getAccountCookie();
   const pools = await getPoolData(address);
   const pool = pools[0];
-
+  const contract = getContract({ client, chain, address: pool.token });
   return (
     <CardBase
       title={pool.name}
       token={{ address: pool.token, symbol: pool.name }}
-      revoke={{
-        token: { address: pool.token, symbol: pool.name },
-        contract: { address: investorContract.address, name: "Investor" },
-      }}
+      revoke={{ contract, spender: investorContract.address }}
     >
       <Tabs defaultValue="overview" className="w-[300px] sm:w-[400px]">
         <TabsList className="w-full">

@@ -14,7 +14,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useMounted } from "@/lib/hooks/useMounted";
 import { cn } from "@/lib/utils";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
-import { Session } from "next-auth";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { ComponentPropsWithoutRef, ElementRef, forwardRef, useEffect, useState } from "react";
@@ -47,10 +46,10 @@ ListItem.displayName = "ListItem";
 
 interface NavItemsProps {
   navItems: NavItem[];
-  session: Session | null;
+  isConnected: boolean;
 }
 
-const NavItems = ({ navItems, session }: NavItemsProps) => {
+const NavItems = ({ navItems, isConnected }: NavItemsProps) => {
   const active = false;
   const mobile = useMediaQuery("(max-width: 640px)");
   const [ mounted, setMounted ] = useState<boolean>(false);
@@ -70,7 +69,7 @@ const NavItems = ({ navItems, session }: NavItemsProps) => {
           <NavigationMenuTrigger className="">Links</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid grid-cols-1 m-0 ml-4 mb-1 w-[200px] list-none">
-              {navItems.filter(i => !i.authRequired || !!session).map(({ name, href, description }, key) => (
+              {navItems.filter(i => !i.authRequired || isConnected).map(({ name, href, description }, key) => (
                 <ListItem key={key} title={name} href={href}>{description}</ListItem>
               ))}
             </ul>
@@ -80,7 +79,7 @@ const NavItems = ({ navItems, session }: NavItemsProps) => {
     </NavigationMenu>
   ) : (
     <>
-      {navItems.filter(i => !i.authRequired || !!session).map(({ href, name }, key) => (
+      {navItems.filter(i => !i.authRequired || isConnected).map(({ href, name }, key) => (
         <Link
           key={key}
           href={href}

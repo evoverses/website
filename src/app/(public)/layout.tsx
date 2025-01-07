@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import { PropsWithChildren } from "react";
+import { ThirdwebProvider } from "thirdweb/react";
 
 const nunito = Nunito({ subsets: [ "latin" ], variable: "--font-nunito" });
 
@@ -88,7 +89,9 @@ const RootLayout = ({ children }: PropsWithChildren) => {
     <html lang="en" className={nunito.variable} suppressHydrationWarning>
       <body className="font-nunito">
         <GlobalProvider>
-          {children}
+          <ThirdwebProvider>
+            {children}
+          </ThirdwebProvider>
         </GlobalProvider>
         <Toaster />
         <Analytics />

@@ -4,6 +4,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const nextConfig = {
   experimental: {
     webpackBuildWorker: true,
+    optimizePackageImports: [ "thirdweb" ],
   },
   images: {
     remotePatterns: [
@@ -43,7 +44,6 @@ const nextConfig = {
     return config;
   },
 };
-
 
 // Injected content via Sentry wizard below
 

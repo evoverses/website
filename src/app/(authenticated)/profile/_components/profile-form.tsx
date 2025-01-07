@@ -1,23 +1,14 @@
 "use client";
 
-import { updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
-import { LinkWalletButton } from "@/app/(authenticated)/profile/_components/web3-button";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { updateUserTitleDisplayName } from "@/lib/playfab/actions";
-import { getUserReadOnlyData } from "@/lib/playfab/helpers";
-import { PlayFab } from "@/lib/playfab/types";
-import { IAccountCookie } from "@/types/cookies";
+import { useConnectedSiweWallets, useProfiles, useSmartWalletAdmin } from "@/thirdweb/hooks/use-profiles";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Session } from "next-auth";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { Address } from "thirdweb";
 import * as z from "zod";
-import InfoResultPayload = PlayFab.Client.Account.Responses.InfoResultPayload;
 
 const profileFormSchema = z.object({
   username: z
@@ -39,23 +30,16 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-export type ProfileFormProps = {
-  account: PlayFab.Client.Account.AccountInfo;
-  session: Session;
-  accountCookie: IAccountCookie;
-  combined: InfoResultPayload
-}
-export const ProfileForm = ({ account, session, accountCookie, combined }: ProfileFormProps) => {
-  const readOnlyData = getUserReadOnlyData(combined);
-  const emails = [
-    account.PrivateInfo?.Email,
-    account.GoogleInfo?.GoogleEmail,
-  ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i) as string[];
-
+export const ProfileForm = () => {
+  const { profiles } = useProfiles();
+  const eoaWallets = useConnectedSiweWallets();
+  const adminWallet = useSmartWalletAdmin();
+  const emails = profiles.map(p => p.details.email).filter(Boolean).filter((v, i, a) => a.indexOf(v) === i) as string[];
+  const displayName = "";
   const defaultValues: Partial<ProfileFormValues> = {
-    username: account.TitleInfo.DisplayName,
-    email: account.PrivateInfo?.Email,
-    wallet: readOnlyData.wallets.primary,
+    username: displayName,
+    email: emails.length > 0 ? emails[0] : "",
+    wallet: adminWallet,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -65,20 +49,20 @@ export const ProfileForm = ({ account, session, accountCookie, combined }: Profi
   });
   const { isValid, dirtyFields, isDirty } = form.formState;
   const onSubmit = async (data: ProfileFormValues) => {
-    if (data.username !== account.TitleInfo.DisplayName) {
-      await updateUserTitleDisplayName(data.username, session.playFab.SessionTicket);
-    }
-    if (data.wallet !== readOnlyData.wallets.primary) {
-      await updateUserReadOnlyDataAction(account.PlayFabId, {
-        ...readOnlyData,
-        wallets: {
-          ...readOnlyData.wallets,
-          primary: data.wallet as Address,
-        },
-      });
-    }
-    toast.success("Your profile has been updated.");
-    form.reset();
+    //if (data.username !== displayName) {
+    //  await updateUserTitleDisplayName(data.username, session.playFab.SessionTicket);
+    //}
+    //if (data.wallet !== readOnlyData.wallets.primary) {
+    //  await updateUserReadOnlyDataAction(account.PlayFabId, {
+    //    ...readOnlyData,
+    //    wallets: {
+    //      ...readOnlyData.wallets,
+    //      primary: data.wallet as Address,
+    //    },
+    //  });
+    //}
+    //toast.success("Your profile has been updated.");
+    //form.reset();
   };
 
   return (
@@ -141,29 +125,29 @@ export const ProfileForm = ({ account, session, accountCookie, combined }: Profi
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  disabled={readOnlyData.wallets.connected.length === 0}
+                  disabled={eoaWallets.length === 0}
                 >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={readOnlyData.wallets.connected.length === 0
+                        placeholder={eoaWallets.length === 0
                           ? "You have no connected wallets"
                           : "Select a connected wallet"}
                       />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {readOnlyData.wallets.connected.map(wallet => (
-                      <SelectItem key={wallet} value={wallet}>{wallet}</SelectItem>
+                    {eoaWallets.map(w => w.getAccount()?.address).filter(Boolean).map(wallet => (
+                      <SelectItem key={wallet} value={wallet!}>{wallet}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <LinkWalletButton
-                  playFabId={account.PlayFabId}
-                  accountCookie={accountCookie}
-                  readOnlyData={readOnlyData}
-                  className="ml-2"
-                />
+                {/*<LinkWalletButton*/}
+                {/*  playFabId={account.PlayFabId}*/}
+                {/*  accountCookie={accountCookie}*/}
+                {/*  readOnlyData={readOnlyData}*/}
+                {/*  className="ml-2"*/}
+                {/*/>*/}
               </div>
               <FormDescription>
                 Connecting your wallet allows you to buy, sell, and trade NFTs.

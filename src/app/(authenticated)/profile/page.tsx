@@ -1,58 +1,16 @@
-import { linkAccount } from "@/app/(authenticated)/profile/_components/actions";
+import { LinkedProfiles } from "@/app/(authenticated)/profile/_components/linked-profiles";
 import { ProfileForm } from "@/app/(authenticated)/profile/_components/profile-form";
 import SmartWalletForm from "@/app/(authenticated)/profile/_components/smart-wallet-form";
 import { signOutAction } from "@/app/(public)/actions";
-import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-
 import { getAccountCookie } from "@/lib/cookies/account.server";
-import { getAccountInfo, getCombinedPlayerInfo } from "@/lib/playfab/client";
-import { getUserReadOnlyData } from "@/lib/playfab/helpers";
-import { cn } from "@/lib/utils";
-import { Provider } from "@/types/auth";
-import { CheckIcon } from "@radix-ui/react-icons";
 import { Suspense } from "react";
 
-const connections: Record<string, { Icon: any, disabled?: boolean }> = {
-  Google: {
-    Icon: Icons.google,
-  },
-  Twitch: {
-    Icon: Icons.twitch,
-  },
-  Discord: {
-    Icon: Icons.discord,
-    disabled: true,
-  },
-  Twitter: {
-    Icon: Icons.x,
-    disabled: true,
-  },
-  Facebook: {
-    Icon: Icons.facebook,
-    disabled: true,
-  },
-  Steam: {
-    Icon: Icons.steam,
-    disabled: true,
-  },
-  Apple: {
-    Icon: Icons.apple,
-    disabled: true,
-  },
-};
 const AccountPage = async () => {
   const accountCookie = await getAccountCookie();
-  const session = await auth();
-  if (!session) {
-    return null;
-  }
 
-  const account = await getAccountInfo(session.playFab.PlayFabId, session.playFab.SessionTicket);
-  const combined = await getCombinedPlayerInfo(session.playFab.SessionTicket);
   return (
     <main className="space-y-6">
       <div>
@@ -63,34 +21,10 @@ const AccountPage = async () => {
       </div>
       <Separator />
       <Suspense>
-        <SmartWalletForm accountId={session.playFab.PlayFabId} userReadOnlyData={getUserReadOnlyData(combined)} />
+        <SmartWalletForm />
       </Suspense>
-      <ProfileForm account={account} session={session} accountCookie={accountCookie} combined={combined} />
-      <div className="grid gap-2">
-        <Label htmlFor="buttons">Connections</Label>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(connections).map(([ name, { Icon, disabled } ]) => {
-            const action = linkAccount.bind(null, name.toLowerCase() as Provider);
-            const linked = combined.PlayerProfile.LinkedAccounts.some((la) => la.Platform.toLowerCase()
-              .includes(name.toLowerCase()));
-            return (
-              <form action={action} key={name}>
-                <Button
-                  variant="outline"
-                  type="submit"
-                  size="lg"
-                  disabled={linked || disabled}
-                  className={cn("font-bold relative", { "bg-green-500 text-white": linked })}
-                >
-                  <Icon className="h-5 w-5 mr-2" />
-                  {name}
-                  {linked && <CheckIcon className="absolute right-2 h-5 w-5" />}
-                </Button>
-              </form>
-            );
-          })}
-        </div>
-      </div>
+      <ProfileForm />
+      <LinkedProfiles />
       <div className="grid gap-2">
         <Label htmlFor="sign-out">Danger</Label>
         <div className="flex gap-2">

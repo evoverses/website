@@ -12,10 +12,10 @@ import {
   SmartDrawerTitle,
   SmartDrawerTrigger,
 } from "@/components/ui/smart-drawer";
-import { chain, evoContract } from "@/data/contracts";
+import { evoContract } from "@/data/contracts";
 import { ERC20TokenBalance } from "@/lib/glacier/types";
 import { parseViemDetailedError } from "@/lib/viem";
-import { client } from "@/thirdweb.config";
+import { chain, client } from "@/thirdweb.config";
 import { UploadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
