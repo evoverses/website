@@ -53,11 +53,15 @@ export const metadata: Metadata = {
     description: AppDescription,
     url: BaseURL,
     siteName: AppName,
-    images: [
-      { url: "/icon.png", width: 512, height: 512, alt: "EvoVerses Logo" },
-    ],
+    images: { url: "/icon.png", width: 512, height: 512, alt: "EvoVerses Logo" },
     locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    title: AppName,
+    description: AppDescription,
+    images: { url: "/icon.png", alt: "EvoVerses Logo", width: 512, height: 512 },
+    card: "summary",
   },
   icons: {
     icon: "/icon.png",

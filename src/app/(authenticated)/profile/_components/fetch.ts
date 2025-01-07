@@ -2,6 +2,7 @@ import { LpTokenABI } from "@/assets/abi/lp-token";
 import { asSimpleContract, cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { fetchPairDataOf } from "@/lib/dexscreener";
 import { client } from "@/lib/viem";
+import { poolInfo } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
 import { Pool } from "@/types/core";
 import { cache } from "react";
 import { Address } from "thirdweb";
@@ -45,11 +46,9 @@ export const getPoolData = cache(async (address: Address): Promise<Pool[]> => {
   return Promise.all(
     poolIds.filter(id => id !== 1n).map(async poolId => {
       // noinspection JSUnusedLocalSymbols
-      const [ lpToken, allocPoint, lastRewardTime, accGovTokenPerShare ] = await client.readContract({
-        address: investorContract.address,
-        abi: investorContract.abi,
-        functionName: "poolInfo",
-        args: [ poolId ],
+      const [ lpToken, allocPoint, lastRewardTime, accGovTokenPerShare ] = await poolInfo({
+        contract: investorContract,
+        poolId,
       });
       // noinspection JSUnusedLocalSymbols
       const [

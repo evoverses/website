@@ -1,4 +1,4 @@
-import { verifyAuthCookie } from "@/thirdweb/auth";
+import { verifyAuthCookie } from "@/thirdweb/auth.edge";
 import { NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 
 export const middleware = async (request: NextRequest, event: NextFetchEvent) => {

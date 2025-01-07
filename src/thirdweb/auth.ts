@@ -1,14 +1,11 @@
 "use server";
 import { DeadBeef } from "@/data/constants";
 import { client } from "@/thirdweb.config";
-import type { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import type { Address } from "thirdweb";
 import { createAuth, type GenerateLoginPayloadParams, type VerifyLoginPayloadParams } from "thirdweb/auth";
-import type { JWTPayload } from "thirdweb/utils";
 import { privateKeyToAccount } from "thirdweb/wallets";
-
-const authCookieKey = "ev:jwt" as const;
+import { authCookieKey, verifyAuthCookie } from "./auth.edge";
 
 const privateKey = process.env.THIRDWEB_ADMIN_PRIVATE_KEY || "";
 
@@ -65,17 +62,4 @@ export const getAuthCookie = async () => {
 export const getAuthCookieAddress = async () => {
   const cookie = await getAuthCookie();
   return cookie ? cookie.sub as Address : DeadBeef;
-};
-
-export const verifyAuthCookie = async (cookie: string | RequestCookie | undefined) => {
-
-  let jwt = "";
-  if (typeof cookie === "string") {
-    jwt = cookie;
-  } else if (cookie) {
-    jwt = cookie.value;
-  } else {
-    return { valid: false, parsedJWT: {} as JWTPayload };
-  }
-  return auth.verifyJWT({ jwt });
 };

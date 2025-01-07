@@ -1,5 +1,5 @@
-import { signOut } from "@/auth";
+import { logout } from "@/thirdweb/auth";
 
 export const GET = async () => {
-  await signOut({ redirectTo: "/" });
+   await logout();
 };

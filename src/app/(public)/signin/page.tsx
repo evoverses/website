@@ -4,13 +4,13 @@ import { ConnectEmbed } from "@/components/connect-embed";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Login",
 };
 
-const LoginPage = () => {
-
+const LoginPage = async () => {
   return (
     <main className="container relative h-full min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link
@@ -48,7 +48,9 @@ const LoginPage = () => {
             </p>
           </div>
           <div className="flex flex-col items-center">
-            <ConnectEmbed />
+            <Suspense>
+              <ConnectEmbed />
+            </Suspense>
           </div>
         </div>
       </div>

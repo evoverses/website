@@ -1653,7 +1653,7 @@ export async function poolId(
  * Represents the parameters for the "poolInfo" function.
  */
 export type PoolInfoParams = {
-  arg_0: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "", "type": "uint256" }>
+  poolId: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "", "type": "uint256" }>
 };
 
 /**
@@ -1707,7 +1707,7 @@ export async function poolInfo(
         },
       ],
     ],
-    params: [ options.arg_0 ],
+    params: [ options.poolId ],
   });
 };
 

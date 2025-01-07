@@ -1,12 +1,7 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
-import { Provider } from "@/types/auth";
-
-export const loginWithAction = async (provider: Provider, formData: FormData) => {
-  await signIn(provider);
-}
+import { logout } from "@/thirdweb/auth";
 
 export const signOutAction = async () => {
-  await signOut();
+  await logout();
 };

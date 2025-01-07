@@ -1,7 +1,7 @@
 import { Viewer, ViewerLoading } from "@/app/(authenticated)/assets/[slug]/viewer";
-import { getWallet } from "@/app/(authenticated)/profile/assets/functions";
 import { SortOption, SortOrder } from "@/app/(authenticated)/profile/assets/viewer-components";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getAccountCookie } from "@/lib/cookies/account.server";
 
 import { Slug } from "@/types/core";
 import { Suspense } from "react";
@@ -20,8 +20,7 @@ type Props = {
 
 const ProfileEvoAssetsPage = async ({ searchParams }: Props) => {
   const { limit = 50, offset = 0, sort = "id", order = "desc" } = await searchParams;
-  const wallet = await getWallet();
-  console.log(wallet);
+  const { address: wallet } = await getAccountCookie();
   return (
     <Tabs defaultValue="evo">
       <TabsList className="grid w-full max-w-sm grid-cols-3 mx-auto">
