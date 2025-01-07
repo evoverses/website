@@ -1,10 +1,11 @@
+"use server";
 import type { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import type { Address } from "thirdweb";
+import { type Address, createThirdwebClient } from "thirdweb";
 import { createAuth } from "thirdweb/auth";
 import type { JWTPayload } from "thirdweb/utils";
 import { privateKeyToAddress } from "viem/accounts";
 
-export const authCookieKey = "ev:jwt" as const;
+const authCookieKey = "ev:jwt" as const;
 
 const privateKey = process.env.THIRDWEB_ADMIN_PRIVATE_KEY as Address | undefined;
 
@@ -21,6 +22,7 @@ if (!domain) {
 // stripped down auth to allow edge import
 const auth = createAuth({
   domain,
+  client: createThirdwebClient({ secretKey: process.env.THIRDWEB_SECRET_KEY! }),
   adminAccount: {
     address: privateKeyToAddress(privateKey),
     sendTransaction: () => {
@@ -36,7 +38,6 @@ const auth = createAuth({
 });
 
 export const verifyAuthCookie = async (cookie: string | RequestCookie | undefined) => {
-
   let jwt = "";
   if (typeof cookie === "string") {
     jwt = cookie;

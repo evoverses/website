@@ -5,8 +5,9 @@ import { cookies } from "next/headers";
 import type { Address } from "thirdweb";
 import { createAuth, type GenerateLoginPayloadParams, type VerifyLoginPayloadParams } from "thirdweb/auth";
 import { privateKeyToAccount } from "thirdweb/wallets";
-import { authCookieKey, verifyAuthCookie } from "./auth.edge";
+import { verifyAuthCookie } from "./auth.edge";
 
+const authCookieKey = "ev:jwt" as const;
 const privateKey = process.env.THIRDWEB_ADMIN_PRIVATE_KEY || "";
 
 if (!privateKey) {

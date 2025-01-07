@@ -1,5 +1,5 @@
 "use client";
-import { accountAbstraction, appMetadata, chain, client, socialWallets, walletConnect } from "@/thirdweb.config";
+import { appMetadata, chain, client, socialWallets, walletConnect } from "@/thirdweb.config";
 import { auth } from "@/thirdweb/siwe";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ConnectEmbed as ThirdwebConnectEmbed, darkTheme } from "thirdweb/react";
@@ -19,9 +19,8 @@ const ConnectEmbed = () => {
       showThirdwebBranding={false}
       privacyPolicyUrl="/privacy"
       termsOfServiceUrl="/terms"
-      accountAbstraction={accountAbstraction}
       header={{ title: "" }}
-      onConnect={() => {
+      onConnect={(wallet) => {
         router.push("/profile");
       }}
       theme={darkTheme({
