@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 const LoginPage = async () => {
   return (
-    <main className="container relative h-full min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <main className="container relative h-full min-h-[100svh] flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link
         href="/"
         className="absolute left-4 top-4 z-10 md:left-8 md:top-8 flex items-center space-x-2 text-lg font-medium"
@@ -39,7 +39,7 @@ const LoginPage = async () => {
       </div>
       <div className="lg:p-8">
         <div className="flex flex-col justify-center gap-y-6">
-          <div className="flex flex-col space-y-2 text-center justify-center">
+          <div className="flex flex-col max-sm:hidden space-y-2 text-center justify-center">
             <h1 className="text-2xl font-semibold tracking-tight">
               Sign In
             </h1>
