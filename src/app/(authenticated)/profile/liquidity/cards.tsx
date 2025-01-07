@@ -423,7 +423,7 @@ const EvoCard = async () => {
           </TableRow>
           <TableRow>
             <TableCell>Circulating Supply</TableCell>
-            <TableCell>{Number(formatEther(data.circulating)).toLocaleString()} EVO</TableCell>
+            <TableCell>{Number(formatEther(BigInt(data.circulating))).toLocaleString()} EVO</TableCell>
           </TableRow>
         </TableBody>
       </Table>

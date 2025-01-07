@@ -1,5 +1,4 @@
 "use client";
-import { LpTokenABI } from "@/assets/abi/lp-token";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -70,7 +69,7 @@ const FarmDepositButton = ({ poolId, max, value, lpToken, disabled }: DepositBut
   const valueBigInt = parseEther(value || "0.0");
   const [ approveUnlimited, setApproveUnlimited ] = useState(false);
   const validAmount = valueBigInt > 0 && valueBigInt <= max;
-  const contract = getContract({ client, abi: LpTokenABI, address: lpToken, chain });
+  const contract = getContract({ client, address: lpToken, chain });
   const { data: allowance = 0n, refetch } = useReadContract(getAllowance, {
     contract,
     owner: address,

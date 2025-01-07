@@ -1,5 +1,6 @@
 import {
   type AbiParameterToPrimitiveType,
+  type Address,
   type BaseTransactionOptions,
   prepareContractCall,
   prepareEvent,
@@ -25,7 +26,7 @@ export type DepositEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { depositEvent } from "TODO";
+ * import { depositEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -43,7 +44,7 @@ export function depositEvent(filters: DepositEventFilters = {}) {
     signature: "event Deposit(address indexed user, uint256 indexed pid, uint256 amount)",
     filters,
   });
-};
+}
 
 /**
  * Represents the filters for the "EmergencyWithdraw" event.
@@ -60,7 +61,7 @@ export type EmergencyWithdrawEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { emergencyWithdrawEvent } from "TODO";
+ * import { emergencyWithdrawEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -78,7 +79,7 @@ export function emergencyWithdrawEvent(filters: EmergencyWithdrawEventFilters = 
     signature: "event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount)",
     filters,
   });
-};
+}
 
 /**
  * Creates an event object for the Initialized event.
@@ -86,7 +87,7 @@ export function emergencyWithdrawEvent(filters: EmergencyWithdrawEventFilters = 
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { initializedEvent } from "TODO";
+ * import { initializedEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -100,7 +101,7 @@ export function initializedEvent() {
   return prepareEvent({
     signature: "event Initialized(uint8 version)",
   });
-};
+}
 
 /**
  * Represents the filters for the "RoleAdminChanged" event.
@@ -128,7 +129,7 @@ export type RoleAdminChangedEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { roleAdminChangedEvent } from "TODO";
+ * import { roleAdminChangedEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -147,7 +148,7 @@ export function roleAdminChangedEvent(filters: RoleAdminChangedEventFilters = {}
     signature: "event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)",
     filters,
   });
-};
+}
 
 /**
  * Represents the filters for the "RoleGranted" event.
@@ -175,7 +176,7 @@ export type RoleGrantedEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { roleGrantedEvent } from "TODO";
+ * import { roleGrantedEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -194,7 +195,7 @@ export function roleGrantedEvent(filters: RoleGrantedEventFilters = {}) {
     signature: "event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)",
     filters,
   });
-};
+}
 
 /**
  * Represents the filters for the "RoleRevoked" event.
@@ -222,7 +223,7 @@ export type RoleRevokedEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { roleRevokedEvent } from "TODO";
+ * import { roleRevokedEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -241,7 +242,7 @@ export function roleRevokedEvent(filters: RoleRevokedEventFilters = {}) {
     signature: "event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)",
     filters,
   });
-};
+}
 
 /**
  * Represents the filters for the "SendGovernanceTokenReward" event.
@@ -258,7 +259,7 @@ export type SendGovernanceTokenRewardEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { sendGovernanceTokenRewardEvent } from "TODO";
+ * import { sendGovernanceTokenRewardEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -276,7 +277,7 @@ export function sendGovernanceTokenRewardEvent(filters: SendGovernanceTokenRewar
     signature: "event SendGovernanceTokenReward(address indexed user, uint256 indexed pid, uint256 amount, uint256 lockAmount)",
     filters,
   });
-};
+}
 
 /**
  * Represents the filters for the "Withdraw" event.
@@ -293,7 +294,7 @@ export type WithdrawEventFilters = Partial<{
  * @example
  * ```
  * import { getContractEvents } from "thirdweb";
- * import { withdrawEvent } from "TODO";
+ * import { withdrawEvent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const events = await getContractEvents({
  * contract,
@@ -311,7 +312,7 @@ export function withdrawEvent(filters: WithdrawEventFilters = {}) {
     signature: "event Withdraw(address indexed user, uint256 indexed pid, uint256 amount)",
     filters,
   });
-};
+}
 
 /**
  * Contract read functions
@@ -323,7 +324,7 @@ export function withdrawEvent(filters: WithdrawEventFilters = {}) {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { ADMIN_ROLE } from "TODO";
+ * import { ADMIN_ROLE } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await ADMIN_ROLE();
  *
@@ -347,7 +348,7 @@ export async function ADMIN_ROLE(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "CONTRACT_ROLE" function on the contract.
@@ -355,7 +356,7 @@ export async function ADMIN_ROLE(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { CONTRACT_ROLE } from "TODO";
+ * import { CONTRACT_ROLE } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await CONTRACT_ROLE();
  *
@@ -379,7 +380,7 @@ export async function CONTRACT_ROLE(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "DEFAULT_ADMIN_ROLE" function on the contract.
@@ -387,7 +388,7 @@ export async function CONTRACT_ROLE(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { DEFAULT_ADMIN_ROLE } from "TODO";
+ * import { DEFAULT_ADMIN_ROLE } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await DEFAULT_ADMIN_ROLE();
  *
@@ -411,7 +412,7 @@ export async function DEFAULT_ADMIN_ROLE(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "DEV_DEP_FEE" function on the contract.
@@ -419,7 +420,7 @@ export async function DEFAULT_ADMIN_ROLE(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { DEV_DEP_FEE } from "TODO";
+ * import { DEV_DEP_FEE } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await DEV_DEP_FEE();
  *
@@ -443,7 +444,7 @@ export async function DEV_DEP_FEE(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "DEV_FEE_STAGES" function.
@@ -458,7 +459,7 @@ export type DEV_FEE_STAGESParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { DEV_FEE_STAGES } from "TODO";
+ * import { DEV_FEE_STAGES } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await DEV_FEE_STAGES({
  *  arg_0: ...,
@@ -490,7 +491,7 @@ export async function DEV_FEE_STAGES(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Calls the "DEV_FUND_ADDRESS" function on the contract.
@@ -498,7 +499,7 @@ export async function DEV_FEE_STAGES(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { DEV_FUND_ADDRESS } from "TODO";
+ * import { DEV_FUND_ADDRESS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await DEV_FUND_ADDRESS();
  *
@@ -522,7 +523,7 @@ export async function DEV_FUND_ADDRESS(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "FEE_SHARE_FUND_ADDRESS" function on the contract.
@@ -530,7 +531,7 @@ export async function DEV_FUND_ADDRESS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { FEE_SHARE_FUND_ADDRESS } from "TODO";
+ * import { FEE_SHARE_FUND_ADDRESS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await FEE_SHARE_FUND_ADDRESS();
  *
@@ -554,7 +555,7 @@ export async function FEE_SHARE_FUND_ADDRESS(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "FINISH_BONUS_AT_TIME" function on the contract.
@@ -562,7 +563,7 @@ export async function FEE_SHARE_FUND_ADDRESS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { FINISH_BONUS_AT_TIME } from "TODO";
+ * import { FINISH_BONUS_AT_TIME } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await FINISH_BONUS_AT_TIME();
  *
@@ -586,7 +587,7 @@ export async function FINISH_BONUS_AT_TIME(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "FOUNDERS_FUND_ADDRESS" function on the contract.
@@ -594,7 +595,7 @@ export async function FINISH_BONUS_AT_TIME(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { FOUNDERS_FUND_ADDRESS } from "TODO";
+ * import { FOUNDERS_FUND_ADDRESS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await FOUNDERS_FUND_ADDRESS();
  *
@@ -618,7 +619,7 @@ export async function FOUNDERS_FUND_ADDRESS(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "GOV_TOKEN" function on the contract.
@@ -626,7 +627,7 @@ export async function FOUNDERS_FUND_ADDRESS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { GOV_TOKEN } from "TODO";
+ * import { GOV_TOKEN } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await GOV_TOKEN();
  *
@@ -650,7 +651,7 @@ export async function GOV_TOKEN(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "HALVING_AT_TIMES" function.
@@ -665,7 +666,7 @@ export type HALVING_AT_TIMESParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { HALVING_AT_TIMES } from "TODO";
+ * import { HALVING_AT_TIMES } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await HALVING_AT_TIMES({
  *  arg_0: ...,
@@ -697,7 +698,7 @@ export async function HALVING_AT_TIMES(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Calls the "MARKETING_FUND_ADDRESS" function on the contract.
@@ -705,7 +706,7 @@ export async function HALVING_AT_TIMES(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { MARKETING_FUND_ADDRESS } from "TODO";
+ * import { MARKETING_FUND_ADDRESS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await MARKETING_FUND_ADDRESS();
  *
@@ -729,7 +730,7 @@ export async function MARKETING_FUND_ADDRESS(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "PERCENT_FOR_DEV" function on the contract.
@@ -737,7 +738,7 @@ export async function MARKETING_FUND_ADDRESS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { PERCENT_FOR_DEV } from "TODO";
+ * import { PERCENT_FOR_DEV } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await PERCENT_FOR_DEV();
  *
@@ -761,7 +762,7 @@ export async function PERCENT_FOR_DEV(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "PERCENT_FOR_FEE_SHARE" function on the contract.
@@ -769,7 +770,7 @@ export async function PERCENT_FOR_DEV(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { PERCENT_FOR_FEE_SHARE } from "TODO";
+ * import { PERCENT_FOR_FEE_SHARE } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await PERCENT_FOR_FEE_SHARE();
  *
@@ -793,7 +794,7 @@ export async function PERCENT_FOR_FEE_SHARE(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "PERCENT_FOR_FOUNDERS" function on the contract.
@@ -801,7 +802,7 @@ export async function PERCENT_FOR_FEE_SHARE(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { PERCENT_FOR_FOUNDERS } from "TODO";
+ * import { PERCENT_FOR_FOUNDERS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await PERCENT_FOR_FOUNDERS();
  *
@@ -825,7 +826,7 @@ export async function PERCENT_FOR_FOUNDERS(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "PERCENT_FOR_MARKETING" function on the contract.
@@ -833,7 +834,7 @@ export async function PERCENT_FOR_FOUNDERS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { PERCENT_FOR_MARKETING } from "TODO";
+ * import { PERCENT_FOR_MARKETING } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await PERCENT_FOR_MARKETING();
  *
@@ -857,7 +858,7 @@ export async function PERCENT_FOR_MARKETING(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "PERCENT_LOCK_BONUS_REWARD" function.
@@ -872,7 +873,7 @@ export type PERCENT_LOCK_BONUS_REWARDParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { PERCENT_LOCK_BONUS_REWARD } from "TODO";
+ * import { PERCENT_LOCK_BONUS_REWARD } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await PERCENT_LOCK_BONUS_REWARD({
  *  arg_0: ...,
@@ -904,7 +905,7 @@ export async function PERCENT_LOCK_BONUS_REWARD(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "REWARD_MULTIPLIERS" function.
@@ -919,7 +920,7 @@ export type REWARD_MULTIPLIERSParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { REWARD_MULTIPLIERS } from "TODO";
+ * import { REWARD_MULTIPLIERS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await REWARD_MULTIPLIERS({
  *  arg_0: ...,
@@ -951,7 +952,7 @@ export async function REWARD_MULTIPLIERS(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Calls the "REWARD_PER_SECOND" function on the contract.
@@ -959,7 +960,7 @@ export async function REWARD_MULTIPLIERS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { REWARD_PER_SECOND } from "TODO";
+ * import { REWARD_PER_SECOND } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await REWARD_PER_SECOND();
  *
@@ -983,7 +984,7 @@ export async function REWARD_PER_SECOND(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "REWARD_TOKEN" function on the contract.
@@ -991,7 +992,7 @@ export async function REWARD_PER_SECOND(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { REWARD_TOKEN } from "TODO";
+ * import { REWARD_TOKEN } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await REWARD_TOKEN();
  *
@@ -1015,7 +1016,7 @@ export async function REWARD_TOKEN(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "START_TIME" function on the contract.
@@ -1023,7 +1024,7 @@ export async function REWARD_TOKEN(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { START_TIME } from "TODO";
+ * import { START_TIME } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await START_TIME();
  *
@@ -1047,7 +1048,7 @@ export async function START_TIME(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "TOTAL_ALLOCATION_POINTS" function on the contract.
@@ -1055,7 +1056,7 @@ export async function START_TIME(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { TOTAL_ALLOCATION_POINTS } from "TODO";
+ * import { TOTAL_ALLOCATION_POINTS } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await TOTAL_ALLOCATION_POINTS();
  *
@@ -1079,7 +1080,7 @@ export async function TOTAL_ALLOCATION_POINTS(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "USER_DEP_FEE" function on the contract.
@@ -1087,7 +1088,7 @@ export async function TOTAL_ALLOCATION_POINTS(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { USER_DEP_FEE } from "TODO";
+ * import { USER_DEP_FEE } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await USER_DEP_FEE();
  *
@@ -1111,7 +1112,7 @@ export async function USER_DEP_FEE(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "USER_FEE_STAGES" function.
@@ -1126,7 +1127,7 @@ export type USER_FEE_STAGESParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { USER_FEE_STAGES } from "TODO";
+ * import { USER_FEE_STAGES } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await USER_FEE_STAGES({
  *  arg_0: ...,
@@ -1158,7 +1159,7 @@ export async function USER_FEE_STAGES(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "getLockPercentage" function.
@@ -1174,7 +1175,7 @@ export type GetLockPercentageParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { getLockPercentage } from "TODO";
+ * import { getLockPercentage } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await getLockPercentage({
  *  from: ...,
@@ -1212,7 +1213,7 @@ export async function getLockPercentage(
     ],
     params: [ options.from, options.to ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "getMultiplier" function.
@@ -1228,7 +1229,7 @@ export type GetMultiplierParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { getMultiplier } from "TODO";
+ * import { getMultiplier } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await getMultiplier({
  *  from: ...,
@@ -1266,13 +1267,13 @@ export async function getMultiplier(
     ],
     params: [ options.from, options.to ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "getNewRewardPerSecond" function.
  */
 export type GetNewRewardPerSecondParams = {
-  pid1: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "pid1", "type": "uint256" }>
+  poolId: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "pid1", "type": "uint256" }>
 };
 
 /**
@@ -1281,7 +1282,7 @@ export type GetNewRewardPerSecondParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { getNewRewardPerSecond } from "TODO";
+ * import { getNewRewardPerSecond } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await getNewRewardPerSecond({
  *  pid1: ...,
@@ -1311,9 +1312,9 @@ export async function getNewRewardPerSecond(
         },
       ],
     ],
-    params: [ options.pid1 ],
+    params: [ options.poolId ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "getPoolReward" function.
@@ -1330,7 +1331,7 @@ export type GetPoolRewardParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { getPoolReward } from "TODO";
+ * import { getPoolReward } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await getPoolReward({
  *  from: ...,
@@ -1394,7 +1395,7 @@ export async function getPoolReward(
     ],
     params: [ options.from, options.to, options.allocPoint ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "getRoleAdmin" function.
@@ -1409,7 +1410,7 @@ export type GetRoleAdminParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { getRoleAdmin } from "TODO";
+ * import { getRoleAdmin } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await getRoleAdmin({
  *  role: ...,
@@ -1441,7 +1442,7 @@ export async function getRoleAdmin(
     ],
     params: [ options.role ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "hasRole" function.
@@ -1457,7 +1458,7 @@ export type HasRoleParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { hasRole } from "TODO";
+ * import { hasRole } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await hasRole({
  *  role: ...,
@@ -1495,14 +1496,14 @@ export async function hasRole(
     ],
     params: [ options.role, options.account ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "pendingReward" function.
  */
 export type PendingRewardParams = {
-  pid: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "_pid", "type": "uint256" }>
-  user: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_user", "type": "address" }>
+  poolId: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "_pid", "type": "uint256" }>
+  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_user", "type": "address" }>
 };
 
 /**
@@ -1511,7 +1512,7 @@ export type PendingRewardParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { pendingReward } from "TODO";
+ * import { pendingReward } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await pendingReward({
  *  pid: ...,
@@ -1547,9 +1548,9 @@ export async function pendingReward(
         },
       ],
     ],
-    params: [ options.pid, options.user ],
+    params: [ options.poolId, options.address ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "poolExistence" function.
@@ -1568,7 +1569,7 @@ export type PoolExistenceParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { poolExistence } from "TODO";
+ * import { poolExistence } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await poolExistence({
  *  arg_0: ...,
@@ -1600,7 +1601,7 @@ export async function poolExistence(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "poolId" function.
@@ -1615,7 +1616,7 @@ export type PoolIdParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { poolId } from "TODO";
+ * import { poolId } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await poolId({
  *  arg_0: ...,
@@ -1647,7 +1648,7 @@ export async function poolId(
     ],
     params: [ options.arg_0 ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "poolInfo" function.
@@ -1662,7 +1663,7 @@ export type PoolInfoParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { poolInfo } from "TODO";
+ * import { poolInfo } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await poolInfo({
  *  arg_0: ...,
@@ -1709,7 +1710,7 @@ export async function poolInfo(
     ],
     params: [ options.poolId ],
   });
-};
+}
 
 /**
  * Calls the "poolLength" function on the contract.
@@ -1717,7 +1718,7 @@ export async function poolInfo(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { poolLength } from "TODO";
+ * import { poolLength } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await poolLength();
  *
@@ -1741,7 +1742,7 @@ export async function poolLength(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "supportsInterface" function.
@@ -1756,7 +1757,7 @@ export type SupportsInterfaceParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { supportsInterface } from "TODO";
+ * import { supportsInterface } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await supportsInterface({
  *  interfaceId: ...,
@@ -1788,7 +1789,7 @@ export async function supportsInterface(
     ],
     params: [ options.interfaceId ],
   });
-};
+}
 
 /**
  * Calls the "totalAllocPoint" function on the contract.
@@ -1796,7 +1797,7 @@ export async function supportsInterface(
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { totalAllocPoint } from "TODO";
+ * import { totalAllocPoint } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await totalAllocPoint();
  *
@@ -1820,13 +1821,13 @@ export async function totalAllocPoint(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "userDelta" function.
  */
 export type UserDeltaParams = {
-  pid: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "_pid", "type": "uint256" }>
+  poolId: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "_pid", "type": "uint256" }>
 };
 
 /**
@@ -1835,7 +1836,7 @@ export type UserDeltaParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { userDelta } from "TODO";
+ * import { userDelta } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await userDelta({
  *  pid: ...,
@@ -1865,9 +1866,9 @@ export async function userDelta(
         },
       ],
     ],
-    params: [ options.pid ],
+    params: [ options.poolId ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "userDeltaOf" function.
@@ -1883,7 +1884,7 @@ export type UserDeltaOfParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { userDeltaOf } from "TODO";
+ * import { userDeltaOf } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await userDeltaOf({
  *  pid: ...,
@@ -1921,14 +1922,14 @@ export async function userDeltaOf(
     ],
     params: [ options.pid, options.address ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "userInfo" function.
  */
 export type UserInfoParams = {
-  arg_0: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "", "type": "uint256" }>
-  arg_1: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "", "type": "address" }>
+  poolId: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "", "type": "uint256" }>
+  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "", "type": "address" }>
 };
 
 /**
@@ -1937,7 +1938,7 @@ export type UserInfoParams = {
  * @returns The parsed result of the function call.
  * @example
  * ```
- * import { userInfo } from "TODO";
+ * import { userInfo } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const result = await userInfo({
  *  arg_0: ...,
@@ -2003,9 +2004,9 @@ export async function userInfo(
         },
       ],
     ],
-    params: [ options.arg_0, options.arg_1 ],
+    params: [ options.poolId, options.address ],
   });
-};
+}
 
 /**
  * Contract write functions
@@ -2030,7 +2031,7 @@ export type AddParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { add } from "TODO";
+ * import { add } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = add({
  *  allocPoint: ...,
@@ -2071,7 +2072,7 @@ export function add(
     ],
     params: [ options.allocPoint, options.lpToken, options.withUpdate ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "claimReward" function.
@@ -2086,7 +2087,7 @@ export type ClaimRewardParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { claimReward } from "TODO";
+ * import { claimReward } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = claimReward({
  *  pid: ...,
@@ -2115,7 +2116,7 @@ export function claimReward(
     ],
     params: [ options.pid ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "claimRewards" function.
@@ -2130,7 +2131,7 @@ export type ClaimRewardsParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { claimRewards } from "TODO";
+ * import { claimRewards } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = claimRewards({
  *  pids: ...,
@@ -2159,7 +2160,7 @@ export function claimRewards(
     ],
     params: [ options.pids ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "correctWithdrawal" function.
@@ -2176,7 +2177,7 @@ export type CorrectWithdrawalParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { correctWithdrawal } from "TODO";
+ * import { correctWithdrawal } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = correctWithdrawal({
  *  pid: ...,
@@ -2217,7 +2218,7 @@ export function correctWithdrawal(
     ],
     params: [ options.pid, options.user, options.amount ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "deposit" function.
@@ -2233,7 +2234,7 @@ export type DepositParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { deposit } from "TODO";
+ * import { deposit } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = deposit({
  *  pid: ...,
@@ -2268,7 +2269,7 @@ export function deposit(
     ],
     params: [ options.pid, options.amount ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "emergencyWithdraw" function.
@@ -2283,7 +2284,7 @@ export type EmergencyWithdrawParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { emergencyWithdraw } from "TODO";
+ * import { emergencyWithdraw } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = emergencyWithdraw({
  *  pid: ...,
@@ -2312,7 +2313,7 @@ export function emergencyWithdraw(
     ],
     params: [ options.pid ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "grantRole" function.
@@ -2328,7 +2329,7 @@ export type GrantRoleParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { grantRole } from "TODO";
+ * import { grantRole } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = grantRole({
  *  role: ...,
@@ -2363,7 +2364,7 @@ export function grantRole(
     ],
     params: [ options.role, options.account ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "initialize" function.
@@ -2411,7 +2412,7 @@ export type InitializeParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { initialize } from "TODO";
+ * import { initialize } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = initialize({
  *  params: ...,
@@ -2517,7 +2518,7 @@ export function initialize(
     ],
     params: [ options.params ],
   });
-};
+}
 
 /**
  * Calls the "massUpdatePools" function on the contract.
@@ -2525,7 +2526,7 @@ export function initialize(
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { massUpdatePools } from "TODO";
+ * import { massUpdatePools } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = massUpdatePools();
  *
@@ -2546,7 +2547,7 @@ export function massUpdatePools(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "renounceRole" function.
@@ -2562,7 +2563,7 @@ export type RenounceRoleParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { renounceRole } from "TODO";
+ * import { renounceRole } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = renounceRole({
  *  role: ...,
@@ -2597,7 +2598,7 @@ export function renounceRole(
     ],
     params: [ options.role, options.account ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "reviseDeposit" function.
@@ -2614,7 +2615,7 @@ export type ReviseDepositParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { reviseDeposit } from "TODO";
+ * import { reviseDeposit } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = reviseDeposit({
  *  pid: ...,
@@ -2655,7 +2656,7 @@ export function reviseDeposit(
     ],
     params: [ options.pid, options.user, options.time ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "reviseWithdraw" function.
@@ -2672,7 +2673,7 @@ export type ReviseWithdrawParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { reviseWithdraw } from "TODO";
+ * import { reviseWithdraw } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = reviseWithdraw({
  *  pid: ...,
@@ -2713,7 +2714,7 @@ export function reviseWithdraw(
     ],
     params: [ options.pid, options.user, options.time ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "revokeRole" function.
@@ -2729,7 +2730,7 @@ export type RevokeRoleParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { revokeRole } from "TODO";
+ * import { revokeRole } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = revokeRole({
  *  role: ...,
@@ -2764,7 +2765,7 @@ export function revokeRole(
     ],
     params: [ options.role, options.account ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "set" function.
@@ -2781,7 +2782,7 @@ export type SetParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { set } from "TODO";
+ * import { set } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = set({
  *  pid: ...,
@@ -2822,7 +2823,7 @@ export function set(
     ],
     params: [ options.pid, options.allocPoint, options.withUpdate ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateAddress" function.
@@ -2838,7 +2839,7 @@ export type UpdateAddressParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateAddress } from "TODO";
+ * import { updateAddress } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateAddress({
  *  kind: ...,
@@ -2873,7 +2874,7 @@ export function updateAddress(
     ],
     params: [ options.kind, options.address ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateDepositFee" function.
@@ -2889,7 +2890,7 @@ export type UpdateDepositFeeParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateDepositFee } from "TODO";
+ * import { updateDepositFee } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateDepositFee({
  *  kind: ...,
@@ -2924,7 +2925,7 @@ export function updateDepositFee(
     ],
     params: [ options.kind, options.fee ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateFeeStages" function.
@@ -2940,7 +2941,7 @@ export type UpdateFeeStagesParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateFeeStages } from "TODO";
+ * import { updateFeeStages } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateFeeStages({
  *  kind: ...,
@@ -2975,7 +2976,7 @@ export function updateFeeStages(
     ],
     params: [ options.kind, options.feeStages ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateHalvingAtTimes" function.
@@ -2990,7 +2991,7 @@ export type UpdateHalvingAtTimesParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateHalvingAtTimes } from "TODO";
+ * import { updateHalvingAtTimes } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateHalvingAtTimes({
  *  times: ...,
@@ -3019,7 +3020,7 @@ export function updateHalvingAtTimes(
     ],
     params: [ options.times ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateLastRewardTime" function.
@@ -3034,7 +3035,7 @@ export type UpdateLastRewardTimeParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateLastRewardTime } from "TODO";
+ * import { updateLastRewardTime } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateLastRewardTime({
  *  time: ...,
@@ -3063,7 +3064,7 @@ export function updateLastRewardTime(
     ],
     params: [ options.time ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateLockPercent" function.
@@ -3079,7 +3080,7 @@ export type UpdateLockPercentParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateLockPercent } from "TODO";
+ * import { updateLockPercent } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateLockPercent({
  *  kind: ...,
@@ -3114,7 +3115,7 @@ export function updateLockPercent(
     ],
     params: [ options.kind, options.percent ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updatePool" function.
@@ -3129,7 +3130,7 @@ export type UpdatePoolParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updatePool } from "TODO";
+ * import { updatePool } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updatePool({
  *  pid: ...,
@@ -3158,7 +3159,7 @@ export function updatePool(
     ],
     params: [ options.pid ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateRewardMultipliers" function.
@@ -3173,7 +3174,7 @@ export type UpdateRewardMultipliersParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateRewardMultipliers } from "TODO";
+ * import { updateRewardMultipliers } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateRewardMultipliers({
  *  multipliers: ...,
@@ -3202,7 +3203,7 @@ export function updateRewardMultipliers(
     ],
     params: [ options.multipliers ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateRewardPerSecond" function.
@@ -3217,7 +3218,7 @@ export type UpdateRewardPerSecondParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateRewardPerSecond } from "TODO";
+ * import { updateRewardPerSecond } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateRewardPerSecond({
  *  reward: ...,
@@ -3246,7 +3247,7 @@ export function updateRewardPerSecond(
     ],
     params: [ options.reward ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateStartTime" function.
@@ -3261,7 +3262,7 @@ export type UpdateStartTimeParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateStartTime } from "TODO";
+ * import { updateStartTime } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateStartTime({
  *  time: ...,
@@ -3290,7 +3291,7 @@ export function updateStartTime(
     ],
     params: [ options.time ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "updateUserLockPercents" function.
@@ -3309,7 +3310,7 @@ export type UpdateUserLockPercentsParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { updateUserLockPercents } from "TODO";
+ * import { updateUserLockPercents } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = updateUserLockPercents({
  *  lockPercents: ...,
@@ -3338,7 +3339,7 @@ export function updateUserLockPercents(
     ],
     params: [ options.lockPercents ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "withdraw" function.
@@ -3354,7 +3355,7 @@ export type WithdrawParams = {
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { withdraw } from "TODO";
+ * import { withdraw } from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
  *
  * const transaction = withdraw({
  *  pid: ...,
@@ -3390,4 +3391,26 @@ export function withdraw(
     ],
     params: [ options.pid, options.amount ],
   });
+}
+
+type GetAllPoolDataParams = {
+  poolId: bigint;
+  address: Address;
+};
+
+export const getAllPoolData = async (options: BaseTransactionOptions<GetAllPoolDataParams>) => {
+  const [ userInfo_, newRewardPerSecond, userDelta_, pendingReward_, userDepFee ] = await Promise.all([
+    userInfo(options),
+    getNewRewardPerSecond(options),
+    userDelta(options),
+    pendingReward(options),
+    USER_DEP_FEE(options),
+  ]);
+  return {
+    userInfo: userInfo_,
+    newRewardPerSecond: newRewardPerSecond,
+    userDelta: userDelta_,
+    pendingReward: pendingReward_,
+    userDepFee: userDepFee,
+  };
 };

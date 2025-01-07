@@ -9,9 +9,7 @@ if (!clientId) {
     "Missing NEXT_PUBLIC_THIRDWEB_CLIENT_ID env variable. Please add it to your .env.local file.",
   );
 }
-export const client = createThirdwebClient({
-  clientId,
-});
+export const client = createThirdwebClient(secretKey ? { secretKey } : { clientId });
 
 export const chain = avalanche;
 

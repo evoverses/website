@@ -48,7 +48,7 @@ export function approvalEvent(filters: ApprovalEventFilters = {}) {
     signature: "event Approval(address indexed owner, address indexed spender, uint256 value)",
     filters,
   });
-};
+}
 
 /**
  * Creates an event object for the AuthorityUpdated event.
@@ -70,7 +70,7 @@ export function authorityUpdatedEvent() {
   return prepareEvent({
     signature: "event AuthorityUpdated(address authority)",
   });
-};
+}
 
 /**
  * Creates an event object for the Initialized event.
@@ -92,7 +92,7 @@ export function initializedEvent() {
   return prepareEvent({
     signature: "event Initialized(uint64 version)",
   });
-};
+}
 
 /**
  * Creates an event object for the Paused event.
@@ -114,7 +114,7 @@ export function pausedEvent() {
   return prepareEvent({
     signature: "event Paused(address account)",
   });
-};
+}
 
 /**
  * Represents the filters for the "Transfer" event.
@@ -149,7 +149,7 @@ export function transferEvent(filters: TransferEventFilters = {}) {
     signature: "event Transfer(address indexed from, address indexed to, uint256 value)",
     filters,
   });
-};
+}
 
 /**
  * Creates an event object for the Unpaused event.
@@ -171,7 +171,7 @@ export function unpausedEvent() {
   return prepareEvent({
     signature: "event Unpaused(address account)",
   });
-};
+}
 
 /**
  * Represents the filters for the "Upgraded" event.
@@ -209,7 +209,7 @@ export function upgradedEvent(filters: UpgradedEventFilters = {}) {
     signature: "event Upgraded(address indexed implementation)",
     filters,
   });
-};
+}
 
 /**
  * Contract read functions
@@ -245,7 +245,7 @@ export async function UPGRADE_INTERFACE_VERSION(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "allowance" function.
@@ -299,7 +299,7 @@ export async function allowance(
     ],
     params: [ options.owner, options.spender ],
   });
-};
+}
 
 /**
  * Calls the "authority" function on the contract.
@@ -331,7 +331,7 @@ export async function authority(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "balanceOf" function.
@@ -378,7 +378,7 @@ export async function balanceOf(
     ],
     params: [ options.account ],
   });
-};
+}
 
 /**
  * Calls the "decimals" function on the contract.
@@ -410,7 +410,7 @@ export async function decimals(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "isConsumingScheduledOp" function on the contract.
@@ -442,7 +442,7 @@ export async function isConsumingScheduledOp(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "name" function on the contract.
@@ -474,7 +474,7 @@ export async function name(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "paused" function on the contract.
@@ -506,7 +506,7 @@ export async function paused(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "proxiableUUID" function on the contract.
@@ -538,7 +538,7 @@ export async function proxiableUUID(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "symbol" function on the contract.
@@ -570,7 +570,7 @@ export async function symbol(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "totalSupply" function on the contract.
@@ -602,7 +602,7 @@ export async function totalSupply(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Contract write functions
@@ -663,7 +663,7 @@ export function approve(
     ],
     params: [ options.spender, options.value ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "batchBurn" function.
@@ -714,7 +714,7 @@ export function batchBurn(
     ],
     params: [ options.to, options.amount ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "batchMint" function.
@@ -765,7 +765,7 @@ export function batchMint(
     ],
     params: [ options.to, options.amount ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "burn" function.
@@ -809,7 +809,7 @@ export function burn(
     ],
     params: [ options.value ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "burnFrom" function.
@@ -860,7 +860,7 @@ export function burnFrom(
     ],
     params: [ options.account, options.value ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "deposit" function.
@@ -904,7 +904,7 @@ export function deposit(
     ],
     params: [ options.amount ],
   });
-};
+}
 
 /**
  * Calls the "initialize" function on the contract.
@@ -933,7 +933,7 @@ export function initialize(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Calls the "pause" function on the contract.
@@ -962,7 +962,7 @@ export function pause(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "setAuthority" function.
@@ -1006,7 +1006,7 @@ export function setAuthority(
     ],
     params: [ options.newAuthority ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "transfer" function.
@@ -1063,7 +1063,7 @@ export function transfer(
     ],
     params: [ options.to, options.value ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "transferFrom" function.
@@ -1127,7 +1127,7 @@ export function transferFrom(
     ],
     params: [ options.from, options.to, options.value ],
   });
-};
+}
 
 /**
  * Calls the "unpause" function on the contract.
@@ -1156,7 +1156,7 @@ export function unpause(
     ],
     params: [],
   });
-};
+}
 
 /**
  * Represents the parameters for the "upgradeToAndCall" function.
@@ -1211,7 +1211,7 @@ export function upgradeToAndCall(
     ],
     params: [ options.newImplementation, options.data ],
   });
-};
+}
 
 /**
  * Represents the parameters for the "withdraw" function.
@@ -1255,4 +1255,4 @@ export function withdraw(
     ],
     params: [ options.amount ],
   });
-};
+}

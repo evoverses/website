@@ -51,39 +51,6 @@ export function approvalEvent(filters: ApprovalEventFilters = {}) {
 }
 
 /**
- * Represents the filters for the "ClaimedDisbursement" event.
- */
-export type ClaimedDisbursementEventFilters = Partial<{
-  from: AbiParameterToPrimitiveType<{ "indexed": true, "internalType": "address", "name": "from", "type": "address" }>
-}>;
-
-/**
- * Creates an event object for the ClaimedDisbursement event.
- * @param filters - Optional filters to apply to the event.
- * @returns The prepared event object.
- * @example
- * ```
- * import { getContractEvents } from "thirdweb";
- * import { claimedDisbursementEvent } from "TODO";
- *
- * const events = await getContractEvents({
- * contract,
- * events: [
- *  claimedDisbursementEvent({
- *  from: ...,
- * })
- * ],
- * });
- * ```
- */
-export function claimedDisbursementEvent(filters: ClaimedDisbursementEventFilters = {}) {
-  return prepareEvent({
-    signature: "event ClaimedDisbursement(address indexed from, uint256 amount)",
-    filters,
-  });
-}
-
-/**
  * Creates an event object for the Initialized event.
  * @returns The prepared event object.
  * @example
@@ -394,38 +361,6 @@ export async function DEFAULT_ADMIN_ROLE(
 }
 
 /**
- * Calls the "DEFAULT_VESTING_PERIOD" function on the contract.
- * @param options - The options for the DEFAULT_VESTING_PERIOD function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { DEFAULT_VESTING_PERIOD } from "TODO";
- *
- * const result = await DEFAULT_VESTING_PERIOD();
- *
- * ```
- */
-export async function DEFAULT_VESTING_PERIOD(
-  options: BaseTransactionOptions,
-) {
-  return readContract({
-    contract: options.contract,
-    method: [
-      "0x098480ec",
-      [],
-      [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256",
-        },
-      ],
-    ],
-    params: [],
-  });
-}
-
-/**
  * Calls the "DOMAIN_SEPARATOR" function on the contract.
  * @param options - The options for the DOMAIN_SEPARATOR function.
  * @returns The parsed result of the function call.
@@ -591,6 +526,38 @@ export async function balanceOf(
 }
 
 /**
+ * Calls the "cap" function on the contract.
+ * @param options - The options for the cap function.
+ * @returns The parsed result of the function call.
+ * @example
+ * ```
+ * import { cap } from "TODO";
+ *
+ * const result = await cap();
+ *
+ * ```
+ */
+export async function cap(
+  options: BaseTransactionOptions,
+) {
+  return readContract({
+    contract: options.contract,
+    method: [
+      "0x355274ea",
+      [],
+      [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256",
+        },
+      ],
+    ],
+    params: [],
+  });
+}
+
+/**
  * Calls the "decimals" function on the contract.
  * @param options - The options for the decimals function.
  * @returns The parsed result of the function call.
@@ -619,144 +586,6 @@ export async function decimals(
       ],
     ],
     params: [],
-  });
-}
-
-/**
- * Represents the parameters for the "disbursements" function.
- */
-export type DisbursementsParams = {
-  arg_0: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "", "type": "address" }>
-  arg_1: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "", "type": "uint256" }>
-};
-
-/**
- * Calls the "disbursements" function on the contract.
- * @param options - The options for the disbursements function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { disbursements } from "TODO";
- *
- * const result = await disbursements({
- *  arg_0: ...,
- *  arg_1: ...,
- * });
- *
- * ```
- */
-export async function disbursements(
-  options: BaseTransactionOptions<DisbursementsParams>,
-) {
-  return readContract({
-    contract: options.contract,
-    method: [
-      "0x7a153043",
-      [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address",
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256",
-        },
-      ],
-      [
-        {
-          "internalType": "uint256",
-          "name": "startTime",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "duration",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "balance",
-          "type": "uint256",
-        },
-      ],
-    ],
-    params: [ options.arg_0, options.arg_1 ],
-  });
-}
-
-/**
- * Represents the parameters for the "disbursementsOf" function.
- */
-export type DisbursementsOfParams = {
-  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_address", "type": "address" }>
-};
-
-/**
- * Calls the "disbursementsOf" function on the contract.
- * @param options - The options for the disbursementsOf function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { disbursementsOf } from "TODO";
- *
- * const result = await disbursementsOf({
- *  address: ...,
- * });
- *
- * ```
- */
-export async function disbursementsOf(
-  options: BaseTransactionOptions<DisbursementsOfParams>,
-) {
-  return readContract({
-    contract: options.contract,
-    method: [
-      "0x05cea05f",
-      [
-        {
-          "internalType": "address",
-          "name": "_address",
-          "type": "address",
-        },
-      ],
-      [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "startTime",
-              "type": "uint256",
-            },
-            {
-              "internalType": "uint256",
-              "name": "duration",
-              "type": "uint256",
-            },
-            {
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256",
-            },
-            {
-              "internalType": "uint256",
-              "name": "balance",
-              "type": "uint256",
-            },
-          ],
-          "internalType": "struct cEVOUpgradeable.Disbursement[]",
-          "name": "",
-          "type": "tuple[]",
-        },
-      ],
-    ],
-    params: [ options.address ],
   });
 }
 
@@ -858,53 +687,6 @@ export async function hasRole(
       ],
     ],
     params: [ options.role, options.account ],
-  });
-}
-
-/**
- * Represents the parameters for the "lockedOf" function.
- */
-export type LockedOfParams = {
-  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_address", "type": "address" }>
-};
-
-/**
- * Calls the "lockedOf" function on the contract.
- * @param options - The options for the lockedOf function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { lockedOf } from "TODO";
- *
- * const result = await lockedOf({
- *  address: ...,
- * });
- *
- * ```
- */
-export async function lockedOf(
-  options: BaseTransactionOptions<LockedOfParams>,
-) {
-  return readContract({
-    contract: options.contract,
-    method: [
-      "0xa5f1e282",
-      [
-        {
-          "internalType": "address",
-          "name": "_address",
-          "type": "address",
-        },
-      ],
-      [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256",
-        },
-      ],
-    ],
-    params: [ options.address ],
   });
 }
 
@@ -1017,116 +799,6 @@ export async function paused(
     ],
     params: [],
   });
-}
-
-/**
- * Represents the parameters for the "pendingOf" function.
- */
-export type PendingOfParams = {
-  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_address", "type": "address" }>
-};
-
-/**
- * Calls the "pendingOf" function on the contract.
- * @param options - The options for the pendingOf function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { pendingOf } from "TODO";
- *
- * const result = await pendingOf({
- *  address: ...,
- * });
- *
- * ```
- */
-export async function pendingOf(
-  options: BaseTransactionOptions<PendingOfParams>,
-) {
-  return readContract({
-    contract: options.contract,
-    method: [
-      "0xf44136a1",
-      [
-        {
-          "internalType": "address",
-          "name": "_address",
-          "type": "address",
-        },
-      ],
-      [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256",
-        },
-      ],
-    ],
-    params: [ options.address ],
-  });
-}
-
-/**
- * Represents the parameters for the "selfDisbursement" function.
- */
-export type SelfDisbursementParams = {
-  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "", "type": "address" }>
-};
-
-/**
- * Calls the "selfDisbursement" function on the contract.
- * @param options - The options for the selfDisbursement function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { selfDisbursement } from "TODO";
- *
- * const result = await selfDisbursement({
- *  arg_0: ...,
- * });
- *
- * ```
- */
-export async function selfDisbursement(
-  options: BaseTransactionOptions<SelfDisbursementParams>,
-) {
-  const [ startTime, duration, amount, balance ] = await readContract({
-    contract: options.contract,
-    method: [
-      "0x7ccdd45d",
-      [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address",
-        },
-      ],
-      [
-        {
-          "internalType": "uint256",
-          "name": "startTime",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "duration",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "balance",
-          "type": "uint256",
-        },
-      ],
-    ],
-    params: [ options.address ],
-  });
-  return { startTime, duration, amount, balance };
 }
 
 /**
@@ -1273,201 +945,8 @@ export async function totalSupply(
 }
 
 /**
- * Represents the parameters for the "transferTime" function.
- */
-export type TransferTimeParams = {
-  arg_0: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "", "type": "address" }>
-};
-
-/**
- * Calls the "transferTime" function on the contract.
- * @param options - The options for the transferTime function.
- * @returns The parsed result of the function call.
- * @example
- * ```
- * import { transferTime } from "TODO";
- *
- * const result = await transferTime({
- *  arg_0: ...,
- * });
- *
- * ```
- */
-export async function transferTime(
-  options: BaseTransactionOptions<TransferTimeParams>,
-) {
-  return readContract({
-    contract: options.contract,
-    method: [
-      "0x93866707",
-      [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address",
-        },
-      ],
-      [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256",
-        },
-      ],
-    ],
-    params: [ options.arg_0 ],
-  });
-}
-
-/**
  * Contract write functions
  */
-
-/**
- * Represents the parameters for the "addGlobalWhitelist" function.
- */
-export type AddGlobalWhitelistParams = {
-  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
-};
-
-/**
- * Calls the "addGlobalWhitelist" function on the contract.
- * @param options - The options for the "addGlobalWhitelist" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { addGlobalWhitelist } from "TODO";
- *
- * const transaction = addGlobalWhitelist({
- *  to: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function addGlobalWhitelist(
-  options: BaseTransactionOptions<AddGlobalWhitelistParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0xb45cc845",
-      [
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address",
-        },
-      ],
-      [],
-    ],
-    params: [ options.to ],
-  });
-}
-
-/**
- * Represents the parameters for the "addWhitelist" function.
- */
-export type AddWhitelistParams = {
-  from: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "from", "type": "address" }>
-  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
-};
-
-/**
- * Calls the "addWhitelist" function on the contract.
- * @param options - The options for the "addWhitelist" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { addWhitelist } from "TODO";
- *
- * const transaction = addWhitelist({
- *  from: ...,
- *  to: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function addWhitelist(
-  options: BaseTransactionOptions<AddWhitelistParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0xa73d633c",
-      [
-        {
-          "internalType": "address",
-          "name": "from",
-          "type": "address",
-        },
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address",
-        },
-      ],
-      [],
-    ],
-    params: [ options.from, options.to ],
-  });
-}
-
-/**
- * Represents the parameters for the "adminTransferAllDisbursements" function.
- */
-export type AdminTransferAllDisbursementsParams = {
-  from: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "from", "type": "address" }>
-  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
-};
-
-/**
- * Calls the "adminTransferAllDisbursements" function on the contract.
- * @param options - The options for the "adminTransferAllDisbursements" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { adminTransferAllDisbursements } from "TODO";
- *
- * const transaction = adminTransferAllDisbursements({
- *  from: ...,
- *  to: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function adminTransferAllDisbursements(
-  options: BaseTransactionOptions<AdminTransferAllDisbursementsParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0x12bdd0f2",
-      [
-        {
-          "internalType": "address",
-          "name": "from",
-          "type": "address",
-        },
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address",
-        },
-      ],
-      [],
-    ],
-    params: [ options.from, options.to ],
-  });
-}
 
 /**
  * Represents the parameters for the "approve" function.
@@ -1527,28 +1006,24 @@ export function approve(
 }
 
 /**
- * Represents the parameters for the "batchMintDisbursement" function.
+ * Represents the parameters for the "batchBurn" function.
  */
-export type BatchMintDisbursementParams = {
-  to: AbiParameterToPrimitiveType<{ "internalType": "address[]", "name": "to", "type": "address[]" }>
-  amount: AbiParameterToPrimitiveType<{ "internalType": "uint256[]", "name": "amount", "type": "uint256[]" }>
-  startTime: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "startTime", "type": "uint256" }>
-  duration: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "duration", "type": "uint256" }>
+export type BatchBurnParams = {
+  accounts: AbiParameterToPrimitiveType<{ "internalType": "address[]", "name": "accounts", "type": "address[]" }>
+  amounts: AbiParameterToPrimitiveType<{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }>
 };
 
 /**
- * Calls the "batchMintDisbursement" function on the contract.
- * @param options - The options for the "batchMintDisbursement" function.
+ * Calls the "batchBurn" function on the contract.
+ * @param options - The options for the "batchBurn" function.
  * @returns A prepared transaction object.
  * @example
  * ```
- * import { batchMintDisbursement } from "TODO";
+ * import { batchBurn } from "TODO";
  *
- * const transaction = batchMintDisbursement({
- *  to: ...,
- *  amount: ...,
- *  startTime: ...,
- *  duration: ...,
+ * const transaction = batchBurn({
+ *  accounts: ...,
+ *  amounts: ...,
  * });
  *
  * // Send the transaction
@@ -1556,13 +1031,64 @@ export type BatchMintDisbursementParams = {
  *
  * ```
  */
-export function batchMintDisbursement(
-  options: BaseTransactionOptions<BatchMintDisbursementParams>,
+export function batchBurn(
+  options: BaseTransactionOptions<BatchBurnParams>,
 ) {
   return prepareContractCall({
     contract: options.contract,
     method: [
-      "0x18134111",
+      "0x4a6cc677",
+      [
+        {
+          "internalType": "address[]",
+          "name": "accounts",
+          "type": "address[]",
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "amounts",
+          "type": "uint256[]",
+        },
+      ],
+      [],
+    ],
+    params: [ options.accounts, options.amounts ],
+  });
+}
+
+/**
+ * Represents the parameters for the "batchMint" function.
+ */
+export type BatchMintParams = {
+  to: AbiParameterToPrimitiveType<{ "internalType": "address[]", "name": "to", "type": "address[]" }>
+  amounts: AbiParameterToPrimitiveType<{ "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }>
+};
+
+/**
+ * Calls the "batchMint" function on the contract.
+ * @param options - The options for the "batchMint" function.
+ * @returns A prepared transaction object.
+ * @example
+ * ```
+ * import { batchMint } from "TODO";
+ *
+ * const transaction = batchMint({
+ *  to: ...,
+ *  amounts: ...,
+ * });
+ *
+ * // Send the transaction
+ * ...
+ *
+ * ```
+ */
+export function batchMint(
+  options: BaseTransactionOptions<BatchMintParams>,
+) {
+  return prepareContractCall({
+    contract: options.contract,
+    method: [
+      "0x68573107",
       [
         {
           "internalType": "address[]",
@@ -1571,95 +1097,13 @@ export function batchMintDisbursement(
         },
         {
           "internalType": "uint256[]",
-          "name": "amount",
+          "name": "amounts",
           "type": "uint256[]",
         },
-        {
-          "internalType": "uint256",
-          "name": "startTime",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "duration",
-          "type": "uint256",
-        },
       ],
       [],
     ],
-    params: [ options.to, options.amount, options.startTime, options.duration ],
-  });
-}
-
-/**
- * Represents the parameters for the "bridgeMintDisbursement" function.
- */
-export type BridgeMintDisbursementParams = {
-  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
-  startTime: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "startTime", "type": "uint256" }>
-  duration: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "duration", "type": "uint256" }>
-  amount: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "amount", "type": "uint256" }>
-  balance: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "balance", "type": "uint256" }>
-};
-
-/**
- * Calls the "bridgeMintDisbursement" function on the contract.
- * @param options - The options for the "bridgeMintDisbursement" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { bridgeMintDisbursement } from "TODO";
- *
- * const transaction = bridgeMintDisbursement({
- *  to: ...,
- *  startTime: ...,
- *  duration: ...,
- *  amount: ...,
- *  balance: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function bridgeMintDisbursement(
-  options: BaseTransactionOptions<BridgeMintDisbursementParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0xa6d2ba52",
-      [
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address",
-        },
-        {
-          "internalType": "uint256",
-          "name": "startTime",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "duration",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "balance",
-          "type": "uint256",
-        },
-      ],
-      [],
-    ],
-    params: [ options.to, options.startTime, options.duration, options.amount, options.balance ],
+    params: [ options.to, options.amounts ],
   });
 }
 
@@ -1755,64 +1199,6 @@ export function burnFrom(
       [],
     ],
     params: [ options.account, options.amount ],
-  });
-}
-
-/**
- * Calls the "burnLocked" function on the contract.
- * @param options - The options for the "burnLocked" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { burnLocked } from "TODO";
- *
- * const transaction = burnLocked();
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function burnLocked(
-  options: BaseTransactionOptions,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0x4d3ef8dd",
-      [],
-      [],
-    ],
-    params: [],
-  });
-}
-
-/**
- * Calls the "claimPending" function on the contract.
- * @param options - The options for the "claimPending" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { claimPending } from "TODO";
- *
- * const transaction = claimPending();
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function claimPending(
-  options: BaseTransactionOptions,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0x03a9f06e",
-      [],
-      [],
-    ],
-    params: [],
   });
 }
 
@@ -2018,7 +1404,7 @@ export function initialize(
  * Represents the parameters for the "mint" function.
  */
 export type MintParams = {
-  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_address", "type": "address" }>
+  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
   amount: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "amount", "type": "uint256" }>
 };
 
@@ -2031,7 +1417,7 @@ export type MintParams = {
  * import { mint } from "TODO";
  *
  * const transaction = mint({
- *  address: ...,
+ *  to: ...,
  *  amount: ...,
  * });
  *
@@ -2050,83 +1436,18 @@ export function mint(
       [
         {
           "internalType": "address",
-          "name": "_address",
-          "type": "address",
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256",
-        },
-      ],
-      [],
-    ],
-    params: [ options.address, options.amount ],
-  });
-}
-
-/**
- * Represents the parameters for the "mintDisbursement" function.
- */
-export type MintDisbursementParams = {
-  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
-  startTime: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "startTime", "type": "uint256" }>
-  duration: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "duration", "type": "uint256" }>
-  amount: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "amount", "type": "uint256" }>
-};
-
-/**
- * Calls the "mintDisbursement" function on the contract.
- * @param options - The options for the "mintDisbursement" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { mintDisbursement } from "TODO";
- *
- * const transaction = mintDisbursement({
- *  to: ...,
- *  startTime: ...,
- *  duration: ...,
- *  amount: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function mintDisbursement(
-  options: BaseTransactionOptions<MintDisbursementParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0x314f8454",
-      [
-        {
-          "internalType": "address",
           "name": "to",
           "type": "address",
         },
         {
           "internalType": "uint256",
-          "name": "startTime",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
-          "name": "duration",
-          "type": "uint256",
-        },
-        {
-          "internalType": "uint256",
           "name": "amount",
           "type": "uint256",
         },
       ],
       [],
     ],
-    params: [ options.to, options.startTime, options.duration, options.amount ],
+    params: [ options.to, options.amount ],
   });
 }
 
@@ -2297,50 +1618,6 @@ export function renounceRole(
 }
 
 /**
- * Represents the parameters for the "resetTransferTimeOf" function.
- */
-export type ResetTransferTimeOfParams = {
-  address: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "_address", "type": "address" }>
-};
-
-/**
- * Calls the "resetTransferTimeOf" function on the contract.
- * @param options - The options for the "resetTransferTimeOf" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { resetTransferTimeOf } from "TODO";
- *
- * const transaction = resetTransferTimeOf({
- *  address: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function resetTransferTimeOf(
-  options: BaseTransactionOptions<ResetTransferTimeOfParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0x0c64936d",
-      [
-        {
-          "internalType": "address",
-          "name": "_address",
-          "type": "address",
-        },
-      ],
-      [],
-    ],
-    params: [ options.address ],
-  });
-}
-
-/**
  * Represents the parameters for the "revokeRole" function.
  */
 export type RevokeRoleParams = {
@@ -2388,6 +1665,50 @@ export function revokeRole(
       [],
     ],
     params: [ options.role, options.account ],
+  });
+}
+
+/**
+ * Represents the parameters for the "subtractTotalBurned" function.
+ */
+export type SubtractTotalBurnedParams = {
+  amount: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "amount", "type": "uint256" }>
+};
+
+/**
+ * Calls the "subtractTotalBurned" function on the contract.
+ * @param options - The options for the "subtractTotalBurned" function.
+ * @returns A prepared transaction object.
+ * @example
+ * ```
+ * import { subtractTotalBurned } from "TODO";
+ *
+ * const transaction = subtractTotalBurned({
+ *  amount: ...,
+ * });
+ *
+ * // Send the transaction
+ * ...
+ *
+ * ```
+ */
+export function subtractTotalBurned(
+  options: BaseTransactionOptions<SubtractTotalBurnedParams>,
+) {
+  return prepareContractCall({
+    contract: options.contract,
+    method: [
+      "0xc3913991",
+      [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256",
+        },
+      ],
+      [],
+    ],
+    params: [ options.amount ],
   });
 }
 
@@ -2445,50 +1766,6 @@ export function transfer(
       ],
     ],
     params: [ options.to, options.amount ],
-  });
-}
-
-/**
- * Represents the parameters for the "transferAllDisbursements" function.
- */
-export type TransferAllDisbursementsParams = {
-  to: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "to", "type": "address" }>
-};
-
-/**
- * Calls the "transferAllDisbursements" function on the contract.
- * @param options - The options for the "transferAllDisbursements" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { transferAllDisbursements } from "TODO";
- *
- * const transaction = transferAllDisbursements({
- *  to: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function transferAllDisbursements(
-  options: BaseTransactionOptions<TransferAllDisbursementsParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0x9f2310a4",
-      [
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address",
-        },
-      ],
-      [],
-    ],
-    params: [ options.to ],
   });
 }
 
@@ -2582,56 +1859,5 @@ export function unpause(
       [],
     ],
     params: [],
-  });
-}
-
-/**
- * Represents the parameters for the "useLocked" function.
- */
-export type UseLockedParams = {
-  account: AbiParameterToPrimitiveType<{ "internalType": "address", "name": "account", "type": "address" }>
-  amount: AbiParameterToPrimitiveType<{ "internalType": "uint256", "name": "amount", "type": "uint256" }>
-};
-
-/**
- * Calls the "useLocked" function on the contract.
- * @param options - The options for the "useLocked" function.
- * @returns A prepared transaction object.
- * @example
- * ```
- * import { useLocked } from "TODO";
- *
- * const transaction = useLocked({
- *  account: ...,
- *  amount: ...,
- * });
- *
- * // Send the transaction
- * ...
- *
- * ```
- */
-export function useLocked(
-  options: BaseTransactionOptions<UseLockedParams>,
-) {
-  return prepareContractCall({
-    contract: options.contract,
-    method: [
-      "0xc06bab2b",
-      [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address",
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256",
-        },
-      ],
-      [],
-    ],
-    params: [ options.account, options.amount ],
   });
 }
