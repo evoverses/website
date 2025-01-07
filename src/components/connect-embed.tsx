@@ -22,7 +22,7 @@ const ConnectEmbed = () => {
       accountAbstraction={accountAbstraction}
       header={{ title: "" }}
       onConnect={() => {
-        router.push(searchParams.get("redirect") || searchParams.get("redirectUrl") || "/profile");
+        router.push("/profile");
       }}
       theme={darkTheme({
         colors: {
