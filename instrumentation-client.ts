@@ -1,5 +1,5 @@
 // This file configures the initialization of Sentry on the client.
-// The config you add here will be used whenever a users loads a page in their browser.
+// The config you add here will be used whenever users load a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
@@ -31,3 +31,5 @@ Sentry.init({
   // Uncomment the line below to enable Spotlight (https://spotlightjs.com)
   spotlight: process.env.NODE_ENV === "development",
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
