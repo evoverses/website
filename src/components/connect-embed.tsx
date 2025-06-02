@@ -15,7 +15,7 @@ const ConnectEmbed = () => {
       auth={auth}
       appMetadata={appMetadata}
       walletConnect={walletConnect}
-      requireApproval={true}
+      requireApproval={false}
       showThirdwebBranding={false}
       privacyPolicyUrl="/privacy"
       termsOfServiceUrl="/terms"
