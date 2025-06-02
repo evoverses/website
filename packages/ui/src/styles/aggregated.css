@@ -1,4 +1,9 @@
-@import "base.css";
-@import "components.css";
-@import "utilities.css";
-@import "globals.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import "./globals.css";
+@import "./theme.css";
+@import "./base.css";
+@import "./components.css";
+@import "./utilities.css";
+@import "./variants.css";

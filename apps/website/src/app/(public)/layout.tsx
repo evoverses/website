@@ -91,7 +91,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: PropsWithChildren) => {
   return (
     <html lang="en" className={nunito.variable} suppressHydrationWarning>
-      <body className="font-nunito">
+      <body className="font-nunito bg-background text-foreground">
         <GlobalProvider>
           <ThirdwebProvider>
             {children}
