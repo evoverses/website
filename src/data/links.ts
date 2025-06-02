@@ -15,13 +15,13 @@ type LinkData = {
 }
 
 export const marketplaces: LinkData[] = [
-  {
-    name: "Hyperspace",
-    icon: Icons.hyperspace,
-    href: "https://avax.hyperspace.xyz/collection/avax/evoverses",
-    className: "text-brand-hyperspace",
-    buttonClassName: "bg-brand-hyperspace hover:bg-brand-hyperspace/80",
-  },
+  //{
+  //  name: "Hyperspace",
+  //  icon: Icons.hyperspace,
+  //  href: "https://avax.hyperspace.xyz/collection/avax/evoverses",
+  //  className: "text-brand-hyperspace",
+  //  buttonClassName: "bg-brand-hyperspace hover:bg-brand-hyperspace/80",
+  //},
   {
     name: "JoePegs",
     icon: Icons.joePegs,
