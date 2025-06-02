@@ -1,3 +1,6 @@
+import { cn } from "@/lib/utils";
+import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon } from "@radix-ui/react-icons";
+import type { Column } from "@tanstack/react-table";
 import { Button } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -6,12 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon } from "@radix-ui/react-icons";
-import type { Column } from "@tanstack/react-table";
-import type { HTMLAttributes } from "react";
 
-interface ColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
+interface ColumnHeaderProps<TData, TValue> extends React.ComponentProps<"div"> {
   column: Column<TData, TValue>;
   title: string;
 }

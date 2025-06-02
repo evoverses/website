@@ -1,12 +1,12 @@
 "use client";
 import { updateUserReadOnlyDataAction } from "@/app/(authenticated)/profile/_components/actions";
+import { ChainButton } from "@/components/buttons/chain-button";
 import { typedData } from "@/data/viem/signature";
 import { getCsrfToken } from "@/lib/auth";
 import { UserReadOnlyData } from "@/lib/playfab/helpers";
 import { cn } from "@/lib/utils";
 import { IAccountCookie } from "@/types/cookies";
 import { Button } from "@workspace/ui/components/button";
-import { ChainButton } from "@workspace/ui/components/chain-button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";

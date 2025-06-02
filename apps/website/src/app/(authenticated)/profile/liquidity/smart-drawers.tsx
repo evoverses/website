@@ -8,12 +8,12 @@ import {
   FarmWithdrawButton,
   RevokeApprovalButton,
 } from "@/app/(authenticated)/profile/liquidity/buttons";
+import { ChainButton } from "@/components/buttons/chain-button";
 import { bigIntJsonReviver } from "@/lib/node";
 import { cn } from "@/lib/utils";
 import { chain, client } from "@/thirdweb.config";
 import { Pool } from "@/types/core";
 import { Button } from "@workspace/ui/components/button";
-import { ChainButton } from "@workspace/ui/components/chain-button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Separator } from "@workspace/ui/components/separator";

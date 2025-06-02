@@ -1,6 +1,6 @@
-'use client';
-import { Button } from "@workspace/ui/components/button.js";
+"use client";
 import { chain, client } from "@/thirdweb.config";
+import { Button } from "@workspace/ui/components/button.js";
 import { ComponentProps } from "react";
 import { FaCheck, FaSpinner } from "react-icons/fa";
 import {
@@ -30,10 +30,10 @@ const ChainButton = ({ loading, success, children, ...props }: ChainButtonProps)
       {success && <FaCheck className="h-5 w-5 mr-2" />}
       {children}
     </Button>
-  )
-}
+  );
+};
 ChainButton.displayName = "ChainButton";
 
 export {
-  ChainButton
-}
+  ChainButton,
+};

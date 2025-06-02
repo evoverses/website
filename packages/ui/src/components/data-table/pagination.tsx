@@ -1,11 +1,10 @@
-import { Button } from "@workspace/ui/components/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/table-core";
-import type { HTMLAttributes } from "react";
+import { Button } from "@workspace/ui/components/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 
-interface DataTablePaginationProps<TData> extends HTMLAttributes<HTMLDivElement> {
+interface DataTablePaginationProps<TData> extends React.ComponentProps<"div"> {
   table: Table<TData>;
   disableInteraction?: boolean;
 }

@@ -1,9 +1,8 @@
-import { ButtonProps, buttonVariants } from "@workspace/ui/components/button.js";
-
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { ButtonProps, buttonVariants } from "@workspace/ui/components/button.js";
 import Link from "next/link";
-import { ComponentProps, forwardRef } from "react";
+import { ComponentProps } from "react";
 
 const Pagination = ({ className, ...props }: ComponentProps<"nav">) => (
   <nav
@@ -14,14 +13,30 @@ const Pagination = ({ className, ...props }: ComponentProps<"nav">) => (
   />
 );
 
-const PaginationContent = forwardRef<HTMLUListElement, ComponentProps<"ul">>(({ className, ...props }, ref) => (
+const PaginationContent = (
+  {
+    ref,
+    className,
+    ...props
+  }: ComponentProps<"ul"> & {
+    ref: React.RefObject<HTMLUListElement>;
+  },
+) => (
   <ul ref={ref} className={cn("flex flex-row items-center gap-1 m-0", className)} {...props} />
-));
+);
 PaginationContent.displayName = "PaginationContent";
 
-const PaginationItem = forwardRef<HTMLLIElement, ComponentProps<"li">>(({ className, ...props }, ref) => (
+const PaginationItem = (
+  {
+    ref,
+    className,
+    ...props
+  }: ComponentProps<"li"> & {
+    ref: React.RefObject<HTMLLIElement>;
+  },
+) => (
   <li ref={ref} className={cn("list-none mt-0", className)} {...props} />
-));
+);
 PaginationItem.displayName = "PaginationItem";
 
 type PaginationLinkProps = { isActive?: boolean } & Pick<ButtonProps, "size" | "disabled"> & ComponentProps<typeof Link>

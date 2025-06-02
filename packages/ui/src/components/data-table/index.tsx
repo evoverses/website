@@ -1,15 +1,6 @@
 "use client";
 
 import { animations } from "@/app/(authenticated)/roadmap/data";
-import { Button } from "@workspace/ui/components/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Input } from "@workspace/ui/components/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table";
 import { cn } from "@/lib/utils";
 import {
   ColumnDef,
@@ -22,10 +13,19 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { type HTMLAttributes, useEffect, useState } from "react";
+import { Button } from "@workspace/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
+import { Input } from "@workspace/ui/components/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 
-interface DataTableProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
+interface DataTableProps<TData, TValue> extends React.ComponentProps<"div"> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
