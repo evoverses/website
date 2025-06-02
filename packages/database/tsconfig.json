@@ -1,0 +1,21 @@
+{
+  "extends": "@workspace/tsconfig/node.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@workspace/database/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "build",
+    "node_modules"
+  ]
+}

@@ -1,0 +1,71 @@
+@tailwind components;
+
+@layer components {
+  h1 {
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+
+  h2 {
+    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
+  }
+
+  h3 {
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+
+  h4 {
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  }
+
+  h5 {
+    @apply text-xl text-muted-foreground;
+  }
+
+  p {
+    @apply leading-7 [&:not(:first-child)]:mt-6;
+  }
+
+  blockquote {
+    @apply mt-6 border-l-2 pl-6 italic;
+  }
+
+  table {
+    @apply w-full;
+  }
+
+  tr {
+    @apply m-0 border-t p-0 even:bg-muted;
+  }
+
+  th {
+    @apply border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right;
+  }
+
+  td {
+    @apply border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right;
+  }
+
+  ul {
+    @apply my-6 ml-6 list-disc [&>li]:mt-2;
+  }
+
+  code {
+    @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+  }
+
+  .text-lead {
+    @apply text-xl text-muted-foreground;
+  }
+
+  .text-lg {
+    @apply font-semibold;
+  }
+
+  .text-sm {
+    @apply font-medium leading-none;
+  }
+
+  .text-muted-foreground {
+    @apply text-sm;
+  }
+}
