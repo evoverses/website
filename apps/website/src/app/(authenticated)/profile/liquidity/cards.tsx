@@ -235,7 +235,7 @@ const BankCard = async () => {
 const FarmCard = async () => {
   const { address } = await getAccountCookie();
   const pools = await getPoolData(address);
-  const pool = pools[0];
+  const pool = pools[0]!;
   const contract = getContract({ client, chain, address: pool.token });
   return (
     <CardBase

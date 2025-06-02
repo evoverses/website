@@ -13,7 +13,7 @@ const Page = () => {
     js = document.createElement("script");
     js.id = "termly-jssdk";
     js.src = "https://app.termly.io/embed-policy.min.js";
-    tjs.parentNode?.insertBefore(js, tjs);
+    tjs!.parentNode?.insertBefore(js, tjs!);
   }, []);
 
   // noinspection HtmlUnknownAttribute

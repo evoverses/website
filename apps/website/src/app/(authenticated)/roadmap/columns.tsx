@@ -1,6 +1,6 @@
 "use client";
 import { animations, type EvoAnimationProgress, groups, inProgress } from "@/app/(authenticated)/roadmap/data";
-import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
+import { DataTableColumnHeader } from "@/components/data-table/column-header";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 
@@ -18,7 +18,7 @@ export const columns: ColumnDef<EvoAnimationProgress>[] = [
         ? "Complete"
         : inProgress.includes(row.species)
           ? "In Progress"
-          : groups[groups.indexOf(inProgress) + 1].includes(row.species)
+          : groups[groups.indexOf(inProgress) + 1]!.includes(row.species)
             ? "Up Next"
             : statuses.some(Boolean) ? "Backlog" : "Not Started";
     },

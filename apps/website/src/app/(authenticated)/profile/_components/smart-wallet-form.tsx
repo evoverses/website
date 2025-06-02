@@ -111,7 +111,7 @@ const SmartWalletForm = () => {
               managedWallet={address}
               balance={{ balance: formatEther(balance) } as ERC20TokenBalance}
             />
-            <Button variant="danger" className="w-full">
+            <Button variant="destructive" className="w-full">
               <DownloadIcon />
             </Button>
           </AccountCard>

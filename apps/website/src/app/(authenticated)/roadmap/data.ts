@@ -27,7 +27,7 @@ export const groups: Species[][] = [
   [ "Jokull", "Istral", "Cyzorak" ],
 ];
 
-export const inProgress: Species[] = groups[currentGroup];
+export const inProgress: Species[] = groups[currentGroup]!;
 
 const originalData: EvoAnimationProgress[] = [
   { id: 1, idle: true, attack: true, dash: true, backUp: true, hit: true, species: "Nissel" },

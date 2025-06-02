@@ -27,6 +27,13 @@
   --input: hsl(240 5.9% 90%);
   --ring: hsl(142.1 76.2% 36.3%);
   --radius: 0.5rem;
+
+  /* Brand colors */
+  --brand-opensea: oklch(0.6008 0.1701 253.12);
+  --brand-hyperspace: oklch(0.6229 0.2031 25.61);
+  --brand-avalanche: oklch(0.6229 0.2031 25.61);
+  --brand-joepegs: oklch(0.6417 0.2003 284.76);
+  --brand-discord: oklch(0.6474 0.1243 270.62);
 }
 
 

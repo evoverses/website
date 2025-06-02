@@ -41,7 +41,7 @@ export const parseViemDetailedError = (error: Error | null): ViemDetailedError |
         const strSplit = v.split(":");
         let rawKey = strSplit.length > 0 ? strSplit[0] : "";
         let value = strSplit.length > 1 ? strSplit.slice(1).join(":") : "";
-        if (rawKey.startsWith(" ")) {
+        if (rawKey?.startsWith(" ")) {
           const key = Object.keys(d).pop() || "";
           const subKey = rawKey.trim();
           if (d[key] === "") {
@@ -52,7 +52,9 @@ export const parseViemDetailedError = (error: Error | null): ViemDetailedError |
             )[subKey] = value.trim();
           }
         } else {
-          const key = rawKey.trim().toLowerCase().split(" ").map((k, index) =>
+          const key = (
+            rawKey || ""
+          ).trim().toLowerCase().split(" ").map((k, index) =>
             index === 0 ? k : k.charAt(0).toUpperCase() + k.slice(1)).join("");
           d[key] = value.trim();
           if (key === "requestBody") {

@@ -30,8 +30,8 @@ const NftPage = async ({ params }: { params: Promise<Record<string, string>> }) 
   const { slug: in_slug, token_id } = await params;
   const slug = in_slug === "egg" ? "evo" : "evo";
   const [ item, history ] = await Promise.all([
-    getCollectionItem(slug as any, token_id),
-    getEvoHistory(token_id),
+    getCollectionItem(slug as any, token_id!),
+    getEvoHistory(token_id!),
   ]);
   const isEgg = "treated" in item;
 
@@ -116,7 +116,7 @@ const NftPage = async ({ params }: { params: Promise<Record<string, string>> }) 
       <section className="space-y-4">
         <h2>History</h2>
         <Suspense fallback={<div>Loading...</div>}>
-          <AssetHistory slug={slug} tokenId={token_id} />
+          <AssetHistory slug={slug} tokenId={token_id!} />
         </Suspense>
       </section>
     </div>

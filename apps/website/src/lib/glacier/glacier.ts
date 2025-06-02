@@ -32,7 +32,7 @@ export const getERC20Balance = cache(async (contractAddress: Address, wallet: Ad
     };
   }
   const data = await resp.json() as ListERC20BalancesResponse;
-  return data.erc20TokenBalances[0];
+  return data.erc20TokenBalances[0]!;
 });
 
 export const getOwnedNftIds = cache(async (contract: Address, wallet: Address) => {

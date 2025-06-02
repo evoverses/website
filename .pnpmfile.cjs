@@ -3,8 +3,16 @@
  * @type {import("@pnpm/types").ReadPackageHook}
  */
 const readPackage = (pkg) => {
-  if (pkg.name === "use-sync-external-store") {
-    pkg.peerDependencies["react"] = "*";
+  switch (pkg.name) {
+    case "use-sync-external-store": {
+      pkg.peerDependencies["react"] = "*";
+      break;
+    }
+    case "react-day-picker": {
+      pkg.peerDependencies["react"] = "*";
+      pkg.peerDependencies["date-fns"] = "*";
+      break;
+    }
   }
   return pkg;
 };

@@ -28,6 +28,7 @@
     "@prisma/client": "^5.13.0"
   },
   "devDependencies": {
+    "@types/node": "22.15.21",
     "eslint": "^9.27.0",
     "prisma": "^5.13.0",
     "rimraf": "^6",

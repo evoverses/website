@@ -193,7 +193,7 @@ export const getPlayFabIDFromGoogleID = async (id: string, sessionTicket: string
     throw new Error(`Get GoogleID Failed: ${resp.statusText}`);
   }
   const data = await resp.json() as { data: { Data: { GoogleId: string, PlayFabId: string }[] } };
-  return data.data.Data.length === 0 ? undefined : data.data.Data[0].PlayFabId;
+  return data.data.Data.length === 0 ? undefined : data.data.Data[0]!.PlayFabId;
 };
 
 export const getPlayFabIDFromTwitchID = async (id: string, sessionTicket: string) => {
@@ -212,7 +212,7 @@ export const getPlayFabIDFromTwitchID = async (id: string, sessionTicket: string
     throw new Error(`Get TwitchId Failed: ${resp.statusText}`);
   }
   const data = await resp.json() as { data: { Data: { TwitchId: string, PlayFabId: string }[] } };
-  return data.data.Data.length === 0 ? undefined : data.data.Data[0].PlayFabId;
+  return data.data.Data.length === 0 ? undefined : data.data.Data[0]!.PlayFabId;
 };
 
 export const getAccountInfo = async (id: string, clientSessionTicket: string) => {

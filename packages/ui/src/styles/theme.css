@@ -51,6 +51,13 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
 
+  /* brand colors */
+  --color-brand-opensea: var(--brand-opensea);
+  --color-brand-hyperspace: var(--brand-hyperspace);
+  --color-brand-avalanche: var(--brand-avalanche);
+  --color-brand-joepegs: var(--brand-joepegs);
+  --color-brand-discord: var(--brand-discord);
+
   /* radius */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);

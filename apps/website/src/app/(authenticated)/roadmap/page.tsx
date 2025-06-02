@@ -1,6 +1,6 @@
 import { columns } from "@/app/(authenticated)/roadmap/columns";
 import { data, isComplete } from "@/app/(authenticated)/roadmap/data";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/data-table";
 import { Progress } from "@workspace/ui/components/progress";
 import { ScrollArea, ScrollBar } from "@workspace/ui/components/scroll-area";
 
