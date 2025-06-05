@@ -8,7 +8,7 @@ const YouTubeVideo = ({ videoId, className }: { videoId: string, className?: str
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+      if (entries[0]?.isIntersecting) {
         setLoad(true);
         observer.disconnect();
       }

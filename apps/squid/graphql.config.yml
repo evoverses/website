@@ -1,0 +1,7 @@
+schema:
+  - schema.graphql
+  - squid-schema.graphql
+extensions:
+  endpoints:
+    local:
+      url: http://localhost:4350/graphql

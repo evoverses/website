@@ -1,11 +1,13 @@
 {
-  "name": "@evoverses/website",
+  "name": "website",
   "version": "1.0.0",
   "license": "BSL-1.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:spotlight": "npx @spotlightjs/spotlight",
+    "dev:ngrok": "ngrok http http://localhost:3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@spotlightjs/spotlight": "^2.13.3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "22.15.21",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
@@ -51,6 +54,7 @@
     "eslint": "^9.27.0",
     "eslint-config-next": "15.4.0-canary.51",
     "postcss": "8.5.3",
+    "tailwindcss": "^4",
     "type-fest": "^4.41.0",
     "typescript": "^5"
   }

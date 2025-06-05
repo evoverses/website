@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@workspace/ui/components/dialog.js";
+} from "@workspace/ui/components/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -18,7 +18,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@workspace/ui/components/drawer.js";
+} from "@workspace/ui/components/drawer";
 import { ComponentProps } from "react";
 import { useMediaQuery } from "usehooks-ts";
 

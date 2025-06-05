@@ -1,7 +1,7 @@
 import { GlobalProvider } from "@/components/providers";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@workspace/ui/components/sonner";
-import "@/styles/aggregated.css";
+import "@workspace/ui/styles/aggregated.css";
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import { PropsWithChildren } from "react";

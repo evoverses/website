@@ -1,0 +1,50 @@
+# ————————————————
+# Directive definitions (for subsquid schema.graphql type hinting)
+# ————————————————
+directive @entity(
+  queryName: String,
+  listQueryName: String
+) on OBJECT
+
+directive @query on INTERFACE
+
+directive @derivedFrom(
+  field: String!
+) on FIELD_DEFINITION
+
+directive @unique on FIELD_DEFINITION
+
+directive @index(
+  fields: [String!]
+  unique: Boolean
+) repeatable on OBJECT | FIELD_DEFINITION
+
+directive @fulltext(
+  query: String!
+) on FIELD_DEFINITION
+
+directive @cardinality(
+  value: Int!
+) on OBJECT | FIELD_DEFINITION
+
+directive @byteWeight(
+  value: Float!
+) on FIELD_DEFINITION
+
+# ————————————————
+# Scalar stubs
+# ————————————————
+scalar DateTime
+
+# — include whatever you have in `customScalars` —
+# for example, if you export BigInt, BigDecimal, Bytes:
+
+scalar BigDecimal
+scalar Bytes
+scalar BigInt
+scalar JSON
+
+# If you also use JSON-like scalars:
+
+scalar JSONObject
+scalar JSONValue
