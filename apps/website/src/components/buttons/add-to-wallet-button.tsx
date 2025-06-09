@@ -1,7 +1,7 @@
 "use client";
 
 import { FaWallet } from "react-icons/fa";
-import { toast } from "sonner";
+import { toast } from "@workspace/ui/components/sonner";
 import { Address } from "thirdweb";
 import { useActiveAccount, useActiveWalletConnectionStatus } from "thirdweb/react";
 

@@ -1,5 +1,5 @@
 import { assertNotNull } from "@subsquid/util-internal";
-import { CHAIN_ID } from "../../constants";
+import { CHAIN_ID } from "../../utils/constants";
 import { Chain } from "../../model";
 import type { ProcessorContext } from "../../types/processor";
 

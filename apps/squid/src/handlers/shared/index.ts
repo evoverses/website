@@ -4,7 +4,7 @@ import { Contract, Wallet } from "../../model";
 import type { Log } from "../../types/processor";
 import type { ContractURIUpdatedEventData, LogGenericEventData, OwnerUpdatedEventData } from "../../types/shared";
 import { toDate } from "../../utils";
-import { Context } from "../../utils/context";
+import { Context } from "../../model/context";
 
 export const parseSharedEvents = (ctx: Context, logs: Log[]) => parseEvents(ctx, logs);
 

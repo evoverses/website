@@ -1,7 +1,7 @@
-import { MARKETPLACE_ADDRESSES } from "../../constants";
+import { MARKETPLACE_ADDRESSES } from "../../utils/constants";
 import { Contract, Marketplace } from "../../model";
 import type { Log } from "../../types/processor";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 import { loadEnglishAuctionEntities, parseEnglishAuctionEvents, processEnglishAuctionEvents } from "./auctions";
 import { loadDirectListingEntities, parseDirectListingEvents, processDirectListingEvents } from "./listings";
 import { loadOfferEntities, parseOfferEvents, processOfferEvents } from "./offers";

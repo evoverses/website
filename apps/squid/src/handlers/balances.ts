@@ -4,7 +4,7 @@ import { Contract, ContractType, NFT, NFTWalletBalance, Wallet } from "../model"
 import type { TransferEventData } from "../types/nft";
 import type { Log } from "../types/processor";
 import { range, toDate } from "../utils";
-import type { Context } from "../utils/context";
+import type { Context } from "../model/context";
 
 export const getOrCreateNftWalletBalance = (ctx: Context, nft: NFT, wallet: Wallet) => {
   const id = ctx.entities.toId(wallet.address, nft.contract.address, nft.tokenId);

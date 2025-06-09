@@ -1,5 +1,5 @@
 import { TypeormDatabase, TypeormDatabaseOptions } from "@subsquid/typeorm-store";
-import { DB_ISOLATION_LEVEL, SQUID_STATE_SCHEMA } from "./constants";
+import { DB_ISOLATION_LEVEL, SQUID_STATE_SCHEMA } from "./utils/constants";
 import { loadNftEntities, parseNftEvents, processNftEvents } from "./handlers/asset/nfts";
 import { getOrCreateChain } from "./handlers/core/chains";
 import { parseBlocks } from "./handlers/core/transactions";
@@ -25,8 +25,8 @@ import {
   Wallet, Marketplace, MarketplaceAsset, MarketplaceAdmin, MarketplaceLister,
 } from "./model";
 import { processor } from "./processor";
-import { Context } from "./utils/context";
-import { EntityManager } from "./utils/entity-manager";
+import { Context } from "./model/context";
+import { EntityManager } from "./model/entity-manager";
 
 let chain: Chain;
 

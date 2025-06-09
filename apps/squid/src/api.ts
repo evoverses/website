@@ -1,17 +1,15 @@
-import SimplifyInflectorPlugin from "@graphile-contrib/pg-simplify-inflector";
-import AggregatesPlugin from "@graphile/pg-aggregates";
 import cors from "cors";
 import express from "express";
 import { NodePlugin } from "graphile-build";
+import { PgAllRows, PgRowByUniqueConstraint, PgTablesPlugin } from "graphile-build-pg";
+import { Pool } from "pg";
 import { postgraphile } from "postgraphile";
-import FilterPlugin from "postgraphile-plugin-connection-filter";
-import { DEVELOPMENT, SQUID_STATE_SCHEMA } from "./constants";
-import { AssetPlugin } from "./plugins/asset-plugin";
-import { AttributesByQueryPlugin } from "./plugins/attributes-by-query-plugin";
-import { CollectionPlugin } from "./plugins/collection-plugin";
-import { ProcessorStatusPlugin } from "./plugins/processor-status-plugin";
-import { ProfilePlugin } from "./plugins/profile-plugin";
+import { AttributesByQueryPlugin } from "./graphql/plugins/attributes-by-query-plugin";
+import { CollectionPlugin } from "./graphql/plugins/collection-plugin";
+import { EvoPlugin } from "./graphql/plugins/evo-plugin";
+import { ProcessorStatusPlugin } from "./graphql/plugins/processor-status-plugin";
 import { getEnv } from "./utils";
+import { DATABASE_CONFIG, DEVELOPMENT, SQUID_STATE_SCHEMA } from "./utils/constants";
 
 const app = express();
 
@@ -26,6 +24,8 @@ const allowedOrigins = [
   "https://preview.evoverses.com",
   "https://ngrok.cajun.tools",
 ];
+
+const evosClient = new Pool({ ...DATABASE_CONFIG, database: "evos" });
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -46,18 +46,7 @@ app.get("/graphql", (_req, res, _next) => {
 
 app.use(
   postgraphile(
-    {
-      host: getEnv("DB_HOST", "localhost"),
-      port: parseInt(getEnv("DB_PORT", "5432")),
-      database: getEnv("DB_NAME", "postgres"),
-      user: getEnv("DB_USER", "postgres"),
-      password: getEnv("DB_PASS", "postgres"),
-      ...(
-        getEnv("DB_SSL", "false").toLowerCase() === "true" ? {
-          ssl: { rejectUnauthorized: false },
-        } : {}
-      ),
-    },
+    DATABASE_CONFIG,
     getEnv("DB_SCHEMA", "public"),
     {
       graphiql: true,
@@ -68,22 +57,22 @@ app.use(
         DEVELOPMENT ? {
           showErrorStack: "json",
           extendedErrors: [ "hint", "detail", "errcode" ],
-          exportGqlSchemaPath: "./api-schema.graphql",
+          exportGqlSchemaPath: "./src/graphql/schemas/api.schema.graphql",
         } : {}
       ),
+      // readCache: "",
       disableDefaultMutations: true,
-      disableQueryLog: true, // set false to see the processed queries
-      skipPlugins: [ NodePlugin ],
+      disableQueryLog: DEVELOPMENT, // set false to see the processed queries
+      skipPlugins: [ NodePlugin, PgTablesPlugin, PgAllRows, PgRowByUniqueConstraint ],
       appendPlugins: [
-        AggregatesPlugin,
-        FilterPlugin,
-        SimplifyInflectorPlugin,
-        ProcessorStatusPlugin,
-        AssetPlugin,
+        EvoPlugin,
         AttributesByQueryPlugin,
         CollectionPlugin,
-        ProfilePlugin,
+        ProcessorStatusPlugin,
       ],
+      additionalGraphQLContextFromRequest: async () => (
+        { evosClient }
+      ),
       externalGraphqlRoute: getEnv("GQL_BASE_PATH") ? getEnv("GQL_BASE_PATH") + "/api/graphql" : undefined,
       graphileBuildOptions: {
         stateSchemas: [ SQUID_STATE_SCHEMA ],

@@ -111,6 +111,7 @@
   --breakpoint-3xl: 120rem; /* 1920px */
   /* containers */
   --container-8xl: 90rem; /* 1440px */
+  --container-8xxl: 94.75rem; /* 1516px */
   --container-9xl: 96rem; /* 1536px */
   /* transition timings */
   --ease-out-circ: cubic-bezier(0, 0.55, 0.45, 1);
@@ -119,4 +120,6 @@
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-glow: pulse-glow 3s infinite;
+
+  --aspect-card: 1 / 1.415;
 }

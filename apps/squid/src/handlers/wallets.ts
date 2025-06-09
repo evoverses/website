@@ -1,5 +1,5 @@
 import { Wallet } from "../model";
-import type { Context } from "../utils/context";
+import type { Context } from "../model/context";
 
 export const getOrCreateWallet = (ctx: Context, address: string) => {
   let wallet = ctx.entities.get(Wallet, address, false);

@@ -8,4 +8,5 @@
 .env
 /data
 
-api-schema.graphql
+src/graphql/schemas/api.schema.graphql
+graphql.config.js*

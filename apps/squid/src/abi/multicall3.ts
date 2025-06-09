@@ -1,9 +1,9 @@
 import type { FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
 import { type AbiFunction, ContractBase } from "@subsquid/evm-abi";
 import type { Block } from "@subsquid/evm-abi/lib/contract-base";
-import { MULTICALL3_ADDRESS } from "../constants";
+import { MULTICALL3_ADDRESS } from "../utils/constants";
 import { fetchBlockHeight, splitSlice } from "../utils";
-import type { Context } from "../utils/context";
+import type { Context } from "../model/context";
 import { functions } from "./generated/multicall3-internal";
 
 export type Multicall3Result<T extends AbiFunction<any, any>> =

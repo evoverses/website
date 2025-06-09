@@ -1,5 +1,5 @@
 import { Contract, Token } from "../../model";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 
 export const getOrCreateToken = (ctx: Context, contract: Contract) => {
   const id = contract.address;

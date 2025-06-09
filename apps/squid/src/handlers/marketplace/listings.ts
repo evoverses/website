@@ -18,7 +18,7 @@ import {
   convertTokenTypeToContractType,
   toDate,
 } from "../../utils";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 import { getOrCreateNft } from "../asset/nfts";
 import { getOrCreateToken } from "../asset/tokens";
 import { getOrCreateContract } from "../core/contracts";

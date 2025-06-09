@@ -2,20 +2,20 @@
 import { DeadBeef } from "@/data/constants";
 import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 import { parseViemDetailedError } from "@/lib/viem";
-import { chain, client } from "@/thirdweb.config";
-import { deposit, withdraw } from "@/thirdweb/43114/0x693e07bf86367adf8051926f66321fa9e8ebffb4";
-import { claimPending } from "@/thirdweb/43114/0x7b5501109c2605834f7a4153a75850db7521c37e";
+import { chain, client } from "@/lib/thirdweb/config";
+import { deposit, withdraw } from "@/lib/thirdweb/extensions/0x693e07bf86367adf8051926f66321fa9e8ebffb4";
+import { claimPending } from "@/lib/thirdweb/extensions/0x7b5501109c2605834f7a4153a75850db7521c37e";
 import {
   claimReward,
   deposit as investorDeposit,
   withdraw as investorWithdraw,
-} from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
+} from "@/lib/thirdweb/extensions/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
 import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import { Switch } from "@workspace/ui/components/switch";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@workspace/ui/components/sonner";
 import { type Address, getContract } from "thirdweb";
 import type { ThirdwebContract } from "thirdweb/contract";
 import { allowance as getAllowance, approve } from "thirdweb/extensions/erc20";

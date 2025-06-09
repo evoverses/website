@@ -1,6 +1,6 @@
 import { Contract, ContractType } from "../../model";
 
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 
 export const getOrCreateContract = (ctx: Context, address: string, type?: ContractType) => {
   const id = ctx.entities.toId(address);

@@ -3,7 +3,7 @@ import { DepositEvoSmartDrawer } from "@/app/(nav)/profile/_components/smart-wal
 import { WalletButton } from "@/components/buttons/wallet-button";
 import { evoContract } from "@/data/contracts";
 import type { ERC20TokenBalance } from "@/lib/glacier/types";
-import { chain, client } from "@/thirdweb.config";
+import { chain, client } from "@/lib/thirdweb/config";
 import { CheckIcon, DownloadIcon, HomeIcon } from "@radix-ui/react-icons";
 import { IconProps } from "@radix-ui/react-icons/dist/types";
 import { Button } from "@workspace/ui/components/button";

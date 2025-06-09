@@ -1,6 +1,6 @@
 import { ContractType, StateStatus, TokenType } from "../model";
 import type { Maybe, NumberIsh } from "../types/shared";
-import type { Context } from "./context";
+import type { Context } from "../model/context";
 
 export const convertChainNumericStatus = (status: number) => [
   StateStatus.UNSET,

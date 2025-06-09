@@ -1,8 +1,13 @@
-import { verifyAuthCookie } from "@/thirdweb/auth.edge";
+import { verifyAuthCookie } from "@/lib/thirdweb/auth.edge";
 import { NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 
 export const middleware = async (request: NextRequest, event: NextFetchEvent) => {
   const authResult = await verifyAuthCookie(request.cookies.get("ev:jwt"));
+  const response = NextResponse.next();
+  if (!authResult.valid && "error" in authResult) {
+    response.cookies.delete("ps:jwt");
+    return response;
+  }
 
   if (authResult.valid) {
     if (/^\/((sign(up|in)).*)/i.test(request.nextUrl.pathname)) {
@@ -13,7 +18,7 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
       return NextResponse.redirect(new URL("/signin", request.nextUrl.toString()));
     }
   }
-  return NextResponse.next();
+  return response;
 };
 
 // See "Matching Paths" below to learn more

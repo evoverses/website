@@ -10,6 +10,9 @@
     "generate:gql-types": "sqd codegen",
     "generate:abi-types": "sqd typegen"
   },
+  "ts-node": {
+    "esm": true
+  },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.797.0",
     "@graphile-contrib/pg-simplify-inflector": "^6.1.0",
@@ -26,6 +29,8 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "graphile-build": "4.13.0",
+    "graphile-build-pg": "4.13.0",
+    "graphile-utils": "4.13.0",
     "pg": "^8.12.0",
     "postgraphile": "4.13.0",
     "postgraphile-plugin-connection-filter": "^2.3.0",
@@ -45,8 +50,10 @@
     "@workspace/eslint": "workspace:*",
     "@workspace/tsconfig": "workspace:*",
     "dotenv": "^16.4.5",
+    "graphql-config": "^5.1.5",
     "nodemon": "3.1.9",
     "rimraf": "6.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

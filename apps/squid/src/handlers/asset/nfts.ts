@@ -5,7 +5,7 @@ import { Contract, ContractType, NFT, Wallet } from "../../model";
 import type { MetadataUpdateEventData, TransferEventData } from "../../types/nft";
 import type { Log } from "../../types/processor";
 import { eventsToContractMap, range, toDate } from "../../utils";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 
 import { getOrCreateNftWalletBalance, parseNftTransferEvent } from "../balances";
 import { getOrCreateContract } from "../core/contracts";

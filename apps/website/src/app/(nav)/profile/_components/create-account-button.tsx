@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaSpinner } from "react-icons/fa";
-import { toast } from "sonner";
+import { toast } from "@workspace/ui/components/sonner";
 import { Address } from "thirdweb";
 
 type CreateAccountButtonProps = {

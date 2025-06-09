@@ -2,8 +2,8 @@
 
 import { AutoConnect } from "@/components/auto-connect";
 import { cn } from "@/lib/utils";
-import { client } from "@/thirdweb.config";
-import { useProfiles } from "@/thirdweb/hooks/use-profiles";
+import { client } from "@/lib/thirdweb/config";
+import { useProfiles } from "@/lib/thirdweb/hooks/use-profiles";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { Button } from "@workspace/ui/components/button";
 import { Icons } from "@workspace/ui/components/icons";

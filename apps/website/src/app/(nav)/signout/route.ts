@@ -1,4 +1,4 @@
-import { logout } from "@/thirdweb/auth";
+import { logout } from "@/lib/thirdweb/auth";
 
 export const GET = async () => {
    await logout();

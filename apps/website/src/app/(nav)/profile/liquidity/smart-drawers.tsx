@@ -9,9 +9,9 @@ import {
   RevokeApprovalButton,
 } from "@/app/(nav)/profile/liquidity/buttons";
 import { ChainButton } from "@/components/buttons/chain-button";
-import { bigIntJsonReviver } from "@/lib/node";
+import { bigIntJsonReviver } from "@/utils/node";
 import { cn } from "@/lib/utils";
-import { chain, client } from "@/thirdweb.config";
+import { chain, client } from "@/lib/thirdweb/config";
 import { Pool } from "@/types/core";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";

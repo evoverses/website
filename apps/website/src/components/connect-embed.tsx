@@ -1,6 +1,6 @@
 "use client";
-import { appMetadata, chain, client, socialWallets, walletConnect } from "@/thirdweb.config";
-import { auth } from "@/thirdweb/siwe";
+import { appMetadata, chain, client, socialWallets, walletConnect } from "@/lib/thirdweb/config";
+import { auth } from "@/lib/thirdweb/siwe";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ConnectEmbed as ThirdwebConnectEmbed, darkTheme } from "thirdweb/react";
 

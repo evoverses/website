@@ -1,5 +1,5 @@
 "use client";
-import { client } from "@/thirdweb.config";
+import { client } from "@/lib/thirdweb/config";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@workspace/ui/components/hover-card";
 import type { Address } from "abitype";
@@ -13,21 +13,23 @@ export const SnowtraceLink = ({ bytes, type = "address" }: { bytes: string, type
     address: bytes as Address,
   });
   return (
-    <Link
-      href={`https://snowscan.xyz/${type}/${bytes}`}
-      prefetch={false}
-      target="_blank"
-      rel="nofollow noreferrer"
-      className="flex items-center"
-    >
-      <HoverCard openDelay={500}>
-        <HoverCardTrigger>{ensName || shortBytes}</HoverCardTrigger>
-        <HoverCardContent className="py-1 w-fit">
-          {bytes}
-        </HoverCardContent>
-      </HoverCard>
-      <span></span>
-      <ExternalLinkIcon className="inline-block w-4 h-4 ml-1" />
-    </Link>
+
+    <HoverCard openDelay={500}>
+      <HoverCardTrigger asChild>
+        <Link
+          href={`https://snowscan.xyz/${type}/${bytes}`}
+          prefetch={false}
+          target="_blank"
+          rel="nofollow noreferrer"
+          className="flex items-center"
+        >
+          {ensName || shortBytes}
+          <ExternalLinkIcon className="inline-block w-4 h-4 ml-1" />
+        </Link>
+      </HoverCardTrigger>
+      <HoverCardContent className="py-1 w-fit">
+        {bytes}
+      </HoverCardContent>
+    </HoverCard>
   );
 };

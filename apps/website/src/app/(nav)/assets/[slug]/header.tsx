@@ -1,4 +1,4 @@
-import EvoBannerOpensea from "@/assets/images/evo-banner-opensea.png";
+import EvoBannerOpensea from "@/assets/images/evo-banner-marketplace.png";
 import { getCollectionMetadata } from "@/lib/evoverses/metadata";
 import { getCollectionStats } from "@/lib/opensea";
 import { Slug } from "@/types/core";

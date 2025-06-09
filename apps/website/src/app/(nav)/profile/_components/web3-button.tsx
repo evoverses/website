@@ -10,7 +10,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { toast } from "sonner";
+import { toast } from "@workspace/ui/components/sonner";
 import { Address } from "thirdweb";
 import { useActiveAccount } from "thirdweb/react";
 import { recoverTypedDataAddress, verifyTypedData } from "viem";

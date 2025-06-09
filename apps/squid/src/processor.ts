@@ -11,7 +11,7 @@ import {
   RPC_URLS,
   watchedMarketplaceTopics,
   watchedNftTopics,
-} from "./constants";
+} from "./utils/constants";
 
 export const processor = new EvmBatchProcessor()
   .setGateway(GATEWAY_URL)

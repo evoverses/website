@@ -1,7 +1,7 @@
 import type { BlockHeader } from "@subsquid/evm-processor";
 import { Block } from "../../model";
 import { toDate } from "../../utils";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 
 export const createBlock = (ctx: Context, header: BlockHeader) => {
   const id = ctx.entities.toId(header.height.toString());

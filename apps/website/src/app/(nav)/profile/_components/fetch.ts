@@ -1,18 +1,18 @@
 import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
-import { fetchPairDataOf } from "@/lib/dexscreener";
-import { cap, decimals, symbol } from "@/thirdweb/43114/0x42006ab57701251b580bdfc24778c43c9ff589a1";
+import { fetchPairDataOf } from "@/lib/dexscreener/actions";
+import { cap, decimals, symbol } from "@/lib/thirdweb/extensions/0x42006ab57701251b580bdfc24778c43c9ff589a1";
 import {
   disbursementsOf,
   pendingOf,
   selfDisbursement,
   totalBurned,
-} from "@/thirdweb/43114/0x7b5501109c2605834f7a4153a75850db7521c37e";
-import { getAllLpData } from "@/thirdweb/43114/0xb9775b9efefaefa014f159ae43058c954116aa31";
+} from "@/lib/thirdweb/extensions/0x7b5501109c2605834f7a4153a75850db7521c37e";
+import { getAllLpData } from "@/lib/thirdweb/extensions/0xb9775b9efefaefa014f159ae43058c954116aa31";
 import {
   getAllPoolData,
   poolInfo,
   poolLength as investorPoolLength,
-} from "@/thirdweb/43114/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
+} from "@/lib/thirdweb/extensions/0xd782cf9f04e24cae4953679ebf45ba34509f105c";
 import { Pool } from "@/types/core";
 import { cache } from "react";
 import { Address, getContract } from "thirdweb";

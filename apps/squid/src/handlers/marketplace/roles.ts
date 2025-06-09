@@ -9,7 +9,7 @@ import {
   Wallet,
 } from "../../model";
 import type { Log } from "../../types/processor";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 import { getOrCreateContract } from "../core/contracts";
 import { parseLogGenerics } from "../shared";
 import { getOrCreateWallet } from "../wallets";

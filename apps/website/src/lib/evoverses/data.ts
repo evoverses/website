@@ -1,4 +1,4 @@
-import { Nature, Species, Stat } from "@/lib/evoverses/types";
+import { Nature, Species, StatName } from "@/lib/evoverses/types";
 
 export const maxXpTable: Record<Species, number> = {
   Unknown: 0,
@@ -73,7 +73,7 @@ export const maxXpTable: Record<Species, number> = {
   Sauderon: 1_350_000,
 };
 
-export const natureEffects: Record<Nature, Record<"positive" | "negative", Stat>> = {
+export const natureEffects: Record<Nature, Record<"positive" | "negative", StatName>> = {
   Dauntless: { positive: "Speed", negative: "Defense" },
   Executive: { positive: "Speed", negative: "Attack" },
   Restless: { positive: "Speed", negative: "Resistance" },
@@ -98,7 +98,7 @@ export const natureEffects: Record<Nature, Record<"positive" | "negative", Stat>
   Unknown: { positive: "None", negative: "None" },
 };
 
-export const getNatureEffect = (nature: Nature, stat: Stat) => {
+export const getNatureEffect = (nature: Nature, stat: StatName) => {
   const effects = natureEffects[nature];
   if (effects.positive === stat) {
     return 1;

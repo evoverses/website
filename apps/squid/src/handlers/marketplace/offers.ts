@@ -2,7 +2,7 @@ import { events as marketplaceEvents, events } from "../../abi/marketplaceV3";
 import { Contract, ContractType, Marketplace, NFT, Offer, StateStatus, Token, Transaction, Wallet } from "../../model";
 import type { Log } from "../../types/processor";
 import { convertChainNumericTokenType, convertTokenTypeToContractType, toDate } from "../../utils";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 import { getOrCreateNft } from "../asset/nfts";
 import { getOrCreateToken } from "../asset/tokens";
 import { getOrCreateContract } from "../core/contracts";

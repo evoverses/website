@@ -15,7 +15,7 @@ export const getERC20Balance = cache(async (contractAddress: Address, wallet: Ad
     console.error("Error fetching ERC20 balance", resp.status, await resp.text());
     return {
       ercType: "ERC-20",
-      chainId: "43114",
+      chainId: "extensions",
       address: contractAddress,
       name: "Unknown",
       symbol: "Unknown",

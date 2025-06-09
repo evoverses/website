@@ -9,11 +9,11 @@ import { AddToWalletButton } from "@/components/buttons/add-to-wallet-button";
 import { cEvoContract, evoContract, investorContract, xEvoContract } from "@/data/contracts";
 
 import { getAccountCookie } from "@/lib/cookies/account.server";
-import { fetchPriceOf } from "@/lib/dexscreener";
+import { fetchPriceOf } from "@/lib/dexscreener/actions";
 
-import { bigIntJsonReplacer } from "@/lib/node";
+import { bigIntJsonReplacer } from "@/utils/node";
 import { cn } from "@/lib/utils";
-import { chain, client } from "@/thirdweb.config";
+import { chain, client } from "@/lib/thirdweb/config";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
 import { Table, TableBody, TableCaption, TableCell, TableRow } from "@workspace/ui/components/table";

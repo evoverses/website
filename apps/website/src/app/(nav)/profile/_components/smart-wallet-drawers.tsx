@@ -3,7 +3,7 @@
 import { evoContract } from "@/data/contracts";
 import { ERC20TokenBalance } from "@/lib/glacier/types";
 import { parseViemDetailedError } from "@/lib/viem";
-import { chain, client } from "@/thirdweb.config";
+import { chain, client } from "@/lib/thirdweb/config";
 import { UploadIcon } from "@radix-ui/react-icons";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -19,7 +19,7 @@ import {
 } from "@workspace/ui/components/smart-drawer";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@workspace/ui/components/sonner";
 import { Address } from "thirdweb";
 import { transfer } from "thirdweb/extensions/erc20";
 import { useSendTransaction, useWaitForReceipt } from "thirdweb/react";

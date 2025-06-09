@@ -1,6 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { Address } from "thirdweb";
+import { z } from "zod";
 
 export type CollectionMetadata = {
   id: number
@@ -79,54 +80,81 @@ export type TrainerCollectionResponse = CollectionResponseBase & {
   items: RawTrainer[]
 }
 
-export const elements = [ "None", "Water", "Fire", "Air", "Plant", "Earth", "Light", "Dark", "Mineral", "Corrupt",
-  "Ether", "Bug", "Monster" ] as const;
-export type Element = typeof elements[number];
+export const elementSchema = z.enum([ "None", "Water", "Fire", "Air", "Plant", "Earth", "Light", "Dark", "Mineral",
+  "Corrupt", "Ether", "Bug", "Monster" ]);
+export const elements = elementSchema.options;
+export const Element = elementSchema.enum;
+export type Element = z.infer<typeof elementSchema>;
 
-export const chromas = [ "None", "Chroma", "Super" ] as const;
-export type Chroma = typeof chromas[number];
+export const chromaSchema = z.enum([ "None", "Chroma", "Super" ]);
+export const chromas = chromaSchema.options;
+export const Chroma = chromaSchema.enum;
+export type Chroma = z.infer<typeof chromaSchema>;
 
 // Evo Species ID are mapped 1:1 to their index in this array
-export const species = [ "Unknown", "Nissel", "Finantis", "Karoite", "Nuvea", "Hodeon", "Eulocelus", "Arnoriel",
-  "Unreleased", "Carcoid", "Adhamandra", "Ainepolux", "Kapryno", "Kitsul", "Unreleased", "Rattuos", "Beldar",
-  "Unreleased", "Unreleased", "Firemon", "Obryos", "Unreleased", "Lumi", "Unreleased", "Unreleased", "Onydae", "Skycyx",
-  "Unreleased", "Droserace", "Unreleased", "Kerval", "Unreleased", "Unreleased", "Gwenbee", "Shazark", "Krokon",
-  "Unreleased", "Clocarstone", "Unreleased", "Tokaleaf", "Sunopendra", "Unreleased", "Yotnar", "Hikarul", "Unreleased",
-  "Aubelyon", "Flint", "Unreleased", "Venuserpien", "Unreleased", "Espyke", "Mobyd", "Unreleased", "Ghorgon", "Mellio",
-  "Fugush", "Morphee", "Unreleased", "Unreleased", "Lounn", "Unreleased", "Uzumebach", "Unreleased", "Gemarites",
-  "Methyst", "Unreleased", "Tamandu", "Unreleased", "Tytan", "Moffunap", "Nymphel", "Unreleased", "Unreleased",
-  "Unreleased", "Unreleased", "Allacrow", "Unreleased", "Jokull", "Vulpyro", "Unreleased", "Unreleased", "Fayde",
-  "Unreleased", "Ruard", "Caerthos", "Ryomizu", "Obsy", "Unreleased", "Unreleased", "Dhaek", "Unreleased", "Metheo",
-  "Unreleased", "Nythe", "Unreleased", "Unreleased", "Meissa", "Fluozacil", "Unreleased", "Unreleased", "Cyarabat",
-  "Unreleased", "Struthor", "Istral", "Unreleased", "Unreleased", "Cyzorak", "Unreleased", "Unreleased", "Kaos",
-  "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Athel",
-  "Unreleased", "Unreleased", "Lamphal", "Unreleased", "Geckaiba", "Unreleased", "Unreleased", "Sauderon", "Unreleased",
-  "Unreleased", "Unreleased", "Unreleased", "Unreleased" ] as const;
-export type Species = typeof species[number];
+export const speciesSchema = z.enum([ "Unknown", "Nissel", "Finantis", "Karoite", "Nuvea", "Hodeon", "Eulocelus",
+  "Arnoriel", "Unreleased", "Carcoid", "Adhamandra", "Ainepolux", "Kapryno", "Kitsul", "Unreleased", "Rattuos",
+  "Beldar", "Unreleased", "Unreleased", "Firemon", "Obryos", "Unreleased", "Lumi", "Unreleased", "Unreleased", "Onydae",
+  "Skycyx", "Unreleased", "Droserace", "Unreleased", "Kerval", "Unreleased", "Unreleased", "Gwenbee", "Shazark",
+  "Krokon", "Unreleased", "Clocarstone", "Unreleased", "Tokaleaf", "Sunopendra", "Unreleased", "Yotnar", "Hikarul",
+  "Unreleased", "Aubelyon", "Flint", "Unreleased", "Venuserpien", "Unreleased", "Espyke", "Mobyd", "Unreleased",
+  "Ghorgon", "Mellio", "Fugush", "Morphee", "Unreleased", "Unreleased", "Lounn", "Unreleased", "Uzumebach",
+  "Unreleased", "Gemarites", "Methyst", "Unreleased", "Tamandu", "Unreleased", "Tytan", "Moffunap", "Nymphel",
+  "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Allacrow", "Unreleased", "Jokull", "Vulpyro", "Unreleased",
+  "Unreleased", "Fayde", "Unreleased", "Ruard", "Caerthos", "Ryomizu", "Obsy", "Unreleased", "Unreleased", "Dhaek",
+  "Unreleased", "Metheo", "Unreleased", "Nythe", "Unreleased", "Unreleased", "Meissa", "Fluozacil", "Unreleased",
+  "Unreleased", "Cyarabat", "Unreleased", "Struthor", "Istral", "Unreleased", "Unreleased", "Cyzorak", "Unreleased",
+  "Unreleased", "Kaos", "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Unreleased",
+  "Unreleased", "Athel", "Unreleased", "Unreleased", "Lamphal", "Unreleased", "Geckaiba", "Unreleased", "Unreleased",
+  "Sauderon", "Unreleased", "Unreleased", "Unreleased", "Unreleased", "Unreleased" ]);
+export const species = speciesSchema.options;
+export const Species = speciesSchema.enum;
+export type Species = z.infer<typeof speciesSchema>;
 
-export const genders = [ "Unknown", "Male", "Female" ] as const;
-export type Gender = typeof genders[number];
+export const genderSchema = z.enum([ "Unknown", "Male", "Female" ]);
+export const genders = genderSchema.options;
+export const Gender = genderSchema.enum;
+export type Gender = z.infer<typeof genderSchema>;
 
-export const rarities = [ "Unknown" ] as const;
-export type Rarity = typeof rarities[number];
+export const raritySchema = z.enum([ "Unknown" ]);
+export const rarities = raritySchema.options;
+export const Rarity = typeof raritySchema.enum;
+export type Rarity = z.infer<typeof raritySchema>;
 
-export const natures = [ "Unknown", "Dauntless", "Executive", "Restless", "Nervous", "Cunning", "Energetic", "Clever",
-  "Confident", "Ignorant", "Arrogant", "Biting", "Aggressive", "Patient", "Mature", "Sensible", "Calm", "Rude",
-  "Cautious", "Curious", "Discrete", "Loyal" ] as const;
-export type Nature = typeof natures[number];
+export const natureSchema = z.enum([ "Unknown", "Dauntless", "Executive", "Restless", "Nervous", "Cunning", "Energetic",
+  "Clever", "Confident", "Ignorant", "Arrogant", "Biting", "Aggressive", "Patient", "Mature", "Sensible", "Calm",
+  "Rude", "Cautious", "Curious", "Discrete", "Loyal" ]);
+export const natures = natureSchema.options;
+export const Nature = natureSchema.enum;
+export type Nature = z.infer<typeof natureSchema>;
 
-export const stats = [ "None", "Health", "Attack", "Special", "Defense", "Resistance", "Speed" ] as const;
-export type Stat = typeof stats[number];
+export const statNameSchema = z.enum([ "None", "Health", "Attack", "Special", "Defense", "Resistance", "Speed" ]);
+export const statNames = statNameSchema.options;
+export const StatName = statNameSchema.enum;
+export type StatName = z.infer<typeof statNameSchema>;
 
-export const statAbbrevs = [ "???", "HP", "ATK", "SP", "DEF", "RES", "SPD" ] as const;
-export type StatAbbrev = typeof statAbbrevs[number];
+export const statNameAbbreviationSchema = z.enum([ "???", "HP", "ATK", "SP", "DEF", "RES", "SPD" ]);
+export const statNameAbbreviations = statNameAbbreviationSchema.options;
+export const StatNameAbbreviation = statNameAbbreviationSchema.enum;
+export type StatNameAbbreviation = z.infer<typeof statNameAbbreviationSchema>;
 
-export const statToStatAbbrevMap: Record<Stat, StatAbbrev> = {
-  None: "???",
-  Health: "HP",
-  Attack: "ATK",
-  Special: "SP",
-  Defense: "DEF",
-  Resistance: "RES",
-  Speed: "SPD",
-};
+export const statToAbbrevSchema = statNameSchema.transform((stat): StatNameAbbreviation => {
+  switch (stat) {
+    case StatName.Health:
+      return StatNameAbbreviation.HP;
+    case StatName.Attack:
+      return StatNameAbbreviation.ATK;
+    case StatName.Special:
+      return StatNameAbbreviation.SP;
+    case StatName.Defense:
+      return StatNameAbbreviation.DEF;
+    case StatName.Resistance:
+      return StatNameAbbreviation.RES;
+    case StatName.Speed:
+      return StatNameAbbreviation.SPD;
+    default:
+      return "???";
+  }
+});
+
+export const statValueSchema = z.coerce.number().int().min(0).max(50);

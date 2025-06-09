@@ -1,6 +1,6 @@
 import "server-only";
 import { DeadBeef } from "@/data/constants";
-import { getAuthCookieAddress } from "@/thirdweb/auth";
+import { getAuthCookieAddress } from "@/lib/thirdweb/auth";
 import { IAccountCookie } from "@/types/cookies";
 import { cookies } from "next/headers";
 

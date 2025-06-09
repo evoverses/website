@@ -1,6 +1,6 @@
 import { Block, Transaction } from "../../model";
 import type { Blocks, Log, Transaction as TX } from "../../types/processor";
-import type { Context } from "../../utils/context";
+import type { Context } from "../../model/context";
 import { getOrCreateWallet } from "../wallets";
 import { createBlock } from "./blocks";
 

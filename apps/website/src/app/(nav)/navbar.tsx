@@ -1,7 +1,10 @@
 import NavItems, { ModeButton } from "@/app/(nav)/nav-items";
 import Logo from "@/app/icon.png";
+import { AccountButton } from "@/components/buttons/account-button";
+import { ConnectButton } from "@/components/buttons/connect-button";
 import { getAccountCookie } from "@/lib/cookies/account.server";
 import { Button } from "@workspace/ui/components/button";
+import { WalletCardsIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -46,14 +49,15 @@ const Navbar = async () => {
         </nav>
         <div className="ml-auto flex items-center space-x-4">
           {/*<WalletButton />*/}
-          {!accountCookie.connected && (
-            <div className="flex items-center justify-center">
-              <Button className="px-2 sm:px-4 font-bold" asChild>
-                <Link href="/signin">
-                  Sign In
-                </Link>
+          {accountCookie.connected ? (
+            <AccountButton />
+          ) : (
+            <ConnectButton asChild>
+              <Button variant="ghost">
+                <WalletCardsIcon className="size-5 hidden md:inline-flex" />
+                <span>Sign In</span>
               </Button>
-            </div>
+            </ConnectButton>
 
           )}
           <ModeButton />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useConnectedSiweWallets, useProfiles, useSmartWalletAdmin } from "@/thirdweb/hooks/use-profiles";
+import { useConnectedSiweWallets, useProfiles, useSmartWalletAdmin } from "@/lib/thirdweb/hooks/use-profiles";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@workspace/ui/components/button";

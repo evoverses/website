@@ -1,4 +1,11 @@
-import { chain, client } from "@/thirdweb.config";
+import {
+  evoContractAddress,
+  evoNftContractAddress,
+  usdcContractAddress,
+  usdtContractAddress,
+  wavaxContractAddress,
+} from "@/data/addresses";
+import { chain, client } from "@/lib/thirdweb/config";
 import { getContract } from "thirdweb";
 
 export const investorContract = getContract({
@@ -6,8 +13,9 @@ export const investorContract = getContract({
   client,
   chain,
 });
+
 export const evoContract = getContract({
-  address: "0x42006Ab57701251B580bDFc24778C43c9ff589A1",
+  address: evoContractAddress,
   client,
   chain,
 });
@@ -21,8 +29,33 @@ export const cEvoContract = getContract({
   client,
   chain,
 });
+
 export const evoNftContract = getContract({
-  address: "0x4151b8afa10653d304FdAc9a781AFccd45EC164c",
+  address: evoNftContractAddress,
+  client,
+  chain,
+});
+
+export const marketplaceContract = getContract({
+  address: "0x888BEB2C914657B1eA2cCC91555C5800eecdD4c0",
+  client,
+  chain,
+});
+
+export const usdcContract = getContract({
+  address: usdcContractAddress,
+  client,
+  chain,
+});
+
+export const usdtContract = getContract({
+  address: usdtContractAddress,
+  client,
+  chain,
+});
+
+export const wavaxContract = getContract({
+  address: wavaxContractAddress,
   client,
   chain,
 });
