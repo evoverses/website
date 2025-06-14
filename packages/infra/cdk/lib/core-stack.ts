@@ -10,7 +10,13 @@ import {
   ListenerCondition,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { Key } from "aws-cdk-lib/aws-kms";
-import { Credentials, DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from "aws-cdk-lib/aws-rds";
+import {
+  Credentials,
+  DatabaseInstance,
+  DatabaseInstanceEngine,
+  ParameterGroup,
+  PostgresEngineVersion,
+} from "aws-cdk-lib/aws-rds";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { LoadBalancerTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
@@ -49,8 +55,15 @@ export class CoreStack extends Stack {
       },
     });
 
+    const engine = DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_15 });
+    const parameterGroup = new ParameterGroup(this, "PostgresParamGroup", {
+      engine,
+      parameters: {
+        shared_preload_libraries: "pg_stat_statements,pg_cron",
+      },
+    });
     const rds = new DatabaseInstance(this, `RdsInstance`, {
-      engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_15 }),
+      engine,
       vpc,
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
@@ -63,6 +76,7 @@ export class CoreStack extends Stack {
       deleteAutomatedBackups: true,
       removalPolicy: RemovalPolicy.DESTROY,
       publiclyAccessible: false,
+      parameterGroup,
     });
 
     const graphQlDbUser = new DatabaseUserProvisioner(this, "GraphqlDbUserProvisioner", {

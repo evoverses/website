@@ -31,6 +31,8 @@ export class EcsIndexerTask extends Construct {
         DB_HOST: props.rds.dbInstanceEndpointAddress,
         DB_PORT: props.rds.dbInstanceEndpointPort,
         DB_NAME: props.dbName,
+        DB_SSL: "true",
+        DB_SSL_REJECT_UNAUTHORIZED: "false",
         SQD_DEBUG: "sqd:processor:mapping,sqd:processor:mapping:*",
         SQD_ALLOW_SENTINEL: "BlockHeader.totalDifficulty,BlockHeader.baseFeePerGas",
         MARKETPLACE_ADDRESSES: "0x888BEB2C914657B1eA2cCC91555C5800eecdD4c0",

@@ -1,4 +1,4 @@
-import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { Client } from "pg";
 
 export const handler = async () => {
@@ -24,6 +24,7 @@ export const handler = async () => {
 
   const userExists = await client.query(`SELECT 1 FROM pg_roles WHERE rolname = $1`, [ newUser.username ]);
   if (userExists.rowCount === 0) {
+    await client.query(`CREATE DATABASE IF NOT EXISTS "${process.env.RDS_DB}"`);
     await client.query(`CREATE USER "${newUser.username}" WITH PASSWORD $1`, [ newUser.password ]);
     await client.query(`GRANT CONNECT ON DATABASE ${process.env.RDS_DB} TO "${newUser.username}"`);
     await client.query(`GRANT USAGE ON SCHEMA public TO "${newUser.username}"`);

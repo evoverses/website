@@ -12,4 +12,4 @@ const squidStack = new EcrStack(app, "SquidEcrStack", {
   githubRepo: "website",
   arn: openId.arn,
 });
-new CoreStack(app, "DevCoreStack", { ...context, squidRepository: squidStack.repo });
+new CoreStack(app, "CoreStack", { ...context, squidRepository: squidStack.repo });

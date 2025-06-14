@@ -34,6 +34,7 @@ export class EcsGraphqlTask extends Construct {
         DB_HOST: props.rds.dbInstanceEndpointAddress,
         DB_PORT: props.rds.dbInstanceEndpointPort,
         DB_NAME: props.dbName,
+        DB_SSL: "true",
       },
       secrets: {
         DB_USER: ECSSecret.fromSecretsManager(props.userSecret, "username"),
