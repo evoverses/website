@@ -23,16 +23,22 @@ export class EcrStack extends Stack {
 
     const githubPushRole = new Role(this, "GithubOidcEcrPushRole", {
       assumedBy: new WebIdentityPrincipal(props.arn, {
-        StringEquals: {
+        "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": `repo:${props.githubOrg}/${props.githubRepo}:*`,
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": `repo:${props.githubOrg}/${props.githubRepo}:ref:refs/heads/*`,
         },
       }),
     });
-
     githubPushRole.addToPolicy(new PolicyStatement({
       actions: [
-        "ecr:GetAuthorizationToken",
+        "ecr:GetAuthorizationToken", // must be *
+      ],
+      resources: [ "*" ],
+    }));
+    githubPushRole.addToPolicy(new PolicyStatement({
+      actions: [
         "ecr:BatchGetImage",
         "ecr:BatchCheckLayerAvailability",
         "ecr:CompleteLayerUpload",
