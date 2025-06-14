@@ -1,12 +1,13 @@
 // lib/ecr-stack.ts
 import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { Repository } from "aws-cdk-lib/aws-ecr";
-import { FederatedPrincipal, PolicyStatement, Role } from "aws-cdk-lib/aws-iam";
+import { PolicyStatement, Role, WebIdentityPrincipal } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 interface EcrStackProps extends StackProps {
   githubOrg: string;
   githubRepo: string;
+  arn: string;
 }
 
 export class EcrStack extends Stack {
@@ -21,16 +22,12 @@ export class EcrStack extends Stack {
     });
 
     const githubPushRole = new Role(this, "GithubOidcEcrPushRole", {
-      assumedBy: new FederatedPrincipal(
-        `arn:aws:iam::${this.account}:oidc-provider/token.actions.githubusercontent.com`,
-        {
-          StringEquals: {
-            "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-            "token.actions.githubusercontent.com:sub": `repo:${props.githubOrg}/${props.githubRepo}:*`,
-          },
+      assumedBy: new WebIdentityPrincipal(props.arn, {
+        StringEquals: {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub": `repo:${props.githubOrg}/${props.githubRepo}:*`,
         },
-        "sts:AssumeRoleWithWebIdentity",
-      ),
+      }),
     });
 
     githubPushRole.addToPolicy(new PolicyStatement({
