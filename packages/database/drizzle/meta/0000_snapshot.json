@@ -1,0 +1,327 @@
+{
+  "id": "50f81767-ca5e-4379-ac17-3437118540cf",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "metadata.evo": {
+      "name": "evo",
+      "schema": "metadata",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "token_id": {
+          "name": "token_id",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "gender",
+          "typeSchema": "metadata",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "generation": {
+          "name": "generation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nature": {
+          "name": "nature",
+          "type": "nature",
+          "typeSchema": "metadata",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "rarity": {
+          "name": "rarity",
+          "type": "rarity",
+          "typeSchema": "metadata",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "chroma": {
+          "name": "chroma",
+          "type": "chroma",
+          "typeSchema": "metadata",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'none'"
+        },
+        "total_breeds": {
+          "name": "total_breeds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "last_breed_time": {
+          "name": "last_breed_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "hatched_at": {
+          "name": "hatched_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "attack": {
+          "name": "attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "special": {
+          "name": "special",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "defense": {
+          "name": "defense",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "resistance": {
+          "name": "resistance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "speed": {
+          "name": "speed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "size": {
+          "name": "size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "xp": {
+          "name": "xp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "treated": {
+          "name": "treated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "species_id": {
+          "name": "species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "parent1_token_id": {
+          "name": "parent1_token_id",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent2_token_id": {
+          "name": "parent2_token_id",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "evo_species_id_species_id_fk": {
+          "name": "evo_species_id_species_id_fk",
+          "tableFrom": "evo",
+          "tableTo": "species",
+          "schemaTo": "metadata",
+          "columnsFrom": [
+            "species_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "token_id_unique": {
+          "name": "token_id_unique",
+          "nullsNotDistinct": true,
+          "columns": [
+            "token_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "metadata.species": {
+      "name": "species",
+      "schema": "metadata",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "species": {
+          "name": "species",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "primary_type": {
+          "name": "primary_type",
+          "type": "element",
+          "typeSchema": "metadata",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "secondary_type": {
+          "name": "secondary_type",
+          "type": "element",
+          "typeSchema": "metadata",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "metadata.chroma": {
+      "name": "chroma",
+      "schema": "metadata",
+      "values": [
+        "none",
+        "chroma",
+        "super"
+      ]
+    },
+    "metadata.element": {
+      "name": "element",
+      "schema": "metadata",
+      "values": [
+        "none",
+        "water",
+        "fire",
+        "air",
+        "plant",
+        "earth",
+        "light",
+        "dark",
+        "mineral",
+        "corrupt",
+        "ether",
+        "bug",
+        "monster"
+      ]
+    },
+    "metadata.gender": {
+      "name": "gender",
+      "schema": "metadata",
+      "values": [
+        "unknown",
+        "male",
+        "female"
+      ]
+    },
+    "metadata.nature": {
+      "name": "nature",
+      "schema": "metadata",
+      "values": [
+        "unknown",
+        "dauntless",
+        "executive",
+        "restless",
+        "nervous",
+        "cunning",
+        "energetic",
+        "clever",
+        "confident",
+        "ignorant",
+        "arrogant",
+        "biting",
+        "aggressive",
+        "patient",
+        "mature",
+        "sensible",
+        "calm",
+        "rude",
+        "cautious",
+        "curious",
+        "discrete",
+        "loyal"
+      ]
+    },
+    "metadata.rarity": {
+      "name": "rarity",
+      "schema": "metadata",
+      "values": [
+        "unknown"
+      ]
+    }
+  },
+  "schemas": {
+    "metadata": "metadata"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
