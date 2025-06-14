@@ -162,9 +162,12 @@ export const refreshNftMetadata = cache(async (address: Address, chain: Chain, i
   return resp.ok;
 });
 
-export const getCollectionStats = cache(async (collection: string): Promise<CollectionStatsResponse> => {
+export const getOpenSeaCollectionStats = cache(async (
+  collection: string,
+  opts: NextFetchRequestConfig = {},
+): Promise<CollectionStatsResponse> => {
   const url = new URL(`collections/${collection}/stats`, BASE_URL);
-  const resp = await fetch(url, options);
+  const resp = await fetch(url, { ...options, next: { ...options.next, ...opts } });
   if (!resp.ok) {
     console.error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
     return {

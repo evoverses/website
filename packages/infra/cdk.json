@@ -1,0 +1,6 @@
+{
+  "app": "ts-node cdk/bin/app.ts",
+  "context": {
+    "aws-cdk:enableDiffNoFail": "true"
+  }
+}

@@ -14,18 +14,18 @@ RUN dnf update -y && \
 
 FROM base AS installer
 RUN pnpm install --global turbo
-COPY . .
+COPY --from=root . .
 RUN turbo prune --scope=squid --docker
 
 FROM base AS builder
 COPY --from=installer /workspace/out/json/ .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=from=root,type=cache,id=pnpm,target=/pnpm/store pnpm install
 COPY --from=installer /workspace/out/full/ .
 RUN pnpm turbo build
 
 FROM base AS runner-deps
 COPY --from=installer /workspace/out/json/ .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
+RUN --mount=from=root,type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
 
 FROM prod-base AS runner
 ENV PROCESSOR_PROMETHEUS_PORT=3000 \
@@ -43,3 +43,12 @@ RUN echo -e "loglevel=silent\\nupdate-notifier=false" > /workspace/.npmrc
 RUN npm install --global @subsquid/commands && ln -s $(which squid-commands) /usr/local/bin/sqd
 
 ENTRYPOINT ["sqd"]
+
+
+FROM runner AS gql
+ENTRYPOINT ["sqd"]
+CMD ["serve:prod"]
+
+FROM runner AS indexer
+ENTRYPOINT ["sqd"]
+CMD ["process:prod"]

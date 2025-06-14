@@ -122,3 +122,5 @@ export function getEnv<T>(key: string, fallback?: T): string | T | undefined {
   }
   return value as T;
 }
+
+export const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);

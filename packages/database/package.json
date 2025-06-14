@@ -1,5 +1,5 @@
 {
-  "name": "database",
+  "name": "@workspace/database",
   "version": "1.0.0",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -8,27 +8,34 @@
   "files": [
     "dist/**"
   ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./types": "./src/types/index.ts",
+    "./types/*": "./src/types/*.ts"
+  },
   "scripts": {
-    "build": "tsup",
-    "clean": "rimraf .turbo node_modules dist",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
-    "dev": "tsup --watch",
-    "format": "prisma format",
-    "generate": "prisma generate",
-    "lint": "eslint ./src --fix",
-    "prebuild": "npm run generate",
-    "predev": "npm run generate",
-    "postinstall": "npm run generate",
-    "studio": "prisma studio"
+    "prebuild": "rimraf dist",
+    "build": "tsc",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:check": "drizzle-kit check",
+    "db:studio": "drizzle-kit studio",
+    "tmp": "tsup-node src/test.ts && node --require=dotenv/config ./dist/test.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.13.0"
+    "@prisma/client": "^5.13.0",
+    "drizzle-orm": "0.44.2",
+    "drizzle-zod": "0.8.2",
+    "pg": "^8.12.0",
+    "postgres": "3.4.5",
+    "dotenv": "^16.5.0",
+    "zod": "^3.25.30"
   },
   "devDependencies": {
     "@types/node": "22.15.21",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "0.31.1",
     "eslint": "^9.27.0",
     "prisma": "^5.13.0",
     "rimraf": "^6",

@@ -1,11 +1,9 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { HTMLAttributes } from "react";
-
-type IconProps = HTMLAttributes<SVGElement>
+import { type ComponentProps } from "react";
 
 export const Icons = {
-  twitter: (props: IconProps) => (
+  twitter: (props: ComponentProps<"svg">) => (
     <svg
       {...props}
       height="23"
@@ -22,7 +20,7 @@ export const Icons = {
       />
     </svg>
   ),
-  github: (props: IconProps) => (
+  github: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path
         fill="currentColor"
@@ -53,7 +51,7 @@ export const Icons = {
       ></path>
     </svg>
   ),
-  steam: (props: IconProps) => (
+  steam: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -71,7 +69,7 @@ export const Icons = {
       />
     </svg>
   ),
-  twitch: (props: IconProps) => (
+  twitch: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -86,7 +84,7 @@ export const Icons = {
       />
     </svg>
   ),
-  x: (props: IconProps) => (
+  x: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -97,7 +95,7 @@ export const Icons = {
       />
     </svg>
   ),
-  facebook: (props: IconProps) => (
+  facebook: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -108,7 +106,7 @@ export const Icons = {
       />
     </svg>
   ),
-  npm: (props: IconProps) => (
+  npm: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -119,7 +117,7 @@ export const Icons = {
       />
     </svg>
   ),
-  yarn: (props: IconProps) => (
+  yarn: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -151,7 +149,7 @@ export const Icons = {
       />
     </svg>
   ),
-  pnpm: (props: IconProps) => (
+  pnpm: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -162,7 +160,7 @@ export const Icons = {
       />
     </svg>
   ),
-  react: (props: IconProps) => (
+  react: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -205,7 +203,7 @@ export const Icons = {
       />
     </svg>
   ),
-  tailwind: (props: IconProps) => (
+  tailwind: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 24 24" {...props}>
       <path
         d={[ "M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624",
@@ -219,7 +217,7 @@ export const Icons = {
       />
     </svg>
   ),
-  google_mono: (props: IconProps) => (
+  google_mono: (props: ComponentProps<"svg">) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <path
         fill="currentColor"
@@ -232,7 +230,7 @@ export const Icons = {
       />
     </svg>
   ),
-  apple: (props: IconProps) => (
+  apple: (props: ComponentProps<"svg">) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -247,7 +245,7 @@ export const Icons = {
       />
     </svg>
   ),
-  paypal: (props: IconProps) => (
+  paypal: (props: ComponentProps<"svg">) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -263,7 +261,7 @@ export const Icons = {
       />
     </svg>
   ),
-  discord: (props: IconProps) => (
+  discord: (props: ComponentProps<"svg">) => (
     <svg role="img" width="24" height="24" viewBox="0 -28.5 256 256" {...props}>
       <path
         d={[
@@ -291,7 +289,7 @@ export const Icons = {
       />
     </svg>
   ),
-  epic: (props: IconProps) => (
+  epic: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="1.84 1 10.33 12" {...props}>
       <path
         d={[
@@ -362,7 +360,7 @@ export const Icons = {
       />
     </svg>
   ),
-  ethereum: (props: IconProps) => (
+  ethereum: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 0 784.37 1277.39" {...props}>
       <polygon
         fill="#343434"
@@ -378,7 +376,7 @@ export const Icons = {
       <polygon fill="#393939" points="0,650.54 392.07,882.29 392.07,472.33 " />
     </svg>
   ),
-  hyperspace: (props: IconProps) => (
+  hyperspace: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 0 116 116" {...props}>
       <path
         d={[
@@ -397,7 +395,7 @@ export const Icons = {
       />
     </svg>
   ),
-  wallet: (props: IconProps) => (
+  wallet: (props: ComponentProps<"svg">) => (
     <svg width="24" height="24" viewBox="0 -0.03 387.7 237.65" {...props}>
       <path
         fill="currentColor"
@@ -417,7 +415,7 @@ export const Icons = {
       />
     </svg>
   ),
-  spinner: (props: IconProps) => (
+  spinner: (props: ComponentProps<"svg">) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -433,7 +431,7 @@ export const Icons = {
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </svg>
   ),
-  google: (props: IconProps) => (
+  google: (props: ComponentProps<"svg">) => (
     <svg height="24" width="24" viewBox="0 0 24 24" {...props}>
       <path
         d={[
@@ -466,7 +464,7 @@ export const Icons = {
       <path d="M1 1h22v22H1z" fill="none" />
     </svg>
   ),
-  currency_dollar: (props: IconProps) => (
+  currency_dollar: (props: ComponentProps<"svg">) => (
     <svg
       viewBox="0 0 24 24"
       fill="none"
@@ -479,7 +477,7 @@ export const Icons = {
       <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
     </svg>
   ),
-  joePegs: (props: IconProps) => (
+  joePegs: (props: ComponentProps<"svg">) => (
     <svg viewBox="0 0 339 339" {...props}>
       <path
         fill="#D5CFDB" opacity="1.000000" stroke="none"

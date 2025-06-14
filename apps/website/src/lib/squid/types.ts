@@ -1,5 +1,7 @@
-import type { Chroma, Element, Gender, Nature, Rarity, Species } from "@/lib/evoverses/types";
+import type { Species } from "@/lib/evoverses/types";
+import type { Chroma, Element, Gender, Nature, Rarity } from "@workspace/database/types/evo";
 import type { Address, Hash } from "viem";
+import { z } from "zod";
 
 type Status = "CREATED" | "COMPLETED" | "CANCELLED";
 
@@ -229,41 +231,57 @@ export type SquidAssetEvoMetadata = SquidAssetBase & SquidAssetNonGenesisBase & 
 
 export type SquidAssetMetadata = SquidAssetEggMetadata | SquidAssetEvoMetadata
 
+export const marketplaceStatusSchema = z.enum([ "UNSET", "CREATED", "ACTIVE", "COMPLETED", "CANCELLED", "EXPIRED" ]);
+export const MarketplaceStatus = marketplaceStatusSchema.enum;
+export type MarketplaceStatus = z.infer<typeof marketplaceStatusSchema>;
+
+export type SquidAssetOffer = {
+  id: string
+  quantity: string
+  totalPrice: string
+  expiresAt: string
+  currency: Address
+  offeror: Address
+  status: MarketplaceStatus
+}
+
+export type SquidAssetListingSale = {
+  quantity: string
+  buyer: Address
+  totalPrice: string
+  timestamp: string
+}
+
+export type SquidAssetListing = {
+  id: string
+  quantity: string
+  pricePerToken: string
+  startAt: string
+  endAt: string
+  currency: Address
+  creator: Address
+  status: MarketplaceStatus
+  sales: SquidAssetListingSale[]
+}
+
+export type SquidAssetAuction = {
+  id: string
+  quantity: string
+  minimumBidAmount: string
+  buyoutBidAmount: string
+  startAt: string
+  endAt: string
+  currency: Address
+  creator: Address
+  status: MarketplaceStatus
+}
 export type SquidAsset<T extends SquidAssetMetadata = SquidAssetMetadata> = {
   tokenId: string;
   chainId: string;
   address: Address;
   owner: Address;
   metadata: T;
-  offers: {
-    id: string
-    offerId: string
-    quantity: string
-    totalPrice: string
-    expiresAt: string
-    currencyId: string
-    offerorId: string
-  }[];
-  listings: {
-    id: string
-    listingId: string
-    quantity: string
-    pricePerToken: string
-    startAt: string
-    endAt: string
-    currencyId: string
-    creatorId: string
-  }[];
-  auctions: {
-    id: string
-    auctionId: string
-    quantity: string
-    minimumBidAmount: string
-    buyoutBidAmount: string
-    startAt: string
-    endAt: string
-    currencyId: string
-    creatorId: string
-    status: string
-  }[];
+  offers: SquidAssetOffer[];
+  listings: SquidAssetListing[];
+  auctions: SquidAssetAuction[];
 }

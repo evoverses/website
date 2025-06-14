@@ -18,9 +18,9 @@ const useProfiles = () => {
 };
 export { useProfiles };
 
-export const useSmartWallet = () => {
+export const useSmartWallet = (): Wallet<"smart"> | undefined => {
   const wallets = useConnectedWallets();
-  return wallets.find(w => w.id === "smart") as Wallet<"smart">;
+  return wallets.find(w => w.id === "smart") as Wallet<"smart"> | undefined;
 };
 
 export const useSmartWalletAdmin = () => {

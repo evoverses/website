@@ -13,7 +13,6 @@ const ClientAccountProvider = (
   return (
     <QueryClientProvider client={client}>
       <ThirdwebProvider>
-        <AccountCookieManager accountCookie={accountCookie} />
         {children}
       </ThirdwebProvider>
     </QueryClientProvider>

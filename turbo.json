@@ -1,17 +1,20 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV"
+  ],
   "tasks": {
     "build": {
       "dependsOn": [
         "^build"
       ],
-      "env": [
-        "NODE_ENV"
-      ],
       "inputs": [
         "$TURBO_DEFAULT$",
-        ".env*"
+        ".env.production.local",
+        ".env.local",
+        ".env.production",
+        ".env"
       ],
       "outputs": [
         ".next/**",
@@ -31,7 +34,31 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.development.local",
+        ".env.local",
+        ".env.development",
+        ".env"
+      ]
+    },
+    "website#dev": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.development.local",
+        ".env.local",
+        ".env.development",
+        ".env"
+      ],
+      "env": [
+        "THIRDWEB_SECRET_KEY",
+        "THIRDWEB_ADMIN_PRIVATE_KEY",
+        "OPENSEA_API_KEY",
+        "NEXT_RUNTIME"
+      ]
     },
     "dev:site-proxy": {
       "cache": false,

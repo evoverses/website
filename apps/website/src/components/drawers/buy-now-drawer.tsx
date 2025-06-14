@@ -74,7 +74,7 @@ const BuyNowDrawer = ({ asset, children }: {
 
     return buyFromListing({
       contract: marketplaceContract,
-      listingId: BigInt(listing.listingId),
+      listingId: BigInt(listing.id),
       quantity: 1n,
       recipient: account.address,
     });

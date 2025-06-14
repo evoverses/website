@@ -7,7 +7,7 @@ import { useChain } from "@/hooks/use-chain";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
 import { toAssetFullName } from "@/lib/evo/utils";
 import type { SquidAsset } from "@/lib/squid/types";
-import { formatNumberWithSuffix } from "@/utils/numbers";
+import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
 import { toAssetUrl, toCollectionUrl } from "@/utils/url";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -54,7 +54,7 @@ const EditListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
 
     return updateListing({
       contract: marketplaceContract,
-      listingId: BigInt(listing.listingId),
+      listingId: BigInt(listing.id),
       assetContractAddress: evoNftContractAddress,
       tokenId: BigInt(asset.tokenId),
       pricePerToken: amount,

@@ -8,7 +8,7 @@ import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
 import { SquidAsset } from "@/lib/squid/types";
 import { client } from "@/lib/thirdweb/config";
-import { formatNumberWithSuffix, formatUsd } from "@/utils/numbers";
+import { formatNumberWithSuffix, formatUsd } from "@workspace/evoverses/utils/numbers";
 import { EM_DASH } from "@/utils/strings";
 import { Button } from "@workspace/ui/components/button";
 import {

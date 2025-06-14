@@ -24,3 +24,15 @@ export const getSafeResponseError = async (response: Response) => {
     }
   }
 };
+
+export const assertNotNull = <T>(value: T | undefined | null, errorMessage?: string): T => {
+  if (value === undefined || value === null) {
+    throw new Error(errorMessage ?? "Value is undefined or null");
+  }
+  return value as T;
+};
+
+export const assertEnvNotNull = <T>(value: T | undefined | null, envName: string) => assertNotNull<T>(
+  value,
+  `Missing ${envName} env variable`,
+);

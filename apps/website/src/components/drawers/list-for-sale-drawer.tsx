@@ -8,7 +8,7 @@ import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
 import type { SquidAsset } from "@/lib/squid/types";
 import { createListing } from "@/lib/thirdweb/extensions/marketplace";
-import { formatNumberWithSuffix } from "@/utils/numbers";
+import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
 import { toAssetUrl, toCollectionUrl } from "@/utils/url";
 import { Button } from "@workspace/ui/components/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@workspace/ui/components/drawer";

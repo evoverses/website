@@ -1,6 +1,6 @@
 "use client";
 
-import { appMetadata, client, wallets } from "@/lib/thirdweb/config";
+import { accountAbstraction, appMetadata, client, wallets } from "@/lib/thirdweb/config";
 import { useEffect } from "react";
 import { useActiveWallet, useAdminWallet, useAutoConnect } from "thirdweb/react";
 
@@ -12,6 +12,7 @@ const AutoConnect = ({ account }: { account?: string }) => {
     appMetadata,
     client,
     wallets,
+    accountAbstraction,
     timeout: 5_000, // 5 seconds
     onConnect: (wallet) => {
       console.log(`AutoConnect::connected::${wallet.getAccount()?.address}`);
@@ -22,10 +23,12 @@ const AutoConnect = ({ account }: { account?: string }) => {
   });
   useEffect(() => {
     // console.log(autoConnected, status, error)
-    if (!autoConnected && status === "success" && !error && !wallet) {
-      refetch();
+    if (!autoConnected) {
+      if (status === "success" && !error && !wallet) {
+        refetch();
+      }
     }
-  }, [ autoConnected, status, error, wallet, account ]);
+  }, [ autoConnected, status, error, wallet, account, refetch ]);
 
   useEffect(() => {
     //console.log(wallet, adminWallet)

@@ -1,5 +1,6 @@
 "use client";
 
+import "@workspace/ui/styles/aggregated.css";
 import type { ErrorPageError } from "@/types/core";
 import { HomeIcon, ReloadIcon } from "@radix-ui/react-icons";
 import * as Sentry from "@sentry/nextjs";

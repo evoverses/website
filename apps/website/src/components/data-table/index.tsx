@@ -1,6 +1,6 @@
 "use client";
 
-import { animations } from "@/app/(nav)/roadmap/data";
+import { animations } from "@/app/roadmap/data";
 import { cn } from "@/lib/utils";
 import {
   ColumnDef,

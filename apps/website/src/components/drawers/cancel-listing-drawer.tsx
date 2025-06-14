@@ -5,8 +5,8 @@ import { useChain } from "@/hooks/use-chain";
 import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
 import { SquidAsset } from "@/lib/squid/types";
-import { formatNumberWithSuffix, formatUsd } from "@/utils/numbers";
 import { toAssetUrl } from "@/utils/url";
+import { formatNumberWithSuffix, formatUsd } from "@workspace/evoverses/utils/numbers";
 import { Button } from "@workspace/ui/components/button";
 import {
   Drawer,
@@ -44,7 +44,7 @@ const CancelListingDrawer = ({ asset, children }: { asset: SquidAsset, children?
 
     return cancelListing({
       contract: marketplaceContract,
-      listingId: BigInt(listing.listingId),
+      listingId: BigInt(listing.id),
     });
   }, [ account, asset, listing, switchChainIfNeeded ]);
 

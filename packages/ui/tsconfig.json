@@ -1,5 +1,5 @@
 {
-  "extends": "@workspace/tsconfig/react-library.json",
+  "extends": "@workspace/tsconfig/library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

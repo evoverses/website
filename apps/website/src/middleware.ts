@@ -8,7 +8,6 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
     response.cookies.delete("ps:jwt");
     return response;
   }
-
   if (authResult.valid) {
     if (/^\/((sign(up|in)).*)/i.test(request.nextUrl.pathname)) {
       return NextResponse.redirect(new URL("/profile", request.nextUrl.toString()));

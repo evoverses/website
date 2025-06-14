@@ -1,6 +1,6 @@
 "use client";
 import { chain, client } from "@/lib/thirdweb/config";
-import { Button } from "@workspace/ui/components/button.js";
+import { Button } from "@workspace/ui/components/button";
 import { ComponentProps } from "react";
 import { FaCheck, FaSpinner } from "react-icons/fa";
 import {

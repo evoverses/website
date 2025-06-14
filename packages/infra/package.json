@@ -1,0 +1,30 @@
+{
+  "name": "infra",
+  "version": "0.1.0",
+  "bin": {
+    "infra": "bin/infra.js"
+  },
+  "scripts": {
+    "cdk:deploy": "npx cdk --profile evoverses deploy",
+    "deploy:nft-metadata-ingest": "pnpm cdk-deploy",
+    "test:sqs": "aws sqs --profile posse send-message --queue-url \"https://sqs.us-east-2.amazonaws.com/569174591803/nft-metadata-ingest-queue\" --message-body '{\"chainId\":\"1868\",\"contract\":\"0x20566c95b29301604f11f902ffd46648745c432f\",\"tokenIds\":[\"0\",\"1\"]}' --output text",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "22.7.9",
+    "@workspace/tsconfig": "workspace:*",
+    "@aws-sdk/types": "3.821.0",
+    "aws-cdk": "2.1018.1",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3",
+    "esbuild": "0.25.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.201.0",
+    "constructs": "^10.0.0",
+    "@aws-sdk/client-secrets-manager": "^3.828.0"
+  }
+}

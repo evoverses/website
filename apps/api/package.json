@@ -1,0 +1,23 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@workspace/database": "workspace:*",
+    "@workspace/evoverses": "workspace:*",
+    "@workspace/tsconfig": "workspace:*",
+    "next": "15.3.3",
+    "zod": "^3.25.57"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@workspace/eslint": "workspace:*",
+    "typescript": "^5"
+  }
+}

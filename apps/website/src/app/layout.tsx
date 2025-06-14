@@ -1,8 +1,7 @@
-import Navbar from "@/app/(nav)/navbar";
-import { TrainerMintSmartDrawer } from "@/app/(nav)/trainer-mint-alert-button";
+import Navbar from "@/components/app-navbar/navbar";
 import { AutoConnect } from "@/components/auto-connect";
 import { GlobalProvider } from "@/components/providers";
-import { getAuthCookieAddress } from "@/lib/thirdweb/auth";
+import { getAccountCookie } from "@/lib/cookies/account.server";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@workspace/ui/components/sonner";
 import "@workspace/ui/styles/aggregated.css";
@@ -92,15 +91,14 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = async ({ children }: PropsWithChildren) => {
-  const account = await getAuthCookieAddress();
+  const accountCookie = await getAccountCookie();
   return (
     <html lang="en" className={nunito.variable} suppressHydrationWarning>
       <body className="flex flex-col font-nunito min-h-[100dvh] bg-background text-foreground">
         <GlobalProvider>
-          {account && <AutoConnect account={account} />}
-          <Navbar />
+          {accountCookie.loggedIn && <AutoConnect account={accountCookie.address} />}
+          <Navbar accountCookie={accountCookie} />
           <div className="@container flex flex-grow flex-col pt-16 relative">
-            <TrainerMintSmartDrawer />
             {children}
           </div>
         </GlobalProvider>

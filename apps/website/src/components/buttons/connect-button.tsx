@@ -1,30 +1,28 @@
 "use client";
-import { appMetadata, client, wallets } from "@/lib/thirdweb/config";
+import {
+  accountAbstraction,
+  appMetadata,
+  chains,
+  chainWallets,
+  client,
+  socialWallets,
+  wallets,
+} from "@/lib/thirdweb/config";
 import { auth } from "@/lib/thirdweb/siwe";
-import { generatePayload, isLoggedIn, login, logout } from "@/lib/thirdweb/auth";
 import { Button, Slot } from "@workspace/ui/components/button";
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
-import type { ComponentProps, ReactNode } from "react";
-import { avalanche } from "thirdweb/chains";
-import { darkTheme, useActiveAccount, useConnectModal } from "thirdweb/react";
+import type { ComponentProps } from "react";
+import { darkTheme, useConnectModal } from "thirdweb/react";
 
 const ConnectButton = ({
   className,
   disabled,
   onClick,
-  disconnectedButton,
+  wallets: walletsType = "social",
   asChild,
   ...props
-}: ComponentProps<typeof Button> & { disconnectedButton?: ReactNode }) => {
-  const mobile = useIsMobile();
+}: ComponentProps<typeof Button> & { wallets?: "social" | "chain" | "all" }) => {
   const { connect, isConnecting } = useConnectModal();
-  const activeAccount = useActiveAccount();
 
-  if (!activeAccount && disconnectedButton) {
-    return disconnectedButton;
-  }
-
-  // noinspection LocalVariableNamingConventionJS
   const Comp = asChild ? Slot : "button";
   return (
     <Comp
@@ -32,17 +30,20 @@ const ConnectButton = ({
       disabled={isConnecting || disabled}
       onClick={async e => {
         onClick?.(e);
+
         return connect({
           client,
-          chain: avalanche,
-          wallets,
+          chains,
+          wallets: walletsType === "all" ? wallets : walletsType === "chain" ? chainWallets : socialWallets,
           theme: darkTheme({
             colors: {
               modalBg: "var(--background)",
             },
           }),
+          accountAbstraction,
           appMetadata,
-          size: mobile ? "compact" : "wide",
+          showThirdwebBranding: false,
+          size: "compact",
           titleIcon: "/icon.png",
           termsOfServiceUrl: "/terms",
           privacyPolicyUrl: "/privacy",

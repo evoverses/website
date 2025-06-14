@@ -25,5 +25,10 @@ export const getAccountCookie = async (): Promise<IAccountCookie> => {
   // }
   const address = await getAuthCookieAddress();
 
-  return { address, sessionTicket: "", loggedIn: address !== DeadBeef, connected: address !== DeadBeef };
+  return {
+    address,
+    sessionTicket: "",
+    loggedIn: address && address !== DeadBeef,
+    connected: address && address !== DeadBeef,
+  };
 };

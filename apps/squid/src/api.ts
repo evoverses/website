@@ -2,7 +2,6 @@ import cors from "cors";
 import express from "express";
 import { NodePlugin } from "graphile-build";
 import { PgAllRows, PgRowByUniqueConstraint, PgTablesPlugin } from "graphile-build-pg";
-import { Pool } from "pg";
 import { postgraphile } from "postgraphile";
 import { AttributesByQueryPlugin } from "./graphql/plugins/attributes-by-query-plugin";
 import { CollectionPlugin } from "./graphql/plugins/collection-plugin";
@@ -10,6 +9,7 @@ import { EvoPlugin } from "./graphql/plugins/evo-plugin";
 import { ProcessorStatusPlugin } from "./graphql/plugins/processor-status-plugin";
 import { getEnv } from "./utils";
 import { DATABASE_CONFIG, DEVELOPMENT, SQUID_STATE_SCHEMA } from "./utils/constants";
+import { corsMiddleware } from "./utils/middlewares";
 
 const app = express();
 
@@ -25,23 +25,13 @@ const allowedOrigins = [
   "https://ngrok.cajun.tools",
 ];
 
-const evosClient = new Pool({ ...DATABASE_CONFIG, database: "evos" });
-
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log(`Blocked CORS request from ${origin}`);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+app.use(corsMiddleware(allowedOrigins));
 
 app.get("/graphql", (_req, res, _next) => {
   res.send(`<div>Whatcha doin?</div>`);
+});
+app.get("/health", (_req, res, _next) => {
+  res.send(`ok`);
 });
 
 app.use(
@@ -49,20 +39,20 @@ app.use(
     DATABASE_CONFIG,
     getEnv("DB_SCHEMA", "public"),
     {
-      graphiql: true,
-      enhanceGraphiql: true,
       dynamicJson: true,
       ignoreRBAC: true,
       ...(
         DEVELOPMENT ? {
+          graphiql: true,
+          enhanceGraphiql: true,
           showErrorStack: "json",
           extendedErrors: [ "hint", "detail", "errcode" ],
           exportGqlSchemaPath: "./src/graphql/schemas/api.schema.graphql",
+          disableQueryLog: true,
         } : {}
       ),
       // readCache: "",
       disableDefaultMutations: true,
-      disableQueryLog: DEVELOPMENT, // set false to see the processed queries
       skipPlugins: [ NodePlugin, PgTablesPlugin, PgAllRows, PgRowByUniqueConstraint ],
       appendPlugins: [
         EvoPlugin,
@@ -70,9 +60,6 @@ app.use(
         CollectionPlugin,
         ProcessorStatusPlugin,
       ],
-      additionalGraphQLContextFromRequest: async () => (
-        { evosClient }
-      ),
       externalGraphqlRoute: getEnv("GQL_BASE_PATH") ? getEnv("GQL_BASE_PATH") + "/api/graphql" : undefined,
       graphileBuildOptions: {
         stateSchemas: [ SQUID_STATE_SCHEMA ],

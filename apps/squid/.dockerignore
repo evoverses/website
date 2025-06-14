@@ -6,3 +6,18 @@ npm-debug.log
 
 # OS Files
 .DS_Store
+
+**/.aws
+**/.github
+**/.idea
+**/.turbo
+**/.vercel
+**/node_modules
+.typechain-types
+**/dist
+**/.cache
+/apps/contracts
+/apps/infra/cdk.out
+/apps/squid/lib
+**/.git
+**/.next
