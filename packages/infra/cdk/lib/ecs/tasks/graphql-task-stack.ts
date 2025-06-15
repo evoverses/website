@@ -1,4 +1,4 @@
-import { Port, SubnetType } from "aws-cdk-lib/aws-ec2";
+import { SubnetType } from "aws-cdk-lib/aws-ec2";
 import {
   ContainerImage,
   FargateService,
@@ -7,33 +7,34 @@ import {
   Secret as ECSSecret,
 } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
-import type { EcsTaskProps } from "../interfaces";
+import { EcsTaskStack, type EcsTaskStackId, type EcsTaskStackProps } from "../../../models/ecs-task-stack";
 
-export class EcsGraphqlTask extends Construct {
-  service: FargateService;
+export class EcsGraphQlTaskStack extends EcsTaskStack {
 
-  constructor(scope: Construct, id: string, props: EcsTaskProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: EcsTaskStackId, props: EcsTaskStackProps) {
+    super(scope, id, props);
 
-    const taskDef = new FargateTaskDefinition(this, "GraphqlTaskDef", {
+    this.task = new FargateTaskDefinition(this, this.toPrefixedId("TaskDef"), {
       memoryLimitMiB: 512,
       cpu: 256,
     });
 
-    props.userSecret.grantRead(taskDef.taskRole);
+    props.userSecret.grantRead(this.task.taskRole);
 
-    taskDef.addContainer("GraphqlContainer", {
+    const dbName = this.getContext("dbName");
+
+    this.task.addContainer(this.toPrefixedId("Container"), {
       containerName: "graphql",
-      image: ContainerImage.fromEcrRepository(props.repo, "dev"),
+      image: ContainerImage.fromEcrRepository(props.containerRepository, "dev"),
       logging: LogDrivers.awsLogs({ streamPrefix: "graphql" }),
       portMappings: [ { containerPort: 4350 } ],
       command: [ "serve:prod" ],
       environment: {
         NODE_ENV: "production",
         GQL_PORT: "4350",
-        DB_HOST: props.rds.dbInstanceEndpointAddress,
-        DB_PORT: props.rds.dbInstanceEndpointPort,
-        DB_NAME: props.dbName,
+        DB_HOST: props.dbHost,
+        DB_PORT: "5432",
+        DB_NAME: dbName,
         DB_SSL: "true",
       },
       secrets: {
@@ -42,14 +43,13 @@ export class EcsGraphqlTask extends Construct {
       },
     });
 
-    this.service = new FargateService(this, "GraphqlService", {
+    this.service = new FargateService(this, this.toPrefixedId("Service"), {
       cluster: props.cluster,
-      taskDefinition: taskDef,
+      taskDefinition: this.task,
       assignPublicIp: false,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       desiredCount: 1,
     });
 
-    props.rds.connections.allowFrom(this.service, Port.tcp(5432), "Allow Graphql ECS service to access Postgres");
   }
 }

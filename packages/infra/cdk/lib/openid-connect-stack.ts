@@ -1,16 +1,20 @@
-import { Stack, type StackProps } from "aws-cdk-lib";
 import { OpenIdConnectProvider } from "aws-cdk-lib/aws-iam";
 import type { Construct } from "constructs";
+import { CStack, type CStackProps } from "../models/c-stack";
 
-export class OpenIdConnectStack extends Stack {
-  arn: string;
+interface OpenIdConnectStackProps extends CStackProps {
 
-  constructor(scope: Construct, id: string, props: StackProps) {
+}
+
+export class OpenIdConnectStack extends CStack {
+  providerArn: string;
+
+  constructor(scope: Construct, id: string, props?: OpenIdConnectStackProps) {
     super(scope, id, props);
     const provider = new OpenIdConnectProvider(this, "GitHubOidcProvider", {
       url: "https://token.actions.githubusercontent.com",
       clientIds: [ "sts.amazonaws.com" ],
     });
-    this.arn = provider.openIdConnectProviderArn;
+    this.providerArn = provider.openIdConnectProviderArn;
   }
 }

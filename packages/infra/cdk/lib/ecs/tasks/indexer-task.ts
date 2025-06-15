@@ -1,4 +1,3 @@
-import { Port } from "aws-cdk-lib/aws-ec2";
 import {
   ContainerImage,
   FargateService,
@@ -7,30 +6,31 @@ import {
   Secret as ECSSecret,
 } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
-import type { EcsTaskProps } from "../interfaces";
+import { EcsTaskStack, type EcsTaskStackId, type EcsTaskStackProps } from "../../../models/ecs-task-stack";
 
-export class EcsIndexerTask extends Construct {
-  service: FargateService;
+export class EcsIndexerTaskStack extends EcsTaskStack {
 
-  constructor(scope: Construct, id: string, props: EcsTaskProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: EcsTaskStackId, props: EcsTaskStackProps) {
+    super(scope, id, props);
 
-    const taskDef = new FargateTaskDefinition(this, "IndexerTaskDef", {
+    this.task = new FargateTaskDefinition(this, "IndexerTaskDef", {
       memoryLimitMiB: 512,
       cpu: 256,
     });
 
-    props.userSecret.grantRead(taskDef.taskRole);
+    props.userSecret.grantRead(this.task.taskRole);
 
-    taskDef.addContainer("IndexerContainer", {
-      image: ContainerImage.fromEcrRepository(props.repo, "dev"),
+    const dbName = this.getContext("dbName");
+
+    this.task.addContainer("IndexerContainer", {
+      image: ContainerImage.fromEcrRepository(props.containerRepository, "dev"),
       logging: LogDrivers.awsLogs({ streamPrefix: "indexer" }),
       command: [ "process:prod" ],
       environment: {
         NODE_ENV: "production",
-        DB_HOST: props.rds.dbInstanceEndpointAddress,
-        DB_PORT: props.rds.dbInstanceEndpointPort,
-        DB_NAME: props.dbName,
+        DB_HOST: props.dbHost,
+        DB_PORT: "5432",
+        DB_NAME: dbName,
         DB_SSL: "true",
         DB_SSL_REJECT_UNAUTHORIZED: "false",
         SQD_DEBUG: "sqd:processor:mapping,sqd:processor:mapping:*",
@@ -48,9 +48,8 @@ export class EcsIndexerTask extends Construct {
 
     this.service = new FargateService(this, "IndexerService", {
       cluster: props.cluster,
-      taskDefinition: taskDef,
+      taskDefinition: this.task,
       desiredCount: 1,
     });
-    props.rds.connections.allowFrom(this.service, Port.tcp(5432), "Allow Indexer ECS service to access Postgres");
   }
 }

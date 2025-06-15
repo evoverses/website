@@ -1,33 +1,33 @@
 // lib/ecr-stack.ts
-import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput } from "aws-cdk-lib";
 import { Repository } from "aws-cdk-lib/aws-ecr";
 import { PolicyStatement, Role, WebIdentityPrincipal } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
+import { CStack, type CStackProps } from "../models/c-stack";
 
-interface EcrStackProps extends StackProps {
-  githubOrg: string;
-  githubRepo: string;
-  arn: string;
+interface EcrStackProps extends CStackProps {
+  openIdConnectProviderArn: string;
 }
 
-export class EcrStack extends Stack {
+export class EcrStack extends CStack {
   public readonly repo: Repository;
   public readonly githubPushRoleArn: string;
 
   constructor(scope: Construct, id: string, props: EcrStackProps) {
     super(scope, id, props);
 
-    this.repo = new Repository(this, "EcrRepo", {
-      imageScanOnPush: true,
+    this.repo = new Repository(this, "Repo", {
+      imageScanOnPush: false,
     });
-
+    const githubOrg = this.getContext("githubOrg");
+    const githubRepo = this.getContext("githubRepo");
     const githubPushRole = new Role(this, "GithubOidcEcrPushRole", {
-      assumedBy: new WebIdentityPrincipal(props.arn, {
+      assumedBy: new WebIdentityPrincipal(props.openIdConnectProviderArn, {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": `repo:${props.githubOrg}/${props.githubRepo}:ref:refs/heads/*`,
+          "token.actions.githubusercontent.com:sub": `repo:${githubOrg}/${githubRepo}:ref:refs/heads/*`,
         },
       }),
     });

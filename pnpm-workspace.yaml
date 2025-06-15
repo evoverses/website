@@ -1,4 +1,3 @@
 packages:
   - apps/*
   - packages/*
-  - packages/infra/lambda/db-bootstrap

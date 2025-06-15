@@ -1,4 +1,3 @@
-import cors from "cors";
 import express from "express";
 import { NodePlugin } from "graphile-build";
 import { PgAllRows, PgRowByUniqueConstraint, PgTablesPlugin } from "graphile-build-pg";

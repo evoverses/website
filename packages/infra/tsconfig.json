@@ -24,14 +24,12 @@
     ]
   },
   "include": [
-    "bin",
-    "lib",
-    "test"
+    "cdk"
   ],
   "exclude": [
     "node_modules",
-    "cdk.out",
-    "lambda",
+    "cdk.out/**/*",
+    "../../apps/lambda",
     "dist",
     ".turbo"
   ]

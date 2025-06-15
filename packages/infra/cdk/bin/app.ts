@@ -1,15 +1,9 @@
+#!/usr/bin/env node
+
+import "source-map-support/register";
 import { App } from "aws-cdk-lib";
-import { context } from "../context";
-import { CoreStack } from "../lib/core-stack";
-import { EcrStack } from "../lib/ecr-stack";
-import { OpenIdConnectStack } from "../lib/openid-connect-stack";
+import { InfraStage } from "../lib/stage";
 
 const app = new App();
-const openId = new OpenIdConnectStack(app, "OpenIdConnectStack", context);
-const squidStack = new EcrStack(app, "SquidEcrStack", {
-  ...context,
-  githubOrg: "evoverses",
-  githubRepo: "website",
-  arn: openId.arn,
-});
-new CoreStack(app, "CoreStack", { ...context, squidRepository: squidStack.repo });
+new InfraStage(app, "Dev", { env: { region: "us-east-2" } });
+new InfraStage(app, "Prod", { env: { region: "us-east-2" } });

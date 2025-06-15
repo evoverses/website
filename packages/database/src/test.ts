@@ -1,7 +1,7 @@
-import { db } from "./client";
 import { evoTable } from "@workspace/database/schema/evo";
 import * as fs from "fs";
 import * as path from "path";
+import { db } from "./client";
 
 interface CsvRow {
   id: string;

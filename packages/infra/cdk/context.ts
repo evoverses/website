@@ -1,16 +1,56 @@
-import type { Environment } from "aws-cdk-lib";
+import { join } from "node:path";
 
-export interface Context {
-  readonly env?: Environment,
-  readonly domainName: string,
-  readonly dbName: string
+const projectRoot = join(__dirname, "..", "..", "..");
+
+type Stage = "dev" | "prod";
+
+type GithubContext = {
+  githubOrg: string;
+  githubRepo: string;
 }
 
-export const context: Context = {
-  env: {
-    region: "us-east-2",
-    account: "934769272164",
+type ApiContext = {
+  domainName: string;
+}
+
+type DatabaseContext = {
+  dbName: string;
+  schema: string;
+}
+
+type ProjectPathContext = {
+  lambdaPath: string;
+  projectRoot: string;
+}
+type StageContext = GithubContext & ApiContext & DatabaseContext & ProjectPathContext;
+
+const githubContext: GithubContext = {
+  githubOrg: "evoverses",
+  githubRepo: "website",
+}
+
+const projectPathContext = {
+  lambdaPath: join(projectRoot, "apps", "lambda"),
+  projectRoot,
+};
+
+const dbContext: DatabaseContext = {
+  schema: "squid",
+  dbName: "evoverses-dev",
+};
+
+export const stageContext: Record<Stage, StageContext> = {
+  dev: {
+    domainName: "api.dev.evoverses.com",
+    ...dbContext,
+    ...githubContext,
+    ...projectPathContext,
   },
-  domainName: "api.evoverses.com",
-  dbName: "squid",
-} as const;
+  prod: {
+    domainName: "api.evoverses.com",
+    ...dbContext,
+    dbName: "evoverses",
+    ...githubContext,
+    ...projectPathContext,
+  },
+}
