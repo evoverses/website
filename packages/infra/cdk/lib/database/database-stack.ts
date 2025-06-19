@@ -1,7 +1,16 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
-import { InstanceClass, InstanceSize, InstanceType, Port, SubnetType, type Vpc } from "aws-cdk-lib/aws-ec2";
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  Port,
+  SecurityGroup,
+  SubnetType,
+  type Vpc,
+} from "aws-cdk-lib/aws-ec2";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import type { Key } from "aws-cdk-lib/aws-kms";
+import type { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs";
 import {
   Credentials,
   DatabaseInstance,
@@ -12,6 +21,7 @@ import {
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { join } from "node:path";
+import type { SetRequired } from "type-fest";
 import { CStack, type CStackProps } from "../../models/c-stack";
 import { ManagedFunctionConstruct } from "../constructs/managed-function-construct";
 import { DatabaseUserStack } from "./database-user-stack";
@@ -24,7 +34,9 @@ interface DatabaseStackProps extends CStackProps {
 export class DatabaseStack extends CStack {
   public readonly rds: DatabaseInstance;
   public readonly adminSecret: Secret;
-  public readonly userSecrets: Record<"indexer" | "graphql", Secret> = {} as any;
+  public readonly indexerUserSecret: Secret;
+  public readonly graphQlUserSecret: Secret;
+  public readonly rdsAccessSg: SecurityGroup;
 
   constructor(scope: Construct, id: string, props: DatabaseStackProps) {
     super(scope, id, props);
@@ -47,6 +59,12 @@ export class DatabaseStack extends CStack {
 
     const database = this.getContext("dbName");
 
+    this.rdsAccessSg = new SecurityGroup(this, "RdsAccessSG", {
+      vpc: props.vpc,
+      description: "Allows access to RDS",
+      allowAllOutbound: true,
+    });
+
     this.rds = new DatabaseInstance(this, `RdsInstance`, {
       engine,
       databaseName: database,
@@ -64,44 +82,39 @@ export class DatabaseStack extends CStack {
       publiclyAccessible: false,
       parameterGroup,
     });
+    this.rds.connections.allowFrom(this.rdsAccessSg, Port.POSTGRES);
 
     const lambdaPath = this.getContext("lambdaPath");
 
-    const sharedFnProps = {
+    const sharedFnProps: SetRequired<NodejsFunctionProps, "vpc"> = {
       vpc: props.vpc,
+      securityGroups: [ this.rdsAccessSg ],
       environment: {
         DB_HOST: this.rds.dbInstanceEndpointAddress,
       },
       initialPolicy: [ new PolicyStatement({ actions: [ "secretsmanager:GetSecretValue" ], resources: [ "*" ] }) ],
     };
 
-    const dbProvisioner = new ManagedFunctionConstruct(this, "DatabaseProvisionerConstruct", {
-      function: {
+    new ManagedFunctionConstruct(this, "DatabaseProvisionerConstruct", {
+      functionProps: {
         ...sharedFnProps,
         entry: join(lambdaPath, "src", "db-provisioner.ts"),
+        securityGroups: [ this.rdsAccessSg ],
       },
       resourceProperties: {
         adminSecretArn: this.adminSecret.secretArn,
         database,
       },
     });
-    this.rds.connections.allowFrom(
-      dbProvisioner.fn,
-      Port.tcp(5432),
-      "Allow Lambda DatabaseProvisionerFn to connect to Postgres",
-    );
+
 
     const userProvisioner = new ManagedFunctionConstruct(this, "DatabaseUserProvisionerConstruct", {
-      function: {
+      functionProps: {
         ...sharedFnProps,
         entry: join(lambdaPath, "src", "db-user-provisioner.ts"),
-      }
+      },
     });
-    this.rds.connections.allowFrom(
-      userProvisioner.fn,
-      Port.tcp(5432),
-      "Allow Lambda DatabaseUserProvisionerFn to connect to Postgres",
-    );
+
     const schema = this.getContext("schema");
     const graphQlUserStack = new DatabaseUserStack(this, "GraphQlDatabaseUserStack", {
       username: "graphql",
@@ -110,7 +123,7 @@ export class DatabaseStack extends CStack {
       provider: userProvisioner.provider,
       schema,
     });
-    this.userSecrets.graphql = graphQlUserStack.secret;
+    this.graphQlUserSecret = graphQlUserStack.secret;
     const indexerUserStack = new DatabaseUserStack(this, "IndexerDatabaseUserStack", {
       username: "squid",
       role: "rw",
@@ -118,6 +131,6 @@ export class DatabaseStack extends CStack {
       provider: userProvisioner.provider,
       schema,
     });
-    this.userSecrets.indexer = indexerUserStack.secret;
+    this.indexerUserSecret = indexerUserStack.secret;
   }
 }

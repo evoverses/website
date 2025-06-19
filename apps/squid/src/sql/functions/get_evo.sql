@@ -54,10 +54,10 @@ begin
       'status', ea.status
     ) order by ea.start_at) filter (where ea.id is not null), '{}') as auctions
 
-  from public.nft n
-  join public.contract c on c.id = n.contract_id
-  join public.chain ch on ch.id = c.chain_id
-  join public.wallet w on w.id = n.owner_id
+  from squid.nft n
+  join squid.contract c on c.id = n.contract_id
+  join squid.chain ch on ch.id = c.chain_id
+  join squid.wallet w on w.id = n.owner_id
 
   -- ✅ lateral join to fetch evo + species metadata as a single jsonb blob
   left join lateral (
@@ -72,13 +72,13 @@ begin
     limit 1
   ) meta on true
 
-  left join public.offer o
+  left join squid.offer o
     on o.nft_id = n.id and o.status = 'CREATED' and o.expires_at > now()
 
-  left join public.direct_listing dl
+  left join squid.direct_listing dl
     on dl.nft_id = n.id and dl.status = 'CREATED' and dl.end_at > now()
 
-  left join public.english_auction ea
+  left join squid.english_auction ea
     on ea.nft_id = n.id and ea.status = 'CREATED' and ea.end_at > now()
 
   where n.token_id::text = _tokenId

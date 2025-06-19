@@ -1,3 +1,4 @@
+import { Element } from "@workspace/database/types/evo";
 import { maxXpTable } from "@workspace/evoverses/lib/asset/data";
 import type {
   SquidAsset,
@@ -8,7 +9,6 @@ import type {
   SquidAssetMetadata,
 } from "@workspace/evoverses/lib/asset/types";
 import { toTitleCase } from "@workspace/evoverses/utils/strings";
-import { Element } from "@workspace/database/types/evo";
 
 export const isEvoAsset = (asset: SquidAsset): asset is SquidAsset<SquidAssetEvoMetadata> => {
   return isEvoMetadata(asset.metadata);
@@ -126,15 +126,18 @@ export const getLevelOfEvo = (evo: SquidAsset | SquidAssetMetadata): number => {
     );
 };
 
-const baseImageApiUrl = `https://api.evoverses.com/images`;
+export const baseImageApiUrl = process.env.NEXT_PUBLIC_BASE_API_IMAGE_URL;
+export const imageApiSuffix = process.env.NEXT_PUBLIC_API_IMAGE_SUFFIX;
+
+const asImageUrl = (url: string) => `${baseImageApiUrl}/${url.replace(/\/$/, "").replace(/^\//, "")}/${imageApiSuffix}`;
 
 export const getEvoCardEvoImageUrl = (evo: SquidAsset) => {
-  const base = `${baseImageApiUrl}/evo/${evo.metadata.species}`;
+  const base = `/evo/${evo.metadata.species}`;
   const isEgg = isEggAsset(evo);
   if (isEgg) {
-    return `${base}/${evo.metadata.generation === 0 ? Number(evo.tokenId) % 4 : "egg"}`;
+    return asImageUrl(`${base}/${evo.metadata.generation === 0 ? Number(evo.tokenId) % 4 : "egg"}`);
   }
-  return hasChroma(evo) ? `${base}/${evo.metadata.chroma}` : base;
+  return asImageUrl(hasChroma(evo) ? `${base}/${evo.metadata.chroma}` : base);
 };
 
 export const getEvoCardBorderUrl = (evo: SquidAsset) => {
@@ -142,9 +145,13 @@ export const getEvoCardBorderUrl = (evo: SquidAsset) => {
   if (hasRarity(evo)) {
     color = "silver"; // TODO: metadata.rarity === TBD;
   }
-  return `${baseImageApiUrl}/card/border/${color}-metallic/4`;
+  return asImageUrl(`/card/border/${color}-metallic/4`);
 };
 
 export const getEvoCardElementBackgroundUrl = (evo: SquidAsset) => {
-  return `${baseImageApiUrl}/card/background/${hasElements(evo) ? evo.metadata.primaryType : "genesis"}`;
+  return asImageUrl(`/card/background/${hasElements(evo) ? evo.metadata.primaryType : "genesis"}`);
+};
+
+export const getInfoIslandUrl = () => {
+  return asImageUrl(`/card/overlay/info-island`);
 };

@@ -7,4 +7,3 @@
 ## Packages
 
 - [UI](packages/ui)
-- [prisma](packages/prisma)

@@ -9,6 +9,7 @@ export const ElementIcon = ({
 }: ComponentProps<"svg"> & {
   element: Element | null | undefined,
   iconOnly?: boolean
+  tw?: string
 }) => {
   if (!element || element === Element.none) {
     return null;

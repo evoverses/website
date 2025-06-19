@@ -1,19 +1,34 @@
-import { SubnetType } from "aws-cdk-lib/aws-ec2";
+import { SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import type { Repository } from "aws-cdk-lib/aws-ecr";
 import {
+  type Cluster,
   ContainerImage,
   FargateService,
   FargateTaskDefinition,
   LogDrivers,
   Secret as ECSSecret,
 } from "aws-cdk-lib/aws-ecs";
+import type { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { EcsTaskStack, type EcsTaskStackId, type EcsTaskStackProps } from "../../../models/ecs-task-stack";
+import { CStack, type CStackProps } from "../../../models/c-stack";
 
-export class EcsGraphQlTaskStack extends EcsTaskStack {
+interface EcsTaskStackProps extends CStackProps {
+  cluster: Cluster;
+  userSecret: Secret;
+  containerRepository: Repository;
+  dbHost: string;
+  additionalSecurityGroups: SecurityGroup[];
+  vpc: Vpc;
+}
 
-  constructor(scope: Construct, id: EcsTaskStackId, props: EcsTaskStackProps) {
+export class EcsGraphQlTaskStack extends CStack {
+  public readonly task: FargateTaskDefinition;
+  public readonly service: FargateService;
+  public readonly sg: SecurityGroup;
+
+  constructor(scope: Construct, id: `${string}EcsTaskStack`, props: EcsTaskStackProps) {
     super(scope, id, props);
-
+    this.idPrefix = id.replace("EcsTaskStack", "");
     this.task = new FargateTaskDefinition(this, this.toPrefixedId("TaskDef"), {
       memoryLimitMiB: 512,
       cpu: 256,
@@ -43,12 +58,22 @@ export class EcsGraphQlTaskStack extends EcsTaskStack {
       },
     });
 
+    this.sg = new SecurityGroup(this, this.toPrefixedId("Sg"), {
+      allowAllOutbound: true,
+      vpc: props.vpc,
+    });
+
     this.service = new FargateService(this, this.toPrefixedId("Service"), {
       cluster: props.cluster,
       taskDefinition: this.task,
       assignPublicIp: false,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       desiredCount: 1,
+      serviceName: "graphql",
+      cloudMapOptions: {
+        name: "graphql",
+      },
+      securityGroups: [ this.sg, ...props.additionalSecurityGroups ],
     });
 
   }

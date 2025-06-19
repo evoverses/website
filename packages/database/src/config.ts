@@ -25,6 +25,6 @@ for (const [ key, value ] of Object.entries(c)) {
   }
 }
 
-export const databaseUrl = `postgres://${c.user}:${c.password}@${c.host}:${c.port}/${c.database}`;
+export const databaseUrl = `postgres://${c.user}:${c.password}@${c.host}:${c.port}/${c.database}?sslmode=no-verify`;
 
-export const dbCredentials = { ...c, ssl: false };
+export const dbCredentials = { ...c, ssl: { rejectUnauthorized: false } };

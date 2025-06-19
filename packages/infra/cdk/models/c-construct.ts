@@ -6,7 +6,7 @@ export interface CConstructProps {
 }
 
 export class CConstruct extends Construct {
-
+  private _idPrefix: string = "";
   constructor(scope: Construct, id: string, props?: CConstructProps) {
     super(scope, id);
   }
@@ -19,7 +19,15 @@ export class CConstruct extends Construct {
     return value;
   }
 
+  protected get idPrefix() {
+    return this._idPrefix || this.node.id.replace("Construct", "");
+  }
+
+  protected set idPrefix(value: string) {
+    this._idPrefix = value;
+  }
+
   protected toPrefixedId(id: string) {
-    return `${this.node.id.replace("Construct", "")}${id}`;
+    return `${this.idPrefix}${id}`;
   }
 }

@@ -1,16 +1,32 @@
+import { SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
+import type { Repository } from "aws-cdk-lib/aws-ecr";
 import {
+  type Cluster,
   ContainerImage,
   FargateService,
   FargateTaskDefinition,
   LogDrivers,
   Secret as ECSSecret,
 } from "aws-cdk-lib/aws-ecs";
+import type { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { EcsTaskStack, type EcsTaskStackId, type EcsTaskStackProps } from "../../../models/ecs-task-stack";
+import { CStack, type CStackProps } from "../../../models/c-stack";
 
-export class EcsIndexerTaskStack extends EcsTaskStack {
+interface EcsTaskStackProps extends CStackProps {
+  cluster: Cluster;
+  userSecret: Secret;
+  containerRepository: Repository;
+  dbHost: string;
+  additionalSecurityGroups: SecurityGroup[];
+  vpc: Vpc;
+}
 
-  constructor(scope: Construct, id: EcsTaskStackId, props: EcsTaskStackProps) {
+export class EcsIndexerTaskStack extends CStack {
+  public readonly task: FargateTaskDefinition;
+  public readonly service: FargateService;
+  public readonly sg: SecurityGroup;
+
+  constructor(scope: Construct, id: `${string}EcsTaskStack`, props: EcsTaskStackProps) {
     super(scope, id, props);
 
     this.task = new FargateTaskDefinition(this, "IndexerTaskDef", {
@@ -46,10 +62,20 @@ export class EcsIndexerTaskStack extends EcsTaskStack {
       },
     });
 
+    this.sg = new SecurityGroup(this, this.toPrefixedId("Sg"), {
+      allowAllOutbound: true,
+      vpc: props.vpc,
+    });
+
     this.service = new FargateService(this, "IndexerService", {
       cluster: props.cluster,
       taskDefinition: this.task,
       desiredCount: 1,
+      serviceName: "indexer",
+      cloudMapOptions: {
+        name: "indexer",
+      },
+      securityGroups: [ this.sg, ...props.additionalSecurityGroups ],
     });
   }
 }

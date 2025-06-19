@@ -4,7 +4,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /workspace
 RUN npm install --global corepack@latest && \
     corepack enable && \
-    corepack use pnpm@10.11.0
+    corepack use pnpm@10.12.1
 
 FROM base AS prod-base
 RUN dnf update -y && \
@@ -43,12 +43,3 @@ RUN echo -e "loglevel=silent\\nupdate-notifier=false" > /workspace/.npmrc
 RUN npm install --global @subsquid/commands && ln -s $(which squid-commands) /usr/local/bin/sqd
 
 ENTRYPOINT ["sqd"]
-
-
-FROM runner AS gql
-ENTRYPOINT ["sqd"]
-CMD ["serve:prod"]
-
-FROM runner AS indexer
-ENTRYPOINT ["sqd"]
-CMD ["process:prod"]

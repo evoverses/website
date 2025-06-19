@@ -30,7 +30,7 @@ export const handler = async (event: CloudFormationCustomResourceEvent<ResourceP
       break;
     }
     case "Update": {
-      error = await updateHandler(client, database, schema, user.username, role);
+      error = await updateHandler(client, database, schema, user, role);
       break;
     }
     case "Delete": {
@@ -64,7 +64,7 @@ const createHandler = async (
       await client.queryFmt(`CREATE USER %I WITH PASSWORD %L`, username, password);
     }
     // intentional await to trigger error if needed
-    return await updateHandler(client, database, schema, username, role);
+    return await updateHandler(client, database, schema, user, role);
   } catch (e: unknown) {
     console.error("create::error::", e);
     const err = e as Error;
@@ -76,15 +76,19 @@ const updateHandler = async (
   client: DatabaseClient,
   database: string,
   schema: string,
-  username: string,
+  user: SecretValue,
   role: Role,
 ) => {
   try {
-
-    await client.queryFmt(`GRANT CONNECT ON DATABASE %I TO %I`, database, username);
+    const { username, password } = user;
+    await client.tx()
+      .queryFmt(`ALTER ROLE %I WITH LOGIN PASSWORD %L`, username, password)
+      .queryFmt(`GRANT CONNECT ON DATABASE %I TO %I`, database, username)
+      .send();
 
     await client.setDatabase(database, true);
     await client.tx()
+      .queryFmt(`CREATE SCHEMA IF NOT EXISTS %I`, schema)
       .queryFmt(`GRANT USAGE ON SCHEMA %I TO %I`, schema, username)
       .queryFmt(`ALTER ROLE %I SET search_path TO %I`, username, schema)
       .queryFmt(

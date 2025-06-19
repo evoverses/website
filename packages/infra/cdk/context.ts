@@ -27,7 +27,7 @@ type StageContext = GithubContext & ApiContext & DatabaseContext & ProjectPathCo
 const githubContext: GithubContext = {
   githubOrg: "evoverses",
   githubRepo: "website",
-}
+};
 
 const projectPathContext = {
   lambdaPath: join(projectRoot, "apps", "lambda"),
@@ -53,4 +53,4 @@ export const stageContext: Record<Stage, StageContext> = {
     ...githubContext,
     ...projectPathContext,
   },
-}
+};

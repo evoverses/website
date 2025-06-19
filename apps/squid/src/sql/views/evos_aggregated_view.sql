@@ -12,37 +12,37 @@ select
   ) as metadata,
   (
     select dls.total_price
-    from public.direct_listing_sale dls
-    join public.direct_listing dl on dls.listing_id = dl.id
+    from squid.direct_listing_sale dls
+    join squid.direct_listing dl on dls.listing_id = dl.id
     where dl.nft_id = n.id
     order by dls.id desc
     limit 1
   ) as last_sale,
   (
     select max(o.total_price)
-    from public.offer o
+    from squid.offer o
     where o.nft_id = n.id and o.status = 'CREATED' and o.expires_at > now()
   ) as top_offer,
   (
     select min(dl.price_per_token)
-    from public.direct_listing dl
+    from squid.direct_listing dl
     where dl.nft_id = n.id and dl.status = 'CREATED' and dl.end_at > now()
   ) as listing_price,
   (
     select max(dl.start_at)
-    from public.direct_listing dl
+    from squid.direct_listing dl
     where dl.nft_id = n.id and dl.status = 'CREATED'
   ) as listed_at,
   (
     select max(dls.id)::text
-    from public.direct_listing_sale dls
-    join public.direct_listing dl on dls.listing_id = dl.id
+    from squid.direct_listing_sale dls
+    join squid.direct_listing dl on dls.listing_id = dl.id
     where dl.nft_id = n.id
   ) as sold_at,
   n.updated_at as created_at
-from public.nft n
-join public.contract c on c.id = n.contract_id
-join public.chain ch on ch.id = c.chain_id
-join public.wallet w on w.id = n.owner_id
+from squid.nft n
+join squid.contract c on c.id = n.contract_id
+join squid.chain ch on ch.id = c.chain_id
+join squid.wallet w on w.id = n.owner_id
 join metadata.evo e on e.token_id = n.token_id
 join metadata.species s on s.id = e.species_id;

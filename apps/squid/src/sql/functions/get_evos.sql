@@ -41,7 +41,7 @@ select jsonb_build_object(
         'offerorId', o.offeror_id,
         'status', o.status
       )), '[]')
-      from public.offer o
+      from squid.offer o
       where o.nft_id::text = s.nft_id and o.status = 'CREATED' and o.expires_at > now()
     ),
     'listings', (
@@ -62,13 +62,13 @@ select jsonb_build_object(
              'totalPrice', dls.total_price::text,
              'timestamp', b.timestamp
            )), '[]')
-           from public.direct_listing_sale dls
-           join public.transaction tx on dls.tx_id = tx.id
-           join public.block b on tx.block_id = b.id
+           from squid.direct_listing_sale dls
+           join squid.transaction tx on dls.tx_id = tx.id
+           join squid.block b on tx.block_id = b.id
            where dls.listing_id = dl.id
         )
       )), '[]')
-      from public.direct_listing dl
+      from squid.direct_listing dl
       where dl.nft_id::text = s.nft_id and dl.status = 'CREATED' and dl.end_at > now()
     ),
     'auctions', (
@@ -84,7 +84,7 @@ select jsonb_build_object(
         'creatorId', ea.creator_id,
         'status', ea.status
       )), '[]')
-      from public.english_auction ea
+      from squid.english_auction ea
       where ea.nft_id::text = s.nft_id and ea.status = 'CREATED' and ea.end_at > now()
     )
   )),

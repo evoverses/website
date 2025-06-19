@@ -55,7 +55,7 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
       Query: {
         evoById: async (_query, args, context, _info) => {
           const client: PoolClient = context.pgClient;
-          const result = await client.query("SELECT * FROM squid.metadata.get_evo($1)", [ args.tokenId ]);
+          const result = await client.query("SELECT * FROM metadata.get_evo($1)", [ args.tokenId ]);
           const row = result.rows[0];
           if (!row) {
             return null;
@@ -72,7 +72,7 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
           const listed = args.listed;
 
           const raw = await client.query(
-            "SELECT * FROM squid.metadata.get_evos($1, $2, $3, $4, $5)", [ limit, page, sort, owners, listed ],
+            "SELECT * FROM metadata.get_evos($1, $2, $3, $4, $5)", [ limit, page, sort, owners, listed ],
           );
           const query = raw.rows[0]?.get_evos;
           if (!query || !query.items || query.items.length === 0) {

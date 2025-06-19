@@ -31,40 +31,5 @@ export class CoreStack extends CStack {
       pendingWindow: Duration.days(7),
       removalPolicy: RemovalPolicy.DESTROY,
     });
-
-    //const alb = new ApplicationLoadBalancer(this, "ApiALB", {
-    //  vpc,
-    //  internetFacing: true,
-    //});
-//
-    //const listener = alb.addListener("HttpsListener", {
-    //  port: 443,
-    //  protocol: ApplicationProtocol.HTTPS,
-    //  certificates: [ cert ],
-    //  defaultAction: ListenerAction.fixedResponse(404),
-    //});
-//
-    //new ARecord(this, "ApiAliasRecord", {
-    //  zone,
-    //  target: RecordTarget.fromAlias(new LoadBalancerTarget(alb)),
-    //});
-//
-
-//
-    //listener.addTargets("GraphqlTargets", {
-    //  priority: 1,
-    //  conditions: [ ListenerCondition.pathPatterns([ "/graphql" ]) ],
-    //  port: 4350,
-    //  protocol: ApplicationProtocol.HTTP,
-    //  targets: [ graphqlTask.service ],
-    //  healthCheck: { path: "/health" },
-    //});
-//
-    //graphqlTask.service.connections.allowFrom(
-    //  listener,
-    //  Port.tcp(4350),
-    //  "Allow ALB to reach GraphQL ECS",
-    //);
-
   }
 }

@@ -1,6 +1,8 @@
 import { Stage, type StageProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { stageContext } from "../context";
+import { AlbStack } from "./alb-stack";
+import { ApiGatewayStack } from "./api-gateway-stack";
 import { CoreStack } from "./core-stack";
 import { DatabaseStack } from "./database/database-stack";
 import { EcrStack } from "./ecr-stack";
@@ -31,13 +33,27 @@ export class InfraStage extends Stage {
       kmsKey: coreStack.kmsKey,
     });
 
-    const hostedZoneStack = new HostedZoneStack(this, "HostedZoneStack");
-
     const ecsStack = new EcsStack(this, "EcsStack", {
       vpc: coreStack.vpc,
       containerRepository: squidEcrStack.repo,
-      secrets: dbStack.userSecrets,
+      graphQlSecret: dbStack.graphQlUserSecret,
+      indexerSecret: dbStack.indexerUserSecret,
       dbHost: dbStack.rds.dbInstanceEndpointAddress,
+      dbAccessSg: dbStack.rdsAccessSg,
+    });
+
+    const hostedZoneStack = new HostedZoneStack(this, "HostedZoneStack");
+
+    const albStack = new AlbStack(this, "AlbStack", {
+      vpc: coreStack.vpc,
+      zone: hostedZoneStack.zone,
+      graphqlService: ecsStack.graphQlTaskService,
+      nextJsApiService: ecsStack.nextJsApiTaskService,
+    });
+
+    const apiGatewayStack = new ApiGatewayStack(this, "ApiGatewayStack", {
+      albDnsName: albStack.dnsName,
+      zone: hostedZoneStack.zone,
     });
   }
 

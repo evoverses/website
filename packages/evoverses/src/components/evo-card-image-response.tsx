@@ -1,3 +1,4 @@
+import "@workspace/evoverses/types/next";
 import { Element, StatNameAbbreviation } from "@workspace/database/types/evo";
 import { ElementIcon } from "@workspace/evoverses/components/icons/element-icon";
 import { GenderIcon } from "@workspace/evoverses/components/icons/gender-icon";
@@ -6,6 +7,7 @@ import {
   getEvoCardBorderUrl,
   getEvoCardElementBackgroundUrl,
   getEvoCardEvoImageUrl,
+  getInfoIslandUrl,
   getLevelOfEvo,
   hasElements,
   isEgg,
@@ -17,8 +19,6 @@ import {
 } from "@workspace/evoverses/lib/asset/utils";
 import { daysSince } from "@workspace/evoverses/utils/numbers";
 import { pluralize, toTitleCase } from "@workspace/evoverses/utils/strings";
-
-const baseImageApiUrl = `https://api.evoverses.com/images`;
 
 export const evoCardImageResponse = (asset: SquidAsset) => <EvoCardImageResponse asset={asset} />;
 export const EvoCardImageResponse = ({ asset }: { asset: SquidAsset }) => {
@@ -78,7 +78,7 @@ export const EvoCardImageResponse = ({ asset }: { asset: SquidAsset }) => {
         id="info-overlay"
         tw="absolute w-full h-full top-[60px] opacity-80"
         style={{ filter: "invert(100%)" }}
-        src={`${baseImageApiUrl}/card/overlay/info-island`}
+        src={getInfoIslandUrl()}
         alt="info-overlay-bg"
       />
       <p
