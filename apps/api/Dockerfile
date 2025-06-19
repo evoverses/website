@@ -33,6 +33,7 @@ RUN chown nextjs:nodejs /workspace
 WORKDIR /workspace/apps/api
 #COPY --from=builder /workspace/apps/api/public ./public
 COPY --from=builder --chown=nextjs:nodejs /workspace/apps/api/.next ./.next
+COPY --from=installer --chown=nextjs:nodejs /workspace/apps/api/src/assets/nunito-bold.ttf ./src/assets/nunito-bold.ttf
 USER nextjs
 EXPOSE 3000
 ENV NODE_ENV=production \

@@ -27,7 +27,7 @@ export class EcrStack extends CStack {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": `repo:${githubOrg}/${githubRepo}:ref:refs/heads/*`,
+          "token.actions.githubusercontent.com:sub": `repo:${githubOrg}/${githubRepo}:*`,
         },
       }),
     });

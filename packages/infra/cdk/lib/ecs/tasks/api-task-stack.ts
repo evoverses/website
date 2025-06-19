@@ -20,8 +20,8 @@ export class NextJsApiEcsTaskStack extends CStack {
     super(scope, id, props);
     this.idPrefix = id.replace("EcsTaskStack", "");
     this.task = new FargateTaskDefinition(this, this.toPrefixedId("TaskDef"), {
-      memoryLimitMiB: 512,
-      cpu: 256,
+      memoryLimitMiB: 1024,
+      cpu: 512,
     });
 
     const projectRoot = this.getContext("projectRoot");
