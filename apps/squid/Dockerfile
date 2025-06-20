@@ -14,18 +14,18 @@ RUN dnf update -y && \
 
 FROM base AS installer
 RUN pnpm install --global turbo
-COPY --from=root . .
+COPY . .
 RUN turbo prune --scope=squid --docker
 
 FROM base AS builder
 COPY --from=installer /workspace/out/json/ .
-RUN --mount=from=root,type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 COPY --from=installer /workspace/out/full/ .
 RUN pnpm turbo build
 
 FROM base AS runner-deps
 COPY --from=installer /workspace/out/json/ .
-RUN --mount=from=root,type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod
 
 FROM prod-base AS runner
 ENV PROCESSOR_PROMETHEUS_PORT=3000 \

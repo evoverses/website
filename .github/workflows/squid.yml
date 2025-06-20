@@ -60,6 +60,5 @@ jobs:
           push: true
           platforms: linux/amd64
           provenance: false
-          build-contexts: root=.
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
