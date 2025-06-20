@@ -41,23 +41,21 @@ export class ApiGatewayStack extends CStack {
       createDefaultStage: true,
     });
 
-    const mappedAlbIntegration = new HttpUrlIntegration("MappedAlbIntegration", `http://${props.albDnsName}`, {
+    const albIntegration = new HttpUrlIntegration("albIntegration", `http://${props.albDnsName}`, {
       parameterMapping: new ParameterMapping()
         .overwritePath(MappingValue.requestPath())
         .appendHeader("x-original-path", MappingValue.requestPath()),
     });
 
-    const unmappedAlbIntegration = new HttpUrlIntegration("UnmappedAlbIntegration", `http://${props.albDnsName}`);
-
     this.api.addRoutes({
       path: "/graphql",
       methods: [ HttpMethod.POST ],
-      integration: unmappedAlbIntegration,
+      integration: albIntegration,
     });
     this.api.addRoutes({
       path: "/metadata/{proxy+}",
       methods: [ HttpMethod.GET ],
-      integration: mappedAlbIntegration,
+      integration: albIntegration,
     });
 
     new ARecord(this, "ApiAliasRecord", {

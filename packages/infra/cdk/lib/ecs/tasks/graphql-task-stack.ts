@@ -1,3 +1,4 @@
+import { Duration } from "aws-cdk-lib";
 import { SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import type { Repository } from "aws-cdk-lib/aws-ecr";
 import {
@@ -75,6 +76,7 @@ export class EcsGraphQlTaskStack extends CStack {
         name: "graphql",
       },
       securityGroups: [ this.sg, ...props.additionalSecurityGroups ],
+      healthCheckGracePeriod: Duration.seconds(30),
     });
 
   }

@@ -1,3 +1,4 @@
+import { Duration } from "aws-cdk-lib";
 import { SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import type { Repository } from "aws-cdk-lib/aws-ecr";
 import { type Cluster, ContainerImage, FargateService, FargateTaskDefinition, LogDrivers } from "aws-cdk-lib/aws-ecs";
@@ -53,6 +54,7 @@ export class NextJsApiEcsTaskStack extends CStack {
         name: "nextjs-api",
       },
       securityGroups: [ this.sg, ...props.additionalSecurityGroups ],
+      healthCheckGracePeriod: Duration.seconds(30),
     });
   }
 }

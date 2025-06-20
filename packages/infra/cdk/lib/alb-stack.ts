@@ -1,3 +1,4 @@
+import { Duration } from "aws-cdk-lib";
 import { Port, type Vpc } from "aws-cdk-lib/aws-ec2";
 import type { FargateService } from "aws-cdk-lib/aws-ecs";
 import {
@@ -43,7 +44,13 @@ export class AlbStack extends CStack {
       port: 4350,
       protocol: ApplicationProtocol.HTTP,
       targets: [ props.graphqlService ],
-      healthCheck: { path: "/health" },
+      healthCheck: {
+        path: "/health",
+        interval: Duration.seconds(10),
+        healthyThresholdCount: 2,
+        unhealthyThresholdCount: 2,
+        timeout: Duration.seconds(5),
+      },
     });
 
     this.listener.addTargets("NextJsTargets", {
@@ -52,7 +59,13 @@ export class AlbStack extends CStack {
       port: 3000,
       protocol: ApplicationProtocol.HTTP,
       targets: [ props.nextJsApiService ],
-      healthCheck: { path: "/health" },
+      healthCheck: {
+        path: "/health",
+        interval: Duration.seconds(10),
+        healthyThresholdCount: 2,
+        unhealthyThresholdCount: 2,
+        timeout: Duration.seconds(5),
+      },
     });
 
     props.graphqlService.connections.allowFrom(

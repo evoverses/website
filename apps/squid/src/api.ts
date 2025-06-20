@@ -29,9 +29,9 @@ app.use(
     {
       ignoreRBAC: true,
       dynamicJson: true,
-      graphqlRoute: "/",
       ...(
         DEVELOPMENT ? {
+          graphqlRoute: "/",
           showErrorStack: "json",
           extendedErrors: [ "hint", "detail", "errcode" ],
           exportGqlSchemaPath: "./src/graphql/schemas/api.schema.graphql",
@@ -41,7 +41,7 @@ app.use(
           graphiql: true,
           graphiqlRoute: "/graphiql",
         } : {
-          externalGraphqlRoute: "/graphql",
+          graphqlRoute: "/graphql",
           disableQueryLog: true,
         }
       ),
