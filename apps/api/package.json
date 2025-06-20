@@ -13,6 +13,7 @@
     "@workspace/evoverses": "workspace:*",
     "@workspace/tsconfig": "workspace:*",
     "next": "15.3.4",
+    "sharp": "^0.34.2",
     "zod": "^3.25.57"
   },
   "devDependencies": {
