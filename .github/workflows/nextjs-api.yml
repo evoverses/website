@@ -56,10 +56,9 @@ jobs:
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
-          file: "./apps/squid/Dockerfile"
+          file: "./apps/api/Dockerfile"
           push: true
           platforms: linux/amd64
           provenance: false
-          build-contexts: root=.
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
