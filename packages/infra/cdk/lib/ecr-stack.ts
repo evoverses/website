@@ -1,5 +1,5 @@
 // lib/ecr-stack.ts
-import { CfnOutput } from "aws-cdk-lib";
+import { CfnOutput, RemovalPolicy } from "aws-cdk-lib";
 import { Repository } from "aws-cdk-lib/aws-ecr";
 import { PolicyStatement, Role, WebIdentityPrincipal } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
@@ -18,7 +18,11 @@ export class EcrStack extends CStack {
 
     this.repo = new Repository(this, "Repo", {
       imageScanOnPush: false,
+      removalPolicy: RemovalPolicy.DESTROY,
+      emptyOnDelete: true,
+      lifecycleRules: [ { maxImageCount: 10 } ],
     });
+
     const githubOrg = this.getContext("githubOrg");
     const githubRepo = this.getContext("githubRepo");
     const githubPushRole = new Role(this, "GithubOidcEcrPushRole", {

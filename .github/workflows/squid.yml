@@ -4,11 +4,14 @@ on:
   push:
     paths:
       - 'apps/squid/**'
-      - '.github/workflows/squid.yaml'
+      - '.github/workflows/squid.yml'
 
 permissions:
   id-token: write
   contents: read
+
+env:
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
 
 jobs:
   docker:
@@ -21,14 +24,14 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.SQUID_OIDC_ROLE }}
 
       - name: Generate Docker Meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPO }}
+            ${{ env.ECR_REGISTRY }}/${{ secrets.SQUID_ECR_REPO }}
           tags: |
             type=sha
             type=schedule
@@ -42,7 +45,7 @@ jobs:
       - name: Login to ECR
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+          registry: ${{ env.ECR_REGISTRY }}
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3

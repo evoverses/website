@@ -24,6 +24,7 @@
     "aws-cdk-lib": "2.201.0",
     "constructs": "^10.0.0",
     "@aws-sdk/client-secrets-manager": "^3.828.0",
+    "@pepperize/cdk-github": "0.0.1005",
     "type-fest": "^4.41.0"
   }
 }

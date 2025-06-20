@@ -24,6 +24,10 @@ export class InfraStage extends Stage {
       openIdConnectProviderArn: openIdConnectStack.providerArn,
     });
 
+    const nextJsApiEcrStack = new EcrStack(this, "NextJsEcrStack", {
+      openIdConnectProviderArn: openIdConnectStack.providerArn,
+    });
+
     const coreStack = new CoreStack(this, "CoreStack", {
       squidRepository: squidEcrStack.repo,
     });

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.797.0",
+    "@clerk/express": "^1.7.0",
     "@graphile-contrib/pg-simplify-inflector": "^6.1.0",
     "@graphile/pg-aggregates": "^0.1.1",
     "@subsquid/evm-abi": "^0.3.1",

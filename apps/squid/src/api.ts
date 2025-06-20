@@ -8,47 +8,40 @@ import { EvoPlugin } from "./graphql/plugins/evo-plugin";
 import { ProcessorStatusPlugin } from "./graphql/plugins/processor-status-plugin";
 import { getEnv } from "./utils";
 import { DATABASE_CONFIG, DEVELOPMENT, SQUID_STATE_SCHEMA } from "./utils/constants";
-import { corsMiddleware } from "./utils/middlewares";
+import { middlewares, requireAuth } from "./utils/middlewares";
+import { appRoutes, graphqlRoutes } from "./utils/routes";
 
 const app = express();
 
-const devOrigins = DEVELOPMENT ? [
-  "http://localhost:3000",
-  "http://localhost:4350",
-] : [];
+app.use(...middlewares);
+app.get("/", requireAuth, graphqlRoutes.get);
+app.use("/graphiql", requireAuth);
+app.get("/health", appRoutes.health);
 
-const allowedOrigins = [
-  ...devOrigins,
-  "https://evoverses.com",
-  "https://preview.evoverses.com",
-  "https://ngrok.cajun.tools",
-];
-
-app.use(corsMiddleware(allowedOrigins));
-
-app.get("/graphql", (_req, res, _next) => {
-  res.send(`<div>Whatcha doin?</div>`);
-});
-app.get("/health", (_req, res, _next) => {
-  res.send(`ok`);
-});
+console.log(`running in ${DEVELOPMENT ? "development" : "production"} mode`);
 
 app.use(
   postgraphile(
     DATABASE_CONFIG,
-    getEnv("DB_SCHEMA", "public"),
+    [ "squid", "metadata", SQUID_STATE_SCHEMA ],
     {
-      dynamicJson: true,
       ignoreRBAC: true,
+      dynamicJson: true,
+      graphqlRoute: "/",
       ...(
         DEVELOPMENT ? {
-          graphiql: true,
-          enhanceGraphiql: true,
           showErrorStack: "json",
           extendedErrors: [ "hint", "detail", "errcode" ],
           exportGqlSchemaPath: "./src/graphql/schemas/api.schema.graphql",
+          sortExport: true,
+          enhanceGraphiql: true,
+          externalGraphqlRoute: "/",
+          graphiql: true,
+          graphiqlRoute: "/graphiql",
+        } : {
+          externalGraphqlRoute: "/graphql",
           disableQueryLog: true,
-        } : {}
+        }
       ),
       // readCache: "",
       disableDefaultMutations: true,
@@ -59,7 +52,6 @@ app.use(
         CollectionPlugin,
         ProcessorStatusPlugin,
       ],
-      externalGraphqlRoute: getEnv("GQL_BASE_PATH") ? getEnv("GQL_BASE_PATH") + "/api/graphql" : undefined,
       graphileBuildOptions: {
         stateSchemas: [ SQUID_STATE_SCHEMA ],
         pgDisableNodeIdField: true,
