@@ -19,15 +19,15 @@ const corsMiddleware = (allowedOrigins: string[]) => cors({
   credentials: true,
 });
 
-const url = DEVELOPMENT ? "https://localhost:4350/graphiql" : "https://api.evoverses.com/graphiql";
-
 export const requireAuth = clerkRequireAuth({
   debug: DEVELOPMENT,
 });
 
 export const middlewares = [
   corsMiddleware(allowedOrigins),
-  clerkMiddleware({
-    debug: DEVELOPMENT,
-  }),
+  ...(
+    DEVELOPMENT ? [ clerkMiddleware({
+      debug: DEVELOPMENT,
+    }) ] : []
+  ),
 ];

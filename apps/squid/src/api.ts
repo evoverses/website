@@ -7,15 +7,17 @@ import { CollectionPlugin } from "./graphql/plugins/collection-plugin";
 import { EvoPlugin } from "./graphql/plugins/evo-plugin";
 import { ProcessorStatusPlugin } from "./graphql/plugins/processor-status-plugin";
 import { getEnv } from "./utils";
-import { DATABASE_CONFIG, DEVELOPMENT, SQUID_STATE_SCHEMA } from "./utils/constants";
+import { DATABASE_CONFIG, DEVELOPMENT, SQUID_STATE_SCHEMAS } from "./utils/constants";
 import { middlewares, requireAuth } from "./utils/middlewares";
 import { appRoutes, graphqlRoutes } from "./utils/routes";
 
 const app = express();
 
 app.use(...middlewares);
-app.get("/", requireAuth, graphqlRoutes.get);
-app.use("/graphiql", requireAuth);
+if (DEVELOPMENT) {
+  app.get("/", requireAuth, graphqlRoutes.get);
+  app.use("/graphiql", requireAuth);
+}
 app.get("/health", appRoutes.health);
 
 console.log(`running in ${DEVELOPMENT ? "development" : "production"} mode`);
@@ -23,7 +25,7 @@ console.log(`running in ${DEVELOPMENT ? "development" : "production"} mode`);
 app.use(
   postgraphile(
     DATABASE_CONFIG,
-    [ "squid", "metadata", SQUID_STATE_SCHEMA ],
+    [ "squid", "metadata", ...SQUID_STATE_SCHEMAS ],
     {
       ignoreRBAC: true,
       dynamicJson: true,
@@ -53,7 +55,7 @@ app.use(
         ProcessorStatusPlugin,
       ],
       graphileBuildOptions: {
-        stateSchemas: [ SQUID_STATE_SCHEMA ],
+        stateSchemas: SQUID_STATE_SCHEMAS,
         pgDisableNodeIdField: true,
         pgDisableNodeInterface: true,
       },

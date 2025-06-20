@@ -51,6 +51,7 @@ export class EcsGraphQlTaskStack extends CStack {
         DB_PORT: "5432",
         DB_NAME: dbName,
         DB_SSL: "true",
+        GATEWAY_NETWORK_SLUGS: "avalanche-mainnet",
       },
       secrets: {
         DB_USER: ECSSecret.fromSecretsManager(props.userSecret, "username"),

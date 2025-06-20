@@ -13,6 +13,7 @@ export const RPC_CAPACITY = Number(getEnv("RPC_CAPACITY", 100));
 export const CHAIN_ID = getEnv("CHAIN_ID");
 export const MARKETPLACE_ADDRESSES = parseCsv(getEnv("MARKETPLACE_ADDRESSES"));
 export const NFT_ADDRESSES = parseCsv(getEnv("NFT_ADDRESSES"));
+const gatewayNetworkSlugs = parseCsv(getEnv("GATEWAY_NETWORK_SLUGS"));
 const gatewayNetworkSlug = getEnv("GATEWAY_NETWORK_SLUG", "").toLowerCase();
 export const GATEWAY_URL = getEnv(
   "GATEWAY_URL",
@@ -26,6 +27,7 @@ const stateSchema = gatewayNetworkSlug
   ? `squid_processor_${gatewayNetworkSlug.replace("-", "_")}`
   : `squid_processor`;
 export const SQUID_STATE_SCHEMA = stateSchema + stateSchemaSuffix;
+export const SQUID_STATE_SCHEMAS = gatewayNetworkSlugs.map(slug => `squid_processor_${slug.replace("-", "_")}`);
 
 export const IPFS_GATEWAY = getEnv("IPFS_GATEWAY", "https://ipfs.io/ipfs").replace(/\/?$/, "/");
 
