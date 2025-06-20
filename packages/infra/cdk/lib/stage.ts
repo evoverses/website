@@ -39,7 +39,8 @@ export class InfraStage extends Stage {
 
     const ecsStack = new EcsStack(this, "EcsStack", {
       vpc: coreStack.vpc,
-      containerRepository: squidEcrStack.repo,
+      squidContainerRepository: squidEcrStack.repo,
+      nextJsApiContainerRepository: nextJsApiEcrStack.repo,
       graphQlSecret: dbStack.graphQlUserSecret,
       indexerSecret: dbStack.indexerUserSecret,
       dbHost: dbStack.rds.dbInstanceEndpointAddress,

@@ -1,12 +1,12 @@
 import { SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
-import { Platform } from "aws-cdk-lib/aws-ecr-assets";
+import type { Repository } from "aws-cdk-lib/aws-ecr";
 import { type Cluster, ContainerImage, FargateService, FargateTaskDefinition, LogDrivers } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
-import { join } from "node:path";
 import { CStack, type CStackProps } from "../../../models/c-stack";
 
 interface NextJsApiEcsTaskStackProps extends CStackProps {
   cluster: Cluster;
+  containerRepository: Repository;
   additionalSecurityGroups: SecurityGroup[];
   vpc: Vpc;
 }
@@ -27,10 +27,7 @@ export class NextJsApiEcsTaskStack extends CStack {
     const projectRoot = this.getContext("projectRoot");
     this.task.addContainer(this.toPrefixedId("Container"), {
       containerName: "nextjs-api",
-      image: ContainerImage.fromAsset(projectRoot, {
-        platform: Platform.LINUX_AMD64,
-        file: join("apps", "api", "Dockerfile"),
-      }),
+      image: ContainerImage.fromEcrRepository(props.containerRepository, "dev"),
       logging: LogDrivers.awsLogs({ streamPrefix: "nextjs-api" }),
       portMappings: [ { containerPort: 3000 } ],
       environment: {

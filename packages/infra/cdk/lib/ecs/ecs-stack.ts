@@ -10,7 +10,8 @@ import { EcsIndexerTaskStack } from "./tasks/indexer-task";
 
 interface EcsStackProps extends CStackProps {
   vpc: Vpc;
-  containerRepository: Repository;
+  squidContainerRepository: Repository;
+  nextJsApiContainerRepository: Repository;
   graphQlSecret: Secret;
   indexerSecret: Secret;
   dbHost: string;
@@ -34,7 +35,7 @@ export class EcsStack extends CStack {
     this.cluster = cluster;
 
     const graphQlTask = new EcsGraphQlTaskStack(this, "GraphqlEcsTaskStack", {
-      containerRepository: props.containerRepository,
+      containerRepository: props.squidContainerRepository,
       cluster,
       userSecret: props.graphQlSecret,
       dbHost: props.dbHost,
@@ -44,7 +45,7 @@ export class EcsStack extends CStack {
     this.graphQlTaskService = graphQlTask.service;
 
     new EcsIndexerTaskStack(this, "IndexerEcsTaskStack", {
-      containerRepository: props.containerRepository,
+      containerRepository: props.squidContainerRepository,
       cluster,
       userSecret: props.indexerSecret,
       dbHost: props.dbHost,
@@ -53,6 +54,7 @@ export class EcsStack extends CStack {
     });
 
     const apiTask = new NextJsApiEcsTaskStack(this, "NextJsApiEcsTaskStack", {
+      containerRepository: props.nextJsApiContainerRepository,
       cluster,
       additionalSecurityGroups: [],
       vpc: props.vpc,
