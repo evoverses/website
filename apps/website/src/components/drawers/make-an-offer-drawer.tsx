@@ -6,10 +6,11 @@ import { useChain } from "@/hooks/use-chain";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
 import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
-import { SquidAsset } from "@/lib/squid/types";
 import { client } from "@/lib/thirdweb/config";
-import { formatNumberWithSuffix, formatUsd } from "@workspace/evoverses/utils/numbers";
 import { EM_DASH } from "@/utils/strings";
+
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
+import { formatNumberWithSuffix, formatUsd } from "@workspace/evoverses/utils/numbers";
 import { Button } from "@workspace/ui/components/button";
 import {
   Drawer,

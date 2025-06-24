@@ -1,13 +1,14 @@
-import {
-  MarketplaceStatus,
-  type SquidAsset,
-  type SquidAssetBredEggMetadata,
-  type SquidAssetEggMetadata,
-  type SquidAssetEvoMetadata,
-  type SquidAssetGenesisEggMetadata,
-  type SquidAssetMetadata,
-} from "@/lib/squid/types";
+import { MarketplaceStatus } from "@/lib/squid/types";
 import { toTitleCase } from "@/utils/strings";
+
+import type {
+  SquidAsset,
+  SquidAssetBredEggMetadata,
+  SquidAssetEggMetadata,
+  SquidAssetEvoMetadata,
+  SquidAssetGenesisEggMetadata,
+  SquidAssetMetadata,
+} from "@workspace/evoverses/lib/asset/types";
 
 export const isEvoAsset = (asset: SquidAsset): asset is SquidAsset<SquidAssetEvoMetadata> => {
   return isEvoMetadata(asset.metadata);

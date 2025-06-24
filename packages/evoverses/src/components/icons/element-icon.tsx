@@ -1,18 +1,47 @@
 import { Element } from "@workspace/database/types";
 import { elementColorMap } from "@workspace/evoverses/data/generic";
+import { describeArc } from "@workspace/evoverses/utils/numbers";
 import type { ComponentProps, JSX } from "react";
 
 export const ElementIcon = ({
-  element,
+  value: element,
   iconOnly,
   ...props
 }: ComponentProps<"svg"> & {
-  element: Element | null | undefined,
+  value: Element | "ALL" | null | undefined,
   iconOnly?: boolean
   tw?: string
 }) => {
   if (!element || element === Element.none) {
     return null;
+  }
+  if (element === "ALL") {
+    return (
+      <svg width={66} height={66} viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <defs>
+          {Object.keys(internalElementIcon).map((key, i) => (
+            <clipPath id={`clip-${props.id}-${key}`} key={key}>
+              <path d={describeArc(33, 33, 33, i * 30, (i + 1) * 30)} />
+            </clipPath>
+          ))}
+        </defs>
+        {Object.entries(internalElementIcon).map(([ key, icon ], i) => (
+          <g key={key}>
+            <g clipPath={`url(#clip-${props.id}-${key})`}>
+              {!iconOnly && (
+                <path
+                  d={describeArc(33, 33, 33, i * 30, (i + 1) * 30)}
+                  fill={elementColorMap[key as Element]}
+                />
+              )}
+              <g transform={`rotate(${-i * 30}, 33, 33)`}>
+                {icon}
+              </g>
+            </g>
+          </g>
+        ))}
+      </svg>
+    );
   }
   return (
     <svg width={66} height={66} viewBox="0 0 66 66" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>

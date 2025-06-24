@@ -14,13 +14,14 @@ query EvoByIdQuery($tokenId: String!) {
 `;
 
 export const evosByQueryQuery = `
-query EvosByQueryQuery($limit: Int = 25, $listed: Boolean, $owners: [String!], $page: Int, $sort: SortOrder = PRICE_LOW_TO_HIGH) {
+query EvosByQueryQuery($limit: Int = 25, $listed: Boolean, $owners: [String!], $page: Int, $attributes: JSON, $sort: SortOrder = PRICE_LOW_TO_HIGH) {
   evosByQuery(
     owners: $owners
     listed: $listed
     limit: $limit
     page: $page
     sort: $sort
+    attributes: $attributes
   ) {
     items {
       address

@@ -1,8 +1,8 @@
 "use client";
 import { useEvo } from "@/hooks/use-evo";
 import { hasTypes, isEggMetadata } from "@/lib/evo/utils";
-import type { SquidAssetMetadata } from "@/lib/squid/types";
 import { EM_DASH, toTitleCase } from "@/utils/strings";
+import type { SquidAssetMetadata } from "@workspace/evoverses/lib/asset/types";
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@workspace/ui/components/accordion";
 import { Table, TableBody, TableCell, TableRow } from "@workspace/ui/components/table";
 

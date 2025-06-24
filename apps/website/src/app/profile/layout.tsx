@@ -33,7 +33,7 @@ const Layout = async ({ children }: PropsWithChildren) => {
     unauthorized();
   }
   return (
-    <div className="flex flex-col flex-grow space-y-6 px-4 sm:px-10 pt-6">
+    <div className="flex flex-col space-y-6 px-4 sm:px-10 pt-6">
       <div className="space-y-0.5">
         <h2 className="text-2xl font-bold tracking-tight border-b-0">Profile</h2>
         <p className="text-muted-foreground">

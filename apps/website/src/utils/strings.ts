@@ -105,3 +105,5 @@ export const compareByNameProperty = (a: { name: string }, b: {
 export const pluralize = (val: number | bigint, word: string, plural = word + "s") => [ 1, -1 ].includes(Number(val))
   ? word
   : plural;
+
+export const filterAll = (v: string, _i: number, _a: string[]) => v !== "ALL";

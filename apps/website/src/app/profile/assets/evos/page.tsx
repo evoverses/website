@@ -1,13 +1,13 @@
 "use client";
-import { CollectionItemsFilterBar } from "@/app/profile/assets/evos/filter-bar";
 import { useSortFilters } from "@/components/filters";
+import { CollectionItemsFilterBar } from "@/components/filters/filter-bar";
 import { GridView } from "@/components/views/grid-view";
 import { useConnectedWalletAddresses } from "@/hooks/use-connected-wallets";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { fetchSquidAssets } from "@/lib/evo/fetch";
-import type { SquidAsset } from "@/lib/squid/types";
 import { staleTimeMinutes } from "@/utils/numbers";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { Fragment, useMemo } from "react";
 
 const ProfileEvoAssetsPage = () => {
@@ -49,7 +49,7 @@ const ProfileEvoAssetsPage = () => {
   console.log(items);
   return (
     <Fragment>
-      <CollectionItemsFilterBar itemCount={data.pages[0]?.total} />
+      <CollectionItemsFilterBar itemCount={data.pages[0]?.total} className="top-0" />
       <GridView
         items={items}
         isLoading={isLoading}

@@ -10,3 +10,4 @@
 
 @source "../components/**/*.{ts,tsx}";
 @source "../../../../apps/website/src/**/*.{ts,tsx}";
+@source "../../../evoverses/src/**/*.{ts,tsx}";

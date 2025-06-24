@@ -1,6 +1,6 @@
 import Logo from "@/app/icon.png";
-import NavItems, { ModeButton } from "@/components/app-navbar/nav-items";
 import { AccountButton } from "@/components/app-navbar/account-button";
+import NavItems, { ModeButton } from "@/components/app-navbar/nav-items";
 import { ConnectButton } from "@/components/buttons/connect-button";
 import type { IAccountCookie } from "@/types/cookies";
 import { Button } from "@workspace/ui/components/button";
@@ -38,7 +38,7 @@ export const navigation: NavItem[] = [
 
 const Navbar = ({ accountCookie }: { accountCookie: IAccountCookie }) => {
   return (
-    <div className="border-b fixed w-full bg-background z-20">
+    <div className="sticky isolate inset-x-0 top-0 z-20 border-b bg-background">
       <div className="flex h-16 items-center px-4">
         <Link href="/">
           <Image src={Logo} alt="EvoVerses" className="size-12" />

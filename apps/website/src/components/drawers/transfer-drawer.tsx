@@ -4,8 +4,9 @@ import { EvoImage } from "@/components/images/evo-image";
 import { evoContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { toAssetFullName } from "@/lib/evo/utils";
-import { SquidAsset } from "@/lib/squid/types";
 import { toAssetUrl } from "@/utils/url";
+
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { Button } from "@workspace/ui/components/button";
 import {
   Drawer,
@@ -17,9 +18,9 @@ import {
   DrawerTrigger,
 } from "@workspace/ui/components/drawer";
 import { Separator } from "@workspace/ui/components/separator";
+import { toast } from "@workspace/ui/components/sonner";
 import Link from "next/link";
 import { type ReactNode, useCallback, useRef, useState } from "react";
-import { toast } from "@workspace/ui/components/sonner";
 import { transferFrom } from "thirdweb/extensions/erc721";
 import { TransactionButton, useActiveAccount } from "thirdweb/react";
 import { AddressOrEnsNameInput, Recipient } from "../address-or-ens-name-input";

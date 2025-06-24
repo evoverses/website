@@ -12,7 +12,8 @@ returns table (
   listed_at timestamptz,
   sold_at text,
   created_at timestamptz,
-  sort_key numeric
+  sort_key numeric,
+  token_sort_key numeric
 )
 language sql
 as $$
@@ -28,6 +29,7 @@ as $$
       when 'OLDEST'            then -1 * extract(epoch from created_at)
       when 'RECENTLY_SOLD'     then coalesce(sold_at::bigint, 0)
       else extract(epoch from created_at)
-    end as sort_key
+    end as sort_key,
+    tokenId::numeric as token_sort_key
   from metadata.evos_aggregated_view
 $$;

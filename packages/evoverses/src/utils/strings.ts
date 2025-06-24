@@ -5,7 +5,7 @@ export const currencyOpts = {
 
 export const toTitleCase = (str: string) => {
   const value = str
-    .split(/[-\s]/)
+    .split(/[-\s_]/)
     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
   const overrides: Record<string, string> = {
@@ -18,6 +18,20 @@ export const toTitleCase = (str: string) => {
 export const toKebabCase = (str: string) => str.replace(/([a-z])([A-Z])/g, "$1-$2")
   .replace(/[\s_]+/g, "-")
   .toLowerCase();
+
+export const toSnakeCase = (str: string) => {
+  return str
+    // Insert underscore before uppercase letters that follow lowercase letters (camelCase/PascalCase)
+    .replace(/([a-z])([A-Z])/g, "$1_$2")
+    // Replace hyphens and spaces with underscores
+    .replace(/[-\s]/g, "_")
+    // Replace multiple consecutive underscores with single underscore
+    .replace(/_+/g, "_")
+    // Convert to lowercase
+    .toLowerCase()
+    // Remove leading/trailing underscores
+    .replace(/^_+|_+$/g, "");
+};
 
 export const normalize = (s: string) => s.toLowerCase().replace(" ", "-");
 

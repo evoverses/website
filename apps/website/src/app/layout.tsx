@@ -2,14 +2,13 @@ import Navbar from "@/components/app-navbar/navbar";
 import { AutoConnect } from "@/components/auto-connect";
 import { GlobalProvider } from "@/components/providers";
 import { getAccountCookie } from "@/lib/cookies/account.server";
+import { fontVariables } from "@/styles/fonts";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@workspace/ui/components/sonner";
 import "@workspace/ui/styles/aggregated.css";
+import { cn } from "@workspace/ui/lib/utils";
 import type { Metadata, Viewport } from "next";
-import { Nunito } from "next/font/google";
 import { PropsWithChildren } from "react";
-
-const nunito = Nunito({ subsets: [ "latin" ], variable: "--font-nunito" });
 
 const AppName = "EvoVerses";
 const AppDescription = "A 3D monster battling game bringing Web2 and Web3 together in one platform.";
@@ -93,14 +92,16 @@ export const metadata: Metadata = {
 const RootLayout = async ({ children }: PropsWithChildren) => {
   const accountCookie = await getAccountCookie();
   return (
-    <html lang="en" className={nunito.variable} suppressHydrationWarning>
-      <body className="flex flex-col font-nunito min-h-[100dvh] bg-background text-foreground">
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn("overscroll-none font-sans antialiased overflow-x-hidden text-foreground", fontVariables)}>
         <GlobalProvider>
           {accountCookie.loggedIn && <AutoConnect account={accountCookie.address} />}
-          <Navbar accountCookie={accountCookie} />
-          <div className="@container flex flex-grow flex-col pt-16 relative">
-            {children}
-          </div>
+          <main className="relative flex min-h-svh flex-1 flex-col bg-background bg-contain bg-top bg-no-repeat bg-fixed">
+            <Navbar accountCookie={accountCookie} />
+            <div className="@container flex-1 group/global select-none">
+              {children}
+            </div>
+          </main>
         </GlobalProvider>
         <Toaster />
         <Analytics />

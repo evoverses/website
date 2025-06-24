@@ -16,7 +16,7 @@ sorted as (
   select *
   from metadata.evos_sorted(_sort)
   where nft_id in (select nft_id from filtered_ids)
-  order by sort_key desc nulls last
+  order by sort_key desc nulls last, token_sort_key asc
   limit _limit
   offset _limit * _page
 ),

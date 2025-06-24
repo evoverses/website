@@ -69,32 +69,16 @@ const rgbToHsl = (r: number, g: number, b: number): [ number, number, number ] =
 
   if (max !== min) {
     const d = max - min;
-    s =
-      l > 0.5 ? d / (
-        2 - max - min
-      ) : d / (
-        max + min
-      ); // Saturation
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min); // Saturation
     switch (max) {
       case r:
-        h =
-          (
-            g - b
-          ) / d + (
-            g < b ? 6 : 0
-          );
+        h = (g - b) / d + (g < b ? 6 : 0);
         break;
       case g:
-        h =
-          (
-            b - r
-          ) / d + 2;
+        h = (b - r) / d + 2;
         break;
       case b:
-        h =
-          (
-            r - g
-          ) / d + 4;
+        h = (r - g) / d + 4;
         break;
     }
     h /= 6;
@@ -110,26 +94,14 @@ export const filterVibrantColors = ([ r, g, b ]: [ number, number, number ]): bo
 };
 
 export const atLeastTwoUnderThreshold = (r: number, g: number, b: number, threshold: number) => (
-  (
-    r < threshold && g < threshold
-  ) || // R and G are below the threshold
-  (
-    g < threshold && b < threshold
-  ) || // G and B are below the threshold
-  (
-    r < threshold && b < threshold
-  )    // R and B are below the threshold
+  (r < threshold && g < threshold) || // R and G are below the threshold
+  (g < threshold && b < threshold) || // G and B are below the threshold
+  (r < threshold && b < threshold)    // R and B are below the threshold
 );
 export const atLeastTwoOverThreshold = (r: number, g: number, b: number, threshold: number) => (
-  (
-    r > threshold && g > threshold
-  ) || // R and G are above the threshold
-  (
-    g > threshold && b > threshold
-  ) || // G and B are above the threshold
-  (
-    r > threshold && b > threshold
-  )    // R and B are above the threshold
+  (r > threshold && g > threshold) || // R and G are above the threshold
+  (g > threshold && b > threshold) || // G and B are above the threshold
+  (r > threshold && b > threshold)    // R and B are above the threshold
 );
 
 export const formatTime = (time: number): string => `${String(Math.floor(time / 3600))
@@ -176,6 +148,28 @@ export const range = <T extends number | bigint = number>(from: T, to: T): T[] =
     .map(v => typeof from === "bigint"
       ? BigInt(v)
       : Number(v)) as T[];
+};
+
+const polarToCartesian = (cx: number, cy: number, r: number, angleInDegrees: number) => {
+  const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180.0);
+  return {
+    x: cx + r * Math.cos(angleInRadians),
+    y: cy + r * Math.sin(angleInRadians),
+  };
+};
+
+export const describeArc = (cx: number, cy: number, r: number, startAngle: number, endAngle: number) => {
+  const fudge = 0.75; // degrees
+  const start = polarToCartesian(cx, cy, r, startAngle - fudge);
+  const end = polarToCartesian(cx, cy, r, endAngle + fudge);
+  const largeArcFlag = endAngle - startAngle >= 180 ? "1" : "0";
+
+  return [
+    `M ${cx} ${cy}`,
+    `L ${start.x} ${start.y}`,
+    `A ${r} ${r} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
+    `Z`,
+  ].join(" ");
 };
 
 export const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);

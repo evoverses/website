@@ -1,4 +1,5 @@
 "use client";
+import { useConnectedWallets } from "@/hooks/use-connected-wallets";
 import {
   accountAbstraction,
   appMetadata,
@@ -18,11 +19,16 @@ const ConnectButton = ({
   disabled,
   onClick,
   wallets: walletsType = "social",
+  hideConnected,
   asChild,
   ...props
-}: ComponentProps<typeof Button> & { wallets?: "social" | "chain" | "all" }) => {
+}: ComponentProps<typeof Button> & { wallets?: "social" | "chain" | "all", hideConnected?: boolean }) => {
   const { connect, isConnecting } = useConnectModal();
-
+  const account = useConnectedWallets();
+  console.log(account, hideConnected);
+  if (account && hideConnected) {
+    return null;
+  }
   const Comp = asChild ? Slot : "button";
   return (
     <Comp

@@ -4,8 +4,8 @@ import { marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
-import { SquidAsset } from "@/lib/squid/types";
 import { toAssetUrl } from "@/utils/url";
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { formatNumberWithSuffix, formatUsd } from "@workspace/evoverses/utils/numbers";
 import { Button } from "@workspace/ui/components/button";
 import {

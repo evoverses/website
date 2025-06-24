@@ -1,10 +1,11 @@
 import { EvoImage } from "@/components/images/evo-image";
 import { useConnectedWalletAddresses } from "@/hooks/use-connected-wallets";
 import { getActiveListing, getLastSale, toAssetFullName } from "@/lib/evo/utils";
-import { SquidAsset } from "@/lib/squid/types";
 import { useBoundedStore } from "@/store";
-import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
 import { toAssetUrl } from "@/utils/url";
+
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
+import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardFooter } from "@workspace/ui/components/card";
 import { Skeleton } from "@workspace/ui/components/skeleton";
@@ -220,7 +221,7 @@ const GridViewSkeleton = ({ noAnimate }: { noAnimate?: boolean }) => {
       className="group overflow-hidden p-0 gap-0"
       suppressHydrationWarning
     >
-      <Skeleton className="aspect-[1.5015/1] group-data-[no-animate=true]:animate-none" />
+      <Skeleton className="aspect-card group-data-[no-animate=true]:animate-none" />
       <CardContent className="flex h-12 p-0 px-3 items-center group-data-[variant=mosaic]/grid:hidden">
         <Skeleton className="w-full h-3.5 group-data-[no-animate=true]:animate-none" />
       </CardContent>

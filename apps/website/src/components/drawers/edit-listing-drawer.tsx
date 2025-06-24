@@ -6,9 +6,9 @@ import { marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
 import { toAssetFullName } from "@/lib/evo/utils";
-import type { SquidAsset } from "@/lib/squid/types";
-import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
 import { toAssetUrl, toCollectionUrl } from "@/utils/url";
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
+import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
 import { Button } from "@workspace/ui/components/button";
 import {
   Drawer,

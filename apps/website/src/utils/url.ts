@@ -1,4 +1,4 @@
-import type { SquidAsset } from "@/lib/squid/types";
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 
 export const toAssetUrl = (asset: SquidAsset) => `/assets/${asset.metadata.type.toLowerCase()}/${asset.tokenId}`;
 export const toCollectionUrl = (asset: SquidAsset) => `/assets/${asset.metadata.type.toLowerCase()}`;

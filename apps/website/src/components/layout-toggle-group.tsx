@@ -1,6 +1,6 @@
 "use client";
-import { Layout } from "@/store/preferences";
 import { useBoundedStore } from "@/store";
+import { Layout } from "@/store/preferences";
 import { Button } from "@workspace/ui/components/button";
 import { ToggleGroup, ToggleGroupItem } from "@workspace/ui/components/toggle-group";
 import { cn } from "@workspace/ui/lib/utils";
@@ -41,19 +41,19 @@ const LayoutToggleGroup = ({ onLayoutChange, className }: {
         onValueChange={setLayout}
         className={cn("hidden @4xl:flex", className)}
       >
-        <ToggleGroupItem value="grid" className="size-8 data-[state=on]:text-primary">
+        <ToggleGroupItem value="grid" className="size-8 data-[state=on]:text-primary cursor-pointer">
           <LayoutGridIcon className="size-5" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="compact-grid" className="size-8 data-[state=on]:text-primary">
+        <ToggleGroupItem value="compact-grid" className="size-8 data-[state=on]:text-primary cursor-pointer">
           <Grid3X3Icon className="size-5" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="mosaic" className="size-8 data-[state=on]:text-primary">
+        <ToggleGroupItem value="mosaic" className="size-8 data-[state=on]:text-primary cursor-pointer">
           <Grid2X2Icon className="size-5" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="table" className="size-8  data-[state=on]:text-primary">
+        <ToggleGroupItem value="table" className="size-8  data-[state=on]:text-primary cursor-pointer">
           <Rows3Icon className="size-5" />
         </ToggleGroupItem>
-        <ToggleGroupItem value="compact-table" className="size-8 data-[state=on]:text-primary">
+        <ToggleGroupItem value="compact-table" className="size-8 data-[state=on]:text-primary cursor-pointer">
           <Rows4Icon className="size-5" />
         </ToggleGroupItem>
       </ToggleGroup>

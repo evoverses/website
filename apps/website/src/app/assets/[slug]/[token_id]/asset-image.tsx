@@ -1,8 +1,7 @@
 "use client";
-import { BASE_URL } from "@/data/constants";
+import { EvoImage } from "@/components/images/evo-image";
 import { useEvo } from "@/hooks/use-evo";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import Image from "next/image";
 
 const AssetImage = ({ tokenId }: { tokenId: string }) => {
   const { data, isFetching, isPlaceholderData, isLoading } = useEvo(tokenId);
@@ -15,13 +14,7 @@ const AssetImage = ({ tokenId }: { tokenId: string }) => {
     throw new Error("No data");
   }
   return (
-    <Image
-      src={`${BASE_URL}/api/images/${data.metadata.type.toLowerCase()}/${data.tokenId}`}
-      alt={data.metadata.species}
-      fill
-      unoptimized
-      className="object-contain object-top"
-    />
+    <EvoImage asset={data} />
   );
 };
 AssetImage.displayName = "AssetImage";

@@ -48,6 +48,7 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
           limit: Int = 30,
           page: Int = 0,
           sort: SortOrder = PRICE_LOW_TO_HIGH
+          attributes: JSON
         ): Evos!
       }
     `,
@@ -70,9 +71,11 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
           const sort = args.sort || "PRICE_LOW_TO_HIGH";
           const owners = args.owners ? args.owners.map((o: string) => o.toLowerCase()) : null;
           const listed = args.listed;
-
+          const attributes = args.attributes ?? null;
+          console.log("ATTRIBUTES", attributes);
           const raw = await client.query(
-            "SELECT * FROM metadata.get_evos($1, $2, $3, $4, $5)", [ limit, page, sort, owners, listed ],
+            "SELECT * FROM metadata.get_evos($1, $2, $3, $4, $5, $6)",
+            [ limit, page, sort, owners, listed, attributes ],
           );
           const query = raw.rows[0]?.get_evos;
           if (!query || !query.items || query.items.length === 0) {

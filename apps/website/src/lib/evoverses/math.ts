@@ -1,5 +1,5 @@
 import { maxXpTable } from "@/lib/evoverses/data";
-import type { SquidAsset, SquidAssetEvoMetadata } from "@/lib/squid/types";
+import type { SquidAsset, SquidAssetEvoMetadata } from "@workspace/evoverses/lib/asset/types";
 
 export const getLevelOfEvo = (evo: SquidAsset<SquidAssetEvoMetadata>): number =>
   Array.from(Array(100)) // Create an array with 100 items

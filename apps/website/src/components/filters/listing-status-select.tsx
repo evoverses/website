@@ -18,7 +18,7 @@ const SelectListingStatus = ({
   const { listingStatus, handleListingStatusChange } = useListingStatusFilter();
   const status = listingStatus[0] || "ALL";
   return (
-    <Select value={status} onValueChange={v => handleListingStatusChange([ v ])} {...props}>
+    <Select value={status} onValueChange={handleListingStatusChange} {...props}>
       <SelectTrigger className={cn("w-fit h-8 gap-2 whitespace-nowrap", className)}>
         <SelectValue>
           {listingStatus.includes("ALL") ? "Status" : toTitleCase(listingStatus[0]!.replace("-", " "))}

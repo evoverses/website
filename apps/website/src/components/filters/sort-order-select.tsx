@@ -20,7 +20,7 @@ const SortOrderSelect = ({
   const { sort, handleSortChange } = useSortOrder();
   return (
     <Select value={sort} onValueChange={handleSortChange} {...props}>
-      <SelectTrigger className={cn("w-fit h-8 gap-2", className)}>
+      <SelectTrigger className={cn("w-fit h-8! gap-2", className)}>
         <SelectValue>
           <span className="block text-nowrap">{toTitleCase(sort.replace(/[-_]/g, " "))}</span>
         </SelectValue>

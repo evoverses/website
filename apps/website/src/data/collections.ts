@@ -1,12 +1,12 @@
-import type { Collection } from "@/lib/collection/types";
 import EvoCollectionAvatar from "@/assets/collections/evos/avatar.png";
 import EvoCollectionBanner from "@/assets/collections/evos/banner.png";
 import TrainerCollectionAvatar from "@/assets/collections/trainers/avatar.png";
+import type { Collection } from "@/lib/collection/types";
 
 export const collections: Collection[] = [
   {
     name: "Evos",
-    slug: "evo",
+    slug: "evos",
     description: "Evos are powerful 3D monsters that roam the world with unique abilities and are prone to fights!",
     images: {
       avatar: EvoCollectionAvatar,

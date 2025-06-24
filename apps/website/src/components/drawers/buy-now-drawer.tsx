@@ -5,9 +5,9 @@ import { evoContract, marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
-import type { SquidAsset } from "@/lib/squid/types";
 import { shortenAddress } from "@/utils/strings";
 import { toAccountUrl, toBlockExplorerTxUrl } from "@/utils/url";
+import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
