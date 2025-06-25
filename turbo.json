@@ -20,6 +20,24 @@
         ".next/**",
         "!.next/cache/**",
         "dist/**"
+      ],
+      "passThroughEnv": [
+        "THIRDWEB_ADMIN_PRIVATE_KEY",
+        "THIRDWEB_SECRET_KEY",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "EVOVERSES_API_KEY",
+        "ENGINE_ACCESS_TOKEN",
+        "ENGINE_BASE_URL",
+        "ENGINE_FACTORY_MANAGER",
+        "ENGINE_ACCOUNT_FACTORY",
+        "DATABASE_URL",
+        "WALLETCONNECT_PROJECT_ID",
+        "OPENSEA_API_KEY",
+        "PLAYFAB_TITLE_ID",
+        "PLAYFAB_SECRET_KEY",
+        "AUTH_URL"
       ]
     },
     "lint": {
