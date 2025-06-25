@@ -20,8 +20,10 @@
         ".next/**",
         "!.next/cache/**",
         "dist/**"
-      ],
-      "passThroughEnv": [
+      ]
+    },
+    "website#build": {
+      "env": [
         "THIRDWEB_ADMIN_PRIVATE_KEY",
         "THIRDWEB_SECRET_KEY",
         "SENTRY_AUTH_TOKEN",
