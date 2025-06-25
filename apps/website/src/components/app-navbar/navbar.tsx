@@ -32,7 +32,6 @@ export const navigation: NavItem[] = [
     name: "Marketplace",
     href: "/marketplace",
     description: "Buy and sell Evos",
-    comingSoon: process.env.NODE_ENV !== "development",
   },
 ];
 
