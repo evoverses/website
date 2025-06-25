@@ -42,6 +42,15 @@
         "AUTH_URL"
       ]
     },
+    "database#build": {
+      "env": [
+        "DATABASE_NAME",
+        "DATABASE_PORT",
+        "DATABASE_HOST",
+        "DATABASE_USER",
+        "DATABASE_PASSWORD"
+      ]
+    },
     "lint": {
       "dependsOn": [
         "^lint"
