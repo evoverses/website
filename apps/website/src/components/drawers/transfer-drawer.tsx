@@ -1,6 +1,5 @@
 "use client";
 
-import { EvoImage } from "@/components/images/evo-image";
 import { evoContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { toAssetFullName } from "@/lib/evo/utils";
@@ -24,10 +23,11 @@ import { type ReactNode, useCallback, useRef, useState } from "react";
 import { transferFrom } from "thirdweb/extensions/erc721";
 import { TransactionButton, useActiveAccount } from "thirdweb/react";
 import { AddressOrEnsNameInput, Recipient } from "../address-or-ens-name-input";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const TransferDrawer = ({ asset, children }: { asset: SquidAsset, children?: ReactNode }) => {
-  const [ recipient, setRecipient ] = useState<Recipient | null>(null);
-  const [ success, setSuccess ] = useState<boolean>(false);
+  const [recipient, setRecipient] = useState<Recipient | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const account = useActiveAccount();
@@ -50,7 +50,7 @@ const TransferDrawer = ({ asset, children }: { asset: SquidAsset, children?: Rea
       tokenId: BigInt(asset.tokenId),
     });
 
-  }, [ account, recipient, asset, switchChainIfNeeded ]);
+  }, [account, recipient, asset, switchChainIfNeeded]);
 
   const handleOnOpenChange = (open: boolean) => {
     if (success && !open) {
@@ -67,7 +67,7 @@ const TransferDrawer = ({ asset, children }: { asset: SquidAsset, children?: Rea
         {success ? (
           <div className="flex flex-col gap-6 items-center px-6">
             <div className="relative size-45 sm:size-90 bg-secondary rounded-xl overflow-hidden">
-              <EvoImage asset={asset} />
+              <EvoCard asset={asset} />
             </div>
             <h2 className="font-semibold text-xl sm:text-4xl text-center">Item successfully transferred!</h2>
             <Button variant="secondary" asChild>
@@ -92,7 +92,7 @@ const TransferDrawer = ({ asset, children }: { asset: SquidAsset, children?: Rea
             <DrawerFooter className="px-0 pt-0 justify-end md:flex-row md:justify-between gap-4">
               <div className="flex gap-3 items-center">
                 <div className="relative size-8 bg-secondary rounded-md overflow-hidden">
-                  <EvoImage asset={asset} />
+                  <EvoCard asset={asset} />
                 </div>
                 <span>{toAssetFullName(asset)}</span>
               </div>

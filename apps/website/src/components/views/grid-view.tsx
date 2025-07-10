@@ -1,4 +1,3 @@
-import { EvoImage } from "@/components/images/evo-image";
 import { useConnectedWalletAddresses } from "@/hooks/use-connected-wallets";
 import { getActiveListing, getLastSale, toAssetFullName } from "@/lib/evo/utils";
 import { useBoundedStore } from "@/store";
@@ -18,6 +17,7 @@ import { BuyNowDrawer } from "../drawers/buy-now-drawer";
 import { EditListingDrawer } from "../drawers/edit-listing-drawer";
 import { ListForSaleDrawer } from "../drawers/list-for-sale-drawer";
 import { MakeAnOfferDrawer } from "../drawers/make-an-offer-drawer";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const gridVariants = cva(
   "group/grid grid w-full grid-flow-row-dense gap-3 relative",
@@ -51,7 +51,7 @@ export const GridView = ({
 }) => {
   const variant = useBoundedStore.use.layout();
   const owners = useConnectedWalletAddresses();
-  const [ mounted, setMounted ] = useState(false);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -90,7 +90,7 @@ export const GridView = ({
               >
                 <Card className="overflow-hidden p-0 gap-0 animate-y-fast group-hover/asset:animate-grow">
                   <div className="aspect-card relative">
-                    <EvoImage asset={item} />
+                    <EvoCard asset={item} />
                   </div>
                   <CardContent
                     className={cn(

@@ -1,6 +1,5 @@
 "use client";
 import { ConnectButton } from "@/components/buttons/connect-button";
-import { EvoImage } from "@/components/images/evo-image";
 import { evoContract, evoNftContract, marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
@@ -23,14 +22,15 @@ import { getApproved, isApprovedForAll, setApprovalForAll } from "thirdweb/exten
 import { TransactionButton, useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
 import { parseUnits } from "viem";
 import { PeriodDrawerFooter, usePeriod } from "./period-drawer-footer";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: ReactNode }) => {
   const periodData = usePeriod();
 
-  const [ amount, setAmount ] = useState<string>("");
-  const [ error, setError ] = useState<string | undefined>(undefined);
-  const [ success, setSuccess ] = useState<boolean>(false);
-  const [ progress, setProgress ] = useState<string>();
+  const [amount, setAmount] = useState<string>("");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [progress, setProgress] = useState<string>();
 
   const account = useActiveAccount();
   const { switchChainIfNeeded } = useChain();
@@ -47,7 +47,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
     await switchChainIfNeeded(asset.chainId);
 
     setProgress("Checking approval");
-    const [ isApproved, approvedTokenSpender ] = await Promise.all([
+    const [isApproved, approvedTokenSpender] = await Promise.all([
       isApprovedForAll({
         contract: evoNftContract,
         operator: marketplaceContract.address,
@@ -82,7 +82,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
         reserved: false,
       },
     });
-  }, [ account, mutateAsync, asset, amount, periodData, switchChainIfNeeded, setProgress ]);
+  }, [account, mutateAsync, asset, amount, periodData, switchChainIfNeeded, setProgress]);
 
   const handleOnAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAmount(e.target.value);
@@ -108,7 +108,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
         {success ? (
           <div className="flex flex-col gap-6 items-center px-6">
             <div className="relative size-45 aspect-card sm:size-90 bg-secondary rounded-xl overflow-hidden">
-              <EvoImage asset={asset} />
+              <EvoCard asset={asset} />
             </div>
             <h2 className="font-semibold text-xl sm:text-4xl">Just listed!</h2>
             <div className="flex gap-1 flex-wrap text-center items-center justify-center text-sm">
@@ -155,7 +155,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
                   <TableCell className="pl-0">
                     <div className="flex gap-3 items-center">
                       <div className="relative size-8 aspect-card bg-secondary rounded-md overflow-hidden">
-                        <EvoImage asset={asset} />
+                        <EvoCard asset={asset} />
                       </div>
                       <span>{toAssetFullName(asset)}</span>
                     </div>

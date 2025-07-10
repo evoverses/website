@@ -1,7 +1,8 @@
 "use client";
-import { EvoImage } from "@/components/images/evo-image";
+
 import { useEvo } from "@/hooks/use-evo";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const AssetImage = ({ tokenId }: { tokenId: string }) => {
   const { data, isFetching, isPlaceholderData, isLoading } = useEvo(tokenId);
@@ -14,7 +15,7 @@ const AssetImage = ({ tokenId }: { tokenId: string }) => {
     throw new Error("No data");
   }
   return (
-    <EvoImage asset={data} />
+    <EvoCard asset={data} />
   );
 };
 AssetImage.displayName = "AssetImage";

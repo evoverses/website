@@ -1,6 +1,5 @@
 "use client";
 import { Confetti } from "@/components/confetti";
-import { EvoImage } from "@/components/images/evo-image";
 import { evoContract, marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useEvoPrice } from "@/hooks/use-token-price";
@@ -34,13 +33,14 @@ import {
   WalletProvider,
 } from "thirdweb/react";
 import { formatEther } from "viem";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const BuyNowDrawer = ({ asset, children }: {
   asset: SquidAsset,
   children?: ReactNode
 }) => {
   const listing = asset.listings[0];
-  const [ success, setSuccess ] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const account = useActiveAccount();
   const { switchChainIfNeeded } = useChain();
   const { mutateAsync, data: txHash } = useSendAndConfirmTransaction();
@@ -78,7 +78,7 @@ const BuyNowDrawer = ({ asset, children }: {
       quantity: 1n,
       recipient: account.address,
     });
-  }, [ account, asset, switchChainIfNeeded, listing, mutateAsync ]);
+  }, [account, asset, switchChainIfNeeded, listing, mutateAsync]);
 
   const handleOnOpenChange = async (open: boolean) => {
     if (success && !open) {
@@ -111,7 +111,7 @@ const BuyNowDrawer = ({ asset, children }: {
           {success ? (
             <div className="flex flex-col gap-6 items-center px-6">
               <div className="relative size-45 aspect-card sm:size-90 bg-secondary rounded-xl overflow-hidden">
-                <EvoImage asset={asset} />
+                <EvoCard asset={asset} />
               </div>
               <h2 className="font-semibold text-xl sm:text-4xl text-center">Congrats! You got it!</h2>
               <div className="flex gap-4">
@@ -137,7 +137,7 @@ const BuyNowDrawer = ({ asset, children }: {
                   <span className="text-xs uppercase text-muted-foreground">Items</span>
                   <div className="flex gap-3">
                     <div className="relative size-12 aspect-card bg-secondary rounded-md">
-                      <EvoImage asset={asset} />
+                      <EvoCard asset={asset} />
                     </div>
                     <div className="flex flex-col justify-center gap-2 text-sm font-semibold">
                       <span>{toAssetFullName(asset)}</span>
@@ -171,7 +171,7 @@ const BuyNowDrawer = ({ asset, children }: {
                   <Separator />
                   <div className="flex gap-4 items-center text-sm font-semibold">
                     <div className="relative size-6 aspect-card bg-secondary rounded-md">
-                      <EvoImage asset={asset} />
+                      <EvoCard asset={asset} />
                     </div>
                     <span>Buy Item</span>
                     <Badge className="bg-green-800 text-green-400 ml-auto">

@@ -16,6 +16,7 @@
     "@workspace/eslint": "workspace:*",
     "@workspace/tsconfig": "workspace:*",
     "@workspace/database": "workspace:*",
+    "@workspace/ui": "workspace:*",
     "react": "^19.0.0",
     "typescript": "^5"
   },

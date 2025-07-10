@@ -8,6 +8,7 @@ import { buildSquidAttributeFilters, fetchSquidAssets } from "@/lib/evo/fetch";
 import { staleTimeMinutes } from "@/utils/numbers";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Fragment, useMemo } from "react";
+import { TableView } from "@/components/views/table-view";
 
 const MarketplaceAssetsPage = () => {
   const {
@@ -33,7 +34,7 @@ const MarketplaceAssetsPage = () => {
   } = useSortFilters();
   const wallets = useConnectedWalletAddresses();
   const {
-    data = { pages: [ { items: [], total: 0, nextPage: null } ], pageParams: [] },
+    data = { pages: [{ items: [], total: 0, nextPage: null }], pageParams: [] },
     fetchNextPage,
     hasNextPage,
     isFetching,
@@ -41,8 +42,8 @@ const MarketplaceAssetsPage = () => {
     isLoading,
     isPlaceholderData,
   } = useInfiniteQuery({
-    queryKey: [ "marketplace-evos", sort, listingStatus, stage, price, gender, generation, species, nature, element,
-      chroma, totalBreeds, attack, special, defense, resistance, speed, size, level, treated ],
+    queryKey: ["marketplace-evos", sort, listingStatus, stage, price, gender, generation, species, nature, element,
+      chroma, totalBreeds, attack, special, defense, resistance, speed, size, level, treated],
     queryFn: ({ pageParam }: { pageParam?: number }) => fetchSquidAssets({
       page: pageParam || undefined,
       sort: sort || undefined,
@@ -70,20 +71,25 @@ const MarketplaceAssetsPage = () => {
     }),
     initialPageParam: 0,
     getNextPageParam: lastPage => lastPage.nextPage || null,
-    placeholderData: { pages: [ { items: [], total: 0, nextPage: null } ], pageParams: [] },
+    placeholderData: { pages: [{ items: [], total: 0, nextPage: null }], pageParams: [] },
     staleTime: staleTimeMinutes(5),
     // enabled: owners && owners.length > 0,
   });
   const bottomRef = useInfiniteScroll({ isFetching, fetchNextPageAction: fetchNextPage, hasNextPage });
   const items = useMemo(() => {
     return data.pages.map(page => page.items).flat();
-  }, [ data ]);
+  }, [data]);
   return (
     <Fragment>
       <div className="@container">
         <CollectionItemsFilterBar itemCount={data.pages[0]?.total} />
         <GridView
           items={items}
+          isLoading={isLoading || isPlaceholderData}
+          isFetchingNextPage={isFetchingNextPage}
+          bottomRef={bottomRef}
+        />
+        <TableView items={items}
           isLoading={isLoading || isPlaceholderData}
           isFetchingNextPage={isFetchingNextPage}
           bottomRef={bottomRef}
