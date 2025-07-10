@@ -1,0 +1,33 @@
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
+
+  * {
+    @apply border-border outline-ring/50 leading-none;
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: calc(--spacing(2));
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: var(--color-sidebar);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: var(--radius-xl);
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
+  }
+}

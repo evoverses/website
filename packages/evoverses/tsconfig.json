@@ -1,0 +1,21 @@
+{
+  "extends": "@workspace/tsconfig/library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@workspace/evoverses/*": [
+        "./src/*"
+      ],
+      "@workspace/database/*": [
+        "../database/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

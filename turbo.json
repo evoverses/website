@@ -1,0 +1,101 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.production.local",
+        ".env.local",
+        ".env.production",
+        ".env"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**"
+      ]
+    },
+    "website#build": {
+      "env": [
+        "THIRDWEB_ADMIN_PRIVATE_KEY",
+        "THIRDWEB_SECRET_KEY",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "EVOVERSES_API_KEY",
+        "ENGINE_ACCESS_TOKEN",
+        "ENGINE_BASE_URL",
+        "ENGINE_FACTORY_MANAGER",
+        "ENGINE_ACCOUNT_FACTORY",
+        "DATABASE_URL",
+        "WALLETCONNECT_PROJECT_ID",
+        "OPENSEA_API_KEY",
+        "PLAYFAB_TITLE_ID",
+        "PLAYFAB_SECRET_KEY",
+        "AUTH_URL"
+      ]
+    },
+    "database#build": {
+      "env": [
+        "DATABASE_NAME",
+        "DATABASE_PORT",
+        "DATABASE_HOST",
+        "DATABASE_USER",
+        "DATABASE_PASSWORD"
+      ]
+    },
+    "lint": {
+      "dependsOn": [
+        "^lint"
+      ]
+    },
+    "check-types": {
+      "dependsOn": [
+        "^check-types"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.development.local",
+        ".env.local",
+        ".env.development",
+        ".env"
+      ]
+    },
+    "website#dev": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.development.local",
+        ".env.local",
+        ".env.development",
+        ".env"
+      ],
+      "env": [
+        "THIRDWEB_SECRET_KEY",
+        "THIRDWEB_ADMIN_PRIVATE_KEY",
+        "OPENSEA_API_KEY",
+        "NEXT_RUNTIME"
+      ]
+    },
+    "dev:site-proxy": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": [
+        "web#dev",
+        "squid#dev:serve"
+      ]
+    }
+  }
+}

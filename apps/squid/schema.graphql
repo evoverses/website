@@ -1,0 +1,274 @@
+"""
+Enum representing possible statuses for Listings.
+"""
+enum StateStatus {
+  UNSET      # Invalid
+  CREATED    # Listing exists and is potentially active
+  ACTIVE     # Calculated where status is CREATED && startTime < now && endTime > now
+  COMPLETED  # Listing has been completed (sold out or fulfilled)
+  CANCELLED  # Listing has been canceled by the creator
+  EXPIRED    # Calculated where status is CREATED && endTime < now
+}
+
+"""
+Enum representing different contract types.
+"""
+enum ContractType {
+  UNKNOWN      # Default
+  ERC20        # ERC20 Token contract
+  ERC721       # ERC721 NFT contract
+  ERC1155      # ERC1155 Multi-token contract
+  MARKETPLACE  # Marketplace contract used for listings/auctions
+  NATIVE       # Native entry
+  CUSTOM       # Custom or other contract types
+}
+
+"""
+Enum representing different nft types.
+"""
+enum TokenType {
+  UNKNOWN  # Default
+  ERC721   # ERC721 NFT contract
+  ERC1155  # ERC1155 Multi-token contract
+  ERC20    # ERC20 Token contract
+  CUSTOM   # Custom or other contract types
+}
+
+"""
+Represents a Chain entity to track metadata about the blockchain networks.
+"""
+type Chain @entity {
+  id: ID!                 # Unique identifier for the chain (e.g., chainId)
+  name: String @index    # Human-readable name of the chain (e.g., "Ethereum Mainnet")
+  symbol: String @index  # Symbol or abbreviation for the chain's native currency (e.g., ETH, BSC)
+  icon: String            # Optional - URL or identifier for the chain's icon image
+}
+
+"""
+Represents a Block entity, used to track timestamps of related events.
+"""
+type Block @entity @index(fields: ["id", "timestamp"]) {
+  id: ID!                                                    # Unique identifier for the block in the format chainId-block_number
+  number: Int! @index                                        # Block number
+  timestamp: DateTime! @index                                # Timestamp of the block (in UNIX format)
+  chain: Chain! @index                                       # Reference to the chain where the block belongs
+
+  transactions: [Transaction!] @derivedFrom(field: "block")  #
+}
+
+"""
+Represents a Wallet entity, tracking activity for an Ethereum address.
+"""
+type Wallet @entity {
+  id: ID!                                                                 # Unique identifier for the wallet in the format: chainId-address
+  address: String! @index                                                 # Ethereum address represented by this wallet
+  chain: Chain! @index                                                    # Reference to the chain this wallet belongs to
+
+  transactions: [Transaction!] @derivedFrom(field: "from")                #
+  listings: [DirectListing!] @derivedFrom(field: "creator")               #
+  offers: [Offer!] @derivedFrom(field: "offeror")                         #
+  bids: [EnglishAuctionBid!] @derivedFrom(field: "bidder")                #
+  auctions: [EnglishAuction!] @derivedFrom(field: "creator")              #
+  sales: [DirectListingSale!] @derivedFrom(field: "seller")               #
+  adminMarketplaces: [MarketplaceAdmin!] @derivedFrom(field: "admin")     #
+  listerMarketplaces: [MarketplaceLister!] @derivedFrom(field: "lister")  #
+}
+
+"""
+Represents a Transaction entity, used to track metadata of a transaction.
+"""
+type Transaction @entity {
+  id: ID!               # Unique identifier for the transaction (format: blockId-hash)
+  hash: String! @index  # Transaction hash
+  block: Block!         # Relation to the block where the transaction occurred
+  from: Wallet!         # Reference to the wallet that initiated the transaction
+}
+
+"""
+Represents a Contract entity to track metadata about smart contracts.
+"""
+type Contract @entity @index(fields: ["chain"]) @index(fields: ["chain", "address"]) @index(fields: ["chain", "name"]) {
+  id: ID!                                                              # Unique identifier for the contract in the format chainId-address
+  address: String! @index                                              # Ethereum address of the contract
+  name: String @index                                                  # Optional - Name of the contract (e.g., token name)
+  symbol: String @index                                                # Optional - Symbol of the contract (e.g., token symbol)
+  uri: String                                                          # Optional - URI for the contract (if applicable)
+  metadata: JSON                                                       # Optional - JSON metadata of the contract (if applicable)
+  type: ContractType! @index                                           # Enum representing the type of the contract (e.g., ERC20, ERC721)
+  chain: Chain!   @index                                               # Chain the contract is deployed on
+  updatedAt: DateTime @index                                           #
+
+  assetMarketplaces: [MarketplaceAsset!] @derivedFrom(field: "asset")  #
+}
+
+
+type Marketplace @entity {
+  id: ID!                                                           # unique identifier for a marketplace contract
+  contract: Contract! @index                                        # Relation to the Contract metadata of the marketplace
+  updatedAt: DateTime @index                                        #
+
+  admins: [MarketplaceAdmin!] @derivedFrom(field: "marketplace")    # Wallets with admin access to the marketplace
+  listers: [MarketplaceLister!] @derivedFrom(field: "marketplace")  # Wallets with create listing permissions
+  assets: [MarketplaceAsset!] @derivedFrom(field: "marketplace")    # Contracts allowed to interact with the marketplace
+  listings: [DirectListing!] @derivedFrom(field: "marketplace")     #
+  offers: [Offer!] @derivedFrom(field: "marketplace")               #
+  auctions: [EnglishAuction!] @derivedFrom(field: "marketplace")    #
+  sales: [DirectListingSale!] @derivedFrom(field: "marketplace")    #
+}
+
+type MarketplaceAdmin @entity {
+  id: ID!                           #
+  marketplace: Marketplace @index  #
+  admin: Wallet @index             #
+}
+
+type MarketplaceLister @entity {
+  id: ID!                           #
+  marketplace: Marketplace @index  #
+  lister: Wallet @index            #
+}
+
+type MarketplaceAsset @entity {
+  id: ID!                           #
+  marketplace: Marketplace @index  #
+  asset: Contract @index           #
+}
+
+"""
+Represents a Token entity, tracking ERC20 tokens.
+"""
+type Token @entity {
+  id: ID!                     # Unique identifier for the token in the format: contractId-address
+  contract: Contract! @index  # Relation to the Contract metadata of the token
+  decimals: Int!              # Number of decimals for the token
+}
+
+"""
+Represents an NFT entity, capturing ERC721 and ERC1155 tokens.
+"""
+type NFT @entity {
+  id: ID!                                                   # Globally unique identifier in the format: contractId-tokenId
+  tokenId: BigInt! @index                                   # Token ID of the NFT
+  contract: Contract! @index                                # Reference to the contract metadata for this NFT
+  owner: Wallet @index                                      #
+  metadata: Metadata                                        #
+  updatedAt: DateTime @index                                #
+
+  balances: [NFTWalletBalance!] @derivedFrom(field: "nft")  #
+}
+
+type NFTWalletBalance @entity @index(fields: ["nft", "wallet"]) {
+  id: ID! @index              #
+  nft: NFT! @index            #
+  wallet: Wallet! @index      #
+  balance: BigInt! @index     #
+  updatedAt: DateTime @index  #
+}
+
+type Metadata {
+  name: String              #
+  description: String       #
+  image: String             #
+  imageData: String         #
+  externalUrl: String       #
+  backgroundColor: String   #
+  animationUrl: String      #
+  youtubeUrl: String        #
+  uri: String!              #
+  decoded: JSON             #
+  attributes: [Attribute!]  #
+}
+
+type Attribute {
+  traitType: String!   #
+  value: String!       #
+  displayType: String  #
+}
+
+"""
+Represents a Direct Listing entity in Thirdweb's Marketplace.
+"""
+type DirectListing @entity @index(fields: ["nft", "status", "reserved", "endAt", "pricePerToken"]) {
+  id: ID! @index                    # Unique identifier in the format: chainId-marketplaceAddress-listingId
+  listingId: BigInt! @index         # Unique listing ID
+  marketplace: Marketplace! @index  # Relation to the marketplace
+  tx: Transaction! @index           # Relation to the transaction creating the listing
+  creator: Wallet! @index           # Reference to the wallet of the listing creator
+  nft: NFT! @index                  # Relation to the NFT being listed
+  quantity: BigInt! @index          # Quantity of tokens listed for sale
+  pricePerToken: BigInt! @index     # Price per token (in Wei) in the selected currency
+  currency: Token! @index           # Relation to the ERC20 Token used for the listing
+  startAt: DateTime! @index         # Start timestamp for the listing
+  endAt: DateTime! @index           # End timestamp for the listing
+  reserved: Boolean!  @index        # Indicates if the listing is reserved for whitelisted buyers
+  type: TokenType! @index           # Enum representing the type of listing (DIRECT or AUCTION)
+  status: StateStatus!  @index      # Enum representing the current status of the listing
+}
+
+"""
+Represents an Offer entity in Thirdweb's Marketplace.
+"""
+type Offer @entity @index(fields: ["marketplace", "offerId"]) @index(fields: ["nft", "expiresAt", "totalPrice"]) {
+  id: ID!                      # Unique identifier in the format: chainId-marketplaceAddress-offerId
+  offerId: BigInt! @index      # Unique offer ID
+  marketplace: Marketplace!    # Relation to the marketplace
+  tx: Transaction! @index      # Relation to the transaction making the offer
+  offeror: Wallet! @index      # Reference to the wallet making the offer
+  seller: Wallet @index        # Optional - Reference to the wallet of the seller (if applicable)
+  nft: NFT!                    # Relation to the NFT the offer pertains to
+  quantity: BigInt! @index     # Quantity of tokens the offer is for
+  totalPrice: BigInt! @index   # Total price offered (in Wei)
+  currency: Token! @index      # Reference to the ERC20 Token used in the offer
+  expiresAt: DateTime! @index  # Timestamp when the offer expires
+  status: StateStatus! @index  # Enum representing the current status of the offer
+}
+
+"""
+Represents an EnglishAuction entity in Thirdweb's Marketplace (English Auctions).
+"""
+type EnglishAuction @entity @index(fields: ["marketplace", "auctionId"], unique: true) {
+  id: ID!                                                    # Unique identifier in the format: chainId-marketplaceAddress-auctionId
+  auctionId: BigInt! @index                                  # Unique ID for the auction
+  marketplace: Marketplace! @index                           # Relation to the marketplace
+  tx: Transaction! @index                                    # Relation to the transaction starting the auction
+  creator: Wallet! @index                                    # Reference to the wallet of the auction creator
+  nft: NFT! @index                                           # Relation to the NFT being auctioned
+  quantity: BigInt! @index                                   # Quantity of tokens being auctioned
+  minimumBidAmount: BigInt! @index                           # Minimum bid amount (in Wei) required to participate
+  buyoutBidAmount: BigInt! @index                            # Buyout amount (in Wei) to close the auction instantly
+  currency: Token! @index                                    # Reference to the ERC20 Token used in the auction
+  startAt: DateTime @index                                   # Start timestamp for the auction (in UNIX format)
+  endAt: DateTime! @index                                    # End timestamp for the auction (in UNIX format)
+  timeBufferInSeconds: Int!                                  # Time buffer (seconds) for extending the auction end based on bids
+  bidBufferBps: Int!                                         # Bid buffer percentage (in basis points, e.g., 500 = 5%)
+  status: StateStatus! @index                                # Enum representing the current status of the auction
+  winningBidder: Wallet @index                               # Reference to the wallet of the winning bidder
+  closer: Wallet @index                                      # Reference to the wallet of the closer
+
+  bids: [EnglishAuctionBid!] @derivedFrom(field: "auction")  #
+}
+
+"""
+Represents a Bid placed on an EnglishAuction.
+"""
+type EnglishAuctionBid @entity {
+  id: ID!                          # Unique identifier in the format chainId-auctionId-bidderAddress
+  tx: Transaction! @index          # Relation to the transaction placing the bid
+  auction: EnglishAuction! @index  # Reference to the auction being bid on
+  bidder: Wallet! @index           # Reference to the wallet placing the bid
+  amount: BigInt! @index           # Amount of the bid (in Wei)
+}
+
+"""
+Represents a Sale entity for a direct listing.
+"""
+type DirectListingSale @entity @index(fields: ["marketplace", "listing"], unique: true) @index(fields: ["listing", "tx"]) {
+  id: ID!                         # Unique identifier for the sale
+  marketplace: Marketplace!       # Relation to the marketplace
+  tx: Transaction! @index         # Relation to the transaction completing the sale
+  seller: Wallet! @index          # Reference to the wallet of the seller
+  buyer: Wallet! @index           # Reference to the wallet of the buyer
+  listing: DirectListing! @index  # Reference to the listing
+  quantity: BigInt!  @index       # Quantity of NFTs or tokens sold
+  totalPrice: BigInt!  @index     # Total amount paid for the sale (in Wei)
+}

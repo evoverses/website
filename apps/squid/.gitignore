@@ -1,0 +1,12 @@
+
+/lib
+/builds
+
+/**Versions.json
+
+
+.env
+/data
+env.json
+src/graphql/schemas/api.schema.graphql
+graphql.config.js*

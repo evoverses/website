@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@import "./globals.css";
+@import "./theme.css";
+@import "./base.css";
+@import "./components.css";
+@import "./utilities.css";
+@import "./variants.css";
+
+@source "../components/**/*.{ts,tsx}";
+@source "../../../../apps/website/src/**/*.{ts,tsx}";
+@source "../../../evoverses/src/**/*.{ts,tsx}";

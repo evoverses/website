@@ -1,0 +1,30 @@
+{
+  "name": "infra",
+  "version": "0.1.0",
+  "bin": {
+    "app": "cdk/bin/app.js"
+  },
+  "scripts": {
+    "cdk": "cdk --profile evoverses",
+    "cdk:deploy:prod": "pnpm cdk deploy Prod/**"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "22.7.9",
+    "@workspace/tsconfig": "workspace:*",
+    "@aws-sdk/types": "3.821.0",
+    "aws-cdk": "2.1018.1",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3",
+    "esbuild": "0.25.3",
+    "@vercel/og": "^0.6.8"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.201.0",
+    "constructs": "^10.0.0",
+    "@aws-sdk/client-secrets-manager": "^3.828.0",
+    "@pepperize/cdk-github": "0.0.1005",
+    "type-fest": "^4.41.0"
+  }
+}

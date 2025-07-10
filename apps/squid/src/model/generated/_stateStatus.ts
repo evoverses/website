@@ -1,0 +1,8 @@
+export enum StateStatus {
+  UNSET = "UNSET",
+  CREATED = "CREATED",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
+}
