@@ -24,7 +24,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.9",
     "@vercel/analytics": "^1.5.0",
-    "@vercel/og": "^0.6.8",
+    "@vercel/og": "^0.7.2",
     "@workspace/database": "workspace:*",
     "@workspace/evoverses": "workspace:*",
     "@workspace/ui": "workspace:*",
