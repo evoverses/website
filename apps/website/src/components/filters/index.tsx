@@ -324,7 +324,6 @@ const SortFilterProvider = ({
   defaultQuery?: string,
   searchParams?: Record<string, string | string[]> | string,
 }) => {
-  console.log("searchParamsString", searchParamsString);
   const params = searchParamsSchema.parse(preProcessSearchParams(searchParamsString));
   const [ sort, handleSortChange ] = useSingleOptionState<SortOrder>("sort", params.sort, SortOrder.PRICE_LOW_TO_HIGH);
   const [ treated, handleTreatedChange ] = useSingleOptionState<Allable<TreatedStatus>>(

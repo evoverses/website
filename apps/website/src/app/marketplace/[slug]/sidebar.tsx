@@ -192,7 +192,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
       handleSpeciesChange, handleSpeedChange, handleStageChange, handleTotalBreedsChange, handleTreatedChange, level,
       listingStatus, nature, price, resistance, size, special, species, speed, stage, totalBreeds, treated ],
   );
-  console.log(data);
+
   return (
     <InnerSidebar  {...props}>
       <div className="flex flex-col">
@@ -207,7 +207,6 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
               const isRange = item.type === "range";
               const isAll = (isSelect && item.value[0] === "ALL" || isToggle && item.value === "ALL");
               const nonAllOptions = isSelect ? item.options.filter(filterAll) : [];
-              console.log(item.title, item.value, isSelect, isAll);
               return (
                 <Collapsible
                   key={item.title}
