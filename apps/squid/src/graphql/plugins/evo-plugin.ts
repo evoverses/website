@@ -65,6 +65,8 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
           return mapEvoRow(row);
         },
         evosByQuery: async (_query, args, context, _info) => {
+
+          console.log("QUERY ARGS:", args);
           const client: PoolClient = context.pgClient;
           const limit = clamp(args.limit, 1, 50);
           const page = Math.max(0, args.page);
@@ -115,7 +117,6 @@ const mapEvoRow = (row: any) => {
         acc[k.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())] = v;
         return acc;
       }, {} as Record<string, unknown>),
-      type: metadata.hatched_at ? "EVO" : "EGG",
     },
     offers: toArray(row.offers).map(mapOffer),
     listings: toArray(row.listings).map(mapListing),
