@@ -38,3 +38,16 @@ query EvosByQueryQuery($limit: Int = 25, $listed: Boolean, $owners: [String!], $
   }
 }
 `;
+
+export const evosMarketplaceSummaryQuery = `
+query EvoMarketplaceSummaryQuery {
+  evosMarketplaceSummary {
+    activeListings
+    floorPrice
+    topOffer
+    total
+    totalVolume
+    uniqueOwners
+  }
+}
+`;

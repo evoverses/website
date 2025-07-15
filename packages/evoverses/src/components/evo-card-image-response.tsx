@@ -18,8 +18,8 @@ import {
   isGenesisEgg,
   isTreated,
 } from "@workspace/evoverses/lib/asset/utils";
-import { daysSince } from "@workspace/evoverses/utils/numbers";
-import { pluralize, toTitleCase } from "@workspace/evoverses/utils/strings";
+import { ageFormatter, daysSince } from "@workspace/evoverses/utils/numbers";
+import { toTitleCase } from "@workspace/evoverses/utils/strings";
 
 export const evoCardImageResponse = (asset: SquidAsset) => <EvoCardImageResponse asset={asset} />;
 export const EvoCardImageResponse = ({ asset }: { asset: SquidAsset }) => {
@@ -77,11 +77,8 @@ export const EvoCardImageResponse = ({ asset }: { asset: SquidAsset }) => {
         src={getInfoIslandUrl()}
         alt="info-overlay-bg"
       />
-      <p
-        tw="absolute left-1/2 bottom-[212px]"
-        style={{ transform: "translateX(-50%)" }}
-      >
-        {isEvoAsset(asset) ? toTitleCase(asset.metadata.nature) : `Age: ${age} ${pluralize(age, "Day")}`}
+      <p tw="absolute left-1/2 bottom-[212px]" style={{ transform: "translateX(-50%)" }}>
+        {isEvoAsset(asset) ? toTitleCase(asset.metadata.nature) : `Age: ${ageFormatter(age)}`}
       </p>
       {isEgg(asset) ? (
         <div tw="flex flex-col justify-center items-center w-full max-w-75 mx-auto top-[65px]">

@@ -1,4 +1,4 @@
-import { EM_DASH } from "@workspace/evoverses/utils/strings";
+import { EM_DASH, pluralize } from "@workspace/evoverses/utils/strings";
 
 export const sanitizeDate = (date: Date) => new Date(Number(date.getTime().toString().slice(0, 10)) * 1000);
 
@@ -14,7 +14,7 @@ export const formatNumberWithSuffix = (
     genericLessThan?: number
   } = {},
 ) => {
-  const opts = { defaultValue: "-", ...options };
+  const opts = { defaultValue: EM_DASH, ...options };
   const postfix = opts.postfix ? ` ${opts.postfix}` : "";
   if (!value) {
     return opts.defaultValue + postfix || "";
@@ -197,3 +197,20 @@ export const minutesSince = (date: DateIsh) => secondsSince(date) / 60;
 export const hoursSince = (date: DateIsh) => minutesSince(date) / 60;
 
 export const daysSince = (date: DateIsh) => hoursSince(date) / 24;
+
+export const ageFormatter = (days: number) => {
+  const age = daysSince(days);
+  if (age < 1) {
+    return "< 1 Day";
+  }
+  if (age < 7) {
+    return `${Math.floor(age)} ${pluralize(Math.floor(age), "Day")}`;
+  }
+  if (age < 28) {
+    return `${Math.floor(age / 7)} ${pluralize(Math.floor(age / 7), "Week")}`;
+  }
+  if (age < 365) {
+    return `${Math.floor(age / 30) || 1} ${pluralize(Math.floor(age / 30) || 1, "Day")}`;
+  }
+  return `${Math.floor(age / 365)} ${pluralize(Math.floor(age / 365), "Year")}`;
+};

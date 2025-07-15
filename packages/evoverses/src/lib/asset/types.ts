@@ -101,3 +101,12 @@ export type SquidAsset<T extends SquidAssetMetadata = SquidAssetMetadata> = {
   listings: SquidAssetListing[];
   auctions: SquidAssetAuction[];
 }
+
+export type SquidMarketplaceSummary = {
+  floorPrice: string;
+  topOffer: string;
+  totalVolume: string;
+  activeListings: number;
+  uniqueOwners: number;
+  total: number;
+}

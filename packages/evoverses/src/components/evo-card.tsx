@@ -18,25 +18,9 @@ import {
   isGenesisEgg,
   isTreated,
 } from "@workspace/evoverses/lib/asset/utils";
-import { daysSince } from "@workspace/evoverses/utils/numbers";
-import { pluralize, toTitleCase } from "@workspace/evoverses/utils/strings";
+import { ageFormatter, daysSince } from "@workspace/evoverses/utils/numbers";
+import { toTitleCase } from "@workspace/evoverses/utils/strings";
 
-const ageFormatter = (days: number) => {
-  const age = daysSince(days);
-  if (age < 1) {
-    return "< 1 Day";
-  }
-  if (age < 7) {
-    return `${Math.floor(age)} ${pluralize(Math.floor(age), "Day")}`;
-  }
-  if (age < 28) {
-    return `${Math.floor(age / 7)} ${pluralize(Math.floor(age / 7), "Week")}`;
-  }
-  if (age < 365) {
-    return `${Math.floor(age / 30) || 1} ${pluralize(Math.floor(age / 30) || 1, "Day")}`;
-  }
-  return `${Math.floor(age / 365)} ${pluralize(Math.floor(age / 365), "Year")}`;
-};
 export const EvoCard = ({ asset }: { asset: SquidAsset }) => {
   const age = daysSince(asset.metadata.createdAt);
   const stats = isEvo(asset) ? [

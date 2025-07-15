@@ -25,7 +25,7 @@ import {
 } from "@workspace/ui/components/sidebar";
 import { cn } from "@workspace/ui/lib/utils";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { type ChangeEvent, type ComponentProps, JSX, type SVGProps } from "react";
+import { type ChangeEvent, type ComponentProps, JSX, type SVGProps, useMemo } from "react";
 
 type Icon<T = unknown> = (props: SVGProps<SVGSVGElement> & { value: T }) => JSX.Element | null;
 
@@ -103,73 +103,96 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
     special,
     handleSpecialChange,
   } = useSortFilters();
-  const data: NavItem[] = [
-    {
-      title: "Status",
-      type: "select",
-      asToggle: true,
-      options: [ "ALL", ...listingStatusSchema.options ],
-      value: listingStatus,
-      onChange: handleListingStatusChange,
+  const data: NavItem[] = useMemo(
+    () => {
+      return [
+        {
+          title: "Status",
+          type: "select",
+          asToggle: true,
+          options: [ "ALL", ...listingStatusSchema.options ],
+          value: listingStatus,
+          onChange: handleListingStatusChange,
+        },
+        { title: "Price", type: "range", min: 0, max: 100, value: price, onChange: handlePriceChange },
+        { type: "separator" },
+        {
+          title: "Stage",
+          type: "toggle",
+          options: [ "ALL", ...stageSchema.options ],
+          value: stage,
+          onChange: handleStageChange,
+        },
+        {
+          title: "Gender",
+          type: "toggle",
+          options: [ "ALL", Gender.male, Gender.female ],
+          icon: GenderIcon as Icon,
+          value: gender as string,
+          onChange: handleGenderChange,
+        },
+        { title: "Generation", type: "range", min: 0, max: 100, value: generation, onChange: handleGenerationChange },
+        {
+          title: "Species",
+          type: "select",
+          options: [ "ALL" ].concat([ ...speciesSchema.options as string[] ].filter(s => ![ "unknown",
+            "unreleased" ].includes(s)).sort((a, b) => a.localeCompare(b))),
+          value: species as string[],
+          onChange: handleSpeciesChange,
+        },
+        {
+          title: "Nature",
+          type: "select",
+          options: [ "ALL" ].concat(natures.filter(n => n !== Nature.unknown).sort((a, b) => a.localeCompare(b))),
+          value: nature as string[],
+          onChange: handleNatureChange,
+        },
+        {
+          title: "Element",
+          type: "select",
+          options: [ "ALL" ].concat(elements.filter(e => e !== Element.none).sort((a, b) => a.localeCompare(b))),
+          icon: ElementIcon as Icon,
+          value: element as string[],
+          onChange: handleElementChange,
+        },
+        {
+          title: "Chroma",
+          type: "select",
+          options: [ "ALL", ...chromas ],
+          value: chroma,
+          onChange: handleChromaChange,
+        },
+        {
+          title: "Treated",
+          type: "toggle",
+          options: [ "ALL", ...treatedStatusSchema.options ],
+          value: treated,
+          onChange: handleTreatedChange,
+        },
+        {
+          title: "Total Breeds",
+          type: "range",
+          min: 0,
+          max: 100,
+          value: totalBreeds,
+          onChange: handleTotalBreedsChange,
+        },
+        { title: "Attack", type: "range", min: 0, max: 50, value: attack, onChange: handleAttackChange },
+        { title: "Special", type: "range", min: 0, max: 50, value: special, onChange: handleSpecialChange },
+        { title: "Defense", type: "range", min: 0, max: 50, value: defense, onChange: handleDefenseChange },
+        { title: "Resistance", type: "range", min: 0, max: 50, value: resistance, onChange: handleResistanceChange },
+        { title: "Speed", type: "range", min: 0, max: 50, value: speed, onChange: handleSpeedChange },
+        { title: "Size", type: "range", min: -100, max: 100, value: size, onChange: handleSizeChange },
+        { title: "Level", type: "range", min: 1, max: 100, value: level, onChange: handleLevelChange },
+      ];
     },
-    { title: "Price", type: "range", min: 0, max: 100, value: price, onChange: handlePriceChange },
-    { type: "separator" },
-    {
-      title: "Stage",
-      type: "toggle",
-      options: [ "ALL", ...stageSchema.options ],
-      value: stage,
-      onChange: handleStageChange,
-    },
-    {
-      title: "Gender",
-      type: "toggle",
-      options: [ "ALL", Gender.male, Gender.female ],
-      icon: GenderIcon as Icon,
-      value: gender as string,
-      onChange: handleGenderChange,
-    },
-    { title: "Generation", type: "range", min: 0, max: 100, value: generation, onChange: handleGenerationChange },
-    {
-      title: "Species",
-      type: "select",
-      options: [ "ALL" ].concat([ ...speciesSchema.options as string[] ].filter(s => ![ "unknown",
-        "unreleased" ].includes(s)).sort((a, b) => a.localeCompare(b))),
-      value: species as string[],
-      onChange: handleSpeciesChange,
-    },
-    {
-      title: "Nature",
-      type: "select",
-      options: [ "ALL" ].concat(natures.filter(n => n !== Nature.unknown).sort((a, b) => a.localeCompare(b))),
-      value: nature as string[],
-      onChange: handleNatureChange,
-    },
-    {
-      title: "Element",
-      type: "select",
-      options: [ "ALL" ].concat(elements.filter(e => e !== Element.none).sort((a, b) => a.localeCompare(b))),
-      icon: ElementIcon as Icon,
-      value: element as string[],
-      onChange: handleElementChange,
-    },
-    { title: "Chroma", type: "select", options: [ "ALL", ...chromas ], value: chroma, onChange: handleChromaChange },
-    {
-      title: "Treated",
-      type: "toggle",
-      options: [ "ALL", ...treatedStatusSchema.options ],
-      value: treated,
-      onChange: handleTreatedChange,
-    },
-    { title: "Total Breeds", type: "range", min: 0, max: 100, value: totalBreeds, onChange: handleTotalBreedsChange },
-    { title: "Attack", type: "range", min: 0, max: 50, value: attack, onChange: handleAttackChange },
-    { title: "Special", type: "range", min: 0, max: 50, value: special, onChange: handleSpecialChange },
-    { title: "Defense", type: "range", min: 0, max: 50, value: defense, onChange: handleDefenseChange },
-    { title: "Resistance", type: "range", min: 0, max: 50, value: resistance, onChange: handleResistanceChange },
-    { title: "Speed", type: "range", min: 0, max: 50, value: speed, onChange: handleSpeedChange },
-    { title: "Size", type: "range", min: -100, max: 100, value: size, onChange: handleSizeChange },
-    { title: "Level", type: "range", min: 1, max: 100, value: level, onChange: handleLevelChange },
-  ];
+    [ attack, chroma, defense, element, gender, generation, handleAttackChange, handleChromaChange, handleDefenseChange,
+      handleElementChange, handleGenderChange, handleGenerationChange, handleLevelChange, handleListingStatusChange,
+      handleNatureChange, handlePriceChange, handleResistanceChange, handleSizeChange, handleSpecialChange,
+      handleSpeciesChange, handleSpeedChange, handleStageChange, handleTotalBreedsChange, handleTreatedChange, level,
+      listingStatus, nature, price, resistance, size, special, species, speed, stage, totalBreeds, treated ],
+  );
+  console.log(data);
   return (
     <InnerSidebar  {...props}>
       <div className="flex flex-col">
@@ -184,7 +207,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
               const isRange = item.type === "range";
               const isAll = (isSelect && item.value[0] === "ALL" || isToggle && item.value === "ALL");
               const nonAllOptions = isSelect ? item.options.filter(filterAll) : [];
-
+              console.log(item.title, item.value, isSelect, isAll);
               return (
                 <Collapsible
                   key={item.title}

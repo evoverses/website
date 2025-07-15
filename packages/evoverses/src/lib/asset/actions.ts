@@ -1,8 +1,8 @@
 import { evoByIdQuery, evosByQueryQuery } from "@workspace/evoverses/lib/asset/queries";
 import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { fetchSquid } from "@workspace/evoverses/lib/squid/utils";
-import type { Address } from "@workspace/evoverses/types/viem";
 import type { NextFetchRequestConfig } from "@workspace/evoverses/types/next";
+import type { Address } from "@workspace/evoverses/types/viem";
 
 export const fetchSquidAsset = async (tokenId: string, next: NextFetchRequestConfig = {}) => {
   const result = await fetchSquid<{ evoById: SquidAsset }>(
@@ -35,6 +35,6 @@ export const fetchSquidAssets = async (opts: FetchSquidAssetsOptions = {}, next:
     }, {} as Record<string, unknown>),
     next,
   );
-  console.log("RESULT:", result, result.evosByQuery);
+  // console.log("RESULT:", result, result.evosByQuery);
   return result.evosByQuery;
 };

@@ -324,6 +324,7 @@ const SortFilterProvider = ({
   defaultQuery?: string,
   searchParams?: Record<string, string | string[]> | string,
 }) => {
+  console.log("searchParamsString", searchParamsString);
   const params = searchParamsSchema.parse(preProcessSearchParams(searchParamsString));
   const [ sort, handleSortChange ] = useSingleOptionState<SortOrder>("sort", params.sort, SortOrder.PRICE_LOW_TO_HIGH);
   const [ treated, handleTreatedChange ] = useSingleOptionState<Allable<TreatedStatus>>(
@@ -371,25 +372,30 @@ const SortFilterProvider = ({
   );
 
   const clearAll = useCallback(() => {
-    handleTreatedChange("ALL");
-    handleStageChange("ALL");
-    handleGenderChange("ALL");
-    handlePriceChange({});
-    handleGenerationChange({});
-    handleTotalBreedsChange({});
-    handleAttackChange({});
-    handleSpecialChange({});
-    handleDefenseChange({});
-    handleResistanceChange({});
-    handleSpeedChange({});
-    handleSizeChange({});
-    handleLevelChange({});
-    handleSpeciesChange("ALL");
-    handleNatureChange("ALL");
-    handleElementChange("ALL");
-    handleChromaChange("ALL");
-    handleListingStatusChange("ALL");
-  }, []);
+      handleTreatedChange("ALL");
+      handleStageChange("ALL");
+      handleGenderChange("ALL");
+      handlePriceChange({});
+      handleGenerationChange({});
+      handleTotalBreedsChange({});
+      handleAttackChange({});
+      handleSpecialChange({});
+      handleDefenseChange({});
+      handleResistanceChange({});
+      handleSpeedChange({});
+      handleSizeChange({});
+      handleLevelChange({});
+      handleSpeciesChange("ALL");
+      handleNatureChange("ALL");
+      handleElementChange("ALL");
+      handleChromaChange("ALL");
+      handleListingStatusChange("ALL");
+    },
+    [ handleAttackChange, handleChromaChange, handleDefenseChange, handleElementChange, handleGenderChange,
+      handleGenerationChange, handleLevelChange, handleListingStatusChange, handleNatureChange, handlePriceChange,
+      handleResistanceChange, handleSizeChange, handleSpecialChange, handleSpeciesChange, handleSpeedChange,
+      handleStageChange, handleTotalBreedsChange, handleTreatedChange ],
+  );
   const ctx: FiltersContextType = {
     sort,
     handleSortChange,

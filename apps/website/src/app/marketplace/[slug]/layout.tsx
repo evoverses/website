@@ -2,16 +2,15 @@ import { CollectionHeader } from "@/app/marketplace/[slug]/header";
 import { AppSidebar } from "@/app/marketplace/[slug]/sidebar";
 import { SortFilterProvider } from "@/components/filters";
 import { InnerSidebarProvider } from "@/components/inner-sidebar";
+import { getServerSideUrlFromHeaders } from "@/utils/server";
 import { Metadata } from "next";
-import { headers } from "next/headers";
 import { type PropsWithChildren } from "react";
 
 export const metadata: Metadata = {
   title: "Evos | Marketplace",
 };
 const Layout = async ({ children }: PropsWithChildren) => {
-  const headersList = await headers();
-  const url = headersList.get("referer");
+  const url = await getServerSideUrlFromHeaders();
   const searchParams = url ? new URL(url).searchParams.toString() : undefined;
   return (
     <SortFilterProvider searchParams={searchParams}>
