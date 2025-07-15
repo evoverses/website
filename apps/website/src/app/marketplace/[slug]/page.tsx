@@ -51,7 +51,7 @@ const MarketplaceAssetsPage = () => {
       owners: listingStatus.includes(ListingStatus.OWNED_BY_YOU) && wallets.length > 0 ? wallets : undefined,
       attributes: buildSquidAttributeFilters({
         price,
-        gender: gender === "ALL" ? undefined : gender as string,
+        gender: gender === "ALL" ? undefined : [ gender as string ],
         generation,
         species: species as string[],
         nature: nature as string[],
@@ -65,7 +65,7 @@ const MarketplaceAssetsPage = () => {
         speed,
         size,
         level,
-        type: stage === "ALL" ? undefined : stage as string,
+        type: stage === "ALL" ? undefined : [ stage as string ],
         treated: treated === "TREATED" ? "true" : treated === "UNTREATED" ? "false" : undefined,
       }),
     }),

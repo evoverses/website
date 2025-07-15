@@ -8,7 +8,8 @@ select
   to_jsonb(e) || jsonb_build_object(
     'primary_type', s.primary_type,
     'secondary_type', s.secondary_type,
-    'species', s.species
+    'species', s.species,
+    'type', case when e.gender = 'unknown' then 'EGG' else 'EVO' end
   ) as metadata,
   (
     select dls.total_price

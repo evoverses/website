@@ -49,12 +49,12 @@ export class ApiGatewayStack extends CStack {
 
     this.api.addRoutes({
       path: "/graphql",
-      methods: [ HttpMethod.POST ],
+      methods: [ HttpMethod.POST, HttpMethod.OPTIONS ],
       integration: albIntegration,
     });
     this.api.addRoutes({
       path: "/metadata/{proxy+}",
-      methods: [ HttpMethod.GET ],
+      methods: [ HttpMethod.GET, HttpMethod.OPTIONS ],
       integration: albIntegration,
     });
 
