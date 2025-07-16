@@ -134,6 +134,7 @@ const asImageUrl = (url: string) => `${baseImageApiUrl}/${url.replace(/\/$/, "")
 export const getEvoCardEvoImageUrl = (evo: SquidAsset) => {
   const base = `/evo/${evo.metadata.species}`;
   const isEgg = isEggAsset(evo);
+  console.log(isEgg);
   if (isEgg) {
     return asImageUrl(`${base}/${evo.metadata.generation === 0 ? Number(evo.tokenId) % 4 : "egg"}`);
   }

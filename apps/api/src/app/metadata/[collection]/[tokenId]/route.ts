@@ -19,7 +19,7 @@ import { z } from "zod";
 export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<typeof paramsSchema>> }) => {
   const result = paramsSchema.safeParse(await context.params);
   if (!result.success) {
-    return NextResponse.json({ error: `Failed to generate the image: ${result.error.message}` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to generate metadata: ${result.error.message}` }, { status: 500 });
   }
   const { tokenId } = result.data;
   try {
@@ -79,6 +79,6 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
     console.error(`Error generating the metadata for token ${tokenId}: ${(
       e as Error
     ).message}`);
-    return NextResponse.json({ error: "Failed to generate the metadata" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to generate metadata" }, { status: 500 });
   }
 };

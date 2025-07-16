@@ -3,7 +3,7 @@ import type { SquidErrorResponse } from "@workspace/evoverses/lib/squid/types";
 import type { NextFetchRequestConfig } from "@workspace/evoverses/types/next";
 import { assertEnvNotNull } from "@workspace/evoverses/utils/node";
 
-const squidUrl = process.env.NEXT_PUBLIC_EVOVERSES_GRAPHQL_URL;
+const squidUrl = process.env.EVOVERSES_GRAPHQL_URL || process.env.NEXT_PUBLIC_EVOVERSES_GRAPHQL_URL;
 
 export const fetchSquid = <TData = unknown>(
   operationName: string,
@@ -11,6 +11,6 @@ export const fetchSquid = <TData = unknown>(
   variables: Record<string, unknown> = {},
   next: NextFetchRequestConfig = {},
 ) => {
-  const url = squidUrl || assertEnvNotNull(process.env.EVOVERSES_GRAPHQL_URL, "EVOVERSES_GRAPHQL_URL");
+  const url = squidUrl || assertEnvNotNull(squidUrl, "NEXT_PUBLIC_EVOVERSES_GRAPHQL_URL");
   return fetchGraphQl<TData, SquidErrorResponse>(url, operationName, query, variables, next);
 };
