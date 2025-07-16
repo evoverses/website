@@ -39,6 +39,14 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
         total: Int!
       }
 
+      type EvoMarketplaceSummary {
+        floorPrice: String!
+        topOffer: String!
+        totalVolume: String!
+        activeListings: Int!
+        uniqueOwners: Int!
+        total: Int!
+      }
       extend type Query {
         evoById(tokenId: String!): Evo
         evosByQuery(
@@ -50,6 +58,7 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
           sort: SortOrder = PRICE_LOW_TO_HIGH
           attributes: JSON
         ): Evos!
+        evosMarketplaceSummary: EvoMarketplaceSummary!
       }
     `,
     resolvers: {
@@ -65,7 +74,6 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
           return mapEvoRow(row);
         },
         evosByQuery: async (_query, args, context, _info) => {
-
           console.log("QUERY ARGS:", args);
           const client: PoolClient = context.pgClient;
           const limit = clamp(args.limit, 1, 50);
@@ -92,6 +100,29 @@ export const EvoPlugin = makeExtendSchemaPlugin(() => (
             items: query.items.map(mapEvoRow),
             nextPage: query.next_page ? page + 1 : null,
             total: query.total_count,
+          };
+        },
+        evosMarketplaceSummary: async (_query, _args, context) => {
+          const client: PoolClient = context.pgClient;
+          const raw = await client.query("SELECT * FROM metadata.evos_marketplace_summary_aggregated_view");
+          const query = raw.rows[0];
+          if (!query) {
+            return {
+              floorPrice: "0",
+              topOffer: "0",
+              totalVolume: "0",
+              activeListings: 0,
+              uniqueOwners: 0,
+              total: 0,
+            };
+          }
+          return {
+            floorPrice: query.floor_price ?? "0",
+            topOffer: query.top_offer ?? "0",
+            totalVolume: query.total_volume ?? "0",
+            activeListings: query.listed,
+            uniqueOwners: query.unique_owners,
+            total: query.total,
           };
         },
       },
@@ -122,7 +153,7 @@ const mapEvoRow = (row: any) => {
     listings: toArray(row.listings).map(mapListing),
     auctions: toArray(row.auctions).map(mapAuction),
   };
-}
+};
 
 const toArray = (array: any) => {
   if (!array || array === "{}") {
@@ -132,7 +163,7 @@ const toArray = (array: any) => {
     return [];
   }
   return array;
-}
+};
 const mapOffer = (offer: any) => {
 
   const { id, offerId, offerorId, currencyId, ...o } = offer;
@@ -142,7 +173,7 @@ const mapOffer = (offer: any) => {
     currency: currencyId,
     id: offerId,
   };
-}
+};
 
 const mapListing = (listing: any) => {
   const { id, listingId, creatorId, currencyId, ...o } = listing;

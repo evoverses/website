@@ -1,18 +1,61 @@
+"use client";
 import EvoBannerOpensea from "@/assets/collections/evos/banner.png";
 import { collections } from "@/data/collections";
+import { fetchSquidMarketplaceSummary } from "@/lib/evo/fetch";
 import { Slug } from "@/types/core";
+import { staleTimeMinutes } from "@/utils/numbers";
+import { useQuery } from "@tanstack/react-query";
+import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
+import { formatEther } from "viem";
+
+const placeholderData = {
+  activeListings: 0,
+  floorPrice: "0",
+  topOffer: "0",
+  total: 0,
+  totalVolume: "0",
+  uniqueOwners: 0,
+};
 
 const CollectionHeader = ({ slug }: { slug: Slug }) => {
   const collection = collections.find(c => c.slug.startsWith(slug))!;
-  const rawStats =
-    { total: { volume: 0, sales: 0, average_price: 0, num_owners: 0, floor_price: 0, floor_price_symbol: "" } };
+  const { data = placeholderData } = useQuery({
+    queryKey: [ "marketplace-summary", collection ],
+    queryFn: () => fetchSquidMarketplaceSummary(collection.slug),
+    staleTime: staleTimeMinutes(5),
+    placeholderData,
+  });
 
   const stats = [
-    { title: "Floor Price", value: rawStats.total.floor_price, suffix: true },
-    { title: "Top Offer", value: rawStats.total.floor_price, suffix: true },
-    { title: "Total Volume", value: rawStats.total.volume, suffix: true },
-    { title: "Listed", value: rawStats.total.sales },
-    { title: "Owners (Unique)", value: rawStats.total.num_owners },
+    {
+      title: "Floor Price",
+      value: formatNumberWithSuffix(
+        data.floorPrice === "0" ? undefined : formatEther(BigInt(data.floorPrice)),
+        { postfix: data.floorPrice === "0" ? undefined : "EVO" },
+      ),
+    },
+    {
+      title: "Top Offer",
+      value: formatNumberWithSuffix(
+        data.topOffer === "0" ? undefined : formatEther(BigInt(data.topOffer)),
+        { postfix: data.topOffer === "0" ? undefined : "EVO" },
+      ),
+    },
+    {
+      title: "Total Volume",
+      value: formatNumberWithSuffix(
+        data.totalVolume === "0" ? undefined : formatEther(BigInt(data.totalVolume)),
+        { postfix: data.totalVolume === "0" ? undefined : "EVO" },
+      ),
+    },
+    { title: "Listed", value: formatNumberWithSuffix(data.activeListings) },
+    {
+      title: "Owners (Unique)",
+      value: `${formatNumberWithSuffix(data.uniqueOwners)} (${(data.uniqueOwners / data.total).toLocaleString(
+        "en",
+        { style: "percent" },
+      )})`,
+    },
   ];
   return (
     <div
@@ -27,10 +70,8 @@ const CollectionHeader = ({ slug }: { slug: Slug }) => {
         <div className="hidden sm:flex space-x-4 items-end">
           {stats.map(s => (
             <div className="flex flex-col text-right gap-1" key={s.title}>
-              <span className="text-muted-foreground">{s.title}</span>
-              <span className="font-semibold">
-                {Number(s.value.toFixed(2))} {s.suffix ? "EVO" : ""}
-              </span>
+              <span className="text-muted-foreground font-">{s.title}</span>
+              <span className="font-medium font-mono">{s.value}</span>
             </div>
           ))}
         </div>

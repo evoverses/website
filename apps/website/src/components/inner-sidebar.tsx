@@ -57,7 +57,6 @@ const InnerSidebarTrigger = ({
   ...props
 }: ComponentProps<typeof Button>) => {
   const { open, toggle } = useInnerSidebar();
-  console.log(open);
   return (
     <Button
       onClick={e => {

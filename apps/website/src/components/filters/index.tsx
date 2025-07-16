@@ -371,25 +371,30 @@ const SortFilterProvider = ({
   );
 
   const clearAll = useCallback(() => {
-    handleTreatedChange("ALL");
-    handleStageChange("ALL");
-    handleGenderChange("ALL");
-    handlePriceChange({});
-    handleGenerationChange({});
-    handleTotalBreedsChange({});
-    handleAttackChange({});
-    handleSpecialChange({});
-    handleDefenseChange({});
-    handleResistanceChange({});
-    handleSpeedChange({});
-    handleSizeChange({});
-    handleLevelChange({});
-    handleSpeciesChange("ALL");
-    handleNatureChange("ALL");
-    handleElementChange("ALL");
-    handleChromaChange("ALL");
-    handleListingStatusChange("ALL");
-  }, []);
+      handleTreatedChange("ALL");
+      handleStageChange("ALL");
+      handleGenderChange("ALL");
+      handlePriceChange({});
+      handleGenerationChange({});
+      handleTotalBreedsChange({});
+      handleAttackChange({});
+      handleSpecialChange({});
+      handleDefenseChange({});
+      handleResistanceChange({});
+      handleSpeedChange({});
+      handleSizeChange({});
+      handleLevelChange({});
+      handleSpeciesChange("ALL");
+      handleNatureChange("ALL");
+      handleElementChange("ALL");
+      handleChromaChange("ALL");
+      handleListingStatusChange("ALL");
+    },
+    [ handleAttackChange, handleChromaChange, handleDefenseChange, handleElementChange, handleGenderChange,
+      handleGenerationChange, handleLevelChange, handleListingStatusChange, handleNatureChange, handlePriceChange,
+      handleResistanceChange, handleSizeChange, handleSpecialChange, handleSpeciesChange, handleSpeedChange,
+      handleStageChange, handleTotalBreedsChange, handleTreatedChange ],
+  );
   const ctx: FiltersContextType = {
     sort,
     handleSortChange,

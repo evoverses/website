@@ -64,7 +64,8 @@ begin
     select to_jsonb(e) || jsonb_build_object(
       'species', s.species,
       'primary_type', s.primary_type,
-      'secondary_type', s.secondary_type
+      'secondary_type', s.secondary_type,
+      'type', case when e.gender = 'unknown' then 'EGG' else 'EVO' end
     ) as metadata
     from metadata.evo e
     join metadata.species s on s.id = e.species_id

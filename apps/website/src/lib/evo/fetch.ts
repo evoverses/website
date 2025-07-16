@@ -1,6 +1,6 @@
-import { evoByIdQuery, evosByQueryQuery } from "@/lib/evo/queries";
+import { evoByIdQuery, evosByQueryQuery, evosMarketplaceSummaryQuery } from "@/lib/evo/queries";
 import { Range } from "@/types/generic";
-import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
+import type { SquidAsset, SquidMarketplaceSummary } from "@workspace/evoverses/lib/asset/types";
 import { toSnakeCase } from "@workspace/evoverses/utils/strings";
 import type { Address } from "viem";
 import { fetchSquid } from "../squid/utils";
@@ -37,7 +37,7 @@ export const fetchSquidAssets = async (opts: FetchSquidAssetsOptions = {}, next:
     }, {} as Record<string, unknown>),
     next,
   );
-  console.log("RESULT:", result, result.evosByQuery);
+  // console.log("RESULT:", result, result.evosByQuery);
   return result.evosByQuery;
 };
 
@@ -82,4 +82,13 @@ export const buildSquidAttributeFilters = (filters: Partial<SquidAttributeFilter
   }
 
   return Object.keys(attributes).length > 0 ? attributes : undefined;
+};
+
+export const fetchSquidMarketplaceSummary = async (collection: string) => {
+  const result = await fetchSquid<{ evosMarketplaceSummary: SquidMarketplaceSummary }>(
+    "EvoMarketplaceSummaryQuery",
+    evosMarketplaceSummaryQuery,
+    { collection },
+  );
+  return result.evosMarketplaceSummary;
 };

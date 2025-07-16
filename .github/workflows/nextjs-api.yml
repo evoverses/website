@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'apps/api/**'
+      - 'packages/evoverses/**'
       - '.github/workflows/nextjs-api.yml'
 
 permissions:

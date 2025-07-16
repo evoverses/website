@@ -25,7 +25,6 @@ const ConnectButton = ({
 }: ComponentProps<typeof Button> & { wallets?: "social" | "chain" | "all", hideConnected?: boolean }) => {
   const { connect, isConnecting } = useConnectModal();
   const account = useConnectedWallets();
-  console.log(account, hideConnected);
   if (account && hideConnected) {
     return null;
   }
