@@ -1,6 +1,5 @@
 "use client";
 import { DatePicker } from "@/components/date-picker";
-import { EvoImage } from "@/components/images/evo-image";
 import { evoContractAddress, evoNftContractAddress } from "@/data/addresses";
 import { marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
@@ -29,14 +28,15 @@ import { type ChangeEvent, type ReactNode, useCallback, useState } from "react";
 import { updateListing } from "thirdweb/extensions/marketplace";
 import { TransactionButton, useActiveAccount } from "thirdweb/react";
 import { formatEther } from "viem";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const EditListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: ReactNode }) => {
   const listing = asset.listings[0];
-  const [ period, setPeriod ] = useState<string>("unchanged");
-  const [ customDate, setCustomDate ] = useState<Date | undefined>(undefined);
-  const [ amount, setAmount ] = useState<string>(listing ? formatEther(BigInt(listing.pricePerToken)) : "");
-  const [ error, setError ] = useState<string | undefined>(undefined);
-  const [ success, setSuccess ] = useState<boolean>(false);
+  const [period, setPeriod] = useState<string>("unchanged");
+  const [customDate, setCustomDate] = useState<Date | undefined>(undefined);
+  const [amount, setAmount] = useState<string>(listing ? formatEther(BigInt(listing.pricePerToken)) : "");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const account = useActiveAccount();
   const { switchChainIfNeeded } = useChain();
@@ -66,7 +66,7 @@ const EditListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
       ),
       isReservedListing: false,
     });
-  }, [ account, listing, switchChainIfNeeded, asset, amount, period, customDate ]);
+  }, [account, listing, switchChainIfNeeded, asset, amount, period, customDate]);
 
   const handleCustomDateChange = ({ day, hour, minute }: { day?: Date, hour?: number, minute?: number }) => {
     const d = customDate || new Date();
@@ -106,7 +106,7 @@ const EditListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
         {success ? (
           <div className="flex flex-col gap-6 items-center px-6">
             <div className="relative size-45 aspect-card sm:size-90 bg-secondary rounded-xl overflow-hidden">
-              <EvoImage asset={asset} />
+              <EvoCard asset={asset} />
             </div>
             <h2 className="font-semibold text-xl sm:text-4xl">Just edited!</h2>
             <div className="flex gap-1 flex-wrap text-center items-center justify-center text-sm">
@@ -153,7 +153,7 @@ const EditListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
                   <TableCell className="pl-0">
                     <div className="flex gap-3 min-w-0 items-center w-full overflow-hidden">
                       <div className="relative size-8 aspect-card bg-secondary rounded-md overflow-hidden">
-                        <EvoImage asset={asset} />
+                        <EvoCard asset={asset} />
                       </div>
                       <span className="truncate">{toAssetFullName(asset)}</span>
                     </div>
@@ -297,7 +297,7 @@ const EditListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="unchanged">Unchanged</SelectItem>
-                    {[ 86_400, 86_400 * 3, 86_400 * 7, 86_400 * 30 ].map((v, i) => (
+                    {[86_400, 86_400 * 3, 86_400 * 7, 86_400 * 30].map((v, i) => (
                       <SelectItem key={v.toString()} value={v.toString()}>
                         {v / 86_400} Day{i === 0 ? "" : "s"}
                       </SelectItem>

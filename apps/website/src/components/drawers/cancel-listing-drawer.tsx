@@ -1,5 +1,4 @@
 "use client";
-import { EvoImage } from "@/components/images/evo-image";
 import { marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useEvoPrice } from "@/hooks/use-token-price";
@@ -23,10 +22,11 @@ import { type ReactNode, useCallback, useState } from "react";
 import { cancelListing } from "thirdweb/extensions/marketplace";
 import { TransactionButton, useActiveAccount } from "thirdweb/react";
 import { formatEther } from "viem";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const CancelListingDrawer = ({ asset, children }: { asset: SquidAsset, children?: ReactNode }) => {
   const listing = asset.listings[0];
-  const [ success, setSuccess ] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const account = useActiveAccount();
   const { switchChainIfNeeded } = useChain();
   const currencyPrice = useEvoPrice();
@@ -46,7 +46,7 @@ const CancelListingDrawer = ({ asset, children }: { asset: SquidAsset, children?
       contract: marketplaceContract,
       listingId: BigInt(listing.id),
     });
-  }, [ account, asset, listing, switchChainIfNeeded ]);
+  }, [account, asset, listing, switchChainIfNeeded]);
 
   const handleOnOpenChange = (open: boolean) => {
     if (success && !open) {
@@ -63,7 +63,7 @@ const CancelListingDrawer = ({ asset, children }: { asset: SquidAsset, children?
         {success ? (
           <div className="flex flex-col gap-6 items-center px-6">
             <div className="relative size-45 aspect-card sm:size-90 bg-secondary rounded-xl overflow-hidden">
-              <EvoImage asset={asset} className="grayscale" />
+              <EvoCard asset={asset} className="grayscale" />
             </div>
             <h2 className="font-semibold text-xl sm:text-4xl text-center">Listing successfully cancelled</h2>
             <Button variant="secondary" asChild>
@@ -82,7 +82,7 @@ const CancelListingDrawer = ({ asset, children }: { asset: SquidAsset, children?
                 <span className="font-mono text-sm uppercase text-muted-foreground">1 Listing</span>
                 <div className="flex gap-3 items-center">
                   <div className="relative size-12 aspect-card bg-secondary rounded-md overflow-hidden">
-                    <EvoImage asset={asset} />
+                    <EvoCard asset={asset} />
                   </div>
                   <div className="flex flex-col justify-center gap-2">
                     <span className="text-sm font-medium">{toAssetFullName(asset)}</span>

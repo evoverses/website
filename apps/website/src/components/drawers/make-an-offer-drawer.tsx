@@ -1,6 +1,5 @@
 "use client";
 import { DatePicker } from "@/components/date-picker";
-import { EvoImage } from "@/components/images/evo-image";
 import { evoContract, marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
@@ -33,19 +32,20 @@ import { allowance, approve } from "thirdweb/extensions/erc20";
 import { makeOffer } from "thirdweb/extensions/marketplace";
 import { TransactionButton, useActiveAccount, useSendAndConfirmTransaction, useWalletBalance } from "thirdweb/react";
 import { parseUnits } from "viem";
+import { EvoCard } from "@workspace/evoverses/components/evo-card";
 
 const MakeAnOfferDrawer = ({ asset, children }: {
   asset: SquidAsset,
   children?: ReactNode
 }) => {
-  const [ period, setPeriod ] = useState<string>((
+  const [period, setPeriod] = useState<string>((
     86_400 * 7
   ).toString());
-  const [ customDate, setCustomDate ] = useState<Date | undefined>(undefined);
-  const [ amount, setAmount ] = useState<string>("");
-  const [ error, setError ] = useState<string | undefined>(undefined);
+  const [customDate, setCustomDate] = useState<Date | undefined>(undefined);
+  const [amount, setAmount] = useState<string>("");
+  const [error, setError] = useState<string | undefined>(undefined);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const [ success, setSuccess ] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const account = useActiveAccount();
   const { chain, switchChainIfNeeded } = useChain();
@@ -92,7 +92,7 @@ const MakeAnOfferDrawer = ({ asset, children }: {
       totalOffer: amount,
     });
 
-  }, [ asset, account, mutateAsync, period, amount, customDate, switchChainIfNeeded ]);
+  }, [asset, account, mutateAsync, period, amount, customDate, switchChainIfNeeded]);
 
   const handleCustomDateChange = ({ day, hour, minute }: { day?: Date, hour?: number, minute?: number }) => {
     const d = customDate || new Date();
@@ -162,7 +162,7 @@ const MakeAnOfferDrawer = ({ asset, children }: {
                 <TableCell className="pl-0">
                   <div className="flex gap-3 items-center">
                     <div className="relative size-8 aspect-card bg-secondary rounded-md overflow-hidden">
-                      <EvoImage asset={asset} />
+                      <EvoCard asset={asset} />
                     </div>
                     <span>{toAssetFullName(asset)}</span>
                   </div>
@@ -316,7 +316,7 @@ const MakeAnOfferDrawer = ({ asset, children }: {
                   <SelectValue placeholder="Theme" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[ 86_400, 86_400 * 3, 86_400 * 7, 86_400 * 30 ].map((v, i) => (
+                  {[86_400, 86_400 * 3, 86_400 * 7, 86_400 * 30].map((v, i) => (
                     <SelectItem key={v.toString()} value={v.toString()}>
                       {v / 86_400} Day{i === 0 ? "" : "s"}
                     </SelectItem>
@@ -335,7 +335,7 @@ const MakeAnOfferDrawer = ({ asset, children }: {
                       (
                         <div className="flex gap-3 items-center w-fit">
                           <div className="relative size-8 bg-secondary rounded-md overflow-hidden">
-                            <EvoImage asset={asset} />
+                            <EvoCard asset={asset} />
                           </div>
                           <div className="flex flex-col gap-1">
                             <span>Offer Submitted!</span>

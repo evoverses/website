@@ -3,6 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { appDevMode } from "@/data/constants";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -29,7 +30,7 @@ Sentry.init({
   ],
 
   // Uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  spotlight: process.env.NODE_ENV === "development",
+  spotlight: appDevMode,
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

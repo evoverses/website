@@ -32,17 +32,16 @@ export const EvoCard = ({ asset }: { asset: SquidAsset }) => {
     { stat: StatNameAbbreviation.spd, value: asset.metadata.speed },
   ] : [];
   return (
-    <div className="@container absolute w-full aspect-card rounded-[1.25rem] relative flex text-white font-black text-base">
+    <div
+      className={cn("@container w-full aspect-card rounded-[1.25rem] relative flex text-white font-black text-base", className)}
+      {...props}
+    >
       <img
         src={getEvoCardElementBackgroundUrl(asset)}
         className="w-full h-full rounded-[1.875rem] absolute top-0 left-0 select-none pointer-events-none"
         alt="background"
       />
-      <img
-        src={getEvoCardEvoImageUrl(asset)}
-        className="absolute aspect-square w-[78.125cqw] top-20 left-1/2 -translate-x-1/2 select-none pointer-events-none"
-        alt="evo image"
-      />
+      <EvoImage asset={asset} className="absolute w-[78.125cqw] top-20 left-1/2 -translate-x-1/2" />
       <img className="absolute w-full select-none pointer-events-none" src={getEvoCardBorderUrl(asset)} alt="border" />
       <img
         src={evoversesIconUrl}
@@ -58,7 +57,7 @@ export const EvoCard = ({ asset }: { asset: SquidAsset }) => {
             <GenderIcon value={asset.metadata.gender} className="size-[3.625cqw] text-black" />
           )}
           <div className="flex">
-            {hasElements(asset) && [ asset.metadata.primaryType, asset.metadata.secondaryType ]
+            {hasElements(asset) && [asset.metadata.primaryType, asset.metadata.secondaryType]
               .filter(s => s !== Element.none)
               .map((t, i, a) => (
                 <ElementIcon
@@ -95,7 +94,7 @@ export const EvoCard = ({ asset }: { asset: SquidAsset }) => {
               <span className="absolute left-1/2 bottom-[230px]" style={{ transform: `translateX(-50%)` }}>
                 {isGen0(asset)
                   ? "Genesis"
-                  : <>Parents: {[ asset.metadata.parent1Id, asset.metadata.parent2Id ].filter(Boolean)
+                  : <>Parents: {[asset.metadata.parent1Id, asset.metadata.parent2Id].filter(Boolean)
                     .map(n => `#${n}`)
                     .join(" & ")}</>}
               </span>

@@ -3,11 +3,11 @@
 import { cn } from "@workspace/ui/lib/utils";
 import * as React from "react";
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({ className, outerClassName, ...props }: React.ComponentProps<"table"> & { outerClassName?: string }) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      className={cn("relative w-full overflow-x-auto", outerClassName)}
     >
       <table
         data-slot="table"
@@ -112,4 +112,4 @@ export {
   TableRow,
   TableCell,
   TableCaption,
-}
+};
