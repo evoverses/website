@@ -1,5 +1,6 @@
 import "@workspace/evoverses/types/next";
 import { Element, StatNameAbbreviation } from "@workspace/database/types/evo";
+import { EvoImage } from "@workspace/evoverses/components/evo-image";
 import { ElementIcon } from "@workspace/evoverses/components/icons/element-icon";
 import { GenderIcon } from "@workspace/evoverses/components/icons/gender-icon";
 import type { SquidAsset, SquidAssetEvoMetadata } from "@workspace/evoverses/lib/asset/types";
@@ -7,7 +8,6 @@ import {
   evoversesIconUrl,
   getEvoCardBorderUrl,
   getEvoCardElementBackgroundUrl,
-  getEvoCardEvoImageUrl,
   getInfoIslandUrl,
   getLevelOfEvo,
   hasElements,
@@ -20,8 +20,11 @@ import {
 } from "@workspace/evoverses/lib/asset/utils";
 import { ageFormatter, daysSince } from "@workspace/evoverses/utils/numbers";
 import { toTitleCase } from "@workspace/evoverses/utils/strings";
+import { cn } from "@workspace/ui/lib/utils";
+import type { ComponentProps } from "react";
 
-export const EvoCard = ({ asset }: { asset: SquidAsset }) => {
+export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & { asset: SquidAsset }) => {
+
   const age = daysSince(asset.metadata.createdAt);
   const stats = isEvo(asset) ? [
     { stat: StatNameAbbreviation.hp, value: 50 },
