@@ -22,11 +22,12 @@ import {
   DirectListingSale,
   Token,
   Transaction,
-  Wallet, Marketplace, MarketplaceAsset, MarketplaceAdmin, MarketplaceLister,
+  Wallet, Marketplace, MarketplaceAsset, MarketplaceAdmin, MarketplaceLister, BreedingRequest,
 } from "./model";
 import { processor } from "./processor";
 import { Context } from "./model/context";
 import { EntityManager } from "./model/entity-manager";
+import { loadBreedingEntities, parseBreedingEvents, processBreedingEvents } from "./handlers/asset/breeding";
 
 let chain: Chain;
 
@@ -53,14 +54,17 @@ processor.run(new TypeormDatabase(options), async context => {
   const nftEvents = parseNftEvents(ctx, logs);
   const marketplaceEvents = parseMarketplaceEvents(ctx, logs);
   const sharedEvents = parseSharedEvents(ctx, logs);
+  const breedEvents = parseBreedingEvents(ctx, logs);
 
   await loadNftEntities(ctx);
   await loadMarketplaceEntities(ctx);
   await loadSharedEntities(ctx);
+  await loadBreedingEntities(ctx);
 
   processNftEvents(ctx, nftEvents);
   processMarketplaceEvents(ctx, marketplaceEvents);
   processSharedEvents(ctx, sharedEvents);
+  processBreedingEvents(ctx, breedEvents);
 
   // The order here is important.
   // - Blocks, Wallets, and Contracts require only Chain foreign keys
@@ -86,6 +90,7 @@ processor.run(new TypeormDatabase(options), async context => {
     MarketplaceAsset,
     MarketplaceAdmin,
     MarketplaceLister,
+    BreedingRequest
   );
 
   if (context.isHead) {

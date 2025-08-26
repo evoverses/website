@@ -1,112 +1,67 @@
-import type { FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
-import { ContractBase, fun, viewFun } from "@subsquid/evm-abi";
-import * as p from "@subsquid/evm-codec";
+import * as p from '@subsquid/evm-codec'
+import { event, fun, viewFun, indexed, ContractBase } from '@subsquid/evm-abi'
+import type { EventParams as EParams, FunctionArguments, FunctionReturn } from '@subsquid/evm-abi'
 
 export const functions = {
-  aggregate: fun(
-    "0x252dba42",
-    "aggregate((address,bytes)[])",
-    { "calls": p.array(p.struct({ "target": p.address, "callData": p.bytes })) },
-    { "blockNumber": p.uint256, "returnData": p.array(p.bytes) },
-  ),
-  aggregate3: fun(
-    "0x82ad56cb",
-    "aggregate3((address,bool,bytes)[])",
-    { "calls": p.array(p.struct({ "target": p.address, "allowFailure": p.bool, "callData": p.bytes })) },
-    p.array(p.struct({ "success": p.bool, "returnData": p.bytes })),
-  ),
-  aggregate3Value: fun(
-    "0x174dea71",
-    "aggregate3Value((address,bool,uint256,bytes)[])",
-    {
-      "calls": p.array(p.struct({
-        "target": p.address,
-        "allowFailure": p.bool,
-        "value": p.uint256,
-        "callData": p.bytes,
-      })),
-    },
-    p.array(p.struct({ "success": p.bool, "returnData": p.bytes })),
-  ),
-  blockAndAggregate: fun(
-    "0xc3077fa9",
-    "blockAndAggregate((address,bytes)[])",
-    { "calls": p.array(p.struct({ "target": p.address, "callData": p.bytes })) },
-    {
-      "blockNumber": p.uint256,
-      "blockHash": p.bytes32,
-      "returnData": p.array(p.struct({ "success": p.bool, "returnData": p.bytes })),
-    },
-  ),
-  getBasefee: viewFun("0x3e64a696", "getBasefee()", {}, p.uint256),
-  getBlockHash: viewFun("0xee82ac5e", "getBlockHash(uint256)", { "blockNumber": p.uint256 }, p.bytes32),
-  getBlockNumber: viewFun("0x42cbb15c", "getBlockNumber()", {}, p.uint256),
-  getChainId: viewFun("0x3408e470", "getChainId()", {}, p.uint256),
-  getCurrentBlockCoinbase: viewFun("0xa8b0574e", "getCurrentBlockCoinbase()", {}, p.address),
-  getCurrentBlockDifficulty: viewFun("0x72425d9d", "getCurrentBlockDifficulty()", {}, p.uint256),
-  getCurrentBlockGasLimit: viewFun("0x86d516e8", "getCurrentBlockGasLimit()", {}, p.uint256),
-  getCurrentBlockTimestamp: viewFun("0x0f28c97d", "getCurrentBlockTimestamp()", {}, p.uint256),
-  getEthBalance: viewFun("0x4d2301cc", "getEthBalance(address)", { "addr": p.address }, p.uint256),
-  getLastBlockHash: viewFun("0x27e86d6e", "getLastBlockHash()", {}, p.bytes32),
-  tryAggregate: fun(
-    "0xbce38bd7",
-    "tryAggregate(bool,(address,bytes)[])",
-    { "requireSuccess": p.bool, "calls": p.array(p.struct({ "target": p.address, "callData": p.bytes })) },
-    p.array(p.struct({ "success": p.bool, "returnData": p.bytes })),
-  ),
-  tryBlockAndAggregate: fun(
-    "0x399542e9",
-    "tryBlockAndAggregate(bool,(address,bytes)[])",
-    { "requireSuccess": p.bool, "calls": p.array(p.struct({ "target": p.address, "callData": p.bytes })) },
-    {
-      "blockNumber": p.uint256,
-      "blockHash": p.bytes32,
-      "returnData": p.array(p.struct({ "success": p.bool, "returnData": p.bytes })),
-    },
-  ),
+    aggregate: fun("0x252dba42", "aggregate((address,bytes)[])", {"calls": p.array(p.struct({"target": p.address, "callData": p.bytes}))}, {"blockNumber": p.uint256, "returnData": p.array(p.bytes)}),
+    aggregate3: fun("0x82ad56cb", "aggregate3((address,bool,bytes)[])", {"calls": p.array(p.struct({"target": p.address, "allowFailure": p.bool, "callData": p.bytes}))}, p.array(p.struct({"success": p.bool, "returnData": p.bytes}))),
+    aggregate3Value: fun("0x174dea71", "aggregate3Value((address,bool,uint256,bytes)[])", {"calls": p.array(p.struct({"target": p.address, "allowFailure": p.bool, "value": p.uint256, "callData": p.bytes}))}, p.array(p.struct({"success": p.bool, "returnData": p.bytes}))),
+    blockAndAggregate: fun("0xc3077fa9", "blockAndAggregate((address,bytes)[])", {"calls": p.array(p.struct({"target": p.address, "callData": p.bytes}))}, {"blockNumber": p.uint256, "blockHash": p.bytes32, "returnData": p.array(p.struct({"success": p.bool, "returnData": p.bytes}))}),
+    getBasefee: viewFun("0x3e64a696", "getBasefee()", {}, p.uint256),
+    getBlockHash: viewFun("0xee82ac5e", "getBlockHash(uint256)", {"blockNumber": p.uint256}, p.bytes32),
+    getBlockNumber: viewFun("0x42cbb15c", "getBlockNumber()", {}, p.uint256),
+    getChainId: viewFun("0x3408e470", "getChainId()", {}, p.uint256),
+    getCurrentBlockCoinbase: viewFun("0xa8b0574e", "getCurrentBlockCoinbase()", {}, p.address),
+    getCurrentBlockDifficulty: viewFun("0x72425d9d", "getCurrentBlockDifficulty()", {}, p.uint256),
+    getCurrentBlockGasLimit: viewFun("0x86d516e8", "getCurrentBlockGasLimit()", {}, p.uint256),
+    getCurrentBlockTimestamp: viewFun("0x0f28c97d", "getCurrentBlockTimestamp()", {}, p.uint256),
+    getEthBalance: viewFun("0x4d2301cc", "getEthBalance(address)", {"addr": p.address}, p.uint256),
+    getLastBlockHash: viewFun("0x27e86d6e", "getLastBlockHash()", {}, p.bytes32),
+    tryAggregate: fun("0xbce38bd7", "tryAggregate(bool,(address,bytes)[])", {"requireSuccess": p.bool, "calls": p.array(p.struct({"target": p.address, "callData": p.bytes}))}, p.array(p.struct({"success": p.bool, "returnData": p.bytes}))),
+    tryBlockAndAggregate: fun("0x399542e9", "tryBlockAndAggregate(bool,(address,bytes)[])", {"requireSuccess": p.bool, "calls": p.array(p.struct({"target": p.address, "callData": p.bytes}))}, {"blockNumber": p.uint256, "blockHash": p.bytes32, "returnData": p.array(p.struct({"success": p.bool, "returnData": p.bytes}))}),
 }
 
 export class Contract extends ContractBase {
 
-  getBasefee() {
-    return this.eth_call(functions.getBasefee, {});
-  }
+    getBasefee() {
+        return this.eth_call(functions.getBasefee, {})
+    }
 
-  getBlockHash(blockNumber: GetBlockHashParams["blockNumber"]) {
-    return this.eth_call(functions.getBlockHash, { blockNumber });
-  }
+    getBlockHash(blockNumber: GetBlockHashParams["blockNumber"]) {
+        return this.eth_call(functions.getBlockHash, {blockNumber})
+    }
 
-  getBlockNumber() {
-    return this.eth_call(functions.getBlockNumber, {});
-  }
+    getBlockNumber() {
+        return this.eth_call(functions.getBlockNumber, {})
+    }
 
-  getChainId() {
-    return this.eth_call(functions.getChainId, {});
-  }
+    getChainId() {
+        return this.eth_call(functions.getChainId, {})
+    }
 
-  getCurrentBlockCoinbase() {
-    return this.eth_call(functions.getCurrentBlockCoinbase, {});
-  }
+    getCurrentBlockCoinbase() {
+        return this.eth_call(functions.getCurrentBlockCoinbase, {})
+    }
 
-  getCurrentBlockDifficulty() {
-    return this.eth_call(functions.getCurrentBlockDifficulty, {});
-  }
+    getCurrentBlockDifficulty() {
+        return this.eth_call(functions.getCurrentBlockDifficulty, {})
+    }
 
-  getCurrentBlockGasLimit() {
-    return this.eth_call(functions.getCurrentBlockGasLimit, {});
-  }
+    getCurrentBlockGasLimit() {
+        return this.eth_call(functions.getCurrentBlockGasLimit, {})
+    }
 
-  getCurrentBlockTimestamp() {
-    return this.eth_call(functions.getCurrentBlockTimestamp, {});
-  }
+    getCurrentBlockTimestamp() {
+        return this.eth_call(functions.getCurrentBlockTimestamp, {})
+    }
 
-  getEthBalance(addr: GetEthBalanceParams["addr"]) {
-    return this.eth_call(functions.getEthBalance, { addr });
-  }
+    getEthBalance(addr: GetEthBalanceParams["addr"]) {
+        return this.eth_call(functions.getEthBalance, {addr})
+    }
 
-  getLastBlockHash() {
-    return this.eth_call(functions.getLastBlockHash, {});
-  }
+    getLastBlockHash() {
+        return this.eth_call(functions.getLastBlockHash, {})
+    }
 }
 
 /// Function types
@@ -157,3 +112,4 @@ export type TryAggregateReturn = FunctionReturn<typeof functions.tryAggregate>
 
 export type TryBlockAndAggregateParams = FunctionArguments<typeof functions.tryBlockAndAggregate>
 export type TryBlockAndAggregateReturn = FunctionReturn<typeof functions.tryBlockAndAggregate>
+

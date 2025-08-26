@@ -32,6 +32,8 @@ export type AttributeData = {
 }
 
 export type BreedRequestedEventData = LogGenericEventData & {
+  requestId: bigint,
+  nft: string,
   breeder: string,
   parent1: bigint,
   parent2: bigint,
@@ -39,7 +41,13 @@ export type BreedRequestedEventData = LogGenericEventData & {
 }
 
 export type BreedMintedEventData = LogGenericEventData & {
+  requestId: bigint,
+  nft: string,
   to: string,
   tokenId: bigint,
   mintedBy: string
+}
+
+export type BreedDeniedEventData = LogGenericEventData & {
+  requestId: bigint
 }
