@@ -1,6 +1,6 @@
-import * as p from "@subsquid/evm-codec";
-import { event, fun, viewFun, indexed, ContractBase } from "@subsquid/evm-abi";
 import type { EventParams as EParams, FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
+import { ContractBase, event, fun, indexed, viewFun } from "@subsquid/evm-abi";
+import * as p from "@subsquid/evm-codec";
 
 export const events = {
   Approval: event(
@@ -126,7 +126,7 @@ export const events = {
     "Transfer(address,address,uint256)",
     { "from": indexed(p.address), "to": indexed(p.address), "tokenId": indexed(p.uint256) },
   ),
-};
+}
 
 export const functions = {
   DEFAULT_ADMIN_ROLE: viewFun("0xa217fddf", "DEFAULT_ADMIN_ROLE()", {}, p.bytes32),
@@ -351,7 +351,7 @@ export const functions = {
     },
     p.bool,
   ),
-};
+}
 
 export class Contract extends ContractBase {
 

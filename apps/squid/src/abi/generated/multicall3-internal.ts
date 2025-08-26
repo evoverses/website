@@ -1,6 +1,6 @@
+import type { FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
+import { ContractBase, fun, viewFun } from "@subsquid/evm-abi";
 import * as p from "@subsquid/evm-codec";
-import { event, fun, viewFun, indexed, ContractBase } from "@subsquid/evm-abi";
-import type { EventParams as EParams, FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
 
 export const functions = {
   aggregate: fun(
@@ -64,7 +64,7 @@ export const functions = {
       "returnData": p.array(p.struct({ "success": p.bool, "returnData": p.bytes })),
     },
   ),
-};
+}
 
 export class Contract extends ContractBase {
 

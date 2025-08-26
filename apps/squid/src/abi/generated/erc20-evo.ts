@@ -1,6 +1,6 @@
-import * as p from "@subsquid/evm-codec";
-import { event, fun, viewFun, indexed, ContractBase } from "@subsquid/evm-abi";
 import type { EventParams as EParams, FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
+import { ContractBase, event, fun, indexed, viewFun } from "@subsquid/evm-abi";
+import * as p from "@subsquid/evm-codec";
 
 export const events = {
   Approval: event(
@@ -53,7 +53,7 @@ export const events = {
     "Unpaused(address)",
     { "account": p.address },
   ),
-};
+}
 
 export const functions = {
   ADMIN_ROLE: viewFun("0x75b238fc", "ADMIN_ROLE()", {}, p.bytes32),
@@ -129,7 +129,7 @@ export const functions = {
     p.bool,
   ),
   unpause: fun("0x3f4ba83a", "unpause()", {}),
-};
+}
 
 export class Contract extends ContractBase {
 

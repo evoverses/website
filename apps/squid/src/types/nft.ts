@@ -1,4 +1,5 @@
 import { ContractType } from "../model";
+import type { LogGenericEventData } from "./shared";
 
 export type MetadataUpdateEventData = {
   fromTokenId: bigint;
@@ -28,4 +29,17 @@ export type AttributeData = {
   traitType: string,
   value: string,
   displayType: string | null,
+}
+
+export type BreedRequestedEventData = LogGenericEventData & {
+  breeder: string,
+  parent1: bigint,
+  parent2: bigint,
+  amountPaid: bigint
+}
+
+export type BreedMintedEventData = LogGenericEventData & {
+  to: string,
+  tokenId: bigint,
+  mintedBy: string
 }

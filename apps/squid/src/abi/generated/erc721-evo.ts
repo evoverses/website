@@ -1,6 +1,6 @@
-import * as p from "@subsquid/evm-codec";
-import { event, fun, viewFun, indexed, ContractBase } from "@subsquid/evm-abi";
 import type { EventParams as EParams, FunctionArguments, FunctionReturn } from "@subsquid/evm-abi";
+import { ContractBase, event, fun, indexed, viewFun } from "@subsquid/evm-abi";
+import * as p from "@subsquid/evm-codec";
 
 export const events = {
   Approval: event(
@@ -53,7 +53,7 @@ export const events = {
     "Upgraded(address)",
     { "implementation": indexed(p.address) },
   ),
-};
+}
 
 export const functions = {
   UPGRADE_INTERFACE_VERSION: viewFun("0xad3cb1cc", "UPGRADE_INTERFACE_VERSION()", {}, p.string),
@@ -139,7 +139,7 @@ export const functions = {
     "upgradeToAndCall(address,bytes)",
     { "newImplementation": p.address, "data": p.bytes },
   ),
-};
+}
 
 export class Contract extends ContractBase {
 
