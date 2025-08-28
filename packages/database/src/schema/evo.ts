@@ -68,4 +68,7 @@ export const speciesTable = metadataSchema.table("species", {
   species: text("species"),
   primaryType: elementPgEnum("primary_type").notNull(),
   secondaryType: elementPgEnum("secondary_type").notNull(),
+  stage: integer("stage").notNull().default(0),
+  generation: integer("generation").notNull().default(0),
+  inBreedingPool: boolean("in_breeding_pool").notNull().default(false),
 });

@@ -8,6 +8,13 @@
       "when": 1749441747858,
       "tag": "0000_rapid_mad_thinker",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1756345577515,
+      "tag": "0001_species_details",
+      "breakpoints": true
     }
   ]
 }
