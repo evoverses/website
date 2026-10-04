@@ -10,7 +10,8 @@
     "dev:ngrok": "ngrok http http://localhost:3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:nursery": "node --experimental-strip-types --test tests/nursery/*.test.mts"
   },
   "dependencies": {
     "@auth/core": "0.39.1",

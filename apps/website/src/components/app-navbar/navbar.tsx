@@ -33,6 +33,7 @@ export const navigation: NavItem[] = [
     href: "/marketplace",
     description: "Buy and sell Evos",
   },
+  { name: "Nursery", href: "/nursery", description: "Breed Evos with Bertha and hatch eggs with Hermann" },
 ];
 
 const Navbar = ({ accountCookie }: { accountCookie: IAccountCookie }) => {
