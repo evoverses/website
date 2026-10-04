@@ -258,15 +258,15 @@ export class DatabaseClientTransaction extends BaseQueryClient {
     }
   }
 
-  private async begin() {
+  async begin() {
     await this.client.query("BEGIN");
   }
 
-  private async commit() {
+  async commit() {
     await this.client.query("COMMIT");
   }
 
-  private async rollback() {
+  async rollback() {
     await this.client.query("ROLLBACK");
   }
 

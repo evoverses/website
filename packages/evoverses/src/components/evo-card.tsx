@@ -36,7 +36,10 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
   ] : [];
   return (
     <div
-      className={cn("@container w-full aspect-card rounded-[1.25rem] relative flex text-white font-black text-base", className)}
+      className={cn(
+        "@container w-full aspect-card rounded-[1.25rem] relative flex text-white font-black text-base",
+        className,
+      )}
       {...props}
     >
       <img
@@ -60,7 +63,7 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
             <GenderIcon value={asset.metadata.gender} className="size-[3.625cqw] text-black" />
           )}
           <div className="flex">
-            {hasElements(asset) && [asset.metadata.primaryType, asset.metadata.secondaryType]
+            {hasElements(asset) && [ asset.metadata.primaryType, asset.metadata.secondaryType ]
               .filter(s => s !== Element.none)
               .map((t, i, a) => (
                 <ElementIcon
@@ -97,7 +100,7 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
               <span className="absolute left-1/2 bottom-[230px]" style={{ transform: `translateX(-50%)` }}>
                 {isGen0(asset)
                   ? "Genesis"
-                  : <>Parents: {[asset.metadata.parent1Id, asset.metadata.parent2Id].filter(Boolean)
+                  : <>Parents: {[ asset.metadata.parent1Id, asset.metadata.parent2Id ].filter(Boolean)
                     .map(n => `#${n}`)
                     .join(" & ")}</>}
               </span>
