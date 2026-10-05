@@ -19,7 +19,9 @@ export function stripeStoreConfig(
   if (!["test", "live"].includes(env.EVOROS_STRIPE_MODE ?? "test"))
     throw new Error("Invalid Stripe mode.");
   if (
-    !env.STRIPE_SECRET_KEY?.startsWith(live ? "sk_live_" : "sk_test_") ||
+    !new RegExp(
+      "^(?:rk|sk)_" + (live ? "live" : "test") + "_[a-zA-Z0-9]+$",
+    ).test(env.STRIPE_SECRET_KEY ?? "") ||
     !env.STRIPE_WEBHOOK_SECRET?.startsWith("whsec_")
   )
     throw new Error(
@@ -75,7 +77,7 @@ export function stripeStoreConfig(
   )
     throw new Error("Stripe bundle prices must be distinct.");
   return {
-    secretKey: env.STRIPE_SECRET_KEY,
+    secretKey: env.STRIPE_SECRET_KEY!,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
     origin: url.origin,
     live,

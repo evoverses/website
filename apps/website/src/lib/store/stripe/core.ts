@@ -133,6 +133,7 @@ export async function createCardCheckout(
   const session = await stripe.createSession(
     {
       mode: "payment",
+      integration_identifier: "evoros-store-uipeaojj",
       allowed_payment_method_types: ["card"],
       allow_promotion_codes: false,
       expires_at: order.expiresAt,

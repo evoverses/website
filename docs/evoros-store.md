@@ -36,7 +36,7 @@ Pinned official `stripe@23.0.0` SDK. No Stripe-hosted infrastructure, subscripti
 - `POST /api/store/stripe/checkout`: disabled by default; requires the configured origin, authenticated game session and a strictly validated bundle/request ID. Prices and recipient come from the server, not the browser.
 - `POST /api/store/stripe/webhook`: disabled by default; validates the signature against the untouched raw body, re-fetches the Stripe session and checks paid status, price, quantity, amount, currency, mode, order and recipient before requesting a credit.
 - Browser return URLs never grant Evoros.
-- Orders have a fixed expiry and Stripe idempotency key. Retries reuse attached sessions.
+- Orders have a fixed expiry and Stripe idempotency key. Retries reuse attached sessions. A stable integration identifier distinguishes this checkout flow in Stripe.
 - Currency fulfillment must be atomic and durable so repeated/concurrent webhooks cannot grant twice.
 
 **The real game-service adapter is intentionally missing:** `src/lib/store/stripe/player-service.ts` returns null. Adding keys alone cannot enable checkout. The tests use a mock player service; they do not prove a production database ledger exists.
@@ -63,6 +63,8 @@ Read-only inspection reported `charges_enabled=false`, `payouts_enabled=false`, 
 
 After the user saved access changes, a refreshed account listing still exposed only live mode. No sandbox is available through the connection yet. The user subsequently reported completing ID verification; a fresh API read still listed the document and business-model form as due, with no pending-verification entries. Treat this as the API snapshot, not a claim that the user did not submit their ID. No products, prices, payments, keys, subscriptions, account settings or webhook destinations were created or changed.
 
+**Latest refresh:** payments and payouts are enabled, card payments are active, and the identity-document requirement has cleared. Only the business-model verification form remains currently due. The preceding paragraph records earlier snapshots, not the latest activation state. The connection still exposes live mode only. No website spending gate was enabled.
+
 Use Dashboard account picker → Sandboxes → select/create an **EvoVerses Beta** sandbox, then include that sandbox in the Stripe connection's account selection. Confirm it appears as test mode before creating products. Approved prices remain pending.
 
 ## Environment and activation
@@ -73,10 +75,12 @@ Keep these values server-only, out of git and out of chat:
 | --- | --- |
 | `EVOROS_STRIPE_ENABLED` | Defaults off; only `true` enables configuration, and a real player adapter is still required |
 | `EVOROS_STRIPE_MODE` | `test` for sandbox rehearsal; live requires a later explicit release decision |
-| `STRIPE_SECRET_KEY` | Sandbox secret from secure local/deployment secret storage |
+| `STRIPE_SECRET_KEY` | Prefer a sandbox restricted API key (rk_test_) from secure local/deployment secret storage; matching-mode secret keys are also supported |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for the specific sandbox webhook destination or CLI listener |
 | `EVOROS_STORE_ORIGIN` | Approved origin; localhost HTTP permitted only in test mode; live requires HTTPS |
 | `EVOROS_STRIPE_PRICES` | Server JSON map of all six bundle IDs to approved `priceId`, `currency`, `unitAmount` in Stripe minor units |
+
+The website key should be restricted to the Price reads and Checkout Session reads/writes needed by the gateway. Confirm exact permission dependencies in sandbox; do not grant account management, transfers, payouts or broad write access for runtime checkout. This chat connection is distinct from the website runtime key.
 
 No public/publishable key is needed for redirecting to hosted Checkout in this design. Never use test fixtures as account credentials or real prices.
 
@@ -99,7 +103,7 @@ Run from `apps/website`:
 pnpm test:store
 ```
 
-14 tests pass: four exact-balance formatting cases and ten checkout/fulfillment/signature cases. Tests include wrong recipient/price/amount/currency/mode, unpaid sessions, redirect protection, order expiry, duplicate/concurrent delivery and interrupted session attachment. Concurrency tests use a mock atomic service; persistent ledger tests remain required.
+15 tests pass: four exact-balance formatting cases and eleven checkout/fulfillment/signature/configuration cases. Tests include wrong recipient/price/amount/currency/mode, unpaid sessions, redirect protection, order expiry, duplicate/concurrent delivery and interrupted session attachment. Concurrency tests use a mock atomic service; persistent ledger tests remain required.
 
 Changed website TypeScript/TSX passes targeted ESLint with no errors or warnings. The frozen lockfile-only install check passes. Full website TypeScript compilation reports the same six existing profile/liquidity address-type errors and no new store errors. No successful full production build is claimed.
 

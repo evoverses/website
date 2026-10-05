@@ -119,6 +119,9 @@ test("Stripe is off by default; incomplete prices, wrong mode and unsafe return 
   const f = fixture();
   for (const override of [
     { STRIPE_SECRET_KEY: "sk_live_fixture" },
+    { STRIPE_SECRET_KEY: "rk_live_fixture" },
+    { STRIPE_SECRET_KEY: "pk_test_fixture" },
+    { STRIPE_SECRET_KEY: "rk_test_" },
     { EVOROS_STRIPE_MODE: "guess" },
     { EVOROS_STRIPE_PRICES: "{}" },
     { EVOROS_STORE_ORIGIN: "http://example.com" },
@@ -127,6 +130,23 @@ test("Stripe is off by default; incomplete prices, wrong mode and unsafe return 
     { EVOROS_STORE_ORIGIN: "https://example.com/?next=bad" },
   ])
     assert.throws(() => stripeStoreConfig({ ...f.env, ...override }));
+});
+test("restricted keys are accepted only for their matching environment", () => {
+  const f = fixture();
+  assert.equal(
+    stripeStoreConfig({ ...f.env, STRIPE_SECRET_KEY: "rk_test_fixture" }).live,
+    false,
+  );
+  const live = {
+    ...f.env,
+    EVOROS_STRIPE_MODE: "live",
+    STRIPE_SECRET_KEY: "rk_live_fixture",
+    EVOROS_STORE_ORIGIN: "https://evoverses.com",
+  };
+  assert.equal(stripeStoreConfig(live).live, true);
+  assert.throws(() =>
+    stripeStoreConfig({ ...live, STRIPE_SECRET_KEY: "rk_test_fixture" }),
+  );
 });
 test("checkout uses a verified player and fixed server price/quantity, without granting Evoros", async () => {
   const f = fixture();
@@ -144,6 +164,7 @@ test("checkout uses a verified player and fixed server price/quantity, without g
   ]);
   assert.deepEqual(params.allowed_payment_method_types, ["card"]);
   assert.equal(params.client_reference_id, f.order.id);
+  assert.match(params.integration_identifier, /^evoros-store-[a-z]{8}$/);
   assert.equal(params.metadata.playerId, "player1");
   assert.equal(options.idempotencyKey, "evoros-order-order1");
   assert.equal(params.allow_promotion_codes, false);
