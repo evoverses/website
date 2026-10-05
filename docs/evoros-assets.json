@@ -1,0 +1,57 @@
+{
+  "source_directory": "/mnt/d/documents/GitHub/evoverses/Design/ItemStore/Currency",
+  "source_thread": "01a109ca-a77f-7962-a16b-cb69d612fe05",
+  "art_revision": 2,
+  "currency": "Evoros",
+  "assets": [
+    {
+      "file": "currency_balance.png",
+      "source": "images/64/currency_balance.png",
+      "width": 64,
+      "height": 64,
+      "sha256": "02af7f6018f83239b76bbde41b5681ba7bd868af5abcaccee84637d1351b6445"
+    },
+    {
+      "file": "bundle_pouch.png",
+      "source": "images/512/bundle_pouch.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "22d507f08a7ba6b25185bc9926dfa397e016e94f89f92f31e0a1a1b1b1936471"
+    },
+    {
+      "file": "bundle_satchel.png",
+      "source": "images/512/bundle_satchel.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "bb077214c7a2a61878409e5b344411532c259ab5230618f98c6ac651c41f6837"
+    },
+    {
+      "file": "bundle_canister.png",
+      "source": "images/512/bundle_canister.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "8959d0442a36459869f92c3edbd839831d6a1dd6ff66e6ef6afdf085ed84f041"
+    },
+    {
+      "file": "bundle_case.png",
+      "source": "images/512/bundle_case.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "784d485815b86b50137ee28a8d2e18108410fc830b096d17a75ca2ec901f459f"
+    },
+    {
+      "file": "bundle_chest.png",
+      "source": "images/512/bundle_chest.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "2b161230e6270c1e81980b50c119a32765f525d88c7316ff94a01aaca210e7ae"
+    },
+    {
+      "file": "bundle_vault.png",
+      "source": "images/512/bundle_vault.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "09ae3f17cf18f48bf8b860bd3ef603fac201e52fa394ba19e0565a9b0e9076e9"
+    }
+  ]
+}

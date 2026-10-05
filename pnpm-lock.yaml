@@ -322,6 +322,9 @@ importers:
       require-in-the-middle:
         specifier: ^7.5.2
         version: 7.5.2
+      stripe:
+        specifier: 23.0.0
+        version: 23.0.0(@types/node@22.15.21)
       thirdweb:
         specifier: 5.102.3
         version: 5.102.3(@aws-sdk/client-lambda@3.821.0)(@hey-api/openapi-ts@0.69.2(typescript@5.8.3))(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(aws4fetch@1.0.20)(bufferutil@4.0.9)(encoding@0.1.13)(ethers@6.14.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -9518,6 +9521,12 @@ packages:
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
+
+  stripe@23.0.0:
+    resolution: {integrity: sha512-MDE2A5ZVVluYURORaZEVghSmnLJc3w6aHAlZSxDQMsOjOb3V0O6ro/CiaeFlJS4N7uIVmsg98ocRsPmUK6YfyA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@types/node': '>=20'
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
@@ -21877,6 +21886,10 @@ snapshots:
   strip-json-comments@2.0.1: {}
 
   strip-json-comments@3.1.1: {}
+
+  stripe@23.0.0(@types/node@22.15.21):
+    dependencies:
+      '@types/node': 22.15.21
 
   strnum@1.1.2: {}
 

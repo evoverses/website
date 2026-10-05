@@ -34,6 +34,7 @@ export const navigation: NavItem[] = [
     description: "Buy and sell Evos",
   },
   { name: "Nursery", href: "/nursery", description: "Breed Evos with Bertha and hatch eggs with Hermann" },
+  { name: "Store", href: "/store", description: "Top up your in-game Evoros with EVO or by card" },
 ];
 
 const Navbar = ({ accountCookie }: { accountCookie: IAccountCookie }) => {

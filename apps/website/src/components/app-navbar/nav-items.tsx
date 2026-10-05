@@ -46,7 +46,7 @@ ListItem.displayName = "ListItem";
 
 const NavItems = ({ navItems, isConnected }: { navItems: NavItem[]; isConnected: boolean; }) => {
   const pathname = usePathname();
-  const mobile = useMediaQuery("(max-width: 640px)");
+  const mobile = useMediaQuery("(max-width: 1023px)");
   const [ mounted, setMounted ] = useState<boolean>(false);
 
   useEffect(() => {
