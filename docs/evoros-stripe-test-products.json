@@ -1,0 +1,52 @@
+{
+  "verifiedDate": "2026-10-05",
+  "stripeAccount": "Evoverses Inc",
+  "mode": "test",
+  "livemode": false,
+  "connectionName": "test ac",
+  "note": "Test mode on the same Stripe account ID as Primary; not verified as a separate isolated general sandbox. Products inactive and unpriced. No runtime keys or payment enablement.",
+  "products": [
+    {
+      "bundleId": "bundle_pouch",
+      "productId": "prod_evoros_bundle_pouch_v1",
+      "evoros": 250,
+      "active": false,
+      "priceId": null
+    },
+    {
+      "bundleId": "bundle_satchel",
+      "productId": "prod_evoros_bundle_satchel_v1",
+      "evoros": 500,
+      "active": false,
+      "priceId": null
+    },
+    {
+      "bundleId": "bundle_canister",
+      "productId": "prod_evoros_bundle_canister_v1",
+      "evoros": 1000,
+      "active": false,
+      "priceId": null
+    },
+    {
+      "bundleId": "bundle_case",
+      "productId": "prod_evoros_bundle_case_v1",
+      "evoros": 2500,
+      "active": false,
+      "priceId": null
+    },
+    {
+      "bundleId": "bundle_chest",
+      "productId": "prod_evoros_bundle_chest_v1",
+      "evoros": 5000,
+      "active": false,
+      "priceId": null
+    },
+    {
+      "bundleId": "bundle_vault",
+      "productId": "prod_evoros_bundle_vault_v1",
+      "evoros": 10000,
+      "active": false,
+      "priceId": null
+    }
+  ]
+}

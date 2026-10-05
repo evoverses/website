@@ -57,15 +57,15 @@ Before revenue activation, define refunded/disputed purchase handling, receipt/s
 
 ## Stripe account check — 2026-10-05
 
-The user connected Stripe. The connector exposes **Evoverses Inc**, **live mode**, country **US**, default currency **USD**. This is the account's current setting, not approval of the store's selling currency.
+Stripe access is confirmed through two connections: **test ac** returns Evoverses Inc with `livemode=false`; **Primary** returns the same account with `livemode=true`. This proves test-mode access, not a separate isolated general sandbox. Use the test connection for this catalogue; a separate general sandbox is preferable for future independent development/CI isolation.
 
-Read-only inspection reported `charges_enabled=false`, `payouts_enabled=false`, and inactive card payments. Stripe requires an identity document and business-model verification form. The account owner must provide actual information in Stripe Dashboard. Personal details, documents, bank data and credentials are not recorded here.
+All six agreed bundle products were created through **test ac**, inactive and without prices. A fresh product listing verifies names/quantities, bundle metadata, test mode, inactive status and no default prices. A fresh price listing returns zero prices. The product IDs are recorded in [evoros-stripe-test-products.json](evoros-stripe-test-products.json). Deterministic product IDs allow a repeated setup to detect/reuse the same objects instead of creating duplicates. Do not blindly recreate or overwrite them.
 
-After the user saved access changes, a refreshed account listing still exposed only live mode. No sandbox is available through the connection yet. The user subsequently reported completing ID verification; a fresh API read still listed the document and business-model form as due, with no pending-verification entries. Treat this as the API snapshot, not a claim that the user did not submit their ID. No products, prices, payments, keys, subscriptions, account settings or webhook destinations were created or changed.
+No live product, price, payment, key, webhook, account setting or subscription was changed. No website spending gate was enabled. Stripe account access in this chat does not provide a website runtime API key.
 
-**Latest refresh:** payments and payouts are enabled, card payments are active, and the identity-document requirement has cleared. Only the business-model verification form remains currently due. The preceding paragraph records earlier snapshots, not the latest activation state. The connection still exposes live mode only. No website spending gate was enabled.
+The last verified live-account state is US/USD, payments/payouts enabled, card payments active and identity-document requirement cleared. Only the business-model verification form remained currently due. This does not approve the store's selling currency. The account owner completes actual business/identity requirements in Dashboard; personal details and credentials are not recorded here.
 
-Use Dashboard account picker → Sandboxes → select/create an **EvoVerses Beta** sandbox, then include that sandbox in the Stripe connection's account selection. Confirm it appears as test mode before creating products. Approved prices remain pending.
+Approved prices remain pending. Products must be deliberately activated and assigned approved one-time prices during the later test-checkout setup.
 
 ## Environment and activation
 
@@ -86,7 +86,7 @@ No public/publishable key is needed for redirecting to hosted Checkout in this d
 
 Next activation steps:
 
-1. Connect the sandbox; create the six products without prices until amounts are approved.
+1. Test-mode access and six inactive, unpriced products are complete. Keep approved prices pending; activate products only as part of the later test-checkout setup.
 2. Complete the authenticated game-account ledger adapter and verify its real database guarantees.
 3. Agree cash selling currency/prices, EVO pricing/discount and tax/refund rules.
 4. Configure sandbox prices/secrets, webhook listener/destination and enable only a local test checkout path.
@@ -111,4 +111,4 @@ Desktop/mobile isolated Edge checks cover six bundles, selection, payment toggle
 
 ## Recommended next sprint
 
-Connect the EvoVerses sandbox and hook the store to the authenticated, persistent game-account ledger. Keep monetary prices pending until agreed. The next useful proof is one sandbox purchase reaching the intended game account exactly once.
+Hook the store to the authenticated, persistent game-account ledger; test-mode catalogue setup is complete. Keep monetary prices pending until agreed. The next useful proof is one sandbox purchase reaching the intended game account exactly once.
