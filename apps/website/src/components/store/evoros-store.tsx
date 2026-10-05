@@ -22,14 +22,21 @@ import {
 } from "@workspace/ui/components/card";
 import { Check, Coins, CreditCard, Gamepad2, WalletCards } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useConnectedWallets } from "@/hooks/use-connected-wallets";
+import { useEvoQuote } from "./use-evo-quote";
+import {
+  cashCents,
+  usd,
+  discountedEvoUnits,
+  formatEvoEstimate,
+} from "@/lib/store/pricing";
 import { darkTheme, useActiveAccount, useConnectModal } from "thirdweb/react";
 import type { Address } from "viem";
 
 const amount = (value: number) => value.toLocaleString("en-US");
 
-function StoreWallet() {
-  const account = useActiveAccount();
+function StoreWallet({ account }: { account?: { address: string } }) {
   const { connect, isConnecting } = useConnectModal();
   const [error, setError] = useState<string | null>(null);
   const balance = useQuery({
@@ -126,6 +133,16 @@ function StoreWallet() {
             ? "Change wallet"
             : "Connect wallet"}
       </Button>
+      {account && (
+        <a
+          className="block text-sm underline"
+          href="https://lfj.gg/avalanche/trade/0x42006ab57701251b580bdfc24778c43c9ff589a1"
+          target="_blank"
+          rel="noreferrer"
+        >
+          View EVO on LFJ
+        </a>
+      )}
       {error && (
         <p role="alert" className="text-sm leading-relaxed text-destructive">
           {error}
@@ -137,8 +154,36 @@ function StoreWallet() {
 
 export default function EvorosStore() {
   const [selectedId, setSelectedId] = useState<string>(evorosBundles[0].id);
-  const [payment, setPayment] = useState<"evo" | "card">("evo");
+  const activeAccount = useActiveAccount();
+  const wallets = useConnectedWallets({ includeSmart: false });
+  const account =
+    wallets
+      .map((wallet) => wallet.getAccount())
+      .find(
+        (value) =>
+          value?.address.toLowerCase() === activeAccount?.address.toLowerCase(),
+      ) ?? wallets[0]?.getAccount();
+  const hasWallet = Boolean(account);
+  const [requestedPayment, setPayment] = useState<"evo" | "card">("card");
+  const payment = account ? requestedPayment : "card";
+  useEffect(() => {
+    if (!hasWallet) setPayment("card");
+  }, [hasWallet]);
   const selected = evorosBundles.find((bundle) => bundle.id === selectedId)!;
+  const rate = useEvoQuote(Boolean(account));
+  const priceText = (evoros: number) =>
+    payment === "card"
+      ? usd(cashCents(evoros))
+      : rate.quote
+        ? "≈ " +
+          formatEvoEstimate(discountedEvoUnits(evoros, rate.quote.priceUsd)) +
+          " EVO"
+        : rate.loading
+          ? "Loading EVO price…"
+          : rate.expired
+            ? "EVO quote expired"
+            : "EVO price unavailable";
+
   return (
     <main className="page mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       <header className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-primary/10 via-card to-cyan-400/10 p-6 sm:p-9 mb-8">
@@ -161,8 +206,10 @@ export default function EvorosStore() {
               Stock up on Evoros
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              Top up your Evoros with EVO or a card payment. Potions, revives
-              and the supplies for your next battle—all from one game balance.
+              Top up your Evoros with{" "}
+              {account ? "EVO or a card payment" : "a card payment"}. Potions,
+              revives and the supplies for your next battle—all from one game
+              balance.
             </p>
           </div>
         </div>
@@ -174,7 +221,8 @@ export default function EvorosStore() {
               Choose your bundle
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Six ways to top up. Choose a bundle to see your purchase summary.
+              Test pricing: US$0.01 per Evoro.
+              {account && " Pay with EVO for 90% off the card price."}
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -223,9 +271,7 @@ export default function EvorosStore() {
                   </CardHeader>
                   <CardFooter className="px-4 mt-auto flex-col items-stretch gap-3">
                     <p className="text-sm text-muted-foreground">
-                      {payment === "evo"
-                        ? "EVO price to be confirmed"
-                        : "Card price to be confirmed"}
+                      {priceText(bundle.amount)}
                     </p>
                     <Button
                       variant={chosen ? "default" : "outline"}
@@ -304,12 +350,17 @@ export default function EvorosStore() {
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-muted-foreground">You pay</dt>
-                    <dd className="font-bold">Price pending</dd>
+                    <dd
+                      className="font-bold text-right"
+                      data-testid="selected-price"
+                    >
+                      {priceText(selected.amount)}
+                    </dd>
                   </div>
                   {payment === "evo" && (
                     <div className="flex justify-between gap-3">
                       <dt className="text-muted-foreground">EVO discount</dt>
-                      <dd>To be confirmed</dd>
+                      <dd>90% off</dd>
                     </div>
                   )}
                 </dl>
@@ -317,18 +368,13 @@ export default function EvorosStore() {
               <div className="space-y-3">
                 <p className="font-bold text-sm">How would you like to pay?</p>
                 <div
-                  className="grid grid-cols-2 gap-2"
+                  className={cn(
+                    "grid gap-2",
+                    account ? "grid-cols-2" : "grid-cols-1",
+                  )}
                   role="group"
                   aria-label="Payment method"
                 >
-                  <Button
-                    variant={payment === "evo" ? "default" : "outline"}
-                    aria-pressed={payment === "evo"}
-                    onClick={() => setPayment("evo")}
-                  >
-                    <Coins className="size-4" aria-hidden="true" />
-                    EVO
-                  </Button>
                   <Button
                     variant={payment === "card" ? "default" : "outline"}
                     aria-pressed={payment === "card"}
@@ -337,10 +383,77 @@ export default function EvorosStore() {
                     <CreditCard className="size-4" aria-hidden="true" />
                     Card
                   </Button>
+                  {account && (
+                    <Button
+                      variant={payment === "evo" ? "default" : "outline"}
+                      aria-pressed={payment === "evo"}
+                      onClick={() => setPayment("evo")}
+                    >
+                      <Coins className="size-4" aria-hidden="true" />
+                      EVO
+                    </Button>
+                  )}
                 </div>
               </div>
+              {payment === "evo" && (
+                <div
+                  className="rounded-xl border bg-muted/30 p-4 space-y-3 text-sm break-words"
+                  data-testid="evo-quote-info"
+                  aria-live="polite"
+                >
+                  <p className="font-bold">How your EVO price is calculated</p>
+                  <p>
+                    Your {usd(cashCents(selected.amount))} bundle costs just{" "}
+                    {usd(cashCents(selected.amount) / 10)} worth of EVO after
+                    90% off.
+                  </p>
+                  {rate.quote ? (
+                    <>
+                      <p>
+                        Divide {usd(cashCents(selected.amount) / 10)} by{" "}
+                        {"US$" + rate.quote.priceUsd} per EVO to get the EVO
+                        amount above.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Rate fetched at{" "}
+                        {new Date(rate.quote.fetchedAt).toLocaleTimeString()}{" "}
+                        from{" "}
+                        <a
+                          className="underline"
+                          href={
+                            "https://www.geckoterminal.com/avax/pools/" +
+                            rate.quote.poolAddress
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          GeckoTerminal
+                        </a>
+                        . This estimate lasts five minutes. AVAX network gas is
+                        extra.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-muted-foreground">
+                      {rate.loading
+                        ? "Fetching the market rate…"
+                        : rate.expired
+                          ? "This quote has expired. Refresh to get a new rate."
+                          : "We couldn’t fetch the market rate. No EVO amount is shown until a valid rate is available."}
+                    </p>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={rate.loading}
+                    onClick={() => void rate.refresh()}
+                  >
+                    Refresh EVO quote
+                  </Button>
+                </div>
+              )}
               {payment === "evo" ? (
-                <StoreWallet />
+                <StoreWallet account={account} />
               ) : (
                 <div
                   className="rounded-xl border bg-muted/30 p-4 space-y-2"
@@ -356,8 +469,9 @@ export default function EvorosStore() {
               <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
                 <p className="font-bold text-sm">Your game account</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Game account linking is coming next. Your Evoros balance will
-                  appear here once it is connected.
+                  You must be signed in to your linked game account before
+                  buying Evoros. Game account sign-in is not connected in this
+                  beta yet.
                 </p>
               </div>
               <div className="space-y-3">
@@ -380,8 +494,9 @@ export default function EvorosStore() {
                   id="purchase-disabled-reason"
                   className="text-xs text-muted-foreground leading-relaxed"
                 >
-                  You can browse and select bundles in this beta preview.
-                  Purchases are not open yet, so no payment is taken.
+                  Test prices are shown for review. Purchases require a
+                  signed-in game account and are not open yet, so no payment is
+                  taken.
                 </p>
               </div>
             </CardContent>

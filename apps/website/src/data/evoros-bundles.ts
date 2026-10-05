@@ -1,5 +1,5 @@
 // Accepted quantities and unchanged art from Design/ItemStore/Currency.
-// EVO prices/bonuses are deliberately absent until the economy is approved.
+// Test prices and the EVO preview discount live in lib/store/pricing.ts.
 export const evorosBundles = [
   {
     id: "bundle_pouch",

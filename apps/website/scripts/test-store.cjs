@@ -11,6 +11,10 @@ fs.writeFileSync(
 );
 for (const file of [
   "data/evoros-bundles.ts",
+  "data/addresses.ts",
+  "lib/store/pricing.ts",
+  "lib/store/evo-price.ts",
+  "lib/store/stripe/checkout-handler.ts",
   "lib/store/stripe/config.ts",
   "lib/store/stripe/core.ts",
 ]) {
@@ -33,7 +37,11 @@ for (const file of [
 }
 const result = spawnSync(
   process.execPath,
-  ["--test", path.join(root, "tests/store/stripe.test.cjs")],
+  [
+    "--test",
+    path.join(root, "tests/store/stripe.test.cjs"),
+    path.join(root, "tests/store/pricing.test.cjs"),
+  ],
   { stdio: "inherit", env: { ...process.env, EVOROS_TEST_LIB: out } },
 );
 process.exitCode = result.status ?? 1;

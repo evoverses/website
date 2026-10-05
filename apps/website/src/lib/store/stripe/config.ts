@@ -1,4 +1,5 @@
 import { evorosBundles } from "../../../data/evoros-bundles";
+import { cashCents } from "../pricing";
 export type CardPrice = {
   priceId: string;
   currency: string;
@@ -65,6 +66,11 @@ export function stripeStoreConfig(
       Number(item.unitAmount) <= 0
     )
       throw new Error("Each bundle requires an approved fixed Stripe price.");
+    if (
+      !live &&
+      (item.currency !== "usd" || item.unitAmount !== cashCents(bundle.amount))
+    )
+      throw new Error("Test prices must match US$0.01 per Evoro.");
     prices[bundle.id] = {
       priceId: item.priceId,
       currency: item.currency,

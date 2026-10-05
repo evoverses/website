@@ -4,49 +4,95 @@
   "mode": "test",
   "livemode": false,
   "connectionName": "test ac",
-  "note": "Test mode on the same Stripe account ID as Primary; not verified as a separate isolated general sandbox. Products inactive and unpriced. No runtime keys or payment enablement.",
+  "note": "Test-only US$0.01 per Evoro. Products remain inactive. Purchases remain disabled; no live pricing approval.",
+  "cashCentsPerEvoro": 1,
+  "evoDiscountPercent": 90,
   "products": [
     {
       "bundleId": "bundle_pouch",
       "productId": "prod_evoros_bundle_pouch_v1",
       "evoros": 250,
-      "active": false,
-      "priceId": null
+      "priceId": "price_1UN5GQI8Ec1gWS2XyNp9vSjD",
+      "currency": "usd",
+      "unitAmount": 250,
+      "active": false
     },
     {
       "bundleId": "bundle_satchel",
       "productId": "prod_evoros_bundle_satchel_v1",
       "evoros": 500,
-      "active": false,
-      "priceId": null
+      "priceId": "price_1UN5GUI8Ec1gWS2XFPMSpDns",
+      "currency": "usd",
+      "unitAmount": 500,
+      "active": false
     },
     {
       "bundleId": "bundle_canister",
       "productId": "prod_evoros_bundle_canister_v1",
       "evoros": 1000,
-      "active": false,
-      "priceId": null
+      "priceId": "price_1UN5GYI8Ec1gWS2XtHerD9c4",
+      "currency": "usd",
+      "unitAmount": 1000,
+      "active": false
     },
     {
       "bundleId": "bundle_case",
       "productId": "prod_evoros_bundle_case_v1",
       "evoros": 2500,
-      "active": false,
-      "priceId": null
+      "priceId": "price_1UN5GcI8Ec1gWS2XjhtNdNyE",
+      "currency": "usd",
+      "unitAmount": 2500,
+      "active": false
     },
     {
       "bundleId": "bundle_chest",
       "productId": "prod_evoros_bundle_chest_v1",
       "evoros": 5000,
-      "active": false,
-      "priceId": null
+      "priceId": "price_1UN5GiI8Ec1gWS2XWsDGr1F9",
+      "currency": "usd",
+      "unitAmount": 5000,
+      "active": false
     },
     {
       "bundleId": "bundle_vault",
       "productId": "prod_evoros_bundle_vault_v1",
       "evoros": 10000,
-      "active": false,
-      "priceId": null
+      "priceId": "price_1UN5GqI8Ec1gWS2X4Wuagtk5",
+      "currency": "usd",
+      "unitAmount": 10000,
+      "active": false
     }
-  ]
+  ],
+  "prices": {
+    "bundle_pouch": {
+      "priceId": "price_1UN5GQI8Ec1gWS2XyNp9vSjD",
+      "currency": "usd",
+      "unitAmount": 250
+    },
+    "bundle_satchel": {
+      "priceId": "price_1UN5GUI8Ec1gWS2XFPMSpDns",
+      "currency": "usd",
+      "unitAmount": 500
+    },
+    "bundle_canister": {
+      "priceId": "price_1UN5GYI8Ec1gWS2XtHerD9c4",
+      "currency": "usd",
+      "unitAmount": 1000
+    },
+    "bundle_case": {
+      "priceId": "price_1UN5GcI8Ec1gWS2XjhtNdNyE",
+      "currency": "usd",
+      "unitAmount": 2500
+    },
+    "bundle_chest": {
+      "priceId": "price_1UN5GiI8Ec1gWS2XWsDGr1F9",
+      "currency": "usd",
+      "unitAmount": 5000
+    },
+    "bundle_vault": {
+      "priceId": "price_1UN5GqI8Ec1gWS2X4Wuagtk5",
+      "currency": "usd",
+      "unitAmount": 10000
+    }
+  }
 }

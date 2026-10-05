@@ -15,7 +15,7 @@ function fixture() {
   const prices = Object.fromEntries(
     evorosBundles.map((b, i) => [
       b.id,
-      { priceId: "price_fixture" + i, currency: "usd", unitAmount: 100 + i },
+      { priceId: "price_fixture" + i, currency: "usd", unitAmount: b.amount },
     ]),
   );
   const env = {
@@ -124,6 +124,9 @@ test("Stripe is off by default; incomplete prices, wrong mode and unsafe return 
     { STRIPE_SECRET_KEY: "rk_test_" },
     { EVOROS_STRIPE_MODE: "guess" },
     { EVOROS_STRIPE_PRICES: "{}" },
+    { EVOROS_STRIPE_PRICES: JSON.stringify({ ...f.config.prices, bundle_pouch: { ...f.config.prices.bundle_pouch, unitAmount: 1 } }) },
+    { EVOROS_STRIPE_PRICES: JSON.stringify({ ...f.config.prices, bundle_pouch: { ...f.config.prices.bundle_pouch, currency: "eur" } }) },
+
     { EVOROS_STORE_ORIGIN: "http://example.com" },
     { EVOROS_STORE_ORIGIN: "https://example.com/path" },
     { EVOROS_STORE_ORIGIN: "https://user:password@example.com" },
@@ -321,4 +324,54 @@ test("the official Stripe SDK verifies raw-body signatures and rejects changed o
     timestamp: Math.floor(Date.now() / 1000) - 1000,
   });
   assert.throws(() => stripe.webhooks.constructEvent(payload, expired, secret));
+});
+
+const { createCheckoutHandler } = require(
+  path.join(
+    process.env.EVOROS_TEST_LIB,
+    "lib/store/stripe/checkout-handler.js",
+  ),
+);
+const checkoutBody = { bundleId: input.bundleId, requestId: input.requestId };
+const checkoutRequest = (body = checkoutBody) =>
+  new Request("https://example.com/api/store/stripe/checkout", {
+    method: "POST",
+    headers: {
+      Origin: "http://localhost:3100",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+test("signed-out requests never open checkout, even with a wallet or a supplied recipient", async () => {
+  const f = fixture();
+  f.players.authenticate = async () => null;
+  const handle = createCheckoutHandler(() => f);
+  const response = await handle(
+    checkoutRequest({
+      ...input,
+      playerId: "attacker",
+      walletAddress: "0x1111111111111111111111111111111111111111",
+    }),
+  );
+  assert.equal(response.status, 401);
+  assert.equal(f.records.length, 0);
+  assert.equal(f.credits.size, 0);
+});
+test("the authenticated game account owns checkout; client account and price overrides are rejected", async () => {
+  const f = fixture();
+  f.players.authenticate = async () => ({ playerId: "player1" });
+  const handle = createCheckoutHandler(() => f);
+  for (const extra of [
+    { playerId: "attacker" },
+    { unitAmount: 1 },
+    { walletAddress: "0x1111111111111111111111111111111111111111" },
+  ]) {
+    const response = await handle(
+      checkoutRequest({ ...checkoutBody, ...extra }),
+    );
+    assert.equal(response.status, 400);
+  }
+  assert.equal(f.records.length, 0);
+  assert.equal((await handle(checkoutRequest())).status, 200);
+  assert.equal(f.records[0].params.metadata.playerId, "player1");
 });

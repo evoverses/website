@@ -15,15 +15,17 @@ The store presents the six accepted bundles using the unchanged revision-2 curre
 | Treasure Chest | 5,000 |
 | Grand Vault | 10,000 |
 
-The user chose **prices pending for beta**. No cash prices, EVO exchange rate, bonuses or EVO discount have been invented. Every purchase button remains disabled. This is a reviewable storefront and payment foundation, not a working paid top-up service.
+Test prices are now approved: **US$0.01 per Evoro, with 90% off the USD value when paying in EVO**. Every purchase button remains disabled pending authenticated game-account fulfillment. These prices are for testing only, not approved production economics.
 
 Store follows Nursery in the menu. Marketplace and Nursery remain adjacent. Tablet widths use the existing compact Links menu to avoid overflowing navigation.
 
 ## What a player can do now
 
-Select any bundle and see its artwork, name and quantity in the purchase summary. Switch between EVO and Card. Both show pending prices.
+Select any bundle and see its artwork, name and quantity in the purchase summary. Card is the default. A connected external wallet additionally exposes EVO payment estimates.
 
 The EVO option connects an ordinary supported wallet and reads its EVO holdings on Avalanche C-Chain. This does not create a smart wallet, sign a login, approve spending or transfer tokens. Balance errors offer Retry rather than displaying a fabricated zero. Holdings are formatted without rounding up. Changing accounts uses a separate balance cache key.
+
+The wallet-only EVO view also links to the user-supplied LFJ trading page for the same token address. LFJ's rendered quote was not independently read; the store estimate continues to use the validated GeckoTerminal API response, rather than scraping that page.
 
 The Card option explains hosted Stripe Checkout. It does not require a crypto wallet. Both payment options will need a verified linked game account to receive the purchased Evoros. No account linking, payment or balance credit is simulated on the page.
 
@@ -59,13 +61,40 @@ Before revenue activation, define refunded/disputed purchase handling, receipt/s
 
 Stripe access is confirmed through two connections: **test ac** returns Evoverses Inc with `livemode=false`; **Primary** returns the same account with `livemode=true`. This proves test-mode access, not a separate isolated general sandbox. Use the test connection for this catalogue; a separate general sandbox is preferable for future independent development/CI isolation.
 
-All six agreed bundle products were created through **test ac**, inactive and without prices. A fresh product listing verifies names/quantities, bundle metadata, test mode, inactive status and no default prices. A fresh price listing returns zero prices. The product IDs are recorded in [evoros-stripe-test-products.json](evoros-stripe-test-products.json). Deterministic product IDs allow a repeated setup to detect/reuse the same objects instead of creating duplicates. Do not blindly recreate or overwrite them.
+All six agreed bundle products were created through **test ac**. After test pricing approval, one-time USD prices were created and assigned as defaults. Fresh product/price listings verify exactly six matching test products and prices, with all products still inactive. The product IDs are recorded in [evoros-stripe-test-products.json](evoros-stripe-test-products.json). Deterministic product IDs allow a repeated setup to detect/reuse the same objects instead of creating duplicates. Do not blindly recreate or overwrite them.
 
 No live product, price, payment, key, webhook, account setting or subscription was changed. No website spending gate was enabled. Stripe account access in this chat does not provide a website runtime API key.
 
 The last verified live-account state is US/USD, payments/payouts enabled, card payments active and identity-document requirement cleared. Only the business-model verification form remained currently due. This does not approve the store's selling currency. The account owner completes actual business/identity requirements in Dashboard; personal details and credentials are not recorded here.
 
-Approved prices remain pending. Products must be deliberately activated and assigned approved one-time prices during the later test-checkout setup.
+Test prices are approved and recorded below; products must be deliberately activated during the later test-checkout setup. Production prices remain unapproved.
+
+## Test pricing — approved 2026-10-05
+
+The user set **one Evoro = one US cent** for testing, with **90% off when paying in EVO**. This supersedes the earlier pending-price decision for test mode only; production economics still require separate approval.
+
+| Evoros | Card test price | USD value paid in EVO |
+| ---: | ---: | ---: |
+| 250 | $2.50 | $0.25 |
+| 500 | $5.00 | $0.50 |
+| 1,000 | $10.00 | $1.00 |
+| 2,500 | $25.00 | $2.50 |
+| 5,000 | $50.00 | $5.00 |
+| 10,000 | $100.00 | $10.00 |
+
+The preview calculation is `Evoros × $0.01 × 10% ÷ EVO/USD rate`. Exact arithmetic uses integer token units; the user requested displayed EVO amounts rounded to the nearest integer at 100 or more and one decimal below 100. Tiny positive estimates display at least 0.1 EVO to avoid appearing free. The display is marked approximate, not an executable order or a transfer amount.
+
+**Card is first and selected by default.** Without a connected external wallet, the store hides the EVO button, discount, rate, wallet controls and all EVO copy, and makes no market-rate request. Social/in-app accounts alone do not expose these controls. On disconnect, the page reverts to Card. Wallet connection is separate from authenticated game-account sign-in.
+
+With a wallet present, the page fetches a rate on load through `GET /api/store/evo-quote`. Changing bundle/payment selection uses the same snapshot. A Refresh button fetches a replacement. Quotes expire after five minutes and failures/expired data hide the amount; no hard-coded historical fallback or fabricated zero.
+
+DexScreener probes returned no matching EVO data. The store uses GeckoTerminal's public token endpoint on `avax`, verifying the existing EVO contract, decimals, positive decimal USD price and the known first pool `0xb99a92b6d5a7ca3a2215a63d43d5e8ad43abc4e9`. The provider defines token `price_usd` as the price in that first pool. HTTP fetches use no-store and a timeout. The timestamp means **fetched at**, not last traded at; this endpoint provides no price observation timestamp. A successful local route probe returned a real quote.
+
+This is a display estimate. A spot pool quote is not manipulation-proof payment authority, and the browser must never choose the price/recipient for a real EVO purchase. Before enabling that rail, implement a server-reserved short-lived quote and an approved manipulation-resistant pricing policy; debit the amount shown in the confirmed order and verify on-chain settlement. No EVO transfer/approval flow was added here.
+
+All six test products now have one-time USD prices set as defaults; products remain inactive. Their IDs and approved server price map are in [evoros-stripe-test-products.json](evoros-stripe-test-products.json). Test configuration rejects cash amounts/currencies that disagree with this preview. No live Stripe write, tax registration, runtime key, payment enablement or real charge.
+
+**Purchases require a signed-in linked game account.** Server checkout authenticates before creating an order, derives the recipient from the verified game session and rejects browser-supplied player IDs, wallet addresses and price overrides. Wallet connection alone never proves game identity. The real authenticated ledger adapter is still missing, so purchases remain disabled for everyone.
 
 ## Environment and activation
 
@@ -86,9 +115,9 @@ No public/publishable key is needed for redirecting to hosted Checkout in this d
 
 Next activation steps:
 
-1. Test-mode access and six inactive, unpriced products are complete. Keep approved prices pending; activate products only as part of the later test-checkout setup.
+1. Test-mode access and six priced products are complete. Activate products only as part of the later test-checkout setup.
 2. Complete the authenticated game-account ledger adapter and verify its real database guarantees.
-3. Agree cash selling currency/prices, EVO pricing/discount and tax/refund rules.
+3. Agree production prices, pricing security and tax/refund rules; the current USD rate/discount is test-only.
 4. Configure sandbox prices/secrets, webhook listener/destination and enable only a local test checkout path.
 5. Rehearse successful, declined, cancelled, delayed and repeated payment events; prove Evoros arrive once in the correct game account. Test refunds/disputes according to the agreed policy.
 6. Resolve normal website build errors, review both payment paths and make a separate release decision. Never accept live payments while fulfillment remains unavailable.
@@ -103,12 +132,12 @@ Run from `apps/website`:
 pnpm test:store
 ```
 
-15 tests pass: four exact-balance formatting cases and eleven checkout/fulfillment/signature/configuration cases. Tests include wrong recipient/price/amount/currency/mode, unpaid sessions, redirect protection, order expiry, duplicate/concurrent delivery and interrupted session attachment. Concurrency tests use a mock atomic service; persistent ledger tests remain required.
+23 tests pass: four balance-formatting cases, six pricing/feed/freshness/rounding cases and thirteen checkout/fulfillment/signature/configuration/authentication cases. Tests include wrong recipient/price/amount/currency/mode, unpaid sessions, redirect protection, order expiry, duplicate/concurrent delivery and interrupted session attachment. Concurrency tests use a mock atomic service; persistent ledger tests remain required.
 
 Changed website TypeScript/TSX passes targeted ESLint with no errors or warnings. The frozen lockfile-only install check passes. Full website TypeScript compilation reports the same six existing profile/liquidity address-type errors and no new store errors. No successful full production build is claimed.
 
-Desktop/mobile isolated Edge checks cover six bundles, selection, payment toggle, card option without wallet, disabled purchase controls and no horizontal overflow. A fixture wallet test verifies 100 EVO, switching accounts, RPC failure, Retry and a true zero balance without signatures or transactions. Default-off API routes return 503. External requests are intercepted or blocked; these checks do not access real wallets or charge money.
+Desktop/mobile isolated Edge checks also verify Card first/default, all six USD prices, the 90% EVO calculation, integer/decimal rounding, a single rendering snapshot, refresh/failure/expiry, sign-in-required messaging, and disabled purchases. Without an external wallet there is no EVO copy/button or quote request; disconnect returns to Card. The LFJ link appears only in the wallet EVO view and targets the supplied token URL. No horizontal overflow or page errors. The final rerun passed after allowing the slow development compiler more time for the route transition; no source fix was required. A fixture wallet test verifies 100 EVO, switching accounts, RPC failure, Retry and a true zero balance without signatures or transactions. Default-off API routes return 503. External requests are intercepted or blocked; these checks do not access real wallets or charge money.
 
 ## Recommended next sprint
 
-Hook the store to the authenticated, persistent game-account ledger; test-mode catalogue setup is complete. Keep monetary prices pending until agreed. The next useful proof is one sandbox purchase reaching the intended game account exactly once.
+Hook the store to the authenticated, persistent game-account ledger; test-mode catalogue setup is complete. Keep purchases disabled until authenticated persistence and payment rehearsal pass. The next useful proof is one sandbox purchase reaching the intended game account exactly once.
