@@ -59,19 +59,7 @@ begin
   join squid.chain ch on ch.id = c.chain_id
   join squid.wallet w on w.id = n.owner_id
 
-  -- ✅ lateral join to fetch evo + species metadata as a single jsonb blob
-  left join lateral (
-    select to_jsonb(e) || jsonb_build_object(
-      'species', s.species,
-      'primary_type', s.primary_type,
-      'secondary_type', s.secondary_type,
-      'type', case when e.gender = 'unknown' then 'EGG' else 'EVO' end
-    ) as metadata
-    from metadata.evo e
-    join metadata.species s on s.id = e.species_id
-    where e.token_id = n.token_id
-    limit 1
-  ) meta on true
+  join lateral (select metadata.evo_metadata(n.id) as metadata) meta on meta.metadata is not null
 
   left join squid.offer o
     on o.nft_id = n.id and o.status = 'CREATED' and o.expires_at > now()

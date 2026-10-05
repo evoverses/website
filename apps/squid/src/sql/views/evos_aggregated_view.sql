@@ -5,12 +5,7 @@ select
   ch.id::text as chainId,
   c.address,
   w.address as owner,
-  to_jsonb(e) || jsonb_build_object(
-    'primary_type', s.primary_type,
-    'secondary_type', s.secondary_type,
-    'species', s.species,
-    'type', case when e.gender = 'unknown' then 'EGG' else 'EVO' end
-  ) as metadata,
+  meta.metadata,
   (
     select dls.total_price
     from squid.direct_listing_sale dls
@@ -45,5 +40,4 @@ from squid.nft n
 join squid.contract c on c.id = n.contract_id
 join squid.chain ch on ch.id = c.chain_id
 join squid.wallet w on w.id = n.owner_id
-join metadata.evo e on e.token_id = n.token_id
-join metadata.species s on s.id = e.species_id;
+join lateral (select metadata.evo_metadata(n.id) as metadata) meta on meta.metadata is not null;

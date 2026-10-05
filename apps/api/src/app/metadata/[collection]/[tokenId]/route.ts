@@ -1,3 +1,4 @@
+import { breedingMetadataTraits, metadataImageVersion } from "@/lib/metadata/nursery-traits";
 import {
   metadataCollectionTokenIdRouteParamsSchema as paramsSchema,
 } from "@/app/metadata/[collection]/[tokenId]/schema";
@@ -8,7 +9,6 @@ import {
   hasElements,
   isEgg,
   isEvo,
-  isGen0,
   toAssetFullName,
 } from "@workspace/evoverses/lib/asset/utils";
 import { toTimestampSeconds } from "@workspace/evoverses/utils/numbers";
@@ -29,7 +29,7 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
     return NextResponse.json({
       name: toAssetFullName(asset),
       description: "EvoVerses Evo",
-      image: `https://api.evoverses.com/metadata/evo/${asset.tokenId}/image.png`,
+      image: `https://api.evoverses.com/metadata/evo/${asset.tokenId}/image.png?v=${metadataImageVersion(asset.metadata)}`,
       attributes: [
         { trait_type: "Species", value: toTitleCase(asset.metadata.species) },
         { trait_type: "Generation", value: asset.metadata.generation, display_type: "number" },
@@ -43,11 +43,7 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
           isEvoAsset ? [
             { trait_type: "Chroma", value: toTitleCase(asset.metadata.chroma) },
             { trait_type: "Gender", value: toTitleCase(asset.metadata.gender) },
-            {
-              trait_type: "Breeds Remaining",
-              value: isGen0(asset) ? 5 : 5 - asset.metadata.totalBreeds,
-              max_value: 5,
-            },
+            ...breedingMetadataTraits(asset.metadata),
             {
               trait_type: "Last Breed Time",
               value: toTimestampSeconds(asset.metadata.lastBreedTime),
@@ -74,7 +70,7 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
             : []
         ),
       ].filter(trait => trait && ![ undefined, "#undefined", Element.none, "None", NaN, null ].includes(trait.value)),
-    });
+    }, { headers: { "Cache-Control": "no-store" } });
   } catch (e: unknown) {
     console.error(`Error generating the metadata for token ${tokenId}: ${(
       e as Error

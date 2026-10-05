@@ -1,3 +1,4 @@
+import { NURSERY_CONFIG } from "../../utils/constants";
 import { type BatchMetadataUpdateEventArgs, events as erc1155Events } from "../../abi/erc1155";
 import { events as erc721Events } from "../../abi/erc721";
 import { Contract, ContractType, NFT, Wallet } from "../../model";
@@ -58,7 +59,7 @@ export const parseMetadataUpdateEvent = (
           fromTokenId: d._tokenId,
           toTokenId: d._tokenId,
           contract,
-          type: ContractType.ERC1155,
+          type: NURSERY_CONFIG?.collection === contract.toLowerCase() ? ContractType.ERC721 : ContractType.ERC1155,
           timestamp: toDate(log.block.timestamp),
         };
       }

@@ -1,3 +1,4 @@
+import { assertLegacyBreedingAllowed } from "./legacy-breeding-policy";
 import type { Context, SQSEvent } from "aws-lambda";
 import { DatabaseClient } from "@/utils/db";
 import { getSecret } from "@/utils/aws/secrets";
@@ -13,6 +14,7 @@ const ether = 10n ** 18n;
 const baseCost = 500n * ether;
 
 export const handler = async (event: SQSEvent, ctx: Context) => {
+  assertLegacyBreedingAllowed(process.env);
   const { adminSecretArn, database, schema } = event.ResourceProperties;
   const requestId = 0;
   const admin = await getSecret(adminSecretArn);

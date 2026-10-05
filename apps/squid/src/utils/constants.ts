@@ -1,3 +1,4 @@
+import { nurseryConfig } from "../nursery/config";
 import type { IsolationLevel } from "@subsquid/typeorm-store";
 import type { ClientConfig } from "pg";
 import { events as erc1155Events } from "../abi/erc1155";
@@ -13,6 +14,7 @@ export const RPC_CAPACITY = Number(getEnv("RPC_CAPACITY", 100));
 export const CHAIN_ID = getEnv("CHAIN_ID");
 export const MARKETPLACE_ADDRESSES = parseCsv(getEnv("MARKETPLACE_ADDRESSES"));
 export const NFT_ADDRESSES = parseCsv(getEnv("NFT_ADDRESSES"));
+export const NURSERY_CONFIG = nurseryConfig(process.env);
 const gatewayNetworkSlugs = parseCsv(getEnv("GATEWAY_NETWORK_SLUGS"));
 const gatewayNetworkSlug = getEnv("GATEWAY_NETWORK_SLUG", "").toLowerCase();
 export const GATEWAY_URL = getEnv(

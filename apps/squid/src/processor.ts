@@ -1,3 +1,4 @@
+import { events as nurseryEvents } from "./abi/generated/hatcher-hermann";
 import { EvmBatchProcessor } from "@subsquid/evm-processor";
 import { assertNotNull } from "@subsquid/util-internal";
 import {
@@ -5,6 +6,7 @@ import {
   GATEWAY_URL,
   MARKETPLACE_ADDRESSES,
   NFT_ADDRESSES,
+  NURSERY_CONFIG,
   RPC_CAPACITY,
   RPC_MAX_BATCH_CALL_SIZE,
   RPC_RATE_LIMIT,
@@ -78,3 +80,8 @@ export const processor = new EvmBatchProcessor()
       // l1BlockNumber: number
     },
   });
+
+if (NURSERY_CONFIG) processor.addLog({
+  address: [NURSERY_CONFIG.hatcher], topic0: Object.values(nurseryEvents).map(event => event.topic),
+  range: { from: NURSERY_CONFIG.fromBlock }, transaction: true,
+});

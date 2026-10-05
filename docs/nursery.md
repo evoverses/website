@@ -103,3 +103,11 @@ Fresh validation:
 - No new browser, live RPC, wallet-signing or deployed-contract checks were performed.
 
 This completes automatic egg discovery, not the full website metadata bridge. Existing generic MetadataUpdate listeners only mark records updated; the indexer/API still need canonical egg/adult metadata hydration, parent history reconciliation and replay-safe handling. Contracts already manage counters, egg state, treatment, incubation and hatch results. Those rules were not changed. Independent review, integration fixtures and release rehearsal remain required before spending is enabled.
+
+## 2026-10-05 — Canonical metadata bridge implemented locally
+
+The follow-up implementation now handles Hermann imports, recorded eggs, treatment, hatch requests/results and both parents' authoritative breed history. A tracked canonical overlay feeds the same wallet/marketplace and single-token JSON/image readers, preserves existing XP and transfer ownership, and rolls back with orphaned blocks. The legacy Brenda writer is explicitly gated. Changed metadata receives a versioned image URL.
+
+All 30 new synchronization/database/rollback tests and the 23 existing Nursery tests pass. Squid strict source compilation reports no errors. Existing full-build dependency/type-check problems and the deployment/history prerequisites are recorded in [Nursery metadata synchronization](nursery-metadata.md). This supersedes the missing-implementation status in the preceding discovery entry; it does not establish full-stack or mainnet readiness.
+
+Recommended next step: a disposable local contract/indexer/API/browser rehearsal with mock VRF while independent contract review continues. No deployment settings were enabled and no production database was touched.

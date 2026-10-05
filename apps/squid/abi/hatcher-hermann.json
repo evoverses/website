@@ -1,0 +1,374 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "snapshotHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "AdultImported",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "vrfRequestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "traitsHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "EggHatched",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "parent1",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "parent2",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "species",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "generation",
+        "type": "uint256"
+      }
+    ],
+    "name": "EggRecorded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "payer",
+        "type": "address"
+      }
+    ],
+    "name": "EggTreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "vrfRequestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "payer",
+        "type": "address"
+      }
+    ],
+    "name": "HatchRequested",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "adultOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "species",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "generation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalBreeds",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastBreedTime",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "gender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rarity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "primaryType",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "secondaryType",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "nature",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "size",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct EvoBreedingRules.Attributes",
+            "name": "attributes",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "health",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attack",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "defense",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "special",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "resistance",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "speed",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct EvoBreedingRules.Stats",
+            "name": "stats",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct EvoBreedingRules.Adult",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "eggs",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "parent1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "parent2",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "speciesVersion",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "createdAt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "treated",
+        "type": "bool"
+      },
+      {
+        "internalType": "enum Hatcher_Hermann.EggStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "vrfRequestId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "evoNft",
+    "outputs": [
+      {
+        "internalType": "contract IEvoBreedingMint",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "version",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSpeciesPool",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "enabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "malePercentage",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "primaryType",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "secondaryType",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct EvoBreedingRules.Species[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "known",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

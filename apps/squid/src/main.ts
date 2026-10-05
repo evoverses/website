@@ -1,5 +1,7 @@
+import { parseNurseryEvents, processNurseryEvents } from "./handlers/asset/nursery";
+import { NurseryEvo } from "./model/nurseryEvo.model";
 import { TypeormDatabase, TypeormDatabaseOptions } from "@subsquid/typeorm-store";
-import { DB_ISOLATION_LEVEL, SQUID_STATE_SCHEMA } from "./utils/constants";
+import { DB_ISOLATION_LEVEL, SQUID_STATE_SCHEMA, NURSERY_CONFIG } from "./utils/constants";
 import { loadNftEntities, parseNftEvents, processNftEvents } from "./handlers/asset/nfts";
 import { getOrCreateChain } from "./handlers/core/chains";
 import { parseBlocks } from "./handlers/core/transactions";
@@ -55,6 +57,7 @@ processor.run(new TypeormDatabase(options), async context => {
   const marketplaceEvents = parseMarketplaceEvents(ctx, logs);
   const sharedEvents = parseSharedEvents(ctx, logs);
   const breedEvents = parseBreedingEvents(ctx, logs);
+  const nurseryEvents = parseNurseryEvents(logs, NURSERY_CONFIG);
 
   await loadNftEntities(ctx);
   await loadMarketplaceEntities(ctx);
@@ -65,6 +68,7 @@ processor.run(new TypeormDatabase(options), async context => {
   processMarketplaceEvents(ctx, marketplaceEvents);
   processSharedEvents(ctx, sharedEvents);
   processBreedingEvents(ctx, breedEvents);
+  await processNurseryEvents(ctx, nurseryEvents, NURSERY_CONFIG);
 
   // The order here is important.
   // - Blocks, Wallets, and Contracts require only Chain foreign keys
@@ -90,7 +94,8 @@ processor.run(new TypeormDatabase(options), async context => {
     MarketplaceAsset,
     MarketplaceAdmin,
     MarketplaceLister,
-    BreedingRequest
+    BreedingRequest,
+    NurseryEvo
   );
 
   if (context.isHead) {

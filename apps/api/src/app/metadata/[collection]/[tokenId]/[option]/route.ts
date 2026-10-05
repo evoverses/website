@@ -12,6 +12,7 @@ import { z } from "zod";
 const options: ConstructorParameters<typeof ImageResponse>[1] = {
   width: 512,
   height: 725,
+  headers: { "Cache-Control": "public, max-age=0, must-revalidate" },
   fonts: [ { name: "Nunito", data: undefined as any, weight: 900, style: "normal" } ],
 };
 export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<typeof paramsSchema>> }) => {

@@ -16,7 +16,8 @@ export const natures = natureSchema.options;
 export const Nature = natureSchema.enum;
 export type Nature = z.infer<typeof natureSchema>;
 
-export const raritySchema = z.enum(rarityPgEnum.enumValues);
+// Canonical Nursery JSON may report Epic without rewriting legacy metadata.evo enum rows.
+export const raritySchema = z.enum([...rarityPgEnum.enumValues, "epic"]);
 export const rarities = raritySchema.options;
 export const Rarity = typeof raritySchema.enum;
 export type Rarity = z.infer<typeof raritySchema>;
