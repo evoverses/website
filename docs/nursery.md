@@ -4,7 +4,7 @@ Website branch: `dan-dev`. Source: `apps/website/src/app/nursery` and `apps/webs
 
 - `/nursery`: Marketplace-style Bertha and Hermann character cards.
 - `/nursery/bertha`: connected-wallet Evos, sequential compatible parents, individual and combined EVO prices, current AVAX randomness surcharge, breeding and egg collection.
-- `/nursery/hermann`: owned egg gallery, treatment, three-day incubation, hatch request and final hatch. A token-number lookup recovers eggs before indexer updates.
+- `/nursery/hermann`: owned egg gallery, treatment, three-day incubation, hatch request and final hatch. Owned incubating/pending eggs are discovered directly from the collection and Hermann; indexed cards add artwork/metadata. Token-number lookup remains a recovery option.
 
 ## Deployment configuration
 
@@ -75,7 +75,7 @@ Hermann revision prompt:
 
 > Edit the first referenced portrait of Hatcher Hermann for the EvoVerses Nursery card. Use a clearly cartoonish 2D anime game illustration with clean strong outlines, simplified cel shading, saturated teal and warm amber colors, painted incubator workshop background rather than realistic 3D textures. Make Hermann a rugged adult man in his forties: broad solid shoulders, square jaw, weathered face, scruffy beard and strong moustache, slightly messy sandy-brown hair, smiling warmly. Keep vaguely German alpine workwear, rolled cream sleeves, teal-green suspenders, sturdy tan leather apron and felt alpine hat. Replace the intact egg he holds with the cracked lower half of a hatched speckled egg, with a tiny happy Kitsul kitten sitting inside, its front paws resting on the shell rim. Use the SECOND reference image as the actual Kitsul creature design: cream-white kitten body, large dark sparkling eyes, triangular ears with coral-orange interiors, coral-orange fluffy neck ruff and paw markings, a coral-red fluffy tapering tail with a little warm flame glowing at the tail tip. Adapt this exact creature into an appealing small newborn version, not an ordinary orange cat. Its curved tail sticks up beside the egg so the small fiery tail is visible without obscuring Hermann. Hermann supports the eggshell safely with both hands and looks proud and welcoming. Waist-up centered portrait, full head, egg, kitten and hands inside square frame, readable as a website card. No text, no logo, no watermark. Opaque square background.
 
-## Validation completed
+## Earlier interface validation
 
 - Full website TypeScript check: passed.
 - Nursery ESLint: zero errors and zero warnings.
@@ -85,3 +85,21 @@ Hermann revision prompt:
 - Isolated injected-wallet browser test: sequential parent selection, compatible-only partners, cooldown and breed-cap exclusions, the 2,000 EVO fixture calculation, changing parent 1 clearing parent 2, and owned egg controls all passed. Every transaction submission was forbidden in the test provider.
 
 The current local preview uses temporary development credentials, the verified public GraphQL endpoint `https://api.evoverses.com/graphql`, and the image delivery settings from the repository infrastructure. Nursery wallet lists use a local, read-only `/api/nursery/evos` route to avoid browser cross-origin API restrictions. It validates the owner/page and fixes the query to 48 owned assets; upstream failures remain errors, not empty wallets. Test assets are supplied only by browser interception and are not part of the product. Nursery spending remains disabled while its deployment addresses are blank. Reconnect the same chain wallet after a full browser reload to restore its saved requests.
+
+
+## 2026-10-05 — Automatic discovery of owned eggs
+
+The gallery no longer needs a database row or a remembered token number to find a newly collected egg. It reads the connected wallet's collection balance and token IDs, then checks Hermann's egg state. All discovery reads use one block snapshot, preventing a transfer during enumeration from changing the meaning of an ownership index. RPC calls use batches of 48, without truncating large wallets. Only incubating and pending-hatch tokens are included; adult/unknown and completed tokens are excluded. Existing per-card and pre-transaction ownership checks remain in place.
+
+Indexed/remembered IDs remain supplementary recovery inputs. A newly discovered egg without indexed metadata uses the existing generic egg artwork. Read failures produce the existing retry/error state, rather than silently claiming a wallet is empty. Wallet-query cancellation stops subsequent discovery work; no wallet signatures or transactions are requested by discovery. The collection source implements ERC721Enumerable, which supplies tokenOfOwnerByIndex.
+
+Files: src/lib/nursery/discovery.ts, src/lib/nursery/contracts.ts, src/components/nursery/hatchery.tsx and tests/nursery/discovery.test.mts, beneath apps/website.
+
+Fresh validation:
+
+- All 23 Nursery tests pass: the previous 16 plus seven discovery regressions covering new unindexed eggs, multiple batches, large token IDs, snapshot consistency, empty wallets, invalid/truncated/duplicate data, RPC failure and cancellation.
+- Targeted ESLint passes with no warnings or errors.
+- Full website TypeScript check reports six address-type errors in untouched profile/_components/smart-wallet-form.tsx and profile/liquidity/cards.client.tsx. An in-memory baseline compiler run using HEAD versions of the changed tracked source files reports the same six errors. No Nursery errors were reported; the full website check is not green.
+- No new browser, live RPC, wallet-signing or deployed-contract checks were performed.
+
+This completes automatic egg discovery, not the full website metadata bridge. Existing generic MetadataUpdate listeners only mark records updated; the indexer/API still need canonical egg/adult metadata hydration, parent history reconciliation and replay-safe handling. Contracts already manage counters, egg state, treatment, incubation and hatch results. Those rules were not changed. Independent review, integration fixtures and release rehearsal remain required before spending is enabled.

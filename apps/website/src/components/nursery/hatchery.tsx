@@ -21,6 +21,7 @@ import {
 } from "./hooks";
 import {
   approveEvo,
+  discoverNurseryEggs,
   hermannAddress,
   hermannAbi,
   nurseryConfigured,
@@ -70,7 +71,10 @@ export function Hatchery() {
     queryKey: ["nursery-egg-list", nurseryScope, w.account?.address, ids],
     enabled: nurseryConfigured && Boolean(w.account),
     refetchInterval: 15_000,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
+      const onChain = await discoverNurseryEggs(w.account!.address, signal);
+      signal.throwIfAborted();
+      // Indexed/remembered IDs retain recovery cards; ownership is rechecked by each tile.
       const result = await nurseryClient.multicall({
         allowFailure: true,
         contracts: ids.map((id) => ({
@@ -80,10 +84,12 @@ export function Hatchery() {
           args: [BigInt(id)],
         })),
       });
-      return ids.filter((_, i) => {
+      signal.throwIfAborted();
+      const recovered = ids.filter((_, i) => {
         const r = result[i];
         return r?.status === "success" && [1, 2].includes((r.result as Egg)[5]);
       });
+      return [...new Set([...onChain, ...recovered])];
     },
   });
   const indexedEggs = owned.assets

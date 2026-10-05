@@ -18,6 +18,7 @@ import { avalanche } from "viem/chains";
 import { prepareTransaction, sendTransaction } from "thirdweb";
 import type { Account } from "thirdweb/wallets";
 import { nativeBudget } from "./rules";
+import { discoverOwnedEggs } from "./discovery";
 
 export const berthaAbi = berthaJson as Abi;
 export const hermannAbi = hermannJson as Abi;
@@ -41,6 +42,44 @@ export const nurseryClient = createPublicClient({
   chain: avalanche,
   transport: http(),
 });
+const enumerableNftAbi = [
+  ...erc721Abi,
+  {
+    type: "function",
+    name: "tokenOfOwnerByIndex",
+    stateMutability: "view",
+    inputs: [{ name: "owner", type: "address" }, { name: "index", type: "uint256" }],
+    outputs: [{ name: "tokenId", type: "uint256" }],
+  },
+] as const;
+
+export const discoverNurseryEggs = (owner: Address, signal?: AbortSignal) => {
+  if (!nurseryConfigured) throw new Error("The nursery is opening soon.");
+  return discoverOwnedEggs(owner, {
+    blockNumber: () => nurseryClient.getBlockNumber({ cacheTime: 0 }),
+    balance: (address, blockNumber) => nurseryClient.readContract({
+      address: evoNftContractAddress, abi: enumerableNftAbi,
+      functionName: "balanceOf", args: [address as Address], blockNumber,
+    }),
+    tokenIds: (address, indices, blockNumber) => nurseryClient.multicall({
+      allowFailure: false, blockNumber,
+      contracts: indices.map(index => ({
+        address: evoNftContractAddress, abi: enumerableNftAbi,
+        functionName: "tokenOfOwnerByIndex", args: [address as Address, index],
+      })),
+    }) as Promise<bigint[]>,
+    eggStatuses: async (ids, blockNumber) => {
+      const values = await nurseryClient.multicall({
+        allowFailure: false, blockNumber,
+        contracts: ids.map(id => ({
+          address: hermannAddress!, abi: hermannAbi, functionName: "eggs", args: [id],
+        })),
+      });
+      return values.map(value => (value as Egg)[5]);
+    },
+  }, signal);
+};
+
 export const sameAddress = (a: string, b: string) =>
   a.toLowerCase() === b.toLowerCase();
 export const nurseryScope = `43114:${berthaAddress?.toLowerCase()}:${hermannAddress?.toLowerCase()}`;
