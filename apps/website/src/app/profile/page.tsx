@@ -1,3 +1,6 @@
+import { getPlayerAccount, getPlayerInventory } from "@/lib/player/server";
+import { PlayerProfile } from "@/components/player/player-profile";
+import { ProOnly } from "@/components/providers/pro-mode-provider";
 import { LinkedProfiles } from "@/app/profile/_components/linked-profiles";
 import { ProfileForm } from "@/app/profile/_components/profile-form";
 import SmartWalletForm from "@/app/profile/_components/smart-wallet-form";
@@ -6,6 +9,11 @@ import { Separator } from "@workspace/ui/components/separator";
 import { unauthorized } from "next/navigation";
 
 const AccountPage = async () => {
+  const account = await getPlayerAccount();
+  if (account) {
+    const inventory = await getPlayerInventory().catch(() => null);
+    return <PlayerProfile account={account} inventory={inventory} />;
+  }
   const loggedIn = await isLoggedIn();
   if (!loggedIn) {
     unauthorized();
@@ -19,9 +27,9 @@ const AccountPage = async () => {
         </p>
       </div>
       <Separator />
-      <SmartWalletForm />
+      <ProOnly><SmartWalletForm /></ProOnly>
       <ProfileForm />
-      <LinkedProfiles />
+      <ProOnly><LinkedProfiles /></ProOnly>
     </main>
   );
 };

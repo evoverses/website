@@ -12,7 +12,6 @@ import { Icons } from "@workspace/ui/components/icons";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { type PropsWithChildren, type ReactNode } from "react";
 import { useIsAutoConnecting, useWalletBalance } from "thirdweb/react";
-import { Address } from "viem";
 
 type AccountCardProps = {
   title: string;
@@ -44,7 +43,7 @@ const AccountCard = ({ title, description, icon: Icon, children }: PropsWithChil
 const SmartWalletForm = () => {
   const isAutoConnecting = useIsAutoConnecting();
   const smartWallet = useSmartWallet();
-  const address = smartWallet?.getAccount()?.address as Address;
+  const address = smartWallet?.getAccount()?.address as `0x${string}`;
 
   const {
     data: evoBalance = { value: 0n, displayValue: "0", symbol: "EVO" },

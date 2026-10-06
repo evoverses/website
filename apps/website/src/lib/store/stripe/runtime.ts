@@ -7,7 +7,7 @@ import { getStorePlayerService } from "./player-service";
 export function stripeStoreRuntime() {
   const config = stripeStoreConfig(process.env);
   const players = getStorePlayerService();
-  if (!config || !players) return null;
+  if (!config || !players || config.live) return null;
   const sdk = new Stripe(config.secretKey, {
     maxNetworkRetries: 2,
     timeout: 15_000,

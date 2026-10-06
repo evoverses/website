@@ -1,13 +1,10 @@
 "use client";
-import {
-  appMetadata,
-  chain,
-  chainWallets,
-  client,
-} from "@/lib/thirdweb/config";
+import { chainConnectionOptions } from "@/lib/thirdweb/chain-connection";
+import { walletConnectionAvailable } from "@/lib/thirdweb/preview";
+
 import { nurseryError } from "@/lib/nursery/contracts";
 import { useState } from "react";
-import { darkTheme, useConnectModal } from "thirdweb/react";
+import { useConnectModal } from "thirdweb/react";
 import { Button } from "@workspace/ui/components/button";
 import { AlertCircle, WalletCards, LoaderCircle } from "lucide-react";
 import { formatUnits } from "viem";
@@ -25,23 +22,10 @@ export function ConnectNursery({
   const { connect, isConnecting } = useConnectModal();
   const [error, setError] = useState<string | null>(null);
   const connectWallet = async () => {
+    if (!walletConnectionAvailable) return;
     setError(null);
     try {
-      // Nursery transactions use the NFT-owning chain wallet directly.
-      // The site's default connector wraps chain wallets in a smart account.
-      await connect({
-        client,
-        chain,
-        chains: [chain],
-        wallets: chainWallets,
-        appMetadata,
-        theme: darkTheme({ colors: { modalBg: "var(--background)" } }),
-        showThirdwebBranding: false,
-        size: "compact",
-        titleIcon: "/icon.png",
-        termsOfServiceUrl: "/terms",
-        privacyPolicyUrl: "/privacy",
-      });
+      await connect(chainConnectionOptions());
     } catch (e) {
       setError(nurseryError(e));
     }
@@ -61,7 +45,7 @@ export function ConnectNursery({
               : "Connect the wallet that owns your Evos on Avalanche."}
           </p>
         </div>
-        <Button disabled={isConnecting} onClick={connectWallet}>
+        <Button disabled={!walletConnectionAvailable || isConnecting} onClick={connectWallet}>
           <WalletCards className="size-4" />
           {isConnecting
             ? "Connecting…"

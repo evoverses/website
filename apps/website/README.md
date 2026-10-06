@@ -1,3 +1,5 @@
+Current BETA implementation, setup, test commands and release boundaries are documented in the [root README](../../README.md). The environment table below describes older integrations, not the new Epic-only local login requirements.
+
 # EvoVerses Website
 
 ## Contributing

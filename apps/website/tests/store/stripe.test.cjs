@@ -124,8 +124,18 @@ test("Stripe is off by default; incomplete prices, wrong mode and unsafe return 
     { STRIPE_SECRET_KEY: "rk_test_" },
     { EVOROS_STRIPE_MODE: "guess" },
     { EVOROS_STRIPE_PRICES: "{}" },
-    { EVOROS_STRIPE_PRICES: JSON.stringify({ ...f.config.prices, bundle_pouch: { ...f.config.prices.bundle_pouch, unitAmount: 1 } }) },
-    { EVOROS_STRIPE_PRICES: JSON.stringify({ ...f.config.prices, bundle_pouch: { ...f.config.prices.bundle_pouch, currency: "eur" } }) },
+    {
+      EVOROS_STRIPE_PRICES: JSON.stringify({
+        ...f.config.prices,
+        bundle_pouch: { ...f.config.prices.bundle_pouch, unitAmount: 1 },
+      }),
+    },
+    {
+      EVOROS_STRIPE_PRICES: JSON.stringify({
+        ...f.config.prices,
+        bundle_pouch: { ...f.config.prices.bundle_pouch, currency: "eur" },
+      }),
+    },
 
     { EVOROS_STORE_ORIGIN: "http://example.com" },
     { EVOROS_STORE_ORIGIN: "https://example.com/path" },
@@ -165,7 +175,8 @@ test("checkout uses a verified player and fixed server price/quantity, without g
   assert.deepEqual(params.line_items, [
     { price: "price_fixture0", quantity: 1 },
   ]);
-  assert.deepEqual(params.allowed_payment_method_types, ["card"]);
+  assert.equal(params.payment_method_types, undefined);
+  assert.equal(params.allowed_payment_method_types, undefined);
   assert.equal(params.client_reference_id, f.order.id);
   assert.match(params.integration_identifier, /^evoros-store-[a-z]{8}$/);
   assert.equal(params.metadata.playerId, "player1");
@@ -374,4 +385,70 @@ test("the authenticated game account owns checkout; client account and price ove
   assert.equal(f.records.length, 0);
   assert.equal((await handle(checkoutRequest())).status, 200);
   assert.equal(f.records[0].params.metadata.playerId, "player1");
+});
+
+test("webhook handler verifies raw signatures, rejects live/oversized payloads and acknowledges failures without credit", async () => {
+  const { handleStripeWebhook } = require(
+    path.join(
+      process.env.EVOROS_TEST_LIB,
+      "lib/store/stripe/webhook-handler.js",
+    ),
+  );
+  const f = fixture(),
+    sdk = new Stripe("sk_test_fixture");
+  const service = {
+    config: f.config,
+    gateway: f.gateway,
+    players: f.players,
+    sdk,
+  };
+  const request = (payload, signature) =>
+    new Request("http://localhost:3100/api/store/stripe/webhook", {
+      method: "POST",
+      headers: { "stripe-signature": signature },
+      body: payload,
+    });
+  const event = {
+    id: "evt_fixture",
+    object: "event",
+    livemode: false,
+    type: "checkout.session.async_payment_failed",
+    data: { object: f.session },
+  };
+  const raw = JSON.stringify(event, null, 2),
+    sig = sdk.webhooks.generateTestHeaderString({
+      payload: raw,
+      secret: f.config.webhookSecret,
+    });
+  assert.equal(
+    (await handleStripeWebhook(request(raw, sig), service)).status,
+    200,
+  );
+  assert.equal(
+    (await handleStripeWebhook(request(raw + " ", sig), service)).status,
+    400,
+  );
+  event.livemode = true;
+  const live = JSON.stringify(event);
+  assert.equal(
+    (
+      await handleStripeWebhook(
+        request(
+          live,
+          sdk.webhooks.generateTestHeaderString({
+            payload: live,
+            secret: f.config.webhookSecret,
+          }),
+        ),
+        service,
+      )
+    ).status,
+    400,
+  );
+  assert.equal(
+    (await handleStripeWebhook(request("x".repeat(1_048_577), sig), service))
+      .status,
+    413,
+  );
+  assert.equal(f.credits.size, 0);
 });

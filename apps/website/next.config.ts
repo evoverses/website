@@ -4,6 +4,8 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 const nextConfig = (phase: string) => {
   const config: NextConfig = {
+    // Isolate the local production check from the running development preview.
+    distDir: phase !== PHASE_DEVELOPMENT_SERVER && process.env.EVOVERSES_LOCAL_BUILD_CHECK === "1" ? ".next-beta-check" : ".next",
     transpilePackages: [ "@workspace/ui", "@workspace/database", "thirdweb" ],
     serverExternalPackages: [ "cloudflare" ],
     images: {
@@ -16,6 +18,8 @@ const nextConfig = (phase: string) => {
       position: "bottom-right",
     },
     poweredByHeader: false,
+    // OAuth callback URLs contain single-use codes; never print incoming requests.
+    logging: { incomingRequests: false },
     experimental: {
       typedEnv: true,
       authInterrupts: true,
@@ -90,6 +94,7 @@ const nextConfig = (phase: string) => {
         automaticVercelMonitors: true,
 
         sourcemaps: {
+          disable: process.env.EVOVERSES_LOCAL_BUILD_CHECK === "1",
           deleteSourcemapsAfterUpload: true,
         },
       },

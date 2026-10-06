@@ -1,9 +1,13 @@
 import * as Sentry from "@sentry/nextjs";
 import { appDevMode } from "@/data/constants";
 
-export const onRequestError = Sentry.captureRequestError;
+const localPlayerLogin = process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_EVOVERSES_LOCAL_PLAYER_LOGIN === "1";
+export const onRequestError = (...args: Parameters<typeof Sentry.captureRequestError>) => {
+  if (!localPlayerLogin) Sentry.captureRequestError(...args);
+};
 
 export const register = async () => {
+  if (localPlayerLogin) return;
   if (process.env.NEXT_RUNTIME === "nodejs") {
     Sentry.init({
       dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,

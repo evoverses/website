@@ -1,6 +1,7 @@
 "use client";
 
-import { NavItem } from "@/components/app-navbar/navbar";
+import { useProMode } from "@/components/providers/pro-mode-provider";
+import type { NavItem } from "@/components/app-navbar/navbar";
 import { useMounted } from "@/lib/hooks/useMounted";
 import { cn } from "@/lib/utils";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
@@ -46,7 +47,9 @@ ListItem.displayName = "ListItem";
 
 const NavItems = ({ navItems, isConnected }: { navItems: NavItem[]; isConnected: boolean; }) => {
   const pathname = usePathname();
-  const mobile = useMediaQuery("(max-width: 1023px)");
+  const { proMode } = useProMode();
+  const visibleItems = navItems.filter(i => (!i.authRequired || isConnected) && (!i.proOnly || proMode));
+  const mobile = useMediaQuery("(max-width: 1279px)");
   const [ mounted, setMounted ] = useState<boolean>(false);
 
   useEffect(() => {
@@ -61,10 +64,10 @@ const NavItems = ({ navItems, isConnected }: { navItems: NavItem[]; isConnected:
     <NavigationMenu className="space-x-0">
       <NavigationMenuList className="m-0">
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="">Links</NavigationMenuTrigger>
+          <NavigationMenuTrigger className="px-2">Links</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid grid-cols-1 m-0 ml-4 mb-1 w-50 list-none">
-              {navItems.filter(i => !i.authRequired || isConnected).map(({ name, href, description }, key) => (
+              {visibleItems.map(({ name, href, description }, key) => (
                 <ListItem key={key} title={name} href={href}>{description}</ListItem>
               ))}
             </ul>
@@ -72,7 +75,7 @@ const NavItems = ({ navItems, isConnected }: { navItems: NavItem[]; isConnected:
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
-  ) : navItems.filter(i => !i.authRequired || isConnected).map(({ href, name, comingSoon }, key) => comingSoon ? (
+  ) : visibleItems.map(({ href, name, comingSoon }, key) => comingSoon ? (
     <Tooltip key={key}>
       <TooltipTrigger className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary">
         {name}

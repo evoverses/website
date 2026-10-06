@@ -1,3 +1,6 @@
+import { ExternalWalletAutoConnect } from "@/components/external-wallet-auto-connect";
+import { ProModeGate } from "@/components/pro-mode";
+import { getPlayerAccount } from "@/lib/player/server";
 import Navbar from "@/components/app-navbar/navbar";
 import { AutoConnect } from "@/components/auto-connect";
 import { GlobalProvider } from "@/components/providers";
@@ -91,15 +94,17 @@ export const metadata: Metadata = {
 
 const RootLayout = async ({ children }: PropsWithChildren) => {
   const accountCookie = await getAccountCookie();
+  const playerAccount = await getPlayerAccount();
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("overscroll-none font-sans antialiased overflow-x-hidden text-foreground", fontVariables)}>
         <GlobalProvider>
+          <ExternalWalletAutoConnect />
           {accountCookie.loggedIn && <AutoConnect account={accountCookie.address} />}
           <main className="relative flex min-h-svh flex-1 flex-col bg-background bg-contain bg-top bg-no-repeat bg-fixed">
-            <Navbar accountCookie={accountCookie} />
+            <Navbar accountCookie={accountCookie} player={playerAccount?.player} evoros={playerAccount?.balance.evoros} />
             <div className="@container flex-1 group/global select-none">
-              {children}
+              <ProModeGate>{children}</ProModeGate>
             </div>
           </main>
         </GlobalProvider>

@@ -1,10 +1,10 @@
+import type { Player } from "@/lib/player/auth-core";
+import { ProModeButton } from "@/components/pro-mode";
 import Logo from "@/app/icon.png";
 import { AccountButton } from "@/components/app-navbar/account-button";
 import NavItems, { ModeButton } from "@/components/app-navbar/nav-items";
-import { ConnectButton } from "@/components/buttons/connect-button";
+import { CurrencyBalances } from "./currency-balances";
 import type { IAccountCookie } from "@/types/cookies";
-import { Button } from "@workspace/ui/components/button";
-import { WalletCardsIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,6 +14,7 @@ export type NavItem = {
   description: string;
   comingSoon?: boolean;
   authRequired?: boolean;
+  proOnly?: boolean;
 }
 
 export const navigation: NavItem[] = [
@@ -27,38 +28,32 @@ export const navigation: NavItem[] = [
     comingSoon: true,
   },
   { name: "Docs", href: "https://docs.evoverses.com", description: "Everything you need to know about EvoVerses" },
-  { name: "Liquidity", href: "/liquidity", description: "Quick wallet-only access to liquidity management" },
+  { name: "Liquidity", href: "/liquidity", description: "Quick wallet-only access to liquidity management", proOnly: true },
   {
     name: "Marketplace",
     href: "/marketplace",
     description: "Buy and sell Evos",
+    proOnly: true,
   },
-  { name: "Nursery", href: "/nursery", description: "Breed Evos with Bertha and hatch eggs with Hermann" },
+  { name: "Nursery", href: "/nursery", description: "Breed Evos with Bertha and hatch eggs with Hermann", proOnly: true },
   { name: "Store", href: "/store", description: "Top up your in-game Evoros" },
 ];
 
-const Navbar = ({ accountCookie }: { accountCookie: IAccountCookie }) => {
+const Navbar = ({ accountCookie, player, evoros }: { accountCookie: IAccountCookie; player?: Player; evoros?: number }) => {
   return (
     <div className="sticky isolate inset-x-0 top-0 z-20 border-b bg-background">
-      <div className="flex h-16 items-center px-4">
-        <Link href="/">
-          <Image src={Logo} alt="EvoVerses" className="size-12" />
+      <div className="flex min-h-16 flex-wrap items-center gap-y-2 px-2 py-2 sm:px-4 sm:py-0">
+        <Link href="/" className="shrink-0">
+          <Image src={Logo} alt="EvoVerses" className="size-8 sm:size-12" />
         </Link>
         <nav className="items-center ml-2 sm:space-x-4 sm:mx-6 lg:space-x-6">
-          <NavItems navItems={navigation} isConnected={accountCookie.loggedIn} />
+          <NavItems navItems={navigation} isConnected={!!player || accountCookie.loggedIn} />
         </nav>
-        <div className="ml-auto flex items-center space-x-4">
-          {accountCookie.loggedIn ? (
-            <AccountButton />
-          ) : (
-            <ConnectButton asChild>
-              <Button variant="default">
-                <WalletCardsIcon className="size-5 hidden md:inline-flex" />
-                <span>Sign In</span>
-              </Button>
-            </ConnectButton>
-          )}
+        <div className="ml-auto flex flex-wrap items-center gap-1 sm:gap-2 max-sm:w-full max-sm:ml-0 max-sm:justify-between">
+          <CurrencyBalances playerId={player?.id} evoros={evoros} />
+          <AccountButton player={player} walletLoggedIn={accountCookie.loggedIn} />
           <ModeButton />
+          <ProModeButton />
         </div>
       </div>
     </div>

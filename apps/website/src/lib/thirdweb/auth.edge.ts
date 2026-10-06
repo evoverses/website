@@ -1,5 +1,7 @@
 "use server";
 
+import { localWalletPreview } from "./preview";
+import { clientId } from "./env.client";
 import { adminPrivateKey } from "@/lib/thirdweb/env";
 import { authDomain } from "@/lib/thirdweb/env.client";
 import { assertEnvNotNull } from "@/utils/node";
@@ -9,10 +11,12 @@ import { createAuth } from "thirdweb/auth";
 import type { JWTPayload } from "thirdweb/utils";
 import { privateKeyToAddress } from "viem/accounts";
 
-// stripped down auth to allow edge import
-const auth = createAuth({
+// Construct the configured verifier only when a wallet cookie needs checking.
+let configuredAuth: ReturnType<typeof createAuth> | undefined;
+const getAuth = () => configuredAuth ??= createAuth({
   domain: authDomain,
-  client: createThirdwebClient({ secretKey: process.env.THIRDWEB_SECRET_KEY! }),
+  client: createThirdwebClient(process.env.THIRDWEB_SECRET_KEY
+    ? { secretKey: process.env.THIRDWEB_SECRET_KEY } : { clientId }),
   adminAccount: {
     address: privateKeyToAddress(assertEnvNotNull(adminPrivateKey, "THIRDWEB_ADMIN_PRIVATE_KEY") as `0x${string}`),
     sendTransaction: () => {
@@ -28,6 +32,7 @@ const auth = createAuth({
 });
 
 export const verifyAuthCookie = async (cookie: string | RequestCookie | undefined) => {
+  if (localWalletPreview) return { valid: false, parsedJWT: {} as JWTPayload };
   let jwt = "";
   if (typeof cookie === "string") {
     jwt = cookie;
@@ -36,5 +41,5 @@ export const verifyAuthCookie = async (cookie: string | RequestCookie | undefine
   } else {
     return { valid: false, parsedJWT: {} as JWTPayload };
   }
-  return auth.verifyJWT({ jwt });
+  return getAuth().verifyJWT({ jwt });
 };

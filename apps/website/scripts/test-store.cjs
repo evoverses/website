@@ -17,6 +17,7 @@ for (const file of [
   "lib/store/stripe/checkout-handler.ts",
   "lib/store/stripe/config.ts",
   "lib/store/stripe/core.ts",
+  "lib/store/stripe/webhook-handler.ts",
 ]) {
   const source = path.join(root, "src", file),
     dest = path.join(out, file.replace(/\.ts$/, ".js"));
@@ -41,6 +42,9 @@ const result = spawnSync(
     "--test",
     path.join(root, "tests/store/stripe.test.cjs"),
     path.join(root, "tests/store/pricing.test.cjs"),
+    ...(process.argv.includes("--with-local-accounts")
+      ? [path.join(root, "tests/store/local-payments.test.cjs")]
+      : []),
   ],
   { stdio: "inherit", env: { ...process.env, EVOROS_TEST_LIB: out } },
 );

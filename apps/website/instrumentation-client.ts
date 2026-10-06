@@ -5,7 +5,8 @@
 import * as Sentry from "@sentry/nextjs";
 import { appDevMode } from "@/data/constants";
 
-Sentry.init({
+const localPlayerLogin = process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_EVOVERSES_LOCAL_PLAYER_LOGIN === "1";
+if (!localPlayerLogin) Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   // Adjust this value in production, or use tracesSampler for greater control
@@ -33,4 +34,6 @@ Sentry.init({
   spotlight: appDevMode,
 });
 
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+export const onRouterTransitionStart = (...args: Parameters<typeof Sentry.captureRouterTransitionStart>) => {
+  if (!localPlayerLogin) Sentry.captureRouterTransitionStart(...args);
+};

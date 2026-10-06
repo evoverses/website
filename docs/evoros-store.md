@@ -1,3 +1,9 @@
+Current status (6 October 2026): **local Stripe test Checkout is connected**. See [test instructions and current validation](stripe-local-testing.md). Older account-check entries below record the earlier disabled preparation state.
+
+## Current BETA update - 7 October 2026
+
+Non-Pro Store has no payment-method selector: card is implicit. Pro shows FIAT first/default and EVO disabled until an external wallet is connected; estimates and wallet details require that connection. All purchase routes still require server-verified game sign-in. Direct external-wallet connection, menu balances and wallet controls now live in the account dropdown. Strict TypeScript checking passed after fixing the six legacy address annotations. See the root README for the final checks and remaining release work.
+
 # Evoros website store — local beta
 
 ## Scope and status
@@ -15,7 +21,7 @@ The store presents the six accepted bundles using the unchanged revision-2 curre
 | Treasure Chest | 5,000 |
 | Grand Vault | 10,000 |
 
-Test prices are now approved: **US$0.01 per Evoro, with 90% off the USD value when paying in EVO**. Every purchase button remains disabled pending authenticated game-account fulfillment. These prices are for testing only, not approved production economics.
+Test prices are now approved: **US$0.01 per Evoro, with 90% off the USD value when paying in EVO**. Local card test purchases are now enabled only for signed-in Epic players with the sandbox services configured. EVO purchases remain disabled. These prices are for testing only, not approved production economics.
 
 Store follows Nursery in the menu. Marketplace and Nursery remain adjacent. Tablet widths use the existing compact Links menu to avoid overflowing navigation.
 
@@ -41,7 +47,7 @@ Pinned official `stripe@23.0.0` SDK. No Stripe-hosted infrastructure, subscripti
 - Orders have a fixed expiry and Stripe idempotency key. Retries reuse attached sessions. A stable integration identifier distinguishes this checkout flow in Stripe.
 - Currency fulfillment must be atomic and durable so repeated/concurrent webhooks cannot grant twice.
 
-**The real game-service adapter is intentionally missing:** `src/lib/store/stripe/player-service.ts` returns null. Adding keys alone cannot enable checkout. The tests use a mock player service; they do not prove a production database ledger exists.
+**Local sandbox adapter is implemented:** `src/lib/store/stripe/player-service.ts` revalidates Epic sessions and connects to the owning account service and durable Evoros ledger. Configuration is explicit, test-only and development-only. There is no hosted/production adapter. See [local Stripe testing and work log](stripe-local-testing.md).
 
 Hosted Checkout is the selected integration approach. Stripe Projects groups providers and development credentials; it is not needed just to use Checkout. Do not blindly pull Projects environment values over the website environment.
 
@@ -92,9 +98,9 @@ DexScreener probes returned no matching EVO data. The store uses GeckoTerminal's
 
 This is a display estimate. A spot pool quote is not manipulation-proof payment authority, and the browser must never choose the price/recipient for a real EVO purchase. Before enabling that rail, implement a server-reserved short-lived quote and an approved manipulation-resistant pricing policy; debit the amount shown in the confirmed order and verify on-chain settlement. No EVO transfer/approval flow was added here.
 
-All six test products now have one-time USD prices set as defaults; products remain inactive. Their IDs and approved server price map are in [evoros-stripe-test-products.json](evoros-stripe-test-products.json). Test configuration rejects cash amounts/currencies that disagree with this preview. No live Stripe write, tax registration, runtime key, payment enablement or real charge.
+All six test products have one-time USD prices set as defaults and were activated on 6 October for the local Checkout rehearsal. Their IDs and approved server price map are in [evoros-stripe-test-products.json](evoros-stripe-test-products.json). Test configuration rejects cash amounts/currencies that disagree with this preview. No live Stripe write, tax registration or real charge.
 
-**Purchases require a signed-in linked game account.** Server checkout authenticates before creating an order, derives the recipient from the verified game session and rejects browser-supplied player IDs, wallet addresses and price overrides. Wallet connection alone never proves game identity. The real authenticated ledger adapter is still missing, so purchases remain disabled for everyone.
+**Purchases require a signed-in linked game account.** Server checkout authenticates before creating an order, derives the recipient from the verified game session and rejects browser-supplied player IDs, wallet addresses and price overrides. Wallet connection alone never proves game identity. The local authenticated ledger adapter now enables card test purchases for verified Epic players. Live payments and EVO purchases remain disabled.
 
 ## Environment and activation
 
@@ -102,7 +108,7 @@ Keep these values server-only, out of git and out of chat:
 
 | Variable | Meaning |
 | --- | --- |
-| `EVOROS_STRIPE_ENABLED` | Defaults off; only `true` enables configuration, and a real player adapter is still required |
+| `EVOROS_STRIPE_ENABLED` | Defaults off; local test configuration also requires the reviewed account service and private bridge |
 | `EVOROS_STRIPE_MODE` | `test` for sandbox rehearsal; live requires a later explicit release decision |
 | `STRIPE_SECRET_KEY` | Prefer a sandbox restricted API key (rk_test_) from secure local/deployment secret storage; matching-mode secret keys are also supported |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for the specific sandbox webhook destination or CLI listener |
@@ -115,8 +121,8 @@ No public/publishable key is needed for redirecting to hosted Checkout in this d
 
 Next activation steps:
 
-1. Test-mode access and six priced products are complete. Activate products only as part of the later test-checkout setup.
-2. Complete the authenticated game-account ledger adapter and verify its real database guarantees.
+1. Test-mode access, six active products and local adapter are complete. Follow [local test instructions](stripe-local-testing.md).
+2. Persistent ledger/RPC integration tests pass. Rehearse a genuine Epic-user test-card purchase; production service deployment is still missing.
 3. Agree production prices, pricing security and tax/refund rules; the current USD rate/discount is test-only.
 4. Configure sandbox prices/secrets, webhook listener/destination and enable only a local test checkout path.
 5. Rehearse successful, declined, cancelled, delayed and repeated payment events; prove Evoros arrive once in the correct game account. Test refunds/disputes according to the agreed policy.
@@ -132,7 +138,7 @@ Run from `apps/website`:
 pnpm test:store
 ```
 
-23 tests pass: four balance-formatting cases, six pricing/feed/freshness/rounding cases and thirteen checkout/fulfillment/signature/configuration/authentication cases. Tests include wrong recipient/price/amount/currency/mode, unpaid sessions, redirect protection, order expiry, duplicate/concurrent delivery and interrupted session attachment. Concurrency tests use a mock atomic service; persistent ledger tests remain required.
+30 Store tests pass: four balance-formatting tests plus 26 pricing, payment, webhook and persistent local-adapter tests. Tests include wrong recipient/price/amount/currency/mode, unpaid sessions, redirect protection, order expiry, duplicate/concurrent delivery and interrupted session attachment. The local sandbox work now also tests the actual schema, private HTTP bridge and persistent ledger, including concurrent delivery and restart.
 
 Changed website TypeScript/TSX passes targeted ESLint with no errors or warnings. The frozen lockfile-only install check passes. Full website TypeScript compilation reports the same six existing profile/liquidity address-type errors and no new store errors. No successful full production build is claimed.
 
@@ -140,4 +146,4 @@ Desktop/mobile isolated Edge checks also verify Card first/default, all six USD 
 
 ## Recommended next sprint
 
-Hook the store to the authenticated, persistent game-account ledger; test-mode catalogue setup is complete. Keep purchases disabled until authenticated persistence and payment rehearsal pass. The next useful proof is one sandbox purchase reaching the intended game account exactly once.
+The genuine 500-Evoros purchase and two duplicate confirmations passed; balance is 10,500. Next test cancellation and decline, followed by delayed confirmation/recovery. The local adapter is ready; keep live purchases disabled until the hosted setup and release review are complete.

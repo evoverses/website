@@ -1,7 +1,7 @@
 "use client";
 
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { HydrationBoundary, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { defaultShouldDehydrateQuery, HydrationBoundary, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { type PropsWithChildren, useState } from "react";
 
@@ -36,7 +36,7 @@ const QueryProvider = ({ children }: PropsWithChildren) => {
   return (
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister }}
+      persistOptions={{ persister, dehydrateOptions: { shouldDehydrateQuery: query => query.meta?.private !== true && defaultShouldDehydrateQuery(query) } }}
     >
       <HydrationBoundary state={null}>
         {children}

@@ -1,4 +1,5 @@
 "use client";
+import { ProOnly } from "@/components/providers/pro-mode-provider";
 
 import { useConnectedWallets } from "@/hooks/use-connected-wallets";
 import { useConnectedSiweWallets, useProfiles, useSmartWalletAdmin } from "@/lib/thirdweb/hooks/use-profiles";
@@ -123,7 +124,7 @@ export const ProfileForm = () => {
             </FormItem>
           )}
         />
-        <FormField
+        <ProOnly><FormField
           control={form.control}
           name="wallet"
           render={({ field }) => (
@@ -163,7 +164,7 @@ export const ProfileForm = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /></ProOnly>
         <Button
           disabled={!isValid || !isDirty}
           type="submit"

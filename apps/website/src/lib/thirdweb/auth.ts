@@ -1,5 +1,6 @@
 "use server";
 
+import { localWalletPreview } from "./preview";
 import { DeadBeef } from "@/data/constants";
 import { client } from "@/lib/thirdweb/config";
 import { adminPrivateKey } from "@/lib/thirdweb/env";
@@ -13,18 +14,22 @@ import { verifyAuthCookie } from "./auth.edge";
 
 const authCookieKey = "ev:jwt" as const;
 
-const auth = createAuth({
-  client,
-  domain: authDomain,
-  adminAccount: privateKeyToAccount({
+let configuredAuth: ReturnType<typeof createAuth> | undefined;
+const getAuth = () => {
+  if (localWalletPreview) throw new Error("Wallet sign-in is unavailable in the local UI preview.");
+  return configuredAuth ??= createAuth({
     client,
-    privateKey: assertEnvNotNull(adminPrivateKey, "THIRDWEB_ADMIN_PRIVATE_KEY"),
-  }),
-});
+    domain: authDomain,
+    adminAccount: privateKeyToAccount({
+      client,
+      privateKey: assertEnvNotNull(adminPrivateKey, "THIRDWEB_ADMIN_PRIVATE_KEY"),
+    }),
+  });
+};
 
 export const generatePayload = async (params: GenerateLoginPayloadParams) => {
   // console.log(`generatePayload::params::`, params);
-  const payload = await auth.generatePayload({
+  const payload = await getAuth().generatePayload({
     ...params,
     chainId: 43114,
   });
@@ -33,10 +38,10 @@ export const generatePayload = async (params: GenerateLoginPayloadParams) => {
 };
 
 export const login = async (payload: VerifyLoginPayloadParams) => {
-  const verifiedPayload = await auth.verifyPayload(payload);
+  const verifiedPayload = await getAuth().verifyPayload(payload);
   // console.log(`login::verifiedPayload::${verifiedPayload}`);
   if (verifiedPayload.valid) {
-    const jwt = await auth.generateJWT({
+    const jwt = await getAuth().generateJWT({
       payload: verifiedPayload.payload,
     });
     const cookieStore = await cookies();
@@ -57,6 +62,7 @@ export const logout = async () => {
 };
 
 export const getAuthCookie = async () => {
+  if (localWalletPreview) return false;
   const cookieStore = await cookies();
   const jwt = cookieStore.get(authCookieKey);
   // console.log("getAuthCookie", jwt);

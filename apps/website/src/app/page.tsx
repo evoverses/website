@@ -1,3 +1,4 @@
+import { ProOnly } from "@/components/providers/pro-mode-provider";
 import Logo from "@/assets/images/logo-text.png";
 import { YouTubeVideo } from "@/components/youtube-video";
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
@@ -49,12 +50,12 @@ const Landing = () => {
         <CarouselNext className="max-sm:-right-0" />
       </Carousel>
       <div className="flex flex-col gap-4 md:items-center xl:w-full xl:flex-row xl:justify-between xl:max-w-5xl">
-        <Button variant="outline" size="lg" className="flex px-2 md:px-4 lg:px-8" asChild>
+        <ProOnly><Button variant="outline" size="lg" className="flex px-2 md:px-4 lg:px-8" asChild>
           <Link href="/marketplace/evos" referrerPolicy="no-referrer" prefetch={false}>
             <ShoppingCartIcon />
             <span className="hidden md:inline-flex">Buy Evos</span>
           </Link>
-        </Button>
+        </Button></ProOnly>
         <div className="flex space-x-4">
           {links.map(({ name, icon: Icon, href }, key) => (
             <Button key={key} variant="outline" className="flex" asChild>

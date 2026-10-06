@@ -1,17 +1,13 @@
 "use client";
 
+import { useProMode } from "@/components/providers/pro-mode-provider";
+import { walletConnectionAvailable } from "@/lib/thirdweb/preview";
 import { evorosBundles } from "@/data/evoros-bundles";
-import { evoContractAddress } from "@/data/addresses";
-import {
-  appMetadata,
-  chain,
-  chainWallets,
-  client,
-} from "@/lib/thirdweb/config";
 import { formatEvoBalance } from "@/lib/store/balance";
-import { readEvoBalance } from "@/lib/store/token";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useEvoBalance } from "@/hooks/use-evo-balance";
+import { useChainWallet } from "@/hooks/use-chain-wallet";
+import { chainConnectionOptions } from "@/lib/thirdweb/chain-connection";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -22,8 +18,8 @@ import {
 } from "@workspace/ui/components/card";
 import { Check, Coins, CreditCard, Gamepad2, WalletCards } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useConnectedWallets } from "@/hooks/use-connected-wallets";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useEvoQuote } from "./use-evo-quote";
 import {
   cashCents,
@@ -31,43 +27,19 @@ import {
   discountedEvoUnits,
   formatEvoEstimate,
 } from "@/lib/store/pricing";
-import { darkTheme, useActiveAccount, useConnectModal } from "thirdweb/react";
-import type { Address } from "viem";
+import { useConnectModal } from "thirdweb/react";
 
 const amount = (value: number) => value.toLocaleString("en-US");
 
 function StoreWallet({ account }: { account?: { address: string } }) {
   const { connect, isConnecting } = useConnectModal();
   const [error, setError] = useState<string | null>(null);
-  const balance = useQuery({
-    queryKey: [
-      "evoros-evo-balance",
-      chain.id,
-      evoContractAddress,
-      account?.address.toLowerCase(),
-    ],
-    enabled: Boolean(account),
-    queryFn: () => readEvoBalance(account!.address as Address),
-    staleTime: 15_000,
-    retry: 1,
-    refetchOnWindowFocus: true,
-  });
+  const balance = useEvoBalance(account?.address);
   async function connectWallet() {
+    if (!walletConnectionAvailable) return;
     setError(null);
     try {
-      await connect({
-        client,
-        chain,
-        chains: [chain],
-        wallets: chainWallets,
-        appMetadata,
-        theme: darkTheme({ colors: { modalBg: "var(--background)" } }),
-        showThirdwebBranding: false,
-        size: "compact",
-        titleIcon: "/icon.png",
-        privacyPolicyUrl: "/privacy",
-        termsOfServiceUrl: "/terms",
-      });
+      await connect(chainConnectionOptions());
     } catch {
       setError("Could not connect that wallet. Please try again.");
     }
@@ -124,7 +96,7 @@ function StoreWallet({ account }: { account?: { address: string } }) {
       <Button
         variant="outline"
         className="w-full"
-        disabled={isConnecting}
+        disabled={!walletConnectionAvailable || isConnecting}
         onClick={() => void connectWallet()}
       >
         {isConnecting
@@ -152,17 +124,120 @@ function StoreWallet({ account }: { account?: { address: string } }) {
   );
 }
 
-export default function EvorosStore() {
+export default function EvorosStore({
+  playerAccount,
+  sandboxCheckoutReady = false,
+}: {
+  playerAccount?: { displayName: string; evoros: number };
+  sandboxCheckoutReady?: boolean;
+} = {}) {
   const [selectedId, setSelectedId] = useState<string>(evorosBundles[0].id);
-  const activeAccount = useActiveAccount();
-  const wallets = useConnectedWallets({ includeSmart: false });
-  const account =
-    wallets
-      .map((wallet) => wallet.getAccount())
-      .find(
-        (value) =>
-          value?.address.toLowerCase() === activeAccount?.address.toLowerCase(),
-      ) ?? wallets[0]?.getAccount();
+  const router = useRouter();
+  const [purchasing, setPurchasing] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<string | null>(null);
+  const requestIds = useRef<Record<string, string>>({});
+  const inFlight = useRef(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "cancelled") {
+      setConfirmation("Checkout cancelled. You can try again.");
+      return;
+    }
+    const orderId = params.get("order") || "";
+    if (
+      params.get("checkout") !== "returned" ||
+      !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(orderId)
+    )
+      return;
+    let cancelled = false,
+      timer: ReturnType<typeof setTimeout> | undefined,
+      attempts = 0;
+    setConfirmation("Checking your payment confirmation…");
+    const poll = async () => {
+      try {
+        const response = await fetch(
+          "/api/store/stripe/order?orderId=" + encodeURIComponent(orderId),
+          { cache: "no-store", credentials: "same-origin" },
+        );
+        if (!response.ok)
+          throw new Error(
+            response.status === 401
+              ? "Sign in again to check your purchase."
+              : "Payment confirmation is temporarily unavailable. Refresh to check again.",
+          );
+        const result = await response.json();
+        if (cancelled) return;
+        if (result.status === "credited") {
+          setConfirmation(
+            `${amount(result.evoros)} Evoros added to your game account.`,
+          );
+          router.refresh();
+          return;
+        }
+        if (++attempts < 12) timer = setTimeout(() => void poll(), 2000);
+        else
+          setConfirmation(
+            "Still waiting for payment confirmation. Refresh to check again.",
+          );
+      } catch (error) {
+        if (!cancelled)
+          setConfirmation(
+            error instanceof Error
+              ? error.message
+              : "Refresh to check your payment confirmation.",
+          );
+      }
+    };
+    void poll();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [router]);
+  async function buyByCard() {
+    if (inFlight.current || !playerAccount || !sandboxCheckoutReady) return;
+    inFlight.current = true;
+    setPurchasing(true);
+    setPurchaseError(null);
+    try {
+      requestIds.current[selectedId] ??= crypto.randomUUID();
+      const response = await fetch("/api/store/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          bundleId: selectedId,
+          requestId: requestIds.current[selectedId],
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.error || "Checkout is temporarily unavailable.");
+      const url = new URL(result.url);
+      if (
+        url.protocol !== "https:" ||
+        url.hostname !== "checkout.stripe.com" ||
+        url.username ||
+        url.password
+      )
+        throw new Error("Unexpected checkout address.");
+      window.location.assign(url.href);
+    } catch (error) {
+      setPurchaseError(
+        error instanceof Error
+          ? error.message
+          : "Checkout is temporarily unavailable.",
+      );
+    } finally {
+      inFlight.current = false;
+      setPurchasing(false);
+    }
+  }
+
+  const { account: connectedAccount } = useChainWallet();
+  const { proMode } = useProMode();
+  const account = proMode ? connectedAccount : undefined;
   const hasWallet = Boolean(account);
   const [requestedPayment, setPayment] = useState<"evo" | "card">("card");
   const payment = account ? requestedPayment : "card";
@@ -365,12 +440,12 @@ export default function EvorosStore() {
                   )}
                 </dl>
               </div>
-              <div className="space-y-3">
+              {proMode && <div className="space-y-3">
                 <p className="font-bold text-sm">How would you like to pay?</p>
                 <div
                   className={cn(
                     "grid gap-2",
-                    account ? "grid-cols-2" : "grid-cols-1",
+                    "grid-cols-2",
                   )}
                   role="group"
                   aria-label="Payment method"
@@ -381,10 +456,11 @@ export default function EvorosStore() {
                     onClick={() => setPayment("card")}
                   >
                     <CreditCard className="size-4" aria-hidden="true" />
-                    Card
+                    FIAT
                   </Button>
-                  {account && (
-                    <Button
+                  <Button
+                      disabled={!account}
+                      title={account ? undefined : "Connect a wallet to pay with EVO"}
                       variant={payment === "evo" ? "default" : "outline"}
                       aria-pressed={payment === "evo"}
                       onClick={() => setPayment("evo")}
@@ -392,9 +468,9 @@ export default function EvorosStore() {
                       <Coins className="size-4" aria-hidden="true" />
                       EVO
                     </Button>
-                  )}
                 </div>
-              </div>
+                {!account && <p className="text-xs text-muted-foreground">Connect a wallet to see EVO prices.</p>}
+              </div>}
               {payment === "evo" && (
                 <div
                   className="rounded-xl border bg-muted/30 p-4 space-y-3 text-sm break-words"
@@ -461,23 +537,43 @@ export default function EvorosStore() {
                 >
                   <p className="font-bold text-sm">Card payments with Stripe</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    When purchases open, you’ll pay on Stripe’s secure checkout
-                    page. No crypto wallet is needed for card payments.
+                    {sandboxCheckoutReady
+                      ? "Sandbox checkout opens Stripe’s secure payment page. Payments are simulated; no real money is charged."
+                      : "Card checkout is being prepared for local testing."}
                   </p>
                 </div>
               )}
               <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
                 <p className="font-bold text-sm">Your game account</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  You must be signed in to your linked game account before
-                  buying Evoros. Game account sign-in is not connected in this
-                  beta yet.
+                  {playerAccount
+                    ? `Signed in as ${playerAccount.displayName}. Your balance is ${amount(playerAccount.evoros)} Evoros.`
+                    : "Sign in with Epic to use the same game account here and in the game. You must be signed in before buying Evoros."}
                 </p>
               </div>
               <div className="space-y-3">
+                {confirmation && (
+                  <p
+                    role="status"
+                    className="rounded-xl border bg-primary/5 p-3 text-sm"
+                  >
+                    {confirmation}
+                  </p>
+                )}
+                {purchaseError && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {purchaseError}
+                  </p>
+                )}
                 <Button
                   className="w-full font-bold"
-                  disabled
+                  disabled={
+                    payment === "evo" ||
+                    !sandboxCheckoutReady ||
+                    !playerAccount ||
+                    purchasing
+                  }
+                  onClick={() => void buyByCard()}
                   aria-describedby="purchase-disabled-reason"
                   data-testid="purchase-button"
                 >
@@ -488,15 +584,23 @@ export default function EvorosStore() {
                   )}
                   {payment === "evo"
                     ? "Buy with EVO · Coming soon"
-                    : "Pay by card · Coming soon"}
+                    : purchasing
+                      ? "Opening Stripe…"
+                      : sandboxCheckoutReady
+                        ? "Pay by card · Test checkout"
+                        : "Pay by card · Coming soon"}
                 </Button>
                 <p
                   id="purchase-disabled-reason"
                   className="text-xs text-muted-foreground leading-relaxed"
                 >
-                  Test prices are shown for review. Purchases require a
-                  signed-in game account and are not open yet, so no payment is
-                  taken.
+                  {!playerAccount
+                    ? "Sign in with Epic before buying Evoros."
+                    : payment === "evo"
+                      ? "EVO purchases are coming soon."
+                      : sandboxCheckoutReady
+                        ? "Test prices: US$0.01 per Evoro. Purchased Evoros go to your signed-in game account."
+                        : "Sandbox checkout is not configured yet."}
                 </p>
               </div>
             </CardContent>

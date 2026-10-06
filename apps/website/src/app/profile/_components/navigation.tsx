@@ -1,5 +1,6 @@
 "use client";
 
+import { useProMode } from "@/components/providers/pro-mode-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
@@ -10,11 +11,13 @@ interface SidebarNavProps extends HTMLAttributes<HTMLElement> {
   items: {
     href: string
     title: string
+    proOnly?: boolean
   }[];
 }
 
 export const AccountNavigation = ({ className, items, ...props }: SidebarNavProps) => {
   const pathname = usePathname();
+  const { proMode } = useProMode();
 
   return (
     <nav
@@ -24,7 +27,7 @@ export const AccountNavigation = ({ className, items, ...props }: SidebarNavProp
       )}
       {...props}
     >
-      {items.map((item) => (
+      {items.filter(item => !item.proOnly || proMode).map((item) => (
         <Button
           key={item.href}
           variant="ghost"

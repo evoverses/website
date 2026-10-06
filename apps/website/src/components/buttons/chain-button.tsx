@@ -1,4 +1,6 @@
 "use client";
+import { useProMode } from "@/components/providers/pro-mode-provider";
+import { localWalletPreview } from "@/lib/thirdweb/preview";
 import { chain, client } from "@/lib/thirdweb/config";
 import { Button } from "@workspace/ui/components/button";
 import { ComponentProps } from "react";
@@ -17,6 +19,8 @@ const ChainButton = ({ loading, success, children, ...props }: ChainButtonProps)
   const switchChain = useSwitchActiveWalletChain();
   const { connect } = useConnectModal();
 
+  const { proMode } = useProMode();
+  if (!proMode || localWalletPreview) return null;
   if (status !== "connected") {
     return <Button {...props} onClick={() => connect({ chain, client })}>Connect</Button>;
   }

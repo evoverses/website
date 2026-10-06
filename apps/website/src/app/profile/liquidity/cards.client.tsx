@@ -23,7 +23,7 @@ import { ComponentProps, type PropsWithChildren } from "react";
 import { getContract } from "thirdweb";
 import { balanceOf, totalSupply } from "thirdweb/extensions/erc20";
 import { AccountBalance, AccountProvider, useActiveAccount } from "thirdweb/react";
-import { type Address, formatEther, zeroAddress } from "viem";
+import { formatEther, zeroAddress } from "viem";
 
 type CardBaseProps = {
   title: string;
@@ -137,7 +137,7 @@ const FarmCard = () => {
   const { data: pool, isFetching, isPlaceholderData, isLoading } = useQuery({
     queryKey: [ "farm-pools", account?.address ],
     queryFn: async () => {
-      const pools = await getPoolData(account?.address as Address || zeroAddress);
+      const pools = await getPoolData((account?.address ?? zeroAddress) as `0x${string}`);
       return pools[0];
     },
     staleTime: staleTimeMinutes(10),
@@ -303,7 +303,7 @@ const BankCard = () => {
   const account = useActiveAccount();
   const { data, isFetching, isPlaceholderData, isLoading } = useQuery({
     queryKey: [ "bank", account?.address ],
-    queryFn: async () => getxEVOData(account?.address as Address || zeroAddress),
+    queryFn: async () => getxEVOData((account?.address ?? zeroAddress) as `0x${string}`),
     staleTime: staleTimeMinutes(10),
   });
   if (isFetching || isPlaceholderData || isLoading) {
@@ -415,11 +415,11 @@ const VestingCard = () => {
     queries: [
       {
         queryKey: [ "cevo-data", account?.address ],
-        queryFn: () => getcEVOData(account?.address as Address || zeroAddress),
+        queryFn: () => getcEVOData((account?.address ?? zeroAddress) as `0x${string}`),
       },
       {
         queryKey: [ "evo-data", account?.address ],
-        queryFn: () => getEVOData(account?.address as Address || zeroAddress),
+        queryFn: () => getEVOData((account?.address ?? zeroAddress) as `0x${string}`),
       },
     ],
     combine: result => {
@@ -442,7 +442,7 @@ const VestingCard = () => {
   return (
     <CardBase
       title="cEVO"
-      token={{ address: cEvoContract.address as Address, image: "https://evoverses.com/EVO.png", symbol: "cEVO" }}
+      token={{ address: cEvoContract.address as `0x${string}`, image: "https://evoverses.com/EVO.png", symbol: "cEVO" }}
     >
       <Tabs defaultValue="overview" className="w-75 sm:w-100 [&_div[data-slot=table-container]]:overflow-hidden!">
         <TabsList className="w-full">

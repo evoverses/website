@@ -1,10 +1,10 @@
 {
-  "verifiedDate": "2026-10-05",
+  "verifiedDate": "2026-10-06",
   "stripeAccount": "Evoverses Inc",
   "mode": "test",
   "livemode": false,
   "connectionName": "test ac",
-  "note": "Test-only US$0.01 per Evoro. Products remain inactive. Purchases remain disabled; no live pricing approval.",
+  "note": "Test-only US$0.01 per Evoro. Six products active for local sandbox Checkout. No live pricing or release approval.",
   "cashCentsPerEvoro": 1,
   "evoDiscountPercent": 90,
   "products": [
@@ -15,7 +15,7 @@
       "priceId": "price_1UN5GQI8Ec1gWS2XyNp9vSjD",
       "currency": "usd",
       "unitAmount": 250,
-      "active": false
+      "active": true
     },
     {
       "bundleId": "bundle_satchel",
@@ -24,7 +24,7 @@
       "priceId": "price_1UN5GUI8Ec1gWS2XFPMSpDns",
       "currency": "usd",
       "unitAmount": 500,
-      "active": false
+      "active": true
     },
     {
       "bundleId": "bundle_canister",
@@ -33,7 +33,7 @@
       "priceId": "price_1UN5GYI8Ec1gWS2XtHerD9c4",
       "currency": "usd",
       "unitAmount": 1000,
-      "active": false
+      "active": true
     },
     {
       "bundleId": "bundle_case",
@@ -42,7 +42,7 @@
       "priceId": "price_1UN5GcI8Ec1gWS2XjhtNdNyE",
       "currency": "usd",
       "unitAmount": 2500,
-      "active": false
+      "active": true
     },
     {
       "bundleId": "bundle_chest",
@@ -51,7 +51,7 @@
       "priceId": "price_1UN5GiI8Ec1gWS2XWsDGr1F9",
       "currency": "usd",
       "unitAmount": 5000,
-      "active": false
+      "active": true
     },
     {
       "bundleId": "bundle_vault",
@@ -60,7 +60,7 @@
       "priceId": "price_1UN5GqI8Ec1gWS2X4Wuagtk5",
       "currency": "usd",
       "unitAmount": 10000,
-      "active": false
+      "active": true
     }
   ],
   "prices": {
@@ -94,5 +94,6 @@
       "currency": "usd",
       "unitAmount": 10000
     }
-  }
+  },
+  "accountId": "acct_1UN0wpI8Ec1gWS2X"
 }

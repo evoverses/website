@@ -60,6 +60,7 @@ export const chainWallets = [
   createWallet("com.coinbase.wallet"),
   createWallet("io.rabby"),
   createWallet("com.trustwallet.app"),
+  createWallet("walletConnect"),
 ]
 
 export const wallets = [

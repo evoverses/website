@@ -1,7 +1,8 @@
+import { getPlayerAccount } from "@/lib/player/server";
 import { AccountNavigation } from "@/app/profile/_components/navigation";
 import { isLoggedIn } from "@/lib/thirdweb/auth";
 import { Separator } from "@workspace/ui/components/separator";
-import { unauthorized } from "next/navigation";
+import { redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
 
 const navigation = [
@@ -12,10 +13,12 @@ const navigation = [
   {
     title: "Liquidity",
     href: "/profile/liquidity",
+    proOnly: true,
   },
   {
     title: "Assets",
     href: "/profile/assets",
+    proOnly: true,
   },
   //{
   //  title: "Notifications",
@@ -29,9 +32,8 @@ const navigation = [
 
 const Layout = async ({ children }: PropsWithChildren) => {
   const loggedIn = await isLoggedIn();
-  if (!loggedIn) {
-    unauthorized();
-  }
+  const playerAccount = await getPlayerAccount();
+  if (!loggedIn && !playerAccount) redirect("/signin");
   return (
     <div className="flex flex-col space-y-6 px-4 sm:px-10 pt-6">
       <div className="space-y-0.5">
@@ -43,7 +45,7 @@ const Layout = async ({ children }: PropsWithChildren) => {
       <Separator className="my-6" />
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0 lg:flex-grow">
         <aside className="lg:w-1/5">
-          <AccountNavigation items={navigation} />
+          <AccountNavigation items={navigation.filter(item => !item.proOnly || loggedIn)} />
         </aside>
         <div className="flex-1 overflow-y-scroll">{children}</div>
       </div>

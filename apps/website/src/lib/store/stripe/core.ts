@@ -134,7 +134,6 @@ export async function createCardCheckout(
     {
       mode: "payment",
       integration_identifier: "evoros-store-uipeaojj",
-      allowed_payment_method_types: ["card"],
       allow_promotion_codes: false,
       expires_at: order.expiresAt,
       automatic_tax: { enabled: false },
@@ -148,7 +147,10 @@ export async function createCardCheckout(
         bundleId: order.bundleId,
         evoros: String(order.evoros),
       },
-      success_url: config.origin + "/store?checkout=returned",
+      success_url:
+        config.origin +
+        "/store?checkout=returned&order=" +
+        encodeURIComponent(order.id),
       cancel_url: config.origin + "/store?checkout=cancelled",
     },
     { idempotencyKey: "evoros-order-" + order.id },

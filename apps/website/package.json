@@ -12,7 +12,11 @@
     "start": "next start",
     "lint": "next lint",
     "test:nursery": "node --experimental-strip-types --test tests/nursery/*.test.mts",
-    "test:store": "node --experimental-strip-types --test tests/store/*.test.mts && node scripts/test-store.cjs"
+    "test:store": "node --experimental-strip-types --test tests/store/*.test.mts && node scripts/test-store.cjs",
+    "test:preview": "node --test tests/preview/*.test.cjs",
+    "test:player": "node --test tests/player/*.test.cjs",
+    "test:store:local": "node scripts/test-store.cjs --with-local-accounts",
+    "check:beta-build": "node scripts/check-beta-build.cjs"
   },
   "dependencies": {
     "@auth/core": "0.39.1",
