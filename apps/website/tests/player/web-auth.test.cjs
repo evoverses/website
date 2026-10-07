@@ -22,7 +22,7 @@ function setup(options={}){
    return json({player:profile.player,sessionToken:token,issuedAt:options.fractional?(clock-10)/1000:Math.floor(clock/1000),expiresAt:options.fractional?(clock-10)/1000+900:Math.floor(clock/1000)+900});
   }
   if(url.endsWith('/me'))return options.meDenied?json({error:{code:'INVALID_SESSION'}},401):json(profile);
-  if(url.endsWith('/inventory'))return json({items:[{productId:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',revision:1,quantity:2}],evos:[]});
+  if(url.endsWith('/inventory'))return json({items:[{productId:'vital_dew',revision:1,quantity:2}],evos:[]});
   if(url.endsWith('/logout'))return new Response(null,{status:204});
   throw Error('Unexpected endpoint');
  }});
@@ -140,4 +140,16 @@ test('accepted callback sets only the independent HttpOnly session with integer 
  assert.equal(r.headers.get('location'),'http://localhost:3100/profile');
  const cookie=r.cookies.values.find(v=>v[0]===core.playerSessionCookie);assert.equal(cookie[1],token);assert.equal(cookie[2].httpOnly,true);assert.equal(cookie[2].sameSite,'lax');assert.equal(cookie[2].path,'/');assert.equal(Number.isInteger(cookie[2].maxAge),true);assert.equal(cookie[2].maxAge<=900,true);
  assert.equal(r.cookies.values.some(v=>v[0]==='ev:jwt'),false);
+});
+
+test('failure diagnostics report fixed stage/status only and cannot expose proofs or disrupt authentication', async()=>{
+ const events=[];
+ const flow=core.createPlayerWebAuth({configuration:()=>config,diagnostic:event=>events.push(event),fetchImpl:async()=>Response.json({error:'synthetic-provider-secret'}, {status:503})});
+ const x=flow.start();
+ await reject(flow.callback({state:new URL(x.url).searchParams.get('state'),cookie:x.cookie,code:'synthetic-private-code'}),'EPIC_VERIFICATION_FAILED');
+ assert.equal(events.length,1);assert.equal(events[0].stage,'epic-token');assert.equal(events[0].outcome,'http-error');assert.equal(events[0].status,503);
+ assert.deepEqual(Object.keys(events[0]).sort(),['elapsedMs','outcome','stage','status']);
+ assert.equal(JSON.stringify(events).includes('synthetic'),false);
+ const broken=core.createPlayerWebAuth({configuration:()=>config,diagnostic:()=>{throw Error('logger failed')},fetchImpl:async()=>{throw Error('synthetic-private-response')}});
+ const y=broken.start();await reject(broken.callback({state:new URL(y.url).searchParams.get('state'),cookie:y.cookie,code:'synthetic-private-code'}),'SERVICE_UNAVAILABLE');
 });

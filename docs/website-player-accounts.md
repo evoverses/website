@@ -1,3 +1,5 @@
+> Current follow-up: [local encrypted wallet account links](wallet-account-linking.md) now extend this account flow. Earlier statements below about wallet linking being unimplemented describe their original sprint. Game NFT projection and exclusive Evo reservations remain unimplemented.
+
 # Local website Epic player accounts
 
 ## Current BETA update - 7 October 2026
@@ -138,3 +140,5 @@ After restart, service status confirms one player, one identity and total Evoros
 Connected the signed-in website account to the existing account service's durable payment-order/Evoros ledger through a private loopback bridge. No game source or production infrastructure changed. Six existing Stripe test products were activated and CLI forwarding was started with private local secrets. The account service's test lifetime is now two hours. Live and EVO purchases remain disabled.
 
 The user's genuine **500-Evoros / $5 test purchase** was paid in Stripe and credited to its reserved existing player; balance changed from **10,000 to 10,500**. Two signed local duplicate confirmations returned `already_credited` and left the balance unchanged. Thirty unique Store/payment tests passed, including persistent SQL/RPC retry/restart cases; anonymous browser security/mobile checks passed. See [Stripe local testing](stripe-local-testing.md) for setup, commands, limits and next steps. Next recommended step is cancellation/decline testing, then delayed confirmation/recovery.
+
+**7 October, consolidated inventory:** Profile now combines owned items/Evos with Pro-only verified linked-wallet NFT Evos/eggs, sharing search, sorting and shortened wallet filters. Read-only NFT ownership is checked against C-Chain; no game access is granted. See [inventory implementation and local compiler recovery](consolidated-inventory.md).

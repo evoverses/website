@@ -31,7 +31,7 @@ export function WalletEvos() {
         </div>)}
       </div>
       {owned.hasNextPage && <Button variant="outline" disabled={owned.isFetchingNextPage} onClick={() => void owned.fetchNextPage()}>{owned.isFetchingNextPage ? "Loading…" : "Load more Evos"}</Button>}
-      <p className="text-xs text-muted-foreground">Showing wallet holdings does not yet link them to your Epic account for in-game use.</p>
+      <p className="text-xs text-muted-foreground">This gallery shows the connected wallet. A saved account link is separate; in-game NFT access is coming later.</p>
     </>}
   </section>;
 }

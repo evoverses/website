@@ -1,6 +1,6 @@
 # Local Stripe test purchases
 
-Updated 7 October 2026 (work began 6 October). Local branch: `Dan/website-player-accounts`.
+Updated 7 October 2026 (work began 6 October). Current local branch: `dan-dev`; initial payment work began on `Dan/website-player-accounts`.
 
 The Store now opens hosted Stripe Checkout for a signed-in Epic player. Stripe confirms the simulated payment to the local webhook; the account service independently checks the payment and credits the same durable Evoros balance used by the game. A browser redirect alone cannot add currency. A wallet is unnecessary for card purchases. EVO purchases remain disabled.
 
@@ -70,4 +70,33 @@ Keep forwarding, account service and website running throughout the rehearsal. R
 
 ## Next step
 
-Next, rehearse cancellation and decline: neither may increase the balance. Delayed confirmation/recovery should follow. The successful purchase and duplicate-credit protection are already verified. Production requires reviewed hosting/TLS, secret storage, stable webhooks, account service deployment, reconciliation/refund/dispute policy, production pricing/tax decisions and separate release approval. This sprint makes no AWS deployment, GitHub push, Nursery/contract change or game-source change.
+Next, rehearse interrupted webhook forwarding and recovery: a confirmed payment must eventually credit once when forwarding resumes. Successful purchase, duplicate-credit protection, cancellation and decline are verified below. Production requires reviewed hosting/TLS, secret storage, stable webhooks, account service deployment, reconciliation/refund/dispute policy, production pricing/tax decisions and separate release approval. This sprint makes no AWS deployment, GitHub push, Nursery/contract change or game-source change.
+
+## Restart after reboot - 7 October 2026
+
+Restarted the existing Stripe test listener, ownership-checked account service and website on port 3100, using the same reviewed database directory. The read-only payment check confirmed one player, 10,500 Evoros, one credited 500-Evoros test purchase and no pending saved payment among the checked recent sessions. `/signin` returned HTTP 200 with Epic sign-in enabled. The signed-out Store smoke check passed: purchasing disabled, crypto UI hidden, expected 401/403/400/401 API protections and mobile layout fitting. The restart created no purchases or replacement database; a test-data backup was deliberately skipped. The local account service still closes after two hours.
+
+
+## Cancellation and decline - 7 October 2026
+
+The user completed both genuine browser tests with the 250-Evoros / $2.50 bundle. Read-only Stripe API checks matched each Checkout to its saved local order:
+
+| Test | Stripe result | Local result |
+| --- | --- | --- |
+| Return without paying | Checkout open, payment unpaid, no PaymentIntent | Order awaiting payment; no Evoros added |
+| Declined test card | PaymentIntent requires a payment method; `card_declined` / `generic_decline`; Checkout unpaid | Order awaiting payment; no Evoros added |
+
+The balance stayed **10,500 Evoros**. The aggregate check found the existing paid/credited 500-Evoros purchase and these two unpaid orders. Returning from Checkout does not expire the session; an open unpaid session can still be retried until it expires. These pending orders are unpaid attempts, not paid purchases awaiting fulfillment.
+
+**27 payment tests passed.** The new test sends signed unpaid-completion, failed-payment and expired-session notifications through the actual webhook handler and private account bridge, then checks the temporary SQL database: no balance, ledger or receipt changes. Those automated tests use provider fixtures and a separate temporary database; the browser results above use genuine Stripe test-mode reads. Browser automation could not attach from this WSL session, so the user performed the Checkout actions.
+
+To repeat the read-only checks from `apps/website`:
+
+```powershell
+node scripts/check-stripe-negative-attempts.cjs --expected-balance=10500
+node scripts/check-stripe-sandbox.cjs
+```
+
+The first command reports saved unpaid attempts and safe decline status labels, and fails if an unpaid order is credited or the expected aggregate balance changes. The expected balance is specific to this rehearsal; update it after an intentional credit or purchase. Neither command creates payments, changes orders or prints player identities or credentials.
+
+This sprint changed the local tests, read-only verification script and documentation only. No application, game, Nursery contract, AWS or live-payment change was made. These testing changes have not been pushed.

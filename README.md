@@ -20,7 +20,8 @@ Combined development branch: **`dan-dev`**. This branch started from `main`, mer
 | Stripe test Checkout | Requires server-verified Epic sign-in. Browser supplies only bundle ID/request UUID. The server reserves an immutable order and uses hosted Checkout with a stable idempotency key. Signature-verified webhooks re-fetch paid session/line-item details; the account service independently verifies the receipt and transactionally credits the reserved player's durable ledger once. Return URLs never grant currency. |
 | Epic login | Game-themed Arena sign-in page; confidential server-side OAuth exchange, browser-bound single-use state and explicit new-account confirmation. Web/game clients share the reviewed identity namespace. HttpOnly local session cookies, backend expiry/revocation and profile/inventory revalidation remain authoritative. Local incoming callback logging and Sentry capture are disabled. |
 | Direct wallet connection | Thirdweb v5 external wallets: MetaMask, Coinbase Wallet, Rabby, Trust Wallet and WalletConnect. New Pro connection uses the owner's existing wallet, without smart-account wrapping or wallet-based game login. It reconnects previously authorised wallets when Pro is enabled and supports switching/disconnection. Uses only a public client ID in the browser. |
-| Profile / inventory | Shows verified trainer name, player XP, Evoros and game inventory. Standard-mode UI calls the creatures simply “Evos” and does not describe Pro/wallet features. In Pro mode a separate gallery shows connected-wallet NFT Evos/eggs: live collection count plus paginated indexed details filtered by chain, collection and owner. RPC/indexer failures remain errors, not a false zero. Displaying wallet assets does not permanently link them to Epic or grant in-game rights. |
+| Profile / inventory | One inventory combines owned store items and Evos, with search, type filters and sorting. Pro adds NFT Evos/eggs from every verified linked wallet, with shortened wallet labels on cards and a wallet filter. Indexed details are checked against current C-Chain ownership before display. Standard mode shows only Evos and items. Pages load 48 NFT entries at a time; filters/sorts apply to loaded entries. Errors/metadata delays remain explicit. This read-only view grants no NFT gameplay rights. |
+| Local wallet account links | Pro Profile supports multiple independently verified external wallets per Epic trainer, shared links across family accounts, encrypted address storage and confirmed per-account unlinking. Five-minute single-use session-bound signatures prove control. Linking alone grants no NFT gameplay rights. |
 | Development tooling | Focused Nursery/account/payment tests; signed-out auth/payment checks and an isolated injected-wallet browser regression. Ownership-checked local service start/stop scripts prevent two PGlite owners. Separate production-check output avoids overwriting the running preview. |
 
 ## Contract and data boundaries
@@ -33,7 +34,7 @@ This is the **website repository**. Solidity changes are in `evoverses/contracts
 - Bertha/Hermann addresses must be deliberately configured after contract approval/deployment; blank or invalid settings disable spending. The UI verifies reciprocal wiring, token/collection/treasury and pause state; it has no fallback to Brenda/Harry.
 - Contract economics remain authoritative. Parent cost is `500 EVO × 2^generation × (1 + totalBreeds)`; Gen0 pricing caps at four previous breeds, giving 2,500 EVO maximum per parent. Gen0 lifetime breeds remain unlimited; other generations allow five. Cooldown is `max(1, 7 - generation)` days. Treatment costs 250 EVO. See the detailed Nursery notes for async VRF and payment semantics.
 - Nursery and game-account databases are distinct. Existing indexed NFT metadata/ownership is read for display; local player balances, ordinary Evos/items and account sessions live in the isolated player database.
-- A connected wallet is not a verified permanent Epic association. Signed ownership challenges, encrypted private linking, unlink/recovery rules and the authoritative game NFT projection are **not implemented**. Do not advertise encrypted wallet linking yet.
+- Connecting alone is not a verified Epic association. The local Profile now supports separately signed, encrypted wallet links and per-account unlinking, including shared family wallets. Hosted recovery, game NFT projection and exclusive Evo reservations are **not implemented**; NFT gameplay remains disabled. See [wallet linking](docs/wallet-account-linking.md).
 
 ## Local setup
 
@@ -45,7 +46,7 @@ pnpm install --frozen-lockfile
 cd apps\website
 # Create ignored .env.local using .env.example as a guide, not as live credentials.
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-player-accounts-local.ps1
-pnpm dev --hostname 0.0.0.0 --port 3100
+pnpm dev:beta
 ```
 
 Open **http://localhost:3100** on this machine. Local Epic/payment mutations accept the exact `localhost:3100` Host/Origin; LAN URLs are not registered authentication origins.
@@ -79,6 +80,8 @@ pnpm test:player
 pnpm test:preview
 pnpm test:store
 pnpm test:store:local  # Requires the sibling local account backend
+pnpm test:wallet:local # Same backend requirement; separate temporary test database
+pnpm test:inventory    # Consolidation, filtering, privacy and ownership checks
 pnpm exec tsc --noEmit
 node scripts/check-beta-wallet-ui.cjs
 node scripts/check-player-preview.cjs
@@ -102,8 +105,8 @@ Confirmed before this push:
 ## Remaining release work
 
 1. **Nursery:** complete independent contract review and the contract → indexer → API/image → wallet rehearsal; approve/import history and species mappings; approve addresses, mint roles, VRF configuration, failure recovery and deployment. Apply the metadata migration/watcher deliberately, without replaying transfers into a populated database.
-2. **Accounts:** deploy the shared account/payment service with TLS, durable PostgreSQL, proper secret storage and shared OAuth/session state. Local sign-in is not a hosted account release. Implement the separately reviewed secure Epic/wallet link and game NFT projection.
-3. **Payments:** cancellation/decline, delayed confirmation, interrupted forwarding and recovery tests; stable hosted webhooks/reconciliation, refunds/disputes/support, production pricing and tax decisions. Test-mode Checkout is not revenue activation. EVO settlement needs a reserved quote and manipulation-resistant pricing policy, plus verified on-chain fulfillment.
+2. **Accounts:** deploy the shared account/payment service with TLS, durable PostgreSQL, proper secret storage and shared OAuth/session state. Local sign-in is not a hosted account release. Rehearse the local wallet linking UI, then implement game NFT projection and exclusive Evo reservations; hosted key custody/rotation and recovery remain required.
+3. **Payments:** delayed confirmation, interrupted forwarding and recovery tests; stable hosted webhooks/reconciliation, refunds/disputes/support, production pricing and tax decisions. Test-mode Checkout is not revenue activation. EVO settlement needs a reserved quote and manipulation-resistant pricing policy, plus verified on-chain fulfillment.
 4. **Game economy:** reviewed item/Evo catalogue and prices, purchase/use effects and gameplay validation. A displayed balance alone does not prove every gameplay spending path is deployed.
 
 Nursery release and game/store revenue are concurrent streams. Neither mainnet deployment nor AWS/database migration is authorised by this GitHub push.
@@ -114,6 +117,8 @@ Nursery release and game/store revenue are concurrent streams. Neither mainnet d
 - [Nursery metadata/indexer/migration](docs/nursery-metadata.md)
 - [Store pricing/assets/payment foundation](docs/evoros-store.md)
 - [Stripe local setup and verified purchase](docs/stripe-local-testing.md)
+- [Encrypted local wallet links and game access gate](docs/wallet-account-linking.md)
+- [Consolidated inventory, filters and linked-wallet holdings](docs/consolidated-inventory.md)
 - [Epic/local accounts and earlier work log](docs/website-player-accounts.md)
 - [Local preview/native dependencies](docs/local-preview.md)
 
@@ -121,6 +126,29 @@ Nursery release and game/store revenue are concurrent streams. Neither mainnet d
 
 During verification, a WSL environment flag failed to reach Windows Node and a production-check attempt touched the active `.next` output, causing an internal-server error. Stopped only the website preview, cleared its disposable build output and restarted it; Store returned HTTP 200. The account database was untouched. After replacing dependency junctions, restarted the website preview again to clear stalled Turbopack state; `/store` and `/signin` returned HTTP 200. `check-beta-build.cjs` now sets isolation flags in the Windows child process itself and restores Next’s temporary TypeScript include change only if no independent config edits occurred. Missing locked Rollup/Sharp Windows optional packages were installed only in ignored `node_modules`, with package SHA512 checked against the existing lockfile; no dependency version change or broad reinstall was made. Windows-inaccessible Linux symlinks in the locked Sharp/BIP dependency graphs were replaced with Windows junctions. The final isolated production build passed compilation, type checking, generation of all 27 static pages and build tracing; existing unrelated lint warnings remain.
 
+**7 October, payment failure checks:** the user completed a cancelled Checkout and a declined-card Checkout. Read-only Stripe/local-order checks confirmed both remained unpaid and uncredited, with the balance unchanged at 10,500 Evoros. The payment suite passed 27 tests, including a new signed unpaid/failed/expired notification check against the temporary SQL ledger. Added a read-only negative-attempt verifier; see the [testing log](docs/stripe-local-testing.md). These follow-up test/documentation changes remain local. Recommended next sprint: interrupted webhook forwarding and recovery.
+
+**7 October, wallet linking:** added a Pro Profile section for verified multi-wallet links, shared-wallet associations and individually confirmed unlinking. Addresses and pending address challenges are encrypted in the same local player database; signed proofs are session-bound, expiring and single-use. The service restart retained one player and 10,500 Evoros and revoked old sessions. No game source, inventory, payment, contract or hosted resource changed. 17 wallet tests and 21 account tests passed; strict types and the isolated production build passed. The user confirmed two genuine wallet links; the browser unlink flow remains to be checked. Account-linked NFT gameplay access stays disabled pending server-side per-Evo reservations. These changes are local and unpushed.
+
+**7 October, consolidated inventory:** replaced the connected-wallet-only gallery with one account inventory for owned items, Evos and Pro-only linked-wallet NFT Evos/eggs. Added shared search/type/sort controls, wallet filtering, shortened wallet labels, bounded pagination and current-chain ownership checks. Corrected item-ID validation and excluded private inventory/link queries from persisted browser caches. Added 11 inventory tests, one SQL-backed projection test and a safe auth-diagnostics test; all 51 inventory/wallet/player tests passed. Strict types and the isolated production build passed; remaining lint warnings are existing repository warnings. The user reported sign-in hanging: the owned Turbopack preview had panicked. Restarted only that preview with standard Next compilation and reloaded only the owned account service for the new projection. The database/balance were preserved, with 10,500 Evoros; the user confirmed a fresh Epic sign-in works. The signed-out browser auth regression also passed after compilation completed. First visits are slow with the standard compiler (Store: 56 seconds cold, 133 ms warm); warmed sign-in pages took 0.1–0.5 seconds, and the account backend 27 ms. Use `pnpm dev:beta`; see the inventory log for diagnostic and performance limits. These changes remain local and unpushed. See [inventory notes](docs/consolidated-inventory.md) for pagination limits and next steps.
+
 ## Monorepo structure
 
 `apps/website` is the Next.js frontend; `apps/squid` contains the NFT indexer/metadata migration; `packages/database`, `packages/evoverses` and `packages/ui` provide shared schemas, game types/components and UI styles. Other existing apps/infra remain in the repository; this sprint does not deploy or reconfigure them.
+
+
+### Local game inventory bridge (2026-10-07)
+
+The owned local player service now supplies authenticated purchased inventory plus linked-wallet NFT display data to the game account client. Website and game share the same ownership loader and read adapters. Wallets stay encrypted in storage; only shortened labels enter the game DTO. The game retains its themed Evo grid and adds Items/All views. Account-owned and verified wallet-owned Evos share one game collection, presentation and profile count; Pro controls, wallet labels and ownership-source distinctions are website-only. This is an editor-only, read-only integration; per-Evo reservations are required before NFT gameplay. See [consolidated inventory](docs/consolidated-inventory.md) and the sibling game account bridge's documentation. No push or deployment is included in this sprint.
+
+
+### Local whole-team game admission foundation (2026-10-07)
+
+Added the server-only `createGameTeamVerifier` adapter, reusing current linked-wallet/live ownership checks for the sibling backend's atomic whole-team reservation service. Named conflicts identify the selected Evo and slot without revealing another trainer or wallet. Eight shared feed/verifier checks passed; the backend's reservation and native concurrency suites passed. No website UI/route or running database/service was changed. Battle-start/lifecycle integration is the next local step; reservations do not activate gameplay or XP. See [inventory log](docs/consolidated-inventory.md).
+
+
+### Website checkpoint - 7 October 2026
+
+Prepared the current `dan-dev` account, encrypted multi-wallet linking, consolidated inventory and game-feed adapters for GitHub backup at the user's request. Nursery and the Evoros Store remain together on this branch. Wallet links can be shared between separately verified accounts; unlinking affects only the requesting account. NFT game use still requires trusted per-Evo admission and combat verification.
+
+Before this checkpoint, the inventory, wallet, player, preview, game-feed/team-verifier and local Stripe payment tests passed. Local Stripe checks use synthetic receipts and disposable databases; they do not charge cards. The isolated production build and strict TypeScript check also passed; existing repository lint warnings remain. Local configuration, encryption keys, payment/provider credentials, session files and database contents are excluded from Git. This checkpoint does not deploy the website or activate live payments.

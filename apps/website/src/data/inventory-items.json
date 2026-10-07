@@ -1,0 +1,272 @@
+{
+  "vital_dew": {
+    "name": "Vital Dew",
+    "category": "healing",
+    "image": "/inventory/items/vital_dew.png"
+  },
+  "bloom_tonic": {
+    "name": "Bloom Tonic",
+    "category": "healing",
+    "image": "/inventory/items/bloom_tonic.png"
+  },
+  "lifespring_elixir": {
+    "name": "Lifespring Elixir",
+    "category": "healing",
+    "image": "/inventory/items/lifespring_elixir.png"
+  },
+  "spark_draught": {
+    "name": "Spark Draught",
+    "category": "move_recovery",
+    "image": "/inventory/items/spark_draught.png"
+  },
+  "surge_draught": {
+    "name": "Surge Draught",
+    "category": "move_recovery",
+    "image": "/inventory/items/surge_draught.png"
+  },
+  "ether_well": {
+    "name": "Ether Well",
+    "category": "move_recovery",
+    "image": "/inventory/items/ether_well.png"
+  },
+  "rekindle_shard": {
+    "name": "Rekindle Shard",
+    "category": "revival",
+    "image": "/inventory/items/rekindle_shard.png"
+  },
+  "rekindle_crystal": {
+    "name": "Rekindle Crystal",
+    "category": "revival",
+    "image": "/inventory/items/rekindle_crystal.png"
+  },
+  "dawnheart_crystal": {
+    "name": "Dawnheart Crystal",
+    "category": "revival",
+    "image": "/inventory/items/dawnheart_crystal.png"
+  },
+  "venomleaf_remedy": {
+    "name": "Venomleaf Remedy",
+    "category": "status_cure",
+    "image": "/inventory/items/venomleaf_remedy.png"
+  },
+  "coolmist_salve": {
+    "name": "Coolmist Salve",
+    "category": "status_cure",
+    "image": "/inventory/items/coolmist_salve.png"
+  },
+  "sunwake_nectar": {
+    "name": "Sunwake Nectar",
+    "category": "status_cure",
+    "image": "/inventory/items/sunwake_nectar.png"
+  },
+  "static_salve": {
+    "name": "Static Salve",
+    "category": "status_cure",
+    "image": "/inventory/items/static_salve.png"
+  },
+  "clarity_tea": {
+    "name": "Clarity Tea",
+    "category": "status_cure",
+    "image": "/inventory/items/clarity_tea.png"
+  },
+  "purelight_remedy": {
+    "name": "Purelight Remedy",
+    "category": "status_cure",
+    "image": "/inventory/items/purelight_remedy.png"
+  },
+  "ferocity_sigil": {
+    "name": "Ferocity Sigil",
+    "category": "battle_boost",
+    "image": "/inventory/items/ferocity_sigil.png"
+  },
+  "bulwark_sigil": {
+    "name": "Bulwark Sigil",
+    "category": "battle_boost",
+    "image": "/inventory/items/bulwark_sigil.png"
+  },
+  "tailwind_sigil": {
+    "name": "Tailwind Sigil",
+    "category": "battle_boost",
+    "image": "/inventory/items/tailwind_sigil.png"
+  },
+  "water_boost_weak": {
+    "name": "Tidebrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/water_boost_weak.png"
+  },
+  "water_boost_medium": {
+    "name": "Tidebrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/water_boost_medium.png"
+  },
+  "water_boost_strong": {
+    "name": "Tidebrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/water_boost_strong.png"
+  },
+  "fire_boost_weak": {
+    "name": "Emberbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/fire_boost_weak.png"
+  },
+  "fire_boost_medium": {
+    "name": "Emberbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/fire_boost_medium.png"
+  },
+  "fire_boost_strong": {
+    "name": "Emberbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/fire_boost_strong.png"
+  },
+  "air_boost_weak": {
+    "name": "Galebrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/air_boost_weak.png"
+  },
+  "air_boost_medium": {
+    "name": "Galebrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/air_boost_medium.png"
+  },
+  "air_boost_strong": {
+    "name": "Galebrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/air_boost_strong.png"
+  },
+  "plant_boost_weak": {
+    "name": "Verdantbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/plant_boost_weak.png"
+  },
+  "plant_boost_medium": {
+    "name": "Verdantbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/plant_boost_medium.png"
+  },
+  "plant_boost_strong": {
+    "name": "Verdantbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/plant_boost_strong.png"
+  },
+  "earth_boost_weak": {
+    "name": "Stonebrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/earth_boost_weak.png"
+  },
+  "earth_boost_medium": {
+    "name": "Stonebrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/earth_boost_medium.png"
+  },
+  "earth_boost_strong": {
+    "name": "Stonebrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/earth_boost_strong.png"
+  },
+  "light_boost_weak": {
+    "name": "Dawnbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/light_boost_weak.png"
+  },
+  "light_boost_medium": {
+    "name": "Dawnbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/light_boost_medium.png"
+  },
+  "light_boost_strong": {
+    "name": "Dawnbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/light_boost_strong.png"
+  },
+  "dark_boost_weak": {
+    "name": "Duskbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/dark_boost_weak.png"
+  },
+  "dark_boost_medium": {
+    "name": "Duskbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/dark_boost_medium.png"
+  },
+  "dark_boost_strong": {
+    "name": "Duskbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/dark_boost_strong.png"
+  },
+  "mineral_boost_weak": {
+    "name": "Prismbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/mineral_boost_weak.png"
+  },
+  "mineral_boost_medium": {
+    "name": "Prismbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/mineral_boost_medium.png"
+  },
+  "mineral_boost_strong": {
+    "name": "Prismbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/mineral_boost_strong.png"
+  },
+  "corrupt_boost_weak": {
+    "name": "Blightbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/corrupt_boost_weak.png"
+  },
+  "corrupt_boost_medium": {
+    "name": "Blightbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/corrupt_boost_medium.png"
+  },
+  "corrupt_boost_strong": {
+    "name": "Blightbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/corrupt_boost_strong.png"
+  },
+  "ether_boost_weak": {
+    "name": "Etherbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/ether_boost_weak.png"
+  },
+  "ether_boost_medium": {
+    "name": "Etherbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/ether_boost_medium.png"
+  },
+  "ether_boost_strong": {
+    "name": "Etherbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/ether_boost_strong.png"
+  },
+  "bug_boost_weak": {
+    "name": "Swarmbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/bug_boost_weak.png"
+  },
+  "bug_boost_medium": {
+    "name": "Swarmbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/bug_boost_medium.png"
+  },
+  "bug_boost_strong": {
+    "name": "Swarmbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/bug_boost_strong.png"
+  },
+  "monster_boost_weak": {
+    "name": "Fangbrew Potion",
+    "category": "elemental_boost",
+    "image": "/inventory/items/monster_boost_weak.png"
+  },
+  "monster_boost_medium": {
+    "name": "Fangbrew Tonic",
+    "category": "elemental_boost",
+    "image": "/inventory/items/monster_boost_medium.png"
+  },
+  "monster_boost_strong": {
+    "name": "Fangbrew Elixir",
+    "category": "elemental_boost",
+    "image": "/inventory/items/monster_boost_strong.png"
+  }
+}

@@ -9,6 +9,13 @@ const {
   stripeReceiptVerifier,
   startStoreBridge,
 } = require("./local-store-payments.cjs");
+const {
+  walletLinkSettings,
+  migrateWalletLinks,
+  initializeWalletKey,
+  createWalletLinks,
+} = require("./wallet-link/core.cjs");
+const { startWalletLinkBridge } = require("./wallet-link/bridge.cjs");
 const [accountRepo, runRoot] = process.argv.slice(2),
   mode = "Account";
 if (
@@ -36,6 +43,7 @@ const { createEpicEvidenceVerifier } = require(
   let db,
     api,
     storeApi,
+    walletApi,
     timer,
     deadline,
     closing = false,
@@ -64,6 +72,7 @@ const { createEpicEvidenceVerifier } = require(
     closing = true;
     clearInterval(timer);
     clearTimeout(deadline);
+    if (walletApi) await walletApi.close();
     if (storeApi) await storeApi.close();
     if (api) await api.close();
     if (db) {
@@ -144,8 +153,28 @@ const { createEpicEvidenceVerifier } = require(
       mode: "test",
       ...verifier,
     });
+    let links;
+    const walletSettings = walletLinkSettings(process.env);
+    if (walletSettings) {
+      await migrateWalletLinks(database);
+      await initializeWalletKey(database, walletSettings.key);
+      links = createWalletLinks({
+        accounts,
+        key: walletSettings.key,
+        ErrorType: EconomyError,
+      });
+      walletApi = await startWalletLinkBridge({
+        links,
+        token: walletSettings.token,
+      });
+    }
     api = await startLocalAccountApi({
       economy,
+      readLinkedInventory: links
+        ? require("./game-linked-inventory.cjs").createGameLinkedInventoryReader(
+            { links },
+          )
+        : undefined,
       accounts: {
         login: async (input) => {
           const result = await accounts.login(input);
@@ -175,6 +204,7 @@ const { createEpicEvidenceVerifier } = require(
         websiteClientId,
         storeApiUrl: storeApi?.url,
         storeAccount: store?.paymentScope,
+        walletLinkApiUrl: walletApi?.url,
       }) + "\n",
     );
     timer = setInterval(() => {

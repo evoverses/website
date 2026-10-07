@@ -86,7 +86,9 @@
         "THIRDWEB_SECRET_KEY",
         "THIRDWEB_ADMIN_PRIVATE_KEY",
         "OPENSEA_API_KEY",
-        "NEXT_RUNTIME"
+        "NEXT_RUNTIME",
+        "EVOVERSES_LOCAL_WALLET_LINKING",
+        "EVOVERSES_LOCAL_WALLET_KEY"
       ]
     },
     "dev:site-proxy": {

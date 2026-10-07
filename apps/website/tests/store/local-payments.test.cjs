@@ -233,6 +233,66 @@ test("real Checkout core reserves for the authenticated session, and unpaid rece
   );
   assert.equal((await f.economy.getSnapshot(f.aliceToken)).evoros, 0);
 });
+test("signed unpaid, declined and expired notifications leave the real SQL balance, receipts and ledger untouched", async () => {
+  const Stripe = require("stripe"),
+    sdk = new Stripe("sk_test_fixture"),
+    { handleStripeWebhook } = require(
+      path.join(
+        process.env.EVOROS_TEST_LIB,
+        "lib/store/stripe/webhook-handler.js",
+      ),
+    );
+  const webhookSecret = "whsec_fixture";
+  const service = {
+    config: { ...config, webhookSecret },
+    gateway,
+    players,
+    sdk,
+  };
+  for (const [type, object, expected] of [
+    ["checkout.session.completed", { ...session }, "pending"],
+    [
+      "payment_intent.payment_failed",
+      { id: "pi_fixture_declined", status: "requires_payment_method" },
+      "ignored",
+    ],
+    ["checkout.session.async_payment_failed", { ...session }, "ignored"],
+    ["checkout.session.expired", { ...session, status: "expired" }, "ignored"],
+  ]) {
+    const raw = JSON.stringify({
+      id: "evt_fixture_" + randomUUID(),
+      object: "event",
+      livemode: false,
+      type,
+      data: { object },
+    });
+    const signature = sdk.webhooks.generateTestHeaderString({
+      payload: raw,
+      secret: webhookSecret,
+    });
+    const response = await handleStripeWebhook(
+      new Request("http://localhost:3100/api/store/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": signature },
+        body: raw,
+      }),
+      service,
+    );
+    assert.equal(response.status, 200, type);
+    assert.equal((await response.json()).status, expected, type);
+    assert.equal((await f.economy.getSnapshot(f.aliceToken)).evoros, 0, type);
+    assert.equal((await f.economy.getSnapshot(f.bobToken)).evoros, 0, type);
+    const counts = await db.query(
+      "SELECT (SELECT count(*)::int FROM player.evoros_ledger) AS ledger, (SELECT count(*)::int FROM player.payment_receipts) AS receipts",
+    );
+    assert.deepEqual(counts.rows[0], { ledger: 0, receipts: 0 }, type);
+    assert.equal(
+      (await players.findOrder(verifiedOrder.id)).status,
+      "awaiting_payment",
+      type,
+    );
+  }
+});
 test("altered recipient, amount and live-mode receipts cannot reach the ledger", async () => {
   session = { ...session, status: "complete", payment_status: "paid" };
   const original = structuredClone(session);

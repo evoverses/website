@@ -16,7 +16,11 @@
     "test:preview": "node --test tests/preview/*.test.cjs",
     "test:player": "node --test tests/player/*.test.cjs",
     "test:store:local": "node scripts/test-store.cjs --with-local-accounts",
-    "check:beta-build": "node scripts/check-beta-build.cjs"
+    "check:beta-build": "node scripts/check-beta-build.cjs",
+    "test:wallet:local": "node --test tests/wallet/*.test.cjs",
+    "test:inventory": "node scripts/test-inventory.cjs",
+    "dev:beta": "next dev --hostname 0.0.0.0 --port 3100",
+    "test:game-inventory": "node --test tests/inventory/game-feed.test.cjs tests/inventory/game-team.test.cjs"
   },
   "dependencies": {
     "@auth/core": "0.39.1",

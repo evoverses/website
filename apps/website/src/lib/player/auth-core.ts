@@ -25,8 +25,9 @@ function player(value: unknown): Player {
 }
 
 // Single-process, development-only OAuth transactions. Provider evidence never reaches browser storage.
-export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Date.now }: {
-  configuration: () => LocalEpicConfig | null; fetchImpl?: typeof fetch; now?: () => number;
+export type AuthDiagnostic = { stage: "epic-token" | "account-login" | "account-profile" | "account-inventory" | "account-logout"; outcome: "http-error" | "timeout" | "invalid-response" | "network-error"; status?: number; elapsedMs: number };
+export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Date.now, diagnostic }: {
+  configuration: () => LocalEpicConfig | null; fetchImpl?: typeof fetch; now?: () => number; diagnostic?: (value: AuthDiagnostic) => void;
 }) {
   const states = new Map<string, { cookieHash: string; expires: number; context: string }>();
   const pending = new Map<string, { proof: string; expires: number; context: string }>();
@@ -60,18 +61,25 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     finally { signal.removeEventListener("abort", cancel); await reader.cancel().catch(() => {}); }
   }
   async function request(url: string, init: RequestInit = {}) {
+    const stage: AuthDiagnostic["stage"] = url === "https://api.epicgames.dev/epic/oauth/v2/token" ? "epic-token" : url.endsWith("/v1/auth/login") ? "account-login" : url.endsWith("/v1/player/me") ? "account-profile" : url.endsWith("/v1/player/inventory") ? "account-inventory" : "account-logout";
+    const started = Date.now();
+    const report = (outcome: AuthDiagnostic["outcome"], status?: number) => { try { diagnostic?.({ stage, outcome, ...(status === undefined ? {} : { status }), elapsedMs: Date.now() - started }); } catch { /* Diagnostics never affect authentication. */ } };
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       return await Promise.race([
         (async () => {
           const response = await fetchImpl(url, { ...init, cache: "no-store", redirect: "error", credentials: "omit", signal: controller.signal });
+          if (response.status >= 500 || ((stage === "epic-token" || stage === "account-login") && response.status >= 400)) report("http-error", response.status);
           const value = response.status === 204 ? null : await boundedResponse(response, controller.signal);
           return { status: response.status, value };
         })(),
         new Promise<never>((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new PlayerWebError("SERVICE_UNAVAILABLE")); }, 5000); }),
       ]);
-    } catch { return fail("SERVICE_UNAVAILABLE"); }
+    } catch (error) {
+      report(controller.signal.aborted ? "timeout" : error instanceof PlayerWebError ? "invalid-response" : "network-error");
+      return fail("SERVICE_UNAVAILABLE");
+    }
     finally { clearTimeout(timer); controller.abort(); }
   }
   async function admit<T>(work: () => Promise<T>) {
@@ -154,7 +162,7 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     if (status !== 200) return fail(status === 401 || status === 403 ? "INVALID_SESSION" : "SERVICE_UNAVAILABLE");
     if (!record(value) || !Array.isArray(value.items) || !Array.isArray(value.evos) || value.items.length > 2000 || value.evos.length > 2000) return fail("SERVICE_UNAVAILABLE");
     const items = value.items.map(item => {
-      if (!record(item) || !uuid(item.productId) || !natural(item.revision) || !natural(item.quantity)) return fail("SERVICE_UNAVAILABLE");
+      if (!record(item) || (typeof item.productId !== "string" || !/^[a-z][a-z0-9_]{0,79}$/.test(item.productId)) || !natural(item.revision) || item.revision < 1 || !natural(item.quantity)) return fail("SERVICE_UNAVAILABLE");
       return { productId: item.productId, revision: item.revision, quantity: item.quantity };
     });
     const evos = value.evos.map(evo => {

@@ -1,4 +1,5 @@
 import "server-only";
+import { createHmac } from "node:crypto";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { cache } from "react";
@@ -27,10 +28,12 @@ export function getLocalEpicConfig(): LocalEpicConfig | null {
     return { clientId, clientSecret, deploymentId: expected.deploymentId, applicationId: reviewed.applicationId, apiUrl: ready.apiUrl };
   } catch { return null; } // Never expose credentials/provider responses in error output.
 }
-const key = Symbol.for("evoverses.local.epic.web.flow");
+const key = Symbol.for("evoverses.local.epic.web.flow.v2");
 const shared = globalThis as unknown as Record<symbol, ReturnType<typeof createPlayerWebAuth> | undefined>;
 export function playerWebAuth() {
-  return shared[key] ??= createPlayerWebAuth({ configuration: getLocalEpicConfig });
+  return shared[key] ??= createPlayerWebAuth({ configuration: getLocalEpicConfig, diagnostic: value => {
+    if (localPlayerLogin) console.warn("[local account auth]", JSON.stringify(value));
+  } });
 }
 export const getPlayerAccount = cache(async () => {
   if (!localPlayerLogin) return null;
@@ -54,5 +57,18 @@ export function getLocalStoreConnection() {
     const ready = JSON.parse(read(path.join(root, "ready.json")));
     if (ready.storeAccount !== process.env.EVOROS_STRIPE_ACCOUNT || !/^http:\/\/127\.0\.0\.1:[1-9][0-9]{0,4}$/.test(ready.storeApiUrl || "")) return null;
     return { apiUrl: ready.storeApiUrl as string, token };
+  } catch { return null; }
+}
+
+export function getLocalWalletConnection() {
+  if (!localPlayerLogin || process.env.EVOVERSES_LOCAL_WALLET_LINKING !== "1") return null;
+  const config = getLocalEpicConfig(), root = process.env.EVOVERSES_LOCAL_EPIC_RUN_ROOT;
+  const key = process.env.EVOVERSES_LOCAL_WALLET_KEY;
+  if (!config || !root || !key || !/^[a-f0-9]{64}$/.test(key)) return null;
+  const token = createHmac("sha256", Buffer.from(key, "hex")).update("evoverses-wallet-bridge-v1").digest("hex");
+  try {
+    const ready = JSON.parse(read(path.join(root, "ready.json")));
+    if (!/^http:\/\/127\.0\.0\.1:[1-9][0-9]{0,4}$/.test(ready.walletLinkApiUrl || "")) return null;
+    return { apiUrl: ready.walletLinkApiUrl as string, token };
   } catch { return null; }
 }
