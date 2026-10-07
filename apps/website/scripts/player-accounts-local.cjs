@@ -148,10 +148,15 @@ const { createEpicEvidenceVerifier } = require(
         token: store.token,
         onCredit: status,
       });
+    const gameStore = await require("./game-store-local.cjs").prepareWebsiteGameStore({
+      enabled: process.env.EVOVERSES_LOCAL_GAME_STORE === "1",
+      accountRepo, runRoot, db, economy,
+    });
     const accounts = new PlayerAccounts({
       database,
       mode: "test",
       ...verifier,
+      grantNewPlayer: gameStore ? (tx, id) => gameStore.grantStarter(tx, id) : undefined,
     });
     let links;
     const walletSettings = walletLinkSettings(process.env);
@@ -168,8 +173,12 @@ const { createEpicEvidenceVerifier } = require(
         token: walletSettings.token,
       });
     }
-    api = await startLocalAccountApi({
+    const accountApiFactory = gameStore
+      ? require(path.join(backend, "src/http.cjs")).startLocalStoreApi
+      : startLocalAccountApi;
+    api = await accountApiFactory({
       economy,
+      ...(gameStore ? { store: gameStore } : {}),
       readLinkedInventory: links
         ? require("./game-linked-inventory.cjs").createGameLinkedInventoryReader(
             { links },
@@ -201,6 +210,7 @@ const { createEpicEvidenceVerifier } = require(
       JSON.stringify({
         mode,
         apiUrl: api.url,
+        gameStoreEnabled: !!gameStore,
         websiteClientId,
         storeApiUrl: storeApi?.url,
         storeAccount: store?.paymentScope,

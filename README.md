@@ -1,6 +1,6 @@
 # EvoVerses website BETA
 
-Combined development branch: **`dan-dev`**. This branch started from `main`, merged `dev`, and adds the Nursery, Evoros Store and local Epic/player-account integration. Updated **7 October 2026**.
+Combined development branch: **`dan-dev`**. This branch started from `main`, merged `dev`, and adds the Nursery, Evoros Store and local Epic/player-account integration. Updated **8 October 2026**.
 
 **Terminology:** *Evos* are creatures; *EVO* is the Avalanche token; *Evoros* are account-based game currency.
 
@@ -152,3 +152,11 @@ Added the server-only `createGameTeamVerifier` adapter, reusing current linked-w
 Prepared the current `dan-dev` account, encrypted multi-wallet linking, consolidated inventory and game-feed adapters for GitHub backup at the user's request. Nursery and the Evoros Store remain together on this branch. Wallet links can be shared between separately verified accounts; unlinking affects only the requesting account. NFT game use still requires trusted per-Evo admission and combat verification.
 
 Before this checkpoint, the inventory, wallet, player, preview, game-feed/team-verifier and local Stripe payment tests passed. Local Stripe checks use synthetic receipts and disposable databases; they do not charge cards. The isolated production build and strict TypeScript check also passed; existing repository lint warnings remain. Local configuration, encryption keys, payment/provider credentials, session files and database contents are excluded from Git. This checkpoint does not deploy the website or activate live payments.
+
+
+### Optional local game Store integration - 8 October 2026
+
+Added explicit Store composition on the existing owned account API, with a restorable database backup before additive migration, once-only new-account starter packs and unchanged wallet/Stripe adapters. It is disabled by default; local activation preserved the existing 10,500-Evoros account. No hosted deployment or gameplay effects were activated. Game code/data remain in the separate local `Dan/beta-account-bridge` checkout. See [local Store integration](docs/game-store-local.md) for flags, ownership, backup, restart and testing requirements.
+
+
+Validation for this integration: 93 selected website tests passed, including backup restoration, wallet/account security, inventory, private game feed/team verifier and synthetic local Stripe receipts. The production build and strict types had passed at the preceding website checkpoint; no frontend TypeScript was changed by the optional Store-service wiring. Fresh genuine Epic/game purchasing on the enabled service remains a human check.
