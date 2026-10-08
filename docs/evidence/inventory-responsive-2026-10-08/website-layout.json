@@ -1,0 +1,185 @@
+{
+  "fixture": "Actual Profile/Inventory and Radix popover, production CSS; synthetic account/query/wallet data only. No network.",
+  "responsive": [
+    {
+      "viewport": 1440,
+      "evoWidth": 183,
+      "itemWidth": 85.5,
+      "itemColumns": 12,
+      "evoColumns": 6,
+      "gap": 12,
+      "filters": [
+        280.5,
+        280.5,
+        280.5,
+        280.5
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 1200,
+      "evoWidth": 212.390625,
+      "itemWidth": 100.1875,
+      "itemColumns": 10,
+      "evoColumns": 5,
+      "gap": 12,
+      "filters": [
+        268.5,
+        268.5,
+        268.5,
+        268.5
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 1024,
+      "evoWidth": 177.1875,
+      "itemWidth": 82.59375,
+      "itemColumns": 10,
+      "evoColumns": 5,
+      "gap": 12,
+      "filters": [
+        224.5,
+        224.5,
+        224.5,
+        224.5
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 900,
+      "evoWidth": 193.5,
+      "itemWidth": 90.75,
+      "itemColumns": 8,
+      "evoColumns": 4,
+      "gap": 12,
+      "filters": [
+        193.5,
+        193.5,
+        193.5,
+        193.5
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 768,
+      "evoWidth": 218,
+      "itemWidth": 103,
+      "itemColumns": 6,
+      "evoColumns": 3,
+      "gap": 12,
+      "filters": [
+        160.5,
+        160.5,
+        160.5,
+        160.5
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 640,
+      "evoWidth": 269,
+      "itemWidth": 128.5,
+      "itemColumns": 4,
+      "evoColumns": 2,
+      "gap": 12,
+      "filters": [
+        175.328125,
+        175.328125,
+        175.328125,
+        175.328125
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 520,
+      "evoWidth": 209,
+      "itemWidth": 98.5,
+      "itemColumns": 4,
+      "evoColumns": 2,
+      "gap": 12,
+      "filters": [
+        209,
+        209,
+        209,
+        209
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 390,
+      "evoWidth": 300,
+      "itemWidth": 144,
+      "itemColumns": 2,
+      "evoColumns": 1,
+      "gap": 12,
+      "filters": [
+        300,
+        300,
+        300,
+        300
+      ],
+      "overflow": false,
+      "walletAbove": true
+    },
+    {
+      "viewport": 320,
+      "evoWidth": 230,
+      "itemWidth": 109,
+      "itemColumns": 2,
+      "evoColumns": 1,
+      "gap": 12,
+      "filters": [
+        230,
+        230,
+        230,
+        230
+      ],
+      "overflow": false,
+      "walletAbove": true
+    }
+  ],
+  "hover": [
+    {
+      "width": 640,
+      "left": 784,
+      "right": 1424,
+      "viewport": 1440,
+      "statsFont": "12px",
+      "sections": 2
+    },
+    {
+      "width": 608,
+      "left": 16,
+      "right": 624,
+      "viewport": 640,
+      "statsFont": "12px",
+      "sections": 2
+    },
+    {
+      "width": 358,
+      "left": 16,
+      "right": 374,
+      "viewport": 390,
+      "statsFont": "12px",
+      "sections": 1
+    },
+    {
+      "width": 288,
+      "left": 16,
+      "right": 304,
+      "viewport": 320,
+      "statsFont": "12px",
+      "sections": 1
+    }
+  ],
+  "keyboardAndTap": true,
+  "normalModeHidesPro": true
+}

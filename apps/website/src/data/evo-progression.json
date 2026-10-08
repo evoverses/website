@@ -1,0 +1,1895 @@
+{
+  "source": "UE5 pack pool revision 4 and retained NFT species assets; authored MoveLevelMap, SpeciesMaxXpMap and DT_LegacyMoves",
+  "natures": [
+    {
+      "name": "Dauntless",
+      "increase": "speed",
+      "decrease": "defense"
+    },
+    {
+      "name": "Executive",
+      "increase": "speed",
+      "decrease": "attack"
+    },
+    {
+      "name": "Restless",
+      "increase": "speed",
+      "decrease": "resistance"
+    },
+    {
+      "name": "Nervous",
+      "increase": "speed",
+      "decrease": "special"
+    },
+    {
+      "name": "Cunning",
+      "increase": "special",
+      "decrease": "resistance"
+    },
+    {
+      "name": "Energetic",
+      "increase": "special",
+      "decrease": "defense"
+    },
+    {
+      "name": "Clever",
+      "increase": "special",
+      "decrease": "attack"
+    },
+    {
+      "name": "Confident",
+      "increase": "special",
+      "decrease": "speed"
+    },
+    {
+      "name": "Ignorant",
+      "increase": "attack",
+      "decrease": "special"
+    },
+    {
+      "name": "Arrogant",
+      "increase": "attack",
+      "decrease": "defense"
+    },
+    {
+      "name": "Biting",
+      "increase": "attack",
+      "decrease": "resistance"
+    },
+    {
+      "name": "Aggressive",
+      "increase": "attack",
+      "decrease": "speed"
+    },
+    {
+      "name": "Patient",
+      "increase": "resistance",
+      "decrease": "speed"
+    },
+    {
+      "name": "Mature",
+      "increase": "resistance",
+      "decrease": "attack"
+    },
+    {
+      "name": "Sensible",
+      "increase": "resistance",
+      "decrease": "defense"
+    },
+    {
+      "name": "Calm",
+      "increase": "resistance",
+      "decrease": "special"
+    },
+    {
+      "name": "Rude",
+      "increase": "defense",
+      "decrease": "special"
+    },
+    {
+      "name": "Cautious",
+      "increase": "defense",
+      "decrease": "speed"
+    },
+    {
+      "name": "Curious",
+      "increase": "defense",
+      "decrease": "resistance"
+    },
+    {
+      "name": "Discrete",
+      "increase": "defense",
+      "decrease": "attack"
+    },
+    {
+      "name": "Loyal",
+      "increase": "none",
+      "decrease": "none"
+    }
+  ],
+  "species": {
+    "nissel": {
+      "moves": {
+        "4001": 1,
+        "7016": 1,
+        "7014": 7,
+        "4023": 12,
+        "7002": 15,
+        "7018": 21,
+        "4007": 24,
+        "7001": 32,
+        "7005": 40,
+        "9013": 46
+      },
+      "baseStats": {
+        "health": 280,
+        "attack": 240,
+        "special": 240,
+        "defense": 210,
+        "resistance": 210,
+        "speed": 400
+      },
+      "maxXp": 900000
+    },
+    "finantis": {
+      "moves": {
+        "4023": 1,
+        "4001": 1,
+        "6001": 7,
+        "4015": 14,
+        "6004": 18,
+        "7010": 26,
+        "7004": 35,
+        "6007": 43,
+        "6006": 52,
+        "4025": 60
+      },
+      "baseStats": {
+        "health": 276,
+        "attack": 316,
+        "special": 198,
+        "defense": 214,
+        "resistance": 254,
+        "speed": 318
+      },
+      "maxXp": 900000
+    },
+    "karoite": {
+      "moves": {
+        "5018": 1,
+        "4001": 1,
+        "5010": 11,
+        "4023": 18,
+        "5007": 25,
+        "5016": 33,
+        "4022": 38,
+        "5009": 42,
+        "5005": 65
+      },
+      "baseStats": {
+        "health": 342,
+        "attack": 201,
+        "special": 190,
+        "defense": 388,
+        "resistance": 320,
+        "speed": 148
+      },
+      "maxXp": 900000
+    },
+    "nuvea": {
+      "moves": {
+        "11008": 1,
+        "8015": 1,
+        "8007": 12,
+        "8016": 19,
+        "11012": 26,
+        "11018": 37,
+        "8003": 50,
+        "11009": 73
+      },
+      "baseStats": {
+        "health": 278,
+        "attack": 192,
+        "special": 360,
+        "defense": 226,
+        "resistance": 328,
+        "speed": 226
+      },
+      "maxXp": 900000
+    },
+    "hodeon": {
+      "moves": {
+        "4001": 1,
+        "9016": 1,
+        "9003": 9,
+        "10003": 13,
+        "7015": 15,
+        "4003": 23,
+        "6002": 28,
+        "10002": 35,
+        "10018": 42,
+        "4012": 49
+      },
+      "baseStats": {
+        "health": 300,
+        "attack": 300,
+        "special": 185,
+        "defense": 345,
+        "resistance": 260,
+        "speed": 300
+      },
+      "maxXp": 900000
+    },
+    "arnoriel": {
+      "moves": {
+        "4001": 1,
+        "3019": 1,
+        "3013": 6,
+        "3015": 13,
+        "3021": 18,
+        "3011": 26,
+        "4019": 34,
+        "3017": 39,
+        "3009": 44,
+        "3012": 60
+      },
+      "baseStats": {
+        "health": 240,
+        "attack": 298,
+        "special": 290,
+        "defense": 198,
+        "resistance": 195,
+        "speed": 356
+      },
+      "maxXp": 900000
+    },
+    "adhamandra": {
+      "moves": {
+        "4010": 1,
+        "9016": 1,
+        "4001": 1,
+        "4019": 12,
+        "9017": 16,
+        "9012": 27,
+        "7001": 34,
+        "10007": 40,
+        "9009": 49,
+        "9020": 55,
+        "9005": 63
+      },
+      "baseStats": {
+        "health": 285,
+        "attack": 240,
+        "special": 237,
+        "defense": 212,
+        "resistance": 220,
+        "speed": 380
+      },
+      "maxXp": 900000
+    },
+    "ainepolux": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "8004": 8,
+        "2001": 14,
+        "8015": 19,
+        "2002": 26,
+        "8005": 34,
+        "8019": 41,
+        "8013": 47,
+        "8003": 52,
+        "8010": 64
+      },
+      "baseStats": {
+        "health": 260,
+        "attack": 198,
+        "special": 349,
+        "defense": 180,
+        "resistance": 334,
+        "speed": 275
+      },
+      "maxXp": 900000
+    },
+    "kapryno": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "2001": 9,
+        "4023": 15,
+        "2002": 23,
+        "2020": 29,
+        "2006": 36,
+        "4008": 43,
+        "4003": 50,
+        "2005": 67,
+        "4004": 73
+      },
+      "baseStats": {
+        "health": 328,
+        "attack": 312,
+        "special": 224,
+        "defense": 290,
+        "resistance": 230,
+        "speed": 196
+      },
+      "maxXp": 900000
+    },
+    "rattuos": {
+      "moves": {
+        "4010": 1,
+        "4024": 1,
+        "9016": 8,
+        "7014": 15,
+        "4007": 22,
+        "4022": 29,
+        "7001": 34,
+        "9005": 46,
+        "7009": 60
+      },
+      "baseStats": {
+        "health": 234,
+        "attack": 329,
+        "special": 178,
+        "defense": 355,
+        "resistance": 265,
+        "speed": 325
+      },
+      "maxXp": 750000
+    },
+    "beldar": {
+      "moves": {
+        "4001": 1,
+        "6016": 1,
+        "6010": 13,
+        "6017": 22,
+        "6018": 28,
+        "21": 32,
+        "6014": 47
+      },
+      "baseStats": {
+        "health": 158,
+        "attack": 176,
+        "special": 128,
+        "defense": 137,
+        "resistance": 137,
+        "speed": 216
+      },
+      "maxXp": 750000
+    },
+    "firemon": {
+      "moves": {
+        "4010": 1,
+        "9016": 1,
+        "1005": 9,
+        "7017": 14,
+        "1020": 18,
+        "7014": 23,
+        "1001": 29,
+        "7001": 38,
+        "7005": 44,
+        "1019": 53
+      },
+      "baseStats": {
+        "health": 238,
+        "attack": 306,
+        "special": 342,
+        "defense": 223,
+        "resistance": 275,
+        "speed": 381
+      },
+      "maxXp": 900000
+    },
+    "obryos": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "2001": 1,
+        "3019": 7,
+        "2002": 16,
+        "2020": 21,
+        "4002": 26,
+        "2007": 34,
+        "4011": 40,
+        "2005": 48
+      },
+      "baseStats": {
+        "health": 165,
+        "attack": 251,
+        "special": 137,
+        "defense": 128,
+        "resistance": 196,
+        "speed": 321
+      },
+      "maxXp": 900000
+    },
+    "lumi": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "4": 7,
+        "8004": 12,
+        "8012": 17,
+        "8020": 24,
+        "5": 27,
+        "8015": 32,
+        "8005": 38,
+        "8007": 41
+      },
+      "baseStats": {
+        "health": 202,
+        "attack": 170,
+        "special": 275,
+        "defense": 205,
+        "resistance": 307,
+        "speed": 134
+      },
+      "maxXp": 1225000
+    },
+    "droserace": {
+      "moves": {
+        "9016": 1,
+        "7003": 1,
+        "2001": 8,
+        "2017": 13,
+        "2009": 19,
+        "2002": 26,
+        "2018": 31,
+        "7005": 34,
+        "2010": 48
+      },
+      "baseStats": {
+        "health": 239,
+        "attack": 303,
+        "special": 282,
+        "defense": 175,
+        "resistance": 186,
+        "speed": 215
+      },
+      "maxXp": 1100000
+    },
+    "kerval": {
+      "moves": {
+        "4026": 1,
+        "4001": 1,
+        "3019": 7,
+        "4027": 14,
+        "4011": 22,
+        "4015": 27,
+        "4023": 32,
+        "4012": 37
+      },
+      "baseStats": {
+        "health": 230,
+        "attack": 240,
+        "special": 164,
+        "defense": 156,
+        "resistance": 176,
+        "speed": 274
+      },
+      "maxXp": 1225000
+    },
+    "gwenbee": {
+      "moves": {
+        "4026": 1,
+        "4001": 1,
+        "2001": 1,
+        "3013": 7,
+        "2002": 15,
+        "6013": 26,
+        "3007": 32,
+        "3018": 40,
+        "6014": 46,
+        "6011": 51,
+        "6012": 57
+      },
+      "baseStats": {
+        "health": 255,
+        "attack": 216,
+        "special": 313,
+        "defense": 216,
+        "resistance": 274,
+        "speed": 352
+      },
+      "maxXp": 750000
+    },
+    "krokon": {
+      "moves": {
+        "9016": 1,
+        "4010": 1,
+        "7003": 9,
+        "4": 13,
+        "4019": 18,
+        "7002": 23,
+        "15": 29,
+        "7001": 37,
+        "2": 42,
+        "9002": 56,
+        "12": 67
+      },
+      "baseStats": {
+        "health": 250,
+        "attack": 295,
+        "special": 184,
+        "defense": 280,
+        "resistance": 165,
+        "speed": 281
+      },
+      "maxXp": 1100000
+    },
+    "clocarstone": {
+      "moves": {
+        "4001": 1,
+        "4021": 1,
+        "6016": 11,
+        "5010": 17,
+        "5012": 22,
+        "6010": 26,
+        "5008": 31,
+        "6018": 38,
+        "6017": 44,
+        "5005": 59
+      },
+      "baseStats": {
+        "health": 240,
+        "attack": 351,
+        "special": 305,
+        "defense": 398,
+        "resistance": 313,
+        "speed": 137
+      },
+      "maxXp": 750000
+    },
+    "tokaleaf": {
+      "moves": {
+        "4026": 1,
+        "4001": 1,
+        "5004": 7,
+        "5018": 12,
+        "4008": 29,
+        "2001": 24,
+        "5012": 32,
+        "2002": 40,
+        "5015": 46,
+        "5017": 55
+      },
+      "baseStats": {
+        "health": 308,
+        "attack": 216,
+        "special": 351,
+        "defense": 549,
+        "resistance": 274,
+        "speed": 126
+      },
+      "maxXp": 900000
+    },
+    "yotnar": {
+      "moves": {
+        "4010": 1,
+        "7016": 1,
+        "7014": 7,
+        "4023": 12,
+        "7002": 18,
+        "7017": 23,
+        "9001": 29,
+        "7001": 40,
+        "7005": 47,
+        "9013": 55,
+        "2011": 68
+      },
+      "baseStats": {
+        "health": 356,
+        "attack": 470,
+        "special": 293,
+        "defense": 313,
+        "resistance": 235,
+        "speed": 215
+      },
+      "maxXp": 900000
+    },
+    "flint": {
+      "moves": {
+        "4001": 1,
+        "9016": 1,
+        "1005": 8,
+        "7015": 14,
+        "7005": 21,
+        "1001": 25,
+        "7008": 31,
+        "1013": 40
+      },
+      "baseStats": {
+        "health": 232,
+        "attack": 196,
+        "special": 278,
+        "defense": 212,
+        "resistance": 227,
+        "speed": 305
+      },
+      "maxXp": 1100000
+    },
+    "espyke": {
+      "moves": {
+        "4010": 1,
+        "2001": 1,
+        "4024": 6,
+        "6001": 11,
+        "6019": 17,
+        "7008": 25,
+        "2017": 25,
+        "2011": 33,
+        "6014": 42,
+        "4004": 55
+      },
+      "baseStats": {
+        "health": 215,
+        "attack": 278,
+        "special": 149,
+        "defense": 388,
+        "resistance": 310,
+        "speed": 172
+      },
+      "maxXp": 750000
+    },
+    "mellio": {
+      "moves": {
+        "4001": 1,
+        "4": 1,
+        "8013": 9,
+        "8007": 16,
+        "4019": 25,
+        "5": 35,
+        "21": 43,
+        "11": 52
+      },
+      "baseStats": {
+        "health": 339,
+        "attack": 147,
+        "special": 360,
+        "defense": 206,
+        "resistance": 295,
+        "speed": 377
+      },
+      "maxXp": 1100000
+    },
+    "fugush": {
+      "moves": {
+        "4001": 1,
+        "6004": 1,
+        "4": 9,
+        "4023": 12,
+        "6019": 15,
+        "7008": 24,
+        "8": 32,
+        "17": 42,
+        "6014": 49,
+        "1": 55
+      },
+      "baseStats": {
+        "health": 293,
+        "attack": 412,
+        "special": 157,
+        "defense": 490,
+        "resistance": 275,
+        "speed": 176
+      },
+      "maxXp": 1100000
+    },
+    "morphee": {
+      "moves": {
+        "6001": 1,
+        "6017": 1,
+        "9008": 6,
+        "6016": 11,
+        "6010": 18,
+        "6005": 32
+      },
+      "baseStats": {
+        "health": 220,
+        "attack": 253,
+        "special": 288,
+        "defense": 207,
+        "resistance": 167,
+        "speed": 139
+      },
+      "maxXp": 900000
+    },
+    "lounn": {
+      "moves": {
+        "4001": 1,
+        "2014": 1,
+        "2001": 1,
+        "11016": 9,
+        "2021": 15,
+        "2002": 22,
+        "8016": 34,
+        "8003": 40,
+        "8015": 48,
+        "4020": 57
+      },
+      "baseStats": {
+        "health": 276,
+        "attack": 137,
+        "special": 275,
+        "defense": 157,
+        "resistance": 193,
+        "speed": 278
+      },
+      "maxXp": 900000
+    },
+    "uzumebach": {
+      "moves": {
+        "4023": 1,
+        "6001": 1,
+        "3013": 7,
+        "10001": 14,
+        "3009": 18,
+        "10018": 23,
+        "4015": 29,
+        "10011": 40,
+        "6005": 46
+      },
+      "baseStats": {
+        "health": 206,
+        "attack": 275,
+        "special": 126,
+        "defense": 145,
+        "resistance": 236,
+        "speed": 313
+      },
+      "maxXp": 1100000
+    },
+    "gemarites": {
+      "moves": {
+        "4001": 1,
+        "4021": 1,
+        "5004": 9,
+        "4023": 16,
+        "7005": 25,
+        "5017": 33,
+        "7001": 40,
+        "5008": 49,
+        "4022": 56,
+        "5005": 62
+      },
+      "baseStats": {
+        "health": 291,
+        "attack": 451,
+        "special": 203,
+        "defense": 372,
+        "resistance": 267,
+        "speed": 294
+      },
+      "maxXp": 1225000
+    },
+    "allacrow": {
+      "moves": {
+        "4001": 1,
+        "9016": 1,
+        "3014": 7,
+        "4021": 12,
+        "3015": 15,
+        "3006": 21,
+        "5003": 24,
+        "4002": 28,
+        "3018": 31,
+        "3010": 37
+      },
+      "baseStats": {
+        "health": 180,
+        "attack": 239,
+        "special": 188,
+        "defense": 341,
+        "resistance": 219,
+        "speed": 244
+      },
+      "maxXp": 1225000
+    },
+    "jokull": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "7012": 12,
+        "4021": 16,
+        "9004": 22,
+        "4008": 29,
+        "4002": 36,
+        "7009": 43,
+        "4004": 59,
+        "4006": 70
+      },
+      "baseStats": {
+        "health": 293,
+        "attack": 471,
+        "special": 176,
+        "defense": 373,
+        "resistance": 255,
+        "speed": 353
+      },
+      "maxXp": 1225000
+    },
+    "fayde": {
+      "moves": {
+        "4001": 1,
+        "2001": 1,
+        "11016": 9,
+        "8016": 18,
+        "2002": 29,
+        "4020": 38,
+        "2003": 44,
+        "2019": 51
+      },
+      "baseStats": {
+        "health": 216,
+        "attack": 137,
+        "special": 294,
+        "defense": 157,
+        "resistance": 196,
+        "speed": 333
+      },
+      "maxXp": 1225000
+    },
+    "caerthos": {
+      "moves": {
+        "9016": 1,
+        "4010": 1,
+        "7003": 7,
+        "7015": 14,
+        "7002": 28,
+        "6007": 34,
+        "7004": 41,
+        "7001": 50,
+        "7009": 65
+      },
+      "baseStats": {
+        "health": 333,
+        "attack": 404,
+        "special": 321,
+        "defense": 341,
+        "resistance": 240,
+        "speed": 345
+      },
+      "maxXp": 1100000
+    },
+    "ryomizu": {
+      "moves": {
+        "4001": 1,
+        "4": 1,
+        "19": 6,
+        "9": 11,
+        "11008": 15,
+        "7018": 25,
+        "11012": 33,
+        "5": 39,
+        "8019": 46,
+        "7009": 54,
+        "11009": 65
+      },
+      "baseStats": {
+        "health": 325,
+        "attack": 228,
+        "special": 416,
+        "defense": 280,
+        "resistance": 502,
+        "speed": 165
+      },
+      "maxXp": 1225000
+    },
+    "obsy": {
+      "moves": {
+        "4001": 1,
+        "6016": 1,
+        "6001": 10,
+        "2001": 16,
+        "6019": 25,
+        "6010": 32
+      },
+      "baseStats": {
+        "health": 202,
+        "attack": 177,
+        "special": 177,
+        "defense": 216,
+        "resistance": 216,
+        "speed": 267
+      },
+      "maxXp": 1100000
+    },
+    "metheo": {
+      "moves": {
+        "4001": 1,
+        "4021": 1,
+        "5004": 11,
+        "5016": 18,
+        "5010": 23,
+        "8015": 27,
+        "11018": 32,
+        "5011": 40,
+        "5006": 48,
+        "8008": 63
+      },
+      "baseStats": {
+        "health": 198,
+        "attack": 128,
+        "special": 254,
+        "defense": 235,
+        "resistance": 254,
+        "speed": 333
+      },
+      "maxXp": 1100000
+    },
+    "meissa": {
+      "moves": {
+        "4001": 1,
+        "7016": 1,
+        "11016": 11,
+        "8012": 17,
+        "4002": 23,
+        "8020": 32,
+        "3018": 40,
+        "3002": 46,
+        "8009": 57
+      },
+      "baseStats": {
+        "health": 256,
+        "attack": 221,
+        "special": 345,
+        "defense": 189,
+        "resistance": 549,
+        "speed": 321
+      },
+      "maxXp": 1225000
+    },
+    "fluozacil": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "4": 8,
+        "4024": 12,
+        "11016": 17,
+        "6": 23,
+        "5": 28,
+        "8015": 35,
+        "8005": 43,
+        "8013": 50
+      },
+      "baseStats": {
+        "health": 185,
+        "attack": 294,
+        "special": 333,
+        "defense": 138,
+        "resistance": 138,
+        "speed": 254
+      },
+      "maxXp": 1350000
+    },
+    "istral": {
+      "moves": {
+        "3013": 1,
+        "4026": 1,
+        "3005": 7,
+        "11014": 15,
+        "11018": 24,
+        "3017": 31,
+        "1016": 39,
+        "4002": 46
+      },
+      "baseStats": {
+        "health": 228,
+        "attack": 242,
+        "special": 153,
+        "defense": 192,
+        "resistance": 192,
+        "speed": 286
+      },
+      "maxXp": 1225000
+    },
+    "cyzorak": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "9016": 8,
+        "7002": 15,
+        "4016": 26,
+        "4005": 35,
+        "4002": 43,
+        "10016": 46,
+        "10004": 54,
+        "4006": 60
+      },
+      "baseStats": {
+        "health": 195,
+        "attack": 313,
+        "special": 156,
+        "defense": 352,
+        "resistance": 137,
+        "speed": 156
+      },
+      "maxXp": 1225000
+    },
+    "athel": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "11002": 8,
+        "3001": 15,
+        "8019": 23,
+        "2015": 29,
+        "8003": 37,
+        "11009": 46
+      },
+      "baseStats": {
+        "health": 215,
+        "attack": 138,
+        "special": 216,
+        "defense": 176,
+        "resistance": 275,
+        "speed": 118
+      },
+      "maxXp": 1225000
+    },
+    "lamphal": {
+      "moves": {
+        "11016": 1,
+        "4026": 1,
+        "2001": 8,
+        "6016": 14,
+        "2017": 25,
+        "6013": 29,
+        "2002": 31,
+        "8005": 36,
+        "6017": 43,
+        "6011": 51,
+        "8018": 64
+      },
+      "baseStats": {
+        "health": 215,
+        "attack": 129,
+        "special": 333,
+        "defense": 202,
+        "resistance": 237,
+        "speed": 354
+      },
+      "maxXp": 1350000
+    },
+    "sauderon": {
+      "moves": {
+        "4001": 1,
+        "9016": 1,
+        "1004": 1,
+        "10013": 1,
+        "7016": 7,
+        "10010": 13,
+        "7002": 17,
+        "8005": 25,
+        "10020": 34,
+        "10006": 48,
+        "8002": 55,
+        "8006": 61,
+        "10012": 68
+      },
+      "baseStats": {
+        "health": 355,
+        "attack": 411,
+        "special": 333,
+        "defense": 372,
+        "resistance": 372,
+        "speed": 411
+      },
+      "maxXp": 1350000
+    },
+    "aubelyon": {
+      "moves": {
+        "4001": 1,
+        "4021": 1,
+        "7015": 15,
+        "2020": 25,
+        "4020": 31,
+        "2007": 36,
+        "4008": 44,
+        "4025": 50,
+        "4017": 58
+      },
+      "baseStats": {
+        "health": 320,
+        "attack": 235,
+        "special": 155,
+        "defense": 210,
+        "resistance": 170,
+        "speed": 80
+      },
+      "maxXp": 1225000
+    },
+    "carcoid": {
+      "moves": {
+        "4013": 1,
+        "9016": 1,
+        "4001": 1,
+        "4": 7,
+        "7006": 12,
+        "7003": 16,
+        "4024": 24,
+        "15": 31,
+        "2": 38,
+        "6": 47,
+        "17": 59
+      },
+      "baseStats": {
+        "health": 215,
+        "attack": 145,
+        "special": 95,
+        "defense": 145,
+        "resistance": 100,
+        "speed": 85
+      },
+      "maxXp": 900000
+    },
+    "cyarabat": {
+      "moves": {
+        "4010": 1,
+        "9016": 1,
+        "7003": 7,
+        "9004": 15,
+        "7008": 21,
+        "3007": 27,
+        "7001": 34,
+        "4015": 46
+      },
+      "baseStats": {
+        "health": 145,
+        "attack": 150,
+        "special": 115,
+        "defense": 60,
+        "resistance": 60,
+        "speed": 205
+      },
+      "maxXp": 1100000
+    },
+    "dhaek": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "3022": 8,
+        "7012": 17,
+        "4011": 32,
+        "7011": 46
+      },
+      "baseStats": {
+        "health": 130,
+        "attack": 115,
+        "special": 75,
+        "defense": 45,
+        "resistance": 45,
+        "speed": 185
+      },
+      "maxXp": 1100000
+    },
+    "eulocelus": {
+      "moves": {
+        "4001": 1,
+        "4024": 1,
+        "7002": 11,
+        "2007": 18,
+        "4002": 27,
+        "4027": 33,
+        "4014": 45,
+        "7009": 52,
+        "4022": 56,
+        "2012": 61
+      },
+      "baseStats": {
+        "health": 225,
+        "attack": 190,
+        "special": 80,
+        "defense": 205,
+        "resistance": 50,
+        "speed": 45
+      },
+      "maxXp": 900000
+    },
+    "geckaiba": {
+      "moves": {
+        "4010": 1,
+        "9016": 1,
+        "1005": 9,
+        "7015": 14,
+        "7002": 18,
+        "1001": 23,
+        "7001": 28,
+        "5": 35,
+        "7009": 52
+      },
+      "baseStats": {
+        "health": 135,
+        "attack": 90,
+        "special": 25,
+        "defense": 10,
+        "resistance": 30,
+        "speed": 150
+      },
+      "maxXp": 1350000
+    },
+    "ghorgon": {
+      "moves": {
+        "4010": 1,
+        "4026": 1,
+        "7003": 9,
+        "7015": 14,
+        "7002": 20,
+        "4015": 26,
+        "7001": 32,
+        "7005": 42,
+        "9007": 50
+      },
+      "baseStats": {
+        "health": 165,
+        "attack": 240,
+        "special": 95,
+        "defense": 150,
+        "resistance": 115,
+        "speed": 220
+      },
+      "maxXp": 900000
+    },
+    "hikarul": {
+      "moves": {
+        "4001": 1,
+        "8013": 1,
+        "8004": 12,
+        "8015": 15,
+        "8007": 24,
+        "5": 32,
+        "8005": 40,
+        "8016": 46
+      },
+      "baseStats": {
+        "health": 90,
+        "attack": 25,
+        "special": 130,
+        "defense": 5,
+        "resistance": 240,
+        "speed": 60
+      },
+      "maxXp": 1225000
+    },
+    "kaos": {
+      "moves": {
+        "9016": 1,
+        "11016": 1,
+        "9013": 6,
+        "9008": 12,
+        "8017": 16,
+        "9012": 25,
+        "9010": 36,
+        "9009": 48
+      },
+      "baseStats": {
+        "health": 120,
+        "attack": 40,
+        "special": 240,
+        "defense": 80,
+        "resistance": 200,
+        "speed": 255
+      },
+      "maxXp": 1225000
+    },
+    "kitsul": {
+      "moves": {
+        "4001": 1,
+        "8004": 1,
+        "1005": 8,
+        "8017": 11,
+        "9016": 14,
+        "8007": 19,
+        "1002": 23,
+        "4002": 29,
+        "1009": 33,
+        "9010": 40,
+        "1003": 55
+      },
+      "baseStats": {
+        "health": 210,
+        "attack": 95,
+        "special": 165,
+        "defense": 65,
+        "resistance": 75,
+        "speed": 180
+      },
+      "maxXp": 900000
+    },
+    "methyst": {
+      "moves": {
+        "9008": 1,
+        "9016": 1,
+        "4023": 6,
+        "4019": 13,
+        "9017": 22,
+        "9005": 30,
+        "9013": 37,
+        "9006": 46,
+        "9012": 60
+      },
+      "baseStats": {
+        "health": 140,
+        "attack": 210,
+        "special": 115,
+        "defense": 80,
+        "resistance": 115,
+        "speed": 195
+      },
+      "maxXp": 1100000
+    },
+    "mobyd": {
+      "moves": {
+        "4010": 1,
+        "4": 1,
+        "15": 9,
+        "7015": 16,
+        "2": 23,
+        "4015": 29,
+        "7005": 37,
+        "16": 45,
+        "7001": 53
+      },
+      "baseStats": {
+        "health": 130,
+        "attack": 220,
+        "special": 5,
+        "defense": 150,
+        "resistance": 40,
+        "speed": 95
+      },
+      "maxXp": 900000
+    },
+    "moffunap": {
+      "moves": {
+        "4001": 1,
+        "9019": 1,
+        "4": 8,
+        "19": 12,
+        "4019": 15,
+        "13": 21,
+        "4008": 33,
+        "7": 40,
+        "4020": 46,
+        "1": 54
+      },
+      "baseStats": {
+        "health": 450,
+        "attack": 10,
+        "special": 310,
+        "defense": 115,
+        "resistance": 115,
+        "speed": 25
+      },
+      "maxXp": 1100000
+    },
+    "nymphel": {
+      "moves": {
+        "4001": 1,
+        "3019": 1,
+        "4027": 6,
+        "3014": 11,
+        "3001": 24,
+        "7018": 21,
+        "8012": 28,
+        "3018": 34,
+        "3017": 40,
+        "3002": 51
+      },
+      "baseStats": {
+        "health": 165,
+        "attack": 30,
+        "special": 230,
+        "defense": 60,
+        "resistance": 185,
+        "speed": 300
+      },
+      "maxXp": 750000
+    },
+    "nythe": {
+      "moves": {
+        "4010": 1,
+        "4023": 1,
+        "5004": 8,
+        "7002": 13,
+        "5019": 21,
+        "5002": 26,
+        "7001": 32,
+        "4002": 40
+      },
+      "baseStats": {
+        "health": 125,
+        "attack": 160,
+        "special": 5,
+        "defense": 130,
+        "resistance": 30,
+        "speed": 125
+      },
+      "maxXp": 1225000
+    },
+    "onydae": {
+      "moves": {
+        "4001": 1,
+        "3013": 1,
+        "7003": 9,
+        "3022": 13,
+        "3009": 18,
+        "9018": 21,
+        "9010": 27,
+        "3004": 35,
+        "8009": 50,
+        "9015": 58
+      },
+      "baseStats": {
+        "health": 270,
+        "attack": 115,
+        "special": 200,
+        "defense": 80,
+        "resistance": 260,
+        "speed": 150
+      },
+      "maxXp": 1100000
+    },
+    "ruard": {
+      "moves": {
+        "4001": 1,
+        "9016": 1,
+        "1002": 7,
+        "4023": 12,
+        "7008": 15,
+        "1009": 24,
+        "7001": 32,
+        "1013": 42,
+        "7005": 49
+      },
+      "baseStats": {
+        "health": 220,
+        "attack": 195,
+        "special": 270,
+        "defense": 125,
+        "resistance": 160,
+        "speed": 235
+      },
+      "maxXp": 1225000
+    },
+    "shazark": {
+      "moves": {
+        "4026": 1,
+        "4001": 1,
+        "7003": 10,
+        "4023": 16,
+        "4015": 25,
+        "4007": 32,
+        "7005": 38,
+        "4002": 45,
+        "7009": 54
+      },
+      "baseStats": {
+        "health": 200,
+        "attack": 275,
+        "special": 130,
+        "defense": 130,
+        "resistance": 95,
+        "speed": 190
+      },
+      "maxXp": 1100000
+    },
+    "skycyx": {
+      "moves": {
+        "3014": 1,
+        "3019": 1,
+        "4001": 8,
+        "3005": 13,
+        "4023": 19,
+        "4011": 24,
+        "3015": 29,
+        "1016": 34,
+        "4007": 45,
+        "3010": 58
+      },
+      "baseStats": {
+        "health": 145,
+        "attack": 105,
+        "special": 45,
+        "defense": 40,
+        "resistance": 70,
+        "speed": 260
+      },
+      "maxXp": 1100000
+    },
+    "struthor": {
+      "moves": {
+        "4023": 1,
+        "3014": 1,
+        "4001": 9,
+        "9016": 14,
+        "3005": 21,
+        "4011": 36,
+        "4015": 45,
+        "3016": 59
+      },
+      "baseStats": {
+        "health": 245,
+        "attack": 280,
+        "special": 90,
+        "defense": 175,
+        "resistance": 115,
+        "speed": 255
+      },
+      "maxXp": 1225000
+    },
+    "sunopendra": {
+      "moves": {
+        "4001": 1,
+        "6016": 1,
+        "4024": 6,
+        "6002": 14,
+        "6010": 18,
+        "6019": 24,
+        "4002": 29,
+        "6017": 33,
+        "6018": 43
+      },
+      "baseStats": {
+        "health": 225,
+        "attack": 255,
+        "special": 40,
+        "defense": 170,
+        "resistance": 80,
+        "speed": 5
+      },
+      "maxXp": 1100000
+    },
+    "tamandu": {
+      "moves": {
+        "4010": 1,
+        "4026": 1,
+        "1005": 7,
+        "4015": 15,
+        "1022": 21,
+        "4002": 27,
+        "1019": 33,
+        "7001": 40,
+        "1010": 46
+      },
+      "baseStats": {
+        "health": 170,
+        "attack": 115,
+        "special": 40,
+        "defense": 40,
+        "resistance": 40,
+        "speed": 25
+      },
+      "maxXp": 1100000
+    },
+    "tytan": {
+      "moves": {
+        "3014": 1,
+        "4026": 1,
+        "5004": 7,
+        "4023": 13,
+        "4002": 18,
+        "4012": 24,
+        "5017": 34,
+        "7011": 40,
+        "3016": 54,
+        "5005": 60
+      },
+      "baseStats": {
+        "health": 205,
+        "attack": 190,
+        "special": 95,
+        "defense": 135,
+        "resistance": 205,
+        "speed": 220
+      },
+      "maxXp": 1225000
+    },
+    "venuserpien": {
+      "moves": {
+        "9016": 1,
+        "7003": 1,
+        "1005": 9,
+        "10013": 14,
+        "10003": 19,
+        "1001": 25,
+        "10005": 31,
+        "10010": 35,
+        "7001": 38,
+        "9002": 45
+      },
+      "baseStats": {
+        "health": 95,
+        "attack": 115,
+        "special": 115,
+        "defense": 80,
+        "resistance": 80,
+        "speed": 170
+      },
+      "maxXp": 900000
+    },
+    "vulpyro": {
+      "moves": {
+        "4001": 1,
+        "4026": 1,
+        "1005": 8,
+        "11016": 13,
+        "1001": 19,
+        "1019": 35,
+        "1020": 43,
+        "5017": 52
+      },
+      "baseStats": {
+        "health": 145,
+        "attack": 40,
+        "special": 150,
+        "defense": 35,
+        "resistance": 55,
+        "speed": 80
+      },
+      "maxXp": 1225000
+    }
+  },
+  "moveNames": {
+    "1": "Osmosis",
+    "2": "Abyssal Fury",
+    "4": "Bubble Bomb",
+    "5": "Foam Blast",
+    "6": "Water Pressure",
+    "8": "Hydraulic Beam",
+    "9": "Hydroshot",
+    "11": "Muddy Wave",
+    "12": "Alluvium",
+    "15": "Torpedo",
+    "17": "Pincer Cut",
+    "19": "Sea Veil",
+    "21": "Slimy Armor",
+    "1001": "Ember",
+    "1004": "Dark Fire",
+    "1005": "Scorch",
+    "1013": "Fire Bite",
+    "1016": "Nitro Flame",
+    "1019": "Infernal Spin",
+    "1020": "Hellish Spiral",
+    "2001": "Drainage",
+    "2002": "Mega Drainage",
+    "2003": "Giga Drainage",
+    "2005": "Drain Charge",
+    "2006": "Leafthrower",
+    "2007": "Seed Shot",
+    "2009": "Drill Vine",
+    "2010": "Wild Vine",
+    "2011": "Thorny Punch",
+    "2014": "Flower Gift",
+    "2015": "Flower Cure",
+    "2017": "Pollen Shield",
+    "2018": "Creeper",
+    "2019": "Nutrient Absorber",
+    "2020": "Growth",
+    "2021": "Fertilizer",
+    "3001": "Squall",
+    "3002": "Cyclone",
+    "3005": "Dust Storm",
+    "3006": "Windbreaker",
+    "3007": "Cutting Air",
+    "3009": "Sky Assault",
+    "3010": "Raptor Charge",
+    "3011": "Plummet Strike",
+    "3012": "Kamikaze",
+    "3013": "Wing Smack",
+    "3014": "Peck Attack",
+    "3015": "Sharp Beak",
+    "3017": "Tailwind",
+    "3018": "Roost",
+    "3019": "Dus tCloud",
+    "3021": "Pitch",
+    "4001": "Tackle",
+    "4002": "Lunge",
+    "4003": "Hit n\\' Run",
+    "4004": "Seismic Blitz",
+    "4005": "Frantic Charge",
+    "4006": "Ram Charge",
+    "4007": "Ambush",
+    "4008": "Body Press",
+    "4010": "Scratch",
+    "4011": "Kick Attack",
+    "4012": "Stamp",
+    "4015": "Carry On",
+    "4016": "Tremor",
+    "4019": "Muddy Blast",
+    "4020": "Ancestral Beam",
+    "4021": "Sturdiness",
+    "4022": "Rockiness",
+    "4023": "Sharpen",
+    "4024": "CurlUp",
+    "4025": "Fury Dance",
+    "4026": "Analysis",
+    "4027": "Tactical Withdrawal",
+    "5003": "Iron Wing",
+    "5004": "Rock Strike",
+    "5005": "Diamond Charge",
+    "5006": "Meteor Strike",
+    "5007": "Petrosphere",
+    "5008": "Iron Shot",
+    "5009": "Sonic Bang",
+    "5010": "Metal Wave",
+    "5011": "Magnetic Wave",
+    "5012": "Reflector",
+    "5015": "Recharge",
+    "5016": "Electromagnetism",
+    "5017": "Gem Cloak",
+    "5018": "Hard Rock",
+    "6001": "Bug Bite",
+    "6002": "Venom Bite",
+    "6004": "Toxic Sting",
+    "6005": "Stinger Strike",
+    "6006": "Deep Cut",
+    "6007": "Double Chop",
+    "6010": "Sticky Shot",
+    "6011": "Pollination",
+    "6012": "Swarm",
+    "6013": "Buzz",
+    "6014": "Suction",
+    "6016": "Silk Shot",
+    "6017": "Silk Cloak",
+    "6018": "Shedding",
+    "6019": "Bristle",
+    "7001": "Slash",
+    "7002": "Hardy Claw",
+    "7003": "Savage Cut",
+    "7004": "Double Slash",
+    "7005": "Mordant Strike",
+    "7008": "Bite",
+    "7009": "Tail Whip",
+    "7010": "Zen Fury",
+    "7012": "Triple Attack",
+    "7014": "Smoke Bomb",
+    "7015": "Roar",
+    "7016": "Fib",
+    "7017": "Taunt",
+    "7018": "Ostracism",
+    "8002": "High Voltage",
+    "8003": "Aural Energy",
+    "8004": "Light Flash",
+    "8005": "Light Burst",
+    "8006": "Stray Light",
+    "8007": "Fleeting Shine",
+    "8008": "Stellar Rain",
+    "8009": "Lunar Beam",
+    "8010": "Solar Blast",
+    "8012": "Balance",
+    "8013": "Clarity",
+    "8015": "Healing Pulse",
+    "8016": "Light Veil",
+    "8018": "Eternal Light",
+    "8019": "Clairvoyance",
+    "8020": "Stellar Radiance",
+    "9001": "Ominous Punch",
+    "9002": "Gripper Bite",
+    "9003": "Rip",
+    "9004": "Rancor Blow",
+    "9005": "Vile Strike",
+    "9008": "Evil Sphere",
+    "9009": "Ominous Pulse",
+    "9012": "Cursed Shield",
+    "9013": "Cynicism",
+    "9016": "Leer",
+    "9017": "Dark Shade",
+    "9020": "Ominous Aura",
+    "10001": "Toxic Stinger",
+    "10002": "Sharp Fang",
+    "10003": "Mean Bite",
+    "10004": "Focus Horn Strike",
+    "10006": "Acid Shot",
+    "10007": "Poison Arrow",
+    "10010": "Corrupted Beam",
+    "10011": "Toxic Detonator",
+    "10012": "Acid Rain",
+    "10013": "Corrosion",
+    "10016": "Hybrid Armor",
+    "10018": "Tuning",
+    "10020": "Strategy",
+    "11002": "Telekinesis",
+    "11008": "Pressure Wave",
+    "11009": "Alchemical Wave",
+    "11012": "Plasma Beam",
+    "11014": "Celestial Blast",
+    "11016": "Flash",
+    "11018": "Stellar Charge",
+    "3": "Abyssal Force",
+    "7": "Water Press",
+    "10": "Geiser Blast",
+    "13": "Swirl",
+    "14": "Lethal Torrent",
+    "16": "Change of Course",
+    "18": "Bubble Slash",
+    "20": "Hardy Armor",
+    "22": "Soak",
+    "1002": "Calcination",
+    "1003": "Mystic Fire",
+    "1006": "Summer Breath",
+    "1007": "Burning Rain",
+    "1008": "Fireball",
+    "1009": "Fireworks",
+    "1010": "Crossfire",
+    "1011": "Lava Cannon",
+    "1012": "Solar Storm",
+    "1014": "Flame Punch",
+    "1015": "Flaming Antler",
+    "1017": "Infernal Charge",
+    "1018": "Fire Strike",
+    "1021": "Solar Charge",
+    "1022": "Burning",
+    "1023": "Inflammation",
+    "1024": "Drift Charge",
+    "2004": "Tera Drainage",
+    "2008": "Leaf Typhoon",
+    "2012": "Forest Mace",
+    "2013": "Flower Force",
+    "2016": "Poisoning",
+    "2022": "Fertile Land",
+    "3003": "Hurricane",
+    "3004": "Polar Wind",
+    "3008": "Fecal Bomb",
+    "3016": "Drilling Peck",
+    "3020": "Aerial Dance",
+    "3022": "Swagger",
+    "3023": "Courtship Dance",
+    "4009": "Gravity Strike",
+    "4013": "Pinch",
+    "4014": "Mallet Smash",
+    "4017": "Telluric Force",
+    "4018": "Earthquake",
+    "5001": "Iron Fist",
+    "5002": "Iron Fang",
+    "5013": "Prism Beam",
+    "5014": "Magma Blast",
+    "5019": "Polish",
+    "5020": "Obsidian Shards",
+    "6003": "Puncture",
+    "6008": "Horn Strike",
+    "6009": "Double Horn Strike",
+    "6015": "Spider Web",
+    "7006": "Pincer Trap",
+    "7007": "Stab",
+    "7011": "Off-Guard",
+    "7013": "Mind Torture",
+    "7019": "Sabotage",
+    "7020": "Jump Scare",
+    "8001": "Lightsaber",
+    "8011": "Solar Flare",
+    "8014": "Illumination",
+    "8017": "Warming Light",
+    "8021": "Light Discharge",
+    "9006": "Spectral Charge",
+    "9007": "Heist",
+    "9010": "Dark Force",
+    "9011": "Cursed Charge",
+    "9014": "Mind Block",
+    "9015": "Moon Recovery",
+    "9018": "Hypnotism",
+    "9019": "Deep Sleep",
+    "9021": "Substitution Technique",
+    "9022": "Void",
+    "10005": "Caustic Shot",
+    "10008": "Stink Bomb",
+    "10009": "Putrid Gas",
+    "10014": "Gear",
+    "10015": "Armor Plate",
+    "10017": "Protective Shield",
+    "10019": "Adjustment",
+    "10021": "Holo Trick",
+    "10022": "Ditto",
+    "11001": "Astral Fury",
+    "11003": "Warp Strike",
+    "11004": "Timeless Roar",
+    "11005": "Cosmic Void",
+    "11006": "Void Vortex",
+    "11007": "Stochastic Storm",
+    "11010": "Ethereal Discharge",
+    "11011": "Photon Beam",
+    "11013": "Divine Charge",
+    "11015": "Permutation",
+    "11017": "Golden Dance"
+  }
+}

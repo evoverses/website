@@ -34,7 +34,7 @@ This is the **website repository**. Solidity changes are in `evoverses/contracts
 - Bertha/Hermann addresses must be deliberately configured after contract approval/deployment; blank or invalid settings disable spending. The UI verifies reciprocal wiring, token/collection/treasury and pause state; it has no fallback to Brenda/Harry.
 - Contract economics remain authoritative. Parent cost is `500 EVO × 2^generation × (1 + totalBreeds)`; Gen0 pricing caps at four previous breeds, giving 2,500 EVO maximum per parent. Gen0 lifetime breeds remain unlimited; other generations allow five. Cooldown is `max(1, 7 - generation)` days. Treatment costs 250 EVO. See the detailed Nursery notes for async VRF and payment semantics.
 - Nursery and game-account databases are distinct. Existing indexed NFT metadata/ownership is read for display; local player balances, ordinary Evos/items and account sessions live in the isolated player database.
-- Connecting alone is not a verified Epic association. The local Profile now supports separately signed, encrypted wallet links and per-account unlinking, including shared family wallets. Hosted recovery, game NFT projection and exclusive Evo reservations are **not implemented**; NFT gameplay remains disabled. See [wallet linking](docs/wallet-account-linking.md).
+- Connecting alone is not a verified Epic association. The local Profile now supports separately signed, encrypted wallet links and per-account unlinking, including shared family wallets. The local game inventory projection is connected; local PvBot now uses whole-team exclusive practice reservations with fresh ownership/link checks. Hosted recovery and trusted multiplayer/result settlement remain unimplemented. See [wallet linking](docs/wallet-account-linking.md).
 
 ## Local setup
 
@@ -53,7 +53,7 @@ Open **http://localhost:3100** on this machine. Local Epic/payment mutations acc
 
 The shared backend and player database schemas are already versioned in [`evoverses/evoverses`, `Dan/2026_BETA`](https://github.com/evoverses/evoverses/tree/Dan/2026_BETA/Prototypes/player_economy), verified on GitHub at `e2b45d6` on 7 October. Schema files `001_player_economy.sql` and `002_account_lifecycle.sql` create the player economy and account lifecycle structure. Website-side bridges/payment scripts are included here. Actual player records, balances, sessions and runtime credentials are excluded from Git and require separate private backups. No hosted backend deployment is performed by this push.
 
-The account launcher imports the account/economy modules from the sibling **`evoverses-beta-account-bridge`** game checkout and opens its explicitly reviewed `Saved\EpicAccountLocal-…` database. It starts no Unreal/editor process. It stops after two hours and revokes sessions on shutdown. No test fixture creates players in the real local database. See [account setup](docs/website-player-accounts.md) for reviewed context and process ownership.
+The account launcher imports the account/economy modules from the sibling **`evoverses-beta-account-bridge`** game checkout and opens its explicitly reviewed `Saved\EpicAccountLocal-…` database. It starts no Unreal/editor process. It stops after eight hours and revokes sessions on shutdown. No test fixture creates players in the real local database. See [account setup](docs/website-player-accounts.md) for reviewed context and process ownership.
 
 ### Configuration
 
@@ -93,7 +93,7 @@ Browser checks require the local website; the account check requires the reviewe
 
 The production-check script sets flags inside Windows Node, writes only `.next-beta-check`, disables source-map upload for that check and performs no deployment. A standard production build still uses `.next` and normal hosting configuration.
 
-Confirmed before this push:
+Earlier validation checkpoint (retained as historical evidence):
 
 - **79 automated website tests passed:** 23 Nursery, 21 player account/auth, five preview auth, four balance formatting and 26 pricing/payment/webhook/persistent-ledger tests.
 - Strict website TypeScript checking passed after correcting the six pre-existing legacy address annotations. Those corrections do not change contract destinations or transaction behaviour.
@@ -105,7 +105,7 @@ Confirmed before this push:
 ## Remaining release work
 
 1. **Nursery:** complete independent contract review and the contract → indexer → API/image → wallet rehearsal; approve/import history and species mappings; approve addresses, mint roles, VRF configuration, failure recovery and deployment. Apply the metadata migration/watcher deliberately, without replaying transfers into a populated database.
-2. **Accounts:** deploy the shared account/payment service with TLS, durable PostgreSQL, proper secret storage and shared OAuth/session state. Local sign-in is not a hosted account release. Rehearse the local wallet linking UI, then implement game NFT projection and exclusive Evo reservations; hosted key custody/rotation and recovery remain required.
+2. **Accounts:** deploy the shared account/payment service with TLS, durable PostgreSQL, proper secret storage and shared OAuth/session state. Local sign-in is not a hosted account release. Validate shared-wallet game access across real sessions. Local game inventory and PvBot reservations are connected; hosted key custody/rotation, multiplayer admission and recovery remain required.
 3. **Payments:** delayed confirmation, interrupted forwarding and recovery tests; stable hosted webhooks/reconciliation, refunds/disputes/support, production pricing and tax decisions. Test-mode Checkout is not revenue activation. EVO settlement needs a reserved quote and manipulation-resistant pricing policy, plus verified on-chain fulfillment.
 4. **Game economy:** reviewed item/Evo catalogue and prices, purchase/use effects and gameplay validation. A displayed balance alone does not prove every gameplay spending path is deployed.
 
@@ -160,3 +160,41 @@ Added explicit Store composition on the existing owned account API, with a resto
 
 
 Validation for this integration: 93 selected website tests passed, including backup restoration, wallet/account security, inventory, private game feed/team verifier and synthetic local Stripe receipts. The production build and strict types had passed at the preceding website checkpoint; no frontend TypeScript was changed by the optional Store-service wiring. Fresh genuine Epic/game purchasing on the enabled service remains a human check.
+
+
+## Game account inventory details - 8 October 2026
+
+Profile displays generated account Evo serials, level, remaining/max HP, current/level-100 stat projections, genetic ratings and equipped/locked moves. It reads the same local account service used by the game’s Epic login; separate client sessions resolve one player. Packs use the existing game artwork and stay in inventory until opened in-game. [Data contract, local setup and limitations](docs/game-account-inventory-details.md). Local only; no new deployment/payment activation.
+
+
+## 8 October 2026 - NFT presentation and compact inventory follow-up
+
+See [NFT inventory presentation repairs](docs/nft-inventory-presentation-fixes.md) for the typed NFT trait bridge, common level restrictions, 50 HP baseline, tooltip repair, retained purchase balance, compact inventory sizing and validation. All work is local. The owned account service was subsequently backed up/restarted and the game reopened after the user resumed work. Saved inventory/balance counts matched; a real-account visual check remains pending.
+
+
+## 8 October 2026 - responsive inventory and hover details
+
+Wallet links now precede inventory in Pro mode. Item columns pair with smaller Evo columns; minimum-width cards and filters wrap as their containing panel narrows. Stats and Moves opens a wider responsive panel for all Evos, including NFT Evos, supporting hover, focus, tap and Escape. [Changes, measurements, validation and remaining work](docs/nft-inventory-presentation-fixes.md#responsive-inventory-and-floating-details---8-october-2026). Local `dan-dev` only; no push/deployment.
+
+
+### Local beta follow-up: account team persistence
+
+The website-owned account service now prepares the game's schema 006 team/equipped-move preferences, with a gzip database backup before first migration. These are authenticated account preferences, not inventory or battle authority. The local preview safety timeout is eight hours; a restart revokes existing sessions and requires fresh Epic sign-in. No AWS or production migration is included. Game implementation and validation: `../evoverses-beta-account-bridge/Documentation/account-teams-and-pvp-navigation.md`.
+
+
+### Local PvBot account-team service - 8 October 2026
+
+The explicit local game-store composition now adds authenticated practice reserve/renew/release routes, using the existing SQL team-reservation service and fresh linked-wallet ownership verifier. Before adding missing schema 003 tables, startup saves a verified gzip database backup. Account-only API composition has no practice routes. These leases coordinate local PvBot use; they cannot settle rewards, HP, items or XP. Unsigned requests are rejected with 401 / INVALID_SESSION. No hosted database or infrastructure changed.
+
+The linked-inventory compiler uses a separate ignored output directory per process to prevent concurrent tests/service compilation truncating shared JSON. Eight website feed/verifier checks and 36 sibling backend practice/store/reservation checks passed. Game Settings, team-to-bot handoff and rendered validation are documented in `../evoverses-beta-account-bridge/Documentation/pvbot-account-teams-and-settings.md`. The shared working service was backed up/restarted; sessions require fresh Epic sign-in. Local only; no push or deployment.
+
+
+## GitHub snapshot - 8 October 2026
+
+This website snapshot includes compact responsive inventory cards, Pro-only linked wallets above inventory, shared Stats and Moves hover/focus/tap panels, all 68 configured species in the display reference, pack artwork and validated saved-Evo trait parsing. The explicitly enabled local account service also wires account-backed team/move preferences and whole-team practice reservations from the sibling game backend, with private backups before additive local schemas. No gameplay authority is granted by website metadata.
+
+Validation for this snapshot: 55 account/preview/wallet/game-feed tests, 16 inventory tests, 27 Nursery/pricing/balance tests and 27 payment/ledger tests passed (125 total). The isolated Next production build passed, including TypeScript checking; existing repository lint warnings remain. Responsive evidence uses synthetic accounts and wallets only. Credentials, working databases, backups, runtime logs and build outputs remain excluded from Git.
+
+**Deployment hold:** `vercel.json` at repository and website roots disables Git-triggered deployment for `dan-dev`, covering either configured Vercel project root. This implements the explicit request to push without deploying. Remove that branch hold only after deployment is authorised. See [Vercel's documented branch deployment setting](https://vercel.com/docs/project-configuration/git-configuration#gitdeploymentenabled). No other hosting action or production database migration is performed by this snapshot.
+
+**Next step:** check hosted account/economy service availability, production login configuration and payment mode before approving a beta deployment. The local launcher relies on the separate game backend checkout; pushing this website does not publish that service. Nursery still requires contract review/approved addresses and metadata rollout. Stripe remains sandbox-only, and EVO settlement remains disabled.

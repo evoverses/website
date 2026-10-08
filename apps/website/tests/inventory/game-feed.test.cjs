@@ -34,7 +34,18 @@ function reader({
             address: "0x4151b8afa10653d304fdac9a781afccd45ec164c",
             owner: address,
             tokenId: "7",
-            metadata: { species: "kitsul", type: "EVO", xp: 30 },
+            metadata: {
+              species: "kitsul",
+              type: "EVO",
+              xp: 30,
+              nature: "loyal",
+              gender: "female",
+              attack: 25,
+              special: 25,
+              defense: 25,
+              resistance: 25,
+              speed: 25,
+            },
           },
         ],
         total: 1,
@@ -53,6 +64,8 @@ test("shared loader returns freshly owned NFT with masked wallet only", async ()
   assert.equal(got.entries[0].walletLabel, wallet.label);
   assert.equal(got.entries[0].experience, 30);
   assert.equal(got.available, true);
+  assert.equal(got.entries[0].traits.currentHealth, 50);
+  assert.ok(got.entries[0].traits.level < 100);
   assert.equal(got.partial, false);
   assert.ok(!JSON.stringify(got).includes(address));
 });

@@ -41,5 +41,5 @@ if (!(Test-Path (Join-Path $RunRoot 'ready.json'))) { Set-Content (Join-Path $Ru
 $ready=Get-Content (Join-Path $RunRoot 'ready.json') -Raw | ConvertFrom-Json
 if ($ready.mode -ne 'Account' -or $ready.websiteClientId -notmatch '^[A-Za-z0-9]{16,128}$' -or $ready.apiUrl -notmatch '^http://127\.0\.0\.1:[1-9][0-9]{0,4}$') { throw 'Invalid local service readiness record.' }
 Write-Output 'Local player service ready for website and game account tests.'
-Write-Output 'It closes after two hours and revokes local sessions; restart this script to test again.'
+Write-Output 'It closes after eight hours and revokes local sessions; restart this script to test again.'
 Write-Output 'Only the local account service was started; no game/editor, other animation thread or AWS resources touched.'

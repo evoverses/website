@@ -1,3 +1,4 @@
+import { nftProgression } from "./evo";
 import type {
   InventoryRow,
   NftInventoryPage,
@@ -162,7 +163,10 @@ export async function loadLinkedNfts(
     const m = candidate.metadata,
       species = String(m.species).toLowerCase(),
       egg = m.type === "EGG";
+    const details = egg ? undefined : nftProgression(species, m);
+    if (!egg && !details) warnings.add("METADATA_INCOMPLETE");
     rows.push({
+      details,
       id: `nft:43114:${collection}:${candidate.id}`,
       kind: "nft",
       name: egg

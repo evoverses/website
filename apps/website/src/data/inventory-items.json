@@ -268,5 +268,20 @@
     "name": "Fangbrew Elixir",
     "category": "elemental_boost",
     "image": "/inventory/items/monster_boost_strong.png"
+  },
+  "evo_pack_2": {
+    "name": "2-Evo Pack",
+    "category": "evo_packs",
+    "image": "/inventory/items/evo_pack_2.png"
+  },
+  "evo_pack_4": {
+    "name": "4-Evo Pack",
+    "category": "evo_packs",
+    "image": "/inventory/items/evo_pack_4.png"
+  },
+  "evo_pack_6": {
+    "name": "6-Evo Pack",
+    "category": "evo_packs",
+    "image": "/inventory/items/evo_pack_6.png"
   }
 }

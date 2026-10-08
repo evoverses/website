@@ -7,6 +7,8 @@ export type InventoryRow = {
   xp: number | null;
   species: string | null;
   category: string;
+  displayId?: string;
+  details?: ReturnType<typeof import("./evo").evoProgression>;
   revision?: number;
   generation?: number | null;
   tokenId?: string;

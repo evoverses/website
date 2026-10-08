@@ -1,3 +1,4 @@
+import { isGeneratedStats, evoProgression } from "./evo";
 import type { Inventory } from "../auth-core";
 import displayCatalogue from "@/data/inventory-items.json";
 import type { InventoryRow } from "./types";
@@ -31,6 +32,10 @@ export function ordinaryInventory(inventory: Inventory): InventoryRow[] {
       xp: evo.experience,
       species: evo.speciesKey,
       category: "Evos",
+      displayId: evo.displayId,
+      ...(isGeneratedStats(evo.stats)
+        ? { details: evoProgression(evo.speciesKey, evo.stats) }
+        : {}),
     })),
   ];
 }
@@ -70,6 +75,7 @@ export function visibleInventory(
       row.species,
       row.category,
       row.tokenId,
+      row.displayId,
       row.walletLabel,
     ]
       .filter(Boolean)

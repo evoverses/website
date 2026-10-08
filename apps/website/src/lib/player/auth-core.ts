@@ -1,3 +1,4 @@
+import { parseEvoStats, type GeneratedEvoStats } from "./inventory/evo";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
 export const playerWebOrigin = "http://localhost:3100";
@@ -9,7 +10,7 @@ const hex = /^[0-9a-f]{64}$/;
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 export type Player = { id: string; displayName: string; experience: number };
 export type PlayerSnapshot = { player: Player; balance: { evoros: number } };
-export type Inventory = { items: { productId: string; revision: number; quantity: number }[]; evos: { id: string; speciesKey: string; experience: number; stats: Record<string, number> }[] };
+export type Inventory = { items: { productId: string; revision: number; quantity: number }[]; evos: { id: string; speciesKey: string; experience: number; displayId?: string; stats: Record<string, number> | GeneratedEvoStats }[] };
 export type LocalEpicConfig = { clientId: string; clientSecret: string; deploymentId: string; applicationId: string; apiUrl: string };
 export class PlayerWebError extends Error {
   constructor(public code: string) { super(code); }
@@ -71,7 +72,7 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
         (async () => {
           const response = await fetchImpl(url, { ...init, cache: "no-store", redirect: "error", credentials: "omit", signal: controller.signal });
           if (response.status >= 500 || ((stage === "epic-token" || stage === "account-login") && response.status >= 400)) report("http-error", response.status);
-          const value = response.status === 204 ? null : await boundedResponse(response, controller.signal);
+          const value = response.status === 204 ? null : await boundedResponse(response, controller.signal, stage === "account-inventory" ? 196608 : 65536);
           return { status: response.status, value };
         })(),
         new Promise<never>((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new PlayerWebError("SERVICE_UNAVAILABLE")); }, 5000); }),
@@ -166,8 +167,12 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
       return { productId: item.productId, revision: item.revision, quantity: item.quantity };
     });
     const evos = value.evos.map(evo => {
-      if (!record(evo) || !uuid(evo.id) || typeof evo.speciesKey !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(evo.speciesKey) || !natural(evo.experience) || !record(evo.stats) || Object.keys(evo.stats).length > 32 || Object.values(evo.stats).some(n => !natural(n))) return fail("SERVICE_UNAVAILABLE");
-      return { id: evo.id, speciesKey: evo.speciesKey, experience: evo.experience, stats: evo.stats as Record<string, number> };
+      if (!record(evo) || !uuid(evo.id) || typeof evo.speciesKey !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(evo.speciesKey) || !natural(evo.experience)) return fail("SERVICE_UNAVAILABLE");
+      let stats: Record<string, number> | GeneratedEvoStats;
+      try { stats = parseEvoStats(evo.stats, evo.speciesKey); } catch { return fail("SERVICE_UNAVAILABLE"); }
+      if ("values" in stats && typeof stats.values === "object" &&
+          (typeof evo.displayId !== "string" || !/^E-[0-9]{10,20}$/.test(evo.displayId) || evo.breedable !== false || evo.generation !== null || evo.experience !== stats.experience)) return fail("SERVICE_UNAVAILABLE");
+      return { id: evo.id, speciesKey: evo.speciesKey, experience: evo.experience, stats, ...(typeof evo.displayId === "string" && /^E-[0-9]{10,20}$/.test(evo.displayId) ? {displayId: evo.displayId} : {}) };
     });
     return { items, evos };
   }

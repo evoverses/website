@@ -4,7 +4,7 @@ const fs = require("node:fs"),
   ts = require("typescript");
 function compiledInventory() {
   const root = path.resolve(__dirname, ".."),
-    out = path.join(root, "node_modules/.game-inventory-lib");
+    out = path.join(root, "node_modules/.game-inventory-lib", String(process.pid));
   fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(
     path.join(out, "package.json"),
@@ -13,6 +13,7 @@ function compiledInventory() {
   for (const file of [
     "lib/evo/queries.ts",
     "lib/player/inventory/nfts.ts",
+    "lib/player/inventory/evo.ts",
     "lib/player/inventory/sources.ts",
   ]) {
     const result = ts.transpileModule(
@@ -35,8 +36,19 @@ function compiledInventory() {
       throw Error("Local inventory source compilation failed");
     const dest = path.join(out, file.replace(/\.ts$/, ".js"));
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.writeFileSync(dest, result.outputText);
+    fs.writeFileSync(
+      dest,
+      result.outputText.replace(
+        'require("@/data/evo-progression.json")',
+        'require("../../../data/evo-progression.json")',
+      ),
+    );
   }
+  fs.mkdirSync(path.join(out, "data"), { recursive: true });
+  fs.copyFileSync(
+    path.join(root, "src/data/evo-progression.json"),
+    path.join(out, "data/evo-progression.json"),
+  );
   return {
     ...require(path.join(out, "lib/player/inventory/nfts.js")),
     ...require(path.join(out, "lib/player/inventory/sources.js")),
@@ -65,6 +77,18 @@ function createGameLinkedInventoryReader({ links, load, projection, sources }) {
         experience: row.xp !== null && row.xp <= 2147483647 ? row.xp : null,
         walletId: row.walletId,
         walletLabel: row.walletLabel,
+        ...(row.details
+          ? {
+              traits: {
+                level: row.details.level,
+                currentHealth: row.details.currentHealth,
+                nature: row.details.nature,
+                gender: row.details.gender,
+                values: row.details.values,
+                genetics: row.details.genetics,
+              },
+            }
+          : {}),
       })),
       partial: page.nextPage !== null || page.warnings.length > 0,
       available:
@@ -72,5 +96,6 @@ function createGameLinkedInventoryReader({ links, load, projection, sources }) {
         !page.warnings.includes("OWNERSHIP_UNAVAILABLE"),
     };
   };
+
 }
 module.exports = { compiledInventory, createGameLinkedInventoryReader };

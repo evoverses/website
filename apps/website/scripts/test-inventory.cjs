@@ -12,6 +12,7 @@ fs.writeFileSync(
 );
 for (const file of [
   "lib/player/auth-core.ts",
+  "lib/player/inventory/evo.ts",
   "lib/player/wallet/handler.ts",
   "lib/player/inventory/model.ts",
   "lib/player/inventory/nfts.ts",
@@ -37,16 +38,25 @@ for (const file of [
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(
     dest,
-    result.outputText.replace(
-      'require("@/data/inventory-items.json")',
-      'require("../../../data/inventory-items.json")',
-    ),
+    result.outputText
+      .replace(
+        'require("@/data/inventory-items.json")',
+        'require("../../../data/inventory-items.json")',
+      )
+      .replace(
+        'require("@/data/evo-progression.json")',
+        'require("../../../data/evo-progression.json")',
+      ),
   );
 }
 fs.mkdirSync(path.join(out, "data"), { recursive: true });
 fs.copyFileSync(
   path.join(root, "src/data/inventory-items.json"),
   path.join(out, "data/inventory-items.json"),
+);
+fs.copyFileSync(
+  path.join(root, "src/data/evo-progression.json"),
+  path.join(out, "data/evo-progression.json"),
 );
 const result = spawnSync(
   process.execPath,

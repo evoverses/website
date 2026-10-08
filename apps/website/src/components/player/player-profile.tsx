@@ -49,13 +49,13 @@ export function PlayerProfile({
           </p>
         </section>
       </div>
+      <ProOnly>
+        {walletLinkEnabled && <WalletLink playerId={account.player.id} />}
+      </ProOnly>
       <AccountInventoryView
         playerId={account.player.id}
         initialInventory={inventory}
       />
-      <ProOnly>
-        {walletLinkEnabled && <WalletLink playerId={account.player.id} />}
-      </ProOnly>
       <form action="/api/player/auth/logout" method="post">
         <Button variant="outline" type="submit">
           Sign out

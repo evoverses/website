@@ -5,7 +5,8 @@ function load(file,imports={}){
  vm.runInNewContext(source,{module,exports:module.exports,Buffer,AbortController,URL,URLSearchParams,TextDecoder,setTimeout,clearTimeout,fetch,Date,require:name=>Object.hasOwn(imports,name)?imports[name]:require(name)});
  return module.exports;
 }
-const core=load('src/lib/player/auth-core.ts');
+const evoCore=load('src/lib/player/inventory/evo.ts',{'@/data/evo-progression.json':require('../../src/data/evo-progression.json')});
+const core=load('src/lib/player/auth-core.ts',{'./inventory/evo':evoCore});
 const profile={player:{id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',displayName:'Test trainer',experience:40},balance:{evoros:125}};
 const token='a'.repeat(64);
 const config={clientId:'fixture-client',clientSecret:'synthetic-secret',applicationId:'fixture-app',deploymentId:'fixture-deployment',apiUrl:'http://127.0.0.1:50999'};
@@ -22,6 +23,7 @@ function setup(options={}){
    return json({player:profile.player,sessionToken:token,issuedAt:options.fractional?(clock-10)/1000:Math.floor(clock/1000),expiresAt:options.fractional?(clock-10)/1000+900:Math.floor(clock/1000)+900});
   }
   if(url.endsWith('/me'))return options.meDenied?json({error:{code:'INVALID_SESSION'}},401):json(profile);
+  if(url.endsWith('/inventory')&&options.inventory)return json(options.inventory);
   if(url.endsWith('/inventory'))return json({items:[{productId:'vital_dew',revision:1,quantity:2}],evos:[]});
   if(url.endsWith('/logout'))return new Response(null,{status:204});
   throw Error('Unexpected endpoint');
