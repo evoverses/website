@@ -23,6 +23,8 @@ A working localhost beta is not yet a working hosted beta. Account login is deli
 
 **Known deployment blocker:** Next.js 15.3.3 is affected by the React2Shell advisory. Vercel states that new deployments of vulnerable versions are blocked. Its original 15.3.x fix was 15.3.6; that is not a claim that 15.3.6 covers every later advisory. Select the upgrade against current security advisories at implementation time. [Official Vercel bulletin](https://vercel.com/kb/bulletin/react2shell).
 
+GitHub also reported **290 dependency alerts on the default branch (22 critical, 140 high, 103 moderate, 25 low)** during the push. These are provider-reported default-branch counts, not a completed audit of `dan-dev`. Review the beta lockfile and reachable dependencies before exposure, alongside the confirmed Next.js issue. [Repository dependency alerts](https://github.com/evoverses/website/security/dependabot).
+
 ## Code work before hosting
 
 1. Patch the framework and related dependencies in a separate reviewed commit; retain the existing UI and APIs. Run the production build and account, inventory, wallet, Store and Nursery checks.
