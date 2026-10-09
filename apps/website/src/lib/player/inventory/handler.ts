@@ -1,3 +1,4 @@
+import { combatDetails, type CombatState } from "./combat";
 import { playerSessionCookie } from "../auth-core";
 import type { Inventory } from "../auth-core";
 import { ordinaryInventory } from "./model";
@@ -8,6 +9,7 @@ export async function inventoryHandler(
   dependencies: {
     enabled: boolean;
     readInventory: (token: string) => Promise<Inventory>;
+    readCombat?: (token:string,members:{chainId:43114;collection:string;tokenId:string}[])=>Promise<CombatState[]>;
     projection: (token: string) => Promise<unknown>;
     sources: NftSources;
     image: (row: import("./types").InventoryRow) => string | null;
@@ -116,6 +118,16 @@ export async function inventoryHandler(
     if (body.linksVersion !== null && body.linksVersion !== initial.version)
       return reply(409, { error: { code: "INVENTORY_CHANGED" } });
     const nfts = await loadLinkedNfts(initial, body.page, dependencies.sources);
+    if(dependencies.readCombat){
+      const evos=nfts.rows.filter(row=>row.form==="evo"&&row.tokenId&&row.details);
+      const states:CombatState[]=[];
+      try { for(let start=0;start<evos.length;start+=6){
+        states.push(...await dependencies.readCombat(token,evos.slice(start,start+6).map(row=>({chainId:43114 as const,collection:"0x4151b8afa10653d304fdac9a781afccd45ec164c",tokenId:row.tokenId!}))));
+      }
+      const verified=evos.map(row=>{const state=states.find(s=>s.resourceKey===`chain:43114:0x4151b8afa10653d304fdac9a781afccd45ec164c:${row.tokenId}`);if(!state)throw Error("Combat state unavailable");return combatDetails(row.details!,state);});
+      evos.forEach((row,index)=>{row.details=verified[index];});
+      }catch(error){if(error&&typeof error==="object"&&"code" in error&&error.code==="INVALID_SESSION")throw error;nfts.warnings.push("COMBAT_STATE_UNAVAILABLE");}
+    }
     // Logout/unlink/new-link during upstream reads must not release a stale projection.
     const final = walletProjection(await dependencies.projection(token));
     if (final.version !== initial.version)

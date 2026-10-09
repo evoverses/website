@@ -1,3 +1,4 @@
+import { parseCombat, type CombatState } from "./inventory/combat";
 import { parseEvoStats, type GeneratedEvoStats } from "./inventory/evo";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
@@ -10,7 +11,7 @@ const hex = /^[0-9a-f]{64}$/;
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 export type Player = { id: string; displayName: string; experience: number };
 export type PlayerSnapshot = { player: Player; balance: { evoros: number } };
-export type Inventory = { items: { productId: string; revision: number; quantity: number }[]; evos: { id: string; speciesKey: string; experience: number; displayId?: string; stats: Record<string, number> | GeneratedEvoStats }[] };
+export type Inventory = { items: { productId: string; revision: number; quantity: number }[]; evos: { id: string; speciesKey: string; experience: number; displayId?: string; combat?: CombatState; stats: Record<string, number> | GeneratedEvoStats }[] };
 export type LocalEpicConfig = { clientId: string; clientSecret: string; deploymentId: string; applicationId: string; apiUrl: string };
 export class PlayerWebError extends Error {
   constructor(public code: string) { super(code); }
@@ -72,7 +73,7 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
         (async () => {
           const response = await fetchImpl(url, { ...init, cache: "no-store", redirect: "error", credentials: "omit", signal: controller.signal });
           if (response.status >= 500 || ((stage === "epic-token" || stage === "account-login") && response.status >= 400)) report("http-error", response.status);
-          const value = response.status === 204 ? null : await boundedResponse(response, controller.signal, stage === "account-inventory" ? 196608 : 65536);
+          const value = response.status === 204 ? null : await boundedResponse(response, controller.signal, stage === "account-inventory" ? 1048576 : 65536);
           return { status: response.status, value };
         })(),
         new Promise<never>((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new PlayerWebError("SERVICE_UNAVAILABLE")); }, 5000); }),
@@ -172,14 +173,23 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
       try { stats = parseEvoStats(evo.stats, evo.speciesKey); } catch { return fail("SERVICE_UNAVAILABLE"); }
       if ("values" in stats && typeof stats.values === "object" &&
           (typeof evo.displayId !== "string" || !/^E-[0-9]{10,20}$/.test(evo.displayId) || evo.breedable !== false || evo.generation !== null || evo.experience !== stats.experience)) return fail("SERVICE_UNAVAILABLE");
-      return { id: evo.id, speciesKey: evo.speciesKey, experience: evo.experience, stats, ...(typeof evo.displayId === "string" && /^E-[0-9]{10,20}$/.test(evo.displayId) ? {displayId: evo.displayId} : {}) };
+      return { id: evo.id, speciesKey: evo.speciesKey, experience: evo.experience, stats, ...(evo.combat === undefined ? {} : {combat:parseCombat(evo.combat,"account:"+evo.id)}), ...(typeof evo.displayId === "string" && /^E-[0-9]{10,20}$/.test(evo.displayId) ? {displayId: evo.displayId} : {}) };
     });
     return { items, evos };
+  }
+  async function readCombat(token: string, members: {chainId:43114;collection:string;tokenId:string}[]): Promise<CombatState[]> {
+    if(!hex.test(token)) return fail("INVALID_SESSION");
+    if(!members.length||members.length>6) return fail("SERVICE_UNAVAILABLE");
+    const {status,value}=await request(config().apiUrl+"/v1/player/combat-state",{method:"POST",headers:{authorization:"Bearer "+token,"content-type":"application/json"},body:JSON.stringify({members})});
+    if(status!==200||!record(value)||!Array.isArray(value.states)||value.states.length!==members.length) return fail(status===401?"INVALID_SESSION":"SERVICE_UNAVAILABLE");
+    const states=value.states.map(s=>parseCombat(s));
+    if(new Set(states.map(s=>s.resourceKey)).size!==members.length||members.some(m=>!states.some(s=>s.resourceKey===`chain:43114:${m.collection}:${m.tokenId}`))) return fail("SERVICE_UNAVAILABLE");
+    return states;
   }
   async function logout(token: string) {
     if (!hex.test(token)) return fail("INVALID_SESSION");
     const { status } = await request(config().apiUrl + "/v1/auth/logout", { method: "POST", headers: { authorization: "Bearer " + token, "content-type": "application/json" }, body: "{}" });
     if (status !== 204) return fail(status === 401 ? "INVALID_SESSION" : "SERVICE_UNAVAILABLE");
   }
-  return { start, callback, confirm, hasPending, readProfile, readInventory, logout };
+  return { start, callback, confirm, hasPending, readProfile, readInventory, readCombat, logout };
 }

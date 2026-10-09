@@ -490,6 +490,7 @@ test("generated Evo schema preserves HP/genes and starting moves; malformed or l
   assert.equal(details.moves.find((m) => m.id === 4001).name, "Tackle");
   assert.equal(details.moves.find((m) => m.id === 7014).level, 7);
   assert.equal(details.moves.find((m) => m.id === 7014).unlocked, false);
+  assert.equal(details.moves.find((m) => m.id === 7014).name, "New move");
   const rows = ordinaryInventory({
     items: [{ productId: "evo_pack_2", revision: 2, quantity: 1 }],
     evos: [
@@ -609,7 +610,7 @@ test("same Epic identity in game and website reads one saved pack roster; other 
       rows.every(
         (r) =>
           r.details.level === 1 &&
-          r.details.currentHealth === 50 &&
+          r.details.currentHealth === r.details.maxHealth &&
           r.details.moves.some((m) => m.equipped),
       ),
     );
@@ -687,6 +688,7 @@ test("actual inventory card renders saved HP, stats and move unlocks without Pro
         experience: 0,
         displayId: "E-0000000042",
         stats: parseEvoStats(generatedStats(), "nissel"),
+        combat: {resourceKey:'account:'+owned.evos[0].id,currentHealth:17,maxHealth:50,version:2,recoverAt:null,equipped:[4001,7016],moves:[{id:4001,remaining:3,maximum:42,equipped:true},{id:7016,remaining:1,maximum:42,equipped:true}]},
       },
     ],
   })[0];
@@ -699,12 +701,12 @@ test("actual inventory card renders saved HP, stats and move unlocks without Pro
     "Battle stats",
     "Level 100",
     "Genetic ratings",
-    "Smoke Bomb",
-    "Locked",
+    "New move unlocks at level 7",
     "Tackle",
     "Equipped",
   ])
     assert.ok(html.includes(text), text);
+  assert.equal(html.includes("Smoke Bomb"), false);
   assert.ok(/HP 17[^<]*\/50/.test(html));
   assert.equal(/NFT|off-chain|Future|Challenger/.test(html), false);
   const details = evo.nftProgression("kitsul", {
@@ -734,8 +736,27 @@ test("actual inventory card renders saved HP, stats and move unlocks without Pro
   );
   assert.ok(nft.includes("Stats and moves"));
   assert.ok(nft.includes("Tackle"));
-  assert.ok(nft.includes("Locked"));
-  assert.ok(/HP 50[^<]*\/50/.test(nft));
+  assert.ok(nft.includes("New move unlocks at level"));
+  assert.equal(nft.includes("Calcination"), false);
+  const masked = renderToStaticMarkup(
+    React.createElement(mod.exports.InventoryCard, {
+      row: {
+        ...row,
+        details: {
+          ...row.details,
+          moves: row.details.moves.map((move) => move.unlocked ? move : {
+            ...move,
+            name: "UNREVEALED MOVE SENTINEL",
+            remainingPP: 999,
+            maximumPP: 999,
+          }),
+        },
+      },
+    }),
+  );
+  assert.equal(masked.includes("UNREVEALED MOVE SENTINEL"), false);
+  assert.equal(masked.includes("999"), false);
+  assert.ok(nft.includes("HP awaiting combat service"));
   assert.ok(nft.includes("h-full w-2/3 object-contain"));
   assert.ok(nft.includes("space-y-2 text-xs"));
   assert.ok(nft.includes("max-w-[calc(100vw-32px)]"));
@@ -774,15 +795,20 @@ test("owned NFT details use genes and real XP unlocks; preserve zero HP and omit
   };
   const one = nftProgression("nissel", m);
   assert.equal(one.level, 1);
-  assert.equal(one.currentHealth, 50);
-  assert.equal(one.values.health, 50);
+  assert.equal(one.currentHealth, 28);
+  assert.equal(one.values.health, 28);
   assert.equal(one.geneticHealthAvailable, false);
   assert.equal(one.moves.filter((v) => v.unlocked).length, 2);
   const seven = nftProgression("nissel", { ...m, xp: 309, currentHealth: 0 });
   assert.equal(seven.level, 7);
   assert.equal(seven.currentHealth, 0);
   assert.equal(seven.moves.find((v) => v.id === 7014).unlocked, true);
+  assert.equal(seven.moves.find((v) => v.id === 7014).name, "Smoke Bomb");
   assert.equal(seven.moves.find((v) => v.id === 4023).unlocked, false);
+  assert.equal(seven.moves.find((v) => v.id === 4023).name, "New move");
+  const six = nftProgression("nissel", { ...m, xp: 308 });
+  assert.equal(six.level, 6);
+  assert.equal(six.moves.find((v) => v.id === 7014).name, "New move");
   for (const bad of [
     { ...m, attack: 51 },
     { ...m, nature: "unknown" },
@@ -791,4 +817,79 @@ test("owned NFT details use genes and real XP unlocks; preserve zero HP and omit
   ])
     assert.equal(nftProgression("nissel", bad), undefined);
   assert.equal(nftProgression("nissel", {}), undefined);
+});
+
+test('combat projection validates canonical identity and preserves PP by move identity',()=>{
+ const {parseCombat,combatDetails}=require(path.join(base,'lib/player/inventory/combat.js'));
+ const state={resourceKey:'account:'+owned.evos[0].id,currentHealth:17,maxHealth:50,version:3,recoverAt:'2026-10-09T12:00:00.000Z',equipped:[4001],moves:[{id:4001,remaining:0,maximum:42,equipped:true}]};
+ assert.equal(parseCombat(state,state.resourceKey).moves[0].remaining,0);
+ assert.throws(()=>parseCombat({...state,moves:[{...state.moves[0],remaining:43}]}));
+ assert.throws(()=>parseCombat(state,'account:foreign'));
+ assert.throws(()=>parseCombat({...state,equipped:[9015]}));
+ const d={currentHealth:50,moves:[{id:4001,equipped:false,unlocked:true},{id:9015,equipped:false,unlocked:false}]};
+ const projected=combatDetails(d,parseCombat(state));assert.equal(projected.currentHealth,17);assert.equal(projected.moves[0].remainingPP,0);assert.equal(projected.moves[0].equipped,true);assert.equal(projected.combatVerified,true);
+ assert.throws(()=>combatDetails({...d,moves:d.moves.map(m=>({...m,unlocked:false}))},parseCombat(state)));
+});
+
+
+test("all authored species hide future names and retain unlocks above level 50", () => {
+  const catalogue = require("../../src/data/evo-progression.json");
+  const { nftProgression } = require(path.join(base, "lib/player/inventory/evo.js"));
+  const metadata = {
+    xp: 0, nature: "loyal", gender: "female",
+    attack: 25, special: 25, defense: 25, resistance: 25, speed: 25,
+  };
+  for (const [species, entry] of Object.entries(catalogue.species)) {
+    const initial = nftProgression(species, metadata);
+    const complete = nftProgression(species, { ...metadata, xp: entry.maxXp });
+    assert.equal(complete.level, 100, species);
+    assert.equal(initial.moves.length, Object.keys(entry.moves).length, species);
+    for (const move of initial.moves) {
+      assert.equal(move.name, move.unlocked ? catalogue.moveNames[move.id] : "New move", `${species}:${move.id}`);
+      assert.equal(move.remainingPP, undefined);
+      assert.equal(move.maximumPP, undefined);
+      const unlocked = complete.moves.find((m) => m.id === move.id);
+      assert.equal(unlocked.unlocked, true);
+      assert.equal(unlocked.name, catalogue.moveNames[move.id]);
+    }
+  }
+  const kitsul = nftProgression("kitsul", metadata);
+  assert.equal(kitsul.moves.find((m) => m.id === 1003).level, 55);
+  assert.equal(kitsul.moves.find((m) => m.id === 1003).name, "New move");
+});
+
+test("high authored move IDs retain verified website HP and PP without admitting locked moves", () => {
+  const { parseCombat, combatDetails } = require(path.join(base, "lib/player/inventory/combat.js"));
+  const { nftProgression } = require(path.join(base, "lib/player/inventory/evo.js"));
+  const metadata = {
+    xp: 0, nature: "loyal", gender: "female",
+    attack: 25, special: 25, defense: 25, resistance: 25, speed: 25,
+  };
+  for (const [species, id] of [["nuvea", 11008], ["lamphal", 11016], ["sauderon", 10013]]) {
+    const state = {
+      resourceKey: `nft:fixture:${species}`, currentHealth: 0, maxHealth: 50,
+      version: 3, recoverAt: null, equipped: [id],
+      moves: [{ id, remaining: 0, maximum: 42, equipped: true }],
+    };
+    const details = combatDetails(nftProgression(species, metadata), parseCombat(state, state.resourceKey));
+    assert.equal(details.currentHealth, 0);
+    assert.equal(details.moves.find((m) => m.id === id).remainingPP, 0);
+    for (const bad of [0, 2147483648, 11008.5]) {
+      assert.throws(() => parseCombat({ ...state, equipped: [bad], moves: [{ ...state.moves[0], id: bad }] }));
+    }
+    const locked = details.moves.find((m) => !m.unlocked);
+    if (locked) {
+      assert.throws(() => combatDetails(details, { ...state, equipped: [locked.id], moves: [{ ...state.moves[0], id: locked.id }] }));
+    }
+  }
+});
+
+test('variable HP projects the level curve and verified combat maximum without changing genes or PP',()=>{
+ const {levelHealth,nftProgression}=require(path.join(base,'lib/player/inventory/evo.js'));
+ const {parseCombat,combatDetails}=require(path.join(base,'lib/player/inventory/combat.js'));
+ for(const b of [210,215,240,280,355]){assert.equal(levelHealth(b,1),Math.round(b/10));assert.equal(levelHealth(b,100),b);for(let l=1;l<=100;l++)assert.equal(levelHealth(b,l),Math.round(Math.round(b/10)+(b-Math.round(b/10))*(l-1)/99));}
+ const details=nftProgression('kitsul',{xp:0,nature:'loyal',gender:'male',attack:25,special:25,defense:25,resistance:25,speed:25});assert.equal(details.maxHealth,21);assert.equal(details.projected.health,210);
+ const state={resourceKey:'fixture',currentHealth:7,maxHealth:21,version:3,recoverAt:null,equipped:[4001],moves:[{id:4001,remaining:0,maximum:42,equipped:true}]};
+ const projected=combatDetails(details,parseCombat(state));assert.equal(projected.currentHealth,7);assert.equal(projected.values.health,21);assert.equal(projected.moves.find(m=>m.id===4001).remainingPP,0);assert.deepEqual(projected.genetics,details.genetics);
+ for(const bad of [{...state,currentHealth:22},{...state,maxHealth:0},{...state,maxHealth:21.1},{...state,maxHealth:10001}])assert.throws(()=>parseCombat(bad));
 });

@@ -1,6 +1,6 @@
 import { createPublicClient, erc721Abi, http, type Address } from "viem";
 import { avalanche } from "viem/chains";
-import { evosByQueryQuery } from "../../evo/queries";
+import { evoByIdQuery, evosByQueryQuery } from "../../evo/queries";
 import type { NftSources } from "./nfts";
 const collection = "0x4151b8afa10653d304FdAc9a781AFccd45EC164c" as Address;
 // Shared website/game read adapters; never accept caller-supplied network URLs.
@@ -86,5 +86,27 @@ export function createNftSources(
       ),
     };
   }
-  return { fetchIndexed, readChain };
+  async function fetchByIds(tokenIds:string[]) {
+    if(!tokenIds.length||tokenIds.length>48||tokenIds.some(id=>!/^(0|[1-9][0-9]{0,77})$/.test(id)||BigInt(id)>=2n**256n))throw Error("Invalid metadata identities");
+    const results:unknown[]=[];
+    // Bound upstream concurrency; metadata is never accepted from the browser.
+    for(let start=0;start<tokenIds.length;start+=6){
+      results.push(...await Promise.all(tokenIds.slice(start,start+6).map(async tokenId=>{
+        const response=await fetch(process.env.NEXT_PUBLIC_EVOVERSES_GRAPHQL_URL||"",{
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({operationName:"EvoByIdQuery",query:evoByIdQuery,variables:{tokenId}}),
+          cache:"no-store",redirect:"error",signal:AbortSignal.any([AbortSignal.timeout(8000),signal]),
+        });
+        if(!response.ok)throw Error("Metadata unavailable");
+        const reader=response.body?.getReader();if(!reader)throw Error("Missing metadata");
+        const parts:Uint8Array[]=[];let size=0;
+        try{while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>65536){await reader.cancel();throw Error("Metadata exceeds limit");}parts.push(part.value);}}finally{reader.releaseLock();}
+        const value=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(Buffer.concat(parts)));
+        if(value.errors||!value.data?.evoById||String(value.data.evoById.tokenId)!==tokenId)throw Error("Metadata unavailable");
+        return value.data.evoById;
+      })));
+    }
+    return results;
+  }
+  return { fetchIndexed, fetchByIds, readChain };
 }

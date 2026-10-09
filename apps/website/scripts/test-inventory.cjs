@@ -13,6 +13,7 @@ fs.writeFileSync(
 for (const file of [
   "lib/player/auth-core.ts",
   "lib/player/inventory/evo.ts",
+  "lib/player/inventory/combat.ts",
   "lib/player/wallet/handler.ts",
   "lib/player/inventory/model.ts",
   "lib/player/inventory/nfts.ts",

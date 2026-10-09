@@ -1,4 +1,5 @@
 "use client";
+import { nftProgression } from "@/lib/player/inventory/evo";
 import { useEvo } from "@/hooks/use-evo";
 import { EM_DASH } from "@/utils/strings";
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@workspace/ui/components/accordion";
@@ -24,8 +25,9 @@ const AssetStats = ({ tokenId }: { tokenId: string }) => {
     return null;
   }
 
+  const projected = nftProgression(String(metadata.species).toLowerCase(),metadata);
   const stats = [
-    { name: "Health", value: "50" },
+    { name: "Maximum HP", value: projected ? `${projected.maxHealth}` : EM_DASH },
     { name: "Attack", value: metadata.attack },
     { name: "Special", value: metadata.special },
     { name: "Defense", value: metadata.defense },

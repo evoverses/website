@@ -24,6 +24,8 @@ import { statKeys } from "@/lib/player/inventory/evo";
 import { Egg, Package, Sparkles } from "lucide-react";
 
 const warnings: Record<string, string> = {
+  COMBAT_STATE_UNAVAILABLE:
+    "HP and move uses are temporarily unavailable. Your holdings are still shown.",
   DATA_SERVICE_UNAVAILABLE:
     "Creature details are temporarily unavailable. Your wallet holdings have not changed.",
   OWNERSHIP_UNAVAILABLE:
@@ -184,9 +186,19 @@ function EvoDetails({
                 : ""}
           </h5>
           <p className="text-sm text-muted-foreground">
-            Level {details.level} · HP {details.currentHealth}/
-            {details.values.health} · {details.nature} · {details.gender}
+            Level {details.level} ·{" "}
+            {details.combatVerified
+              ? `HP ${details.currentHealth}/${details.maxHealth}`
+              : "HP awaiting combat service"}{" "}
+            · {details.nature} · {details.gender}
           </p>
+          {details.recoverAt && (
+            <p className="text-xs text-muted-foreground">
+              Full HP and move recovery:{" "}
+              {new Date(details.recoverAt).toLocaleString()}. Items can restore
+              them sooner.
+            </p>
+          )}
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-5">
           <section className="min-w-0 space-y-3">
@@ -238,17 +250,21 @@ function EvoDetails({
                   key={move.id}
                   className={`rounded-lg border p-2 ${move.unlocked ? "bg-primary/5" : "text-muted-foreground"}`}
                 >
-                  <div className="flex justify-between gap-3">
-                    <span className="font-semibold">{move.name}</span>
-                    <span className="shrink-0">Level {move.level}</span>
-                  </div>
-                  <p className="mt-1">
-                    {move.equipped
-                      ? "Equipped"
-                      : move.unlocked
-                        ? "Available"
-                        : "Locked"}
-                  </p>
+                  {move.unlocked ? (
+                    <>
+                      <div className="flex justify-between gap-3">
+                        <span className="font-semibold">{move.name}</span>
+                        <span className="shrink-0">Level {move.level}</span>
+                      </div>
+                      <p className="mt-1">
+                        {move.equipped ? "Equipped" : "Available"}
+                        {move.remainingPP !== undefined &&
+                          ` · PP ${move.remainingPP}/${move.maximumPP}`}
+                      </p>
+                    </>
+                  ) : (
+                    <p>New move unlocks at level {move.level}</p>
+                  )}
                 </li>
               ))}
             </ul>
@@ -281,8 +297,10 @@ export function InventoryCard({
       {row.details && (
         <>
           <p className="text-sm font-semibold">
-            Level {row.details.level} · HP {row.details.currentHealth}/
-            {row.details.values.health}
+            Level {row.details.level} ·{" "}
+            {row.details.combatVerified
+              ? `HP ${row.details.currentHealth}/${row.details.maxHealth}`
+              : "HP awaiting combat service"}
           </p>
           <EvoDetails
             row={row}

@@ -64,7 +64,9 @@ test("shared loader returns freshly owned NFT with masked wallet only", async ()
   assert.equal(got.entries[0].walletLabel, wallet.label);
   assert.equal(got.entries[0].experience, 30);
   assert.equal(got.available, true);
-  assert.equal(got.entries[0].traits.currentHealth, 50);
+  // Kitsul starts at its former L10 HP, rather than the retired fixed 50 HP.
+  assert.equal(got.entries[0].traits.currentHealth, 25);
+  assert.equal(got.entries[0].traits.values.health, 25);
   assert.ok(got.entries[0].traits.level < 100);
   assert.equal(got.partial, false);
   assert.ok(!JSON.stringify(got).includes(address));
@@ -102,4 +104,16 @@ test("authentication failure in final projection propagates", async () => {
     }),
   });
   await assert.rejects(load("synthetic"), /INVALID_SESSION/);
+});
+
+test("targeted combat metadata works beyond the first page and still verifies chain ownership",async()=>{
+ let pageReads=0,verified=[];
+ const make=owner=>createGameLinkedInventoryReader({links:{projection:async()=>projected},projection:shared.walletProjection,load:shared.loadLinkedNfts,sources:()=>({
+  fetchIndexed:async()=>{pageReads++;throw Error('not a page read');},
+  fetchByIds:async ids=>ids.map(tokenId=>({chainId:'43114',address:'0x4151b8afa10653d304fdac9a781afccd45ec164c',owner:address,tokenId,metadata:{species:'kitsul',type:'EVO',xp:0,nature:'loyal',gender:'female',attack:25,special:25,defense:25,resistance:25,speed:25}})),
+  readChain:async(_,ids)=>{verified=ids;return {owners:ids.map(()=>owner),counts:[100n]};},
+ })});
+ const got=await make(address)('synthetic',{tokenIds:['2253']});assert.equal(got.entries[0].tokenId,'2253');assert.deepEqual(verified,['2253']);assert.equal(pageReads,0);
+ assert.equal((await make(other)('synthetic',{tokenIds:['2253']})).entries.length,0);
+ await assert.rejects(make(address)('synthetic',{tokenIds:['2253','2253']}),/Invalid linked selection/);
 });

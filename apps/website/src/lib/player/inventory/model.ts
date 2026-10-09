@@ -1,3 +1,4 @@
+import { combatDetails } from "./combat";
 import { isGeneratedStats, evoProgression } from "./evo";
 import type { Inventory } from "../auth-core";
 import displayCatalogue from "@/data/inventory-items.json";
@@ -34,7 +35,7 @@ export function ordinaryInventory(inventory: Inventory): InventoryRow[] {
       category: "Evos",
       displayId: evo.displayId,
       ...(isGeneratedStats(evo.stats)
-        ? { details: evoProgression(evo.speciesKey, evo.stats) }
+        ? { details: evo.combat ? combatDetails(evoProgression(evo.speciesKey, evo.stats,evo.experience),evo.combat) : evoProgression(evo.speciesKey,evo.stats,evo.experience) }
         : {}),
     })),
   ];

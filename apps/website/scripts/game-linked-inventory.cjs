@@ -61,9 +61,19 @@ function createGameLinkedInventoryReader({ links, load, projection, sources }) {
     projection = built.walletProjection;
     sources = () => built.createNftSources();
   }
-  return async (token) => {
+  return async (token, selection) => {
+    const wanted=selection?.tokenIds;
+    if(selection!==undefined&&(!selection||Object.keys(selection).length!==1||!Array.isArray(wanted)||!wanted.length||wanted.length>48||new Set(wanted).size!==wanted.length||wanted.some(id=>typeof id!=='string'||!/^(0|[1-9][0-9]{0,77})$/.test(id)||BigInt(id)>=2n**256n)))throw Error("Invalid linked selection");
     const before = projection(await links.projection(token, {}));
-    const page = await load(before, 0, sources());
+    const source=sources();
+    // Targeted authoritative metadata reads also work beyond the first inventory page.
+    // loadLinkedNfts still independently checks each owner on Avalanche and the links version.
+    if(wanted){
+      if(typeof source.fetchByIds!=='function')throw Error("Targeted metadata unavailable");
+      const fetch=source.fetchByIds.bind(source);
+      source.fetchIndexed=async()=>({items:await fetch(wanted),total:wanted.length,nextPage:null});
+    }
+    const page = await load(before, 0, source);
     // Re-authenticate and recheck links after external reads. Unlink/relink during
     // the read must not publish the removed wallet's inventory.
     const after = projection(await links.projection(token, {}));

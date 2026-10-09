@@ -36,6 +36,7 @@ export function playerInventory(request: Request) {
   return inventoryHandler(request, {
     enabled: localPlayerLogin,
     readInventory: (token) => playerWebAuth().readInventory(token),
+    readCombat: (token,members) => playerWebAuth().readCombat(token,members),
     projection: (token) => walletRpc("projection", token, {}),
     sources: createNftSources(),
     image: inventoryImage,

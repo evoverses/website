@@ -46,10 +46,13 @@ const { createEpicEvidenceVerifier } = require(
     walletApi,
     timer,
     deadline,
+    cleanupTimer,
+    cleanupPending,
     closing = false,
     initialized = false,
     loginCount = 0,
-    logoutCount = 0;
+    logoutCount = 0,
+    startupStage = "account-context";
   const statusPath = path.join(runRoot, "status.json");
   async function status() {
     const counts =
@@ -72,6 +75,8 @@ const { createEpicEvidenceVerifier } = require(
     closing = true;
     clearInterval(timer);
     clearTimeout(deadline);
+    clearInterval(cleanupTimer);
+    if (cleanupPending) await cleanupPending;
     if (walletApi) await walletApi.close();
     if (storeApi) await storeApi.close();
     if (api) await api.close();
@@ -111,6 +116,7 @@ const { createEpicEvidenceVerifier } = require(
     );
     const { websiteClientId, ...restrictions } = context;
     const verifier = createEpicEvidenceVerifier(restrictions);
+    startupStage = "database-open";
     db = new (localPGlite())(path.join(runRoot, "Database"));
     await db.query("SELECT count(*) FROM player.sessions");
     initialized = true;
@@ -121,6 +127,7 @@ const { createEpicEvidenceVerifier } = require(
         "utf8",
       ),
     );
+    startupStage = "payment-configuration";
     const store = localStoreSettings(process.env, catalogue);
     const sdk = store
       ? new (require("stripe"))(store.secretKey, {
@@ -148,6 +155,7 @@ const { createEpicEvidenceVerifier } = require(
         token: store.token,
         onCredit: status,
       });
+    startupStage = "game-store";
     const gameStore = await require("./game-store-local.cjs").prepareWebsiteGameStore({
       enabled: process.env.EVOVERSES_LOCAL_GAME_STORE === "1",
       accountRepo, runRoot, db, economy,
@@ -159,6 +167,7 @@ const { createEpicEvidenceVerifier } = require(
       grantNewPlayer: gameStore ? (tx, id) => gameStore.grantStarter(tx, id) : undefined,
     });
     let links;
+    startupStage = "wallet-link";
     const walletSettings = walletLinkSettings(process.env);
     if (walletSettings) {
       await migrateWalletLinks(database);
@@ -174,6 +183,7 @@ const { createEpicEvidenceVerifier } = require(
       });
     }
     const readLinkedInventory = links ? require("./game-linked-inventory.cjs").createGameLinkedInventoryReader({links}) : undefined;
+    startupStage = "loadouts";
     const loadouts = gameStore ? await require(path.join(backend,"src/player-loadouts.cjs")).prepareLocalLoadouts({
       db,economy,readLinkedInventory,
       progression: JSON.parse(fs.readFileSync(path.join(accountRepo,"Content/Store/Data/evo-progression.json"),"utf8")),
@@ -185,7 +195,7 @@ const { createEpicEvidenceVerifier } = require(
         if(fs.statSync(backupPath).size!==bytes.length)throw Error("Incomplete local backup");
       }
     }) : undefined;
-    let practice;
+    let practice, combat, casual;
     if(gameStore){
       const present=(await db.query("SELECT to_regclass('player.game_reservations') AS leases,to_regclass('player.game_evo_reservations') AS members")).rows[0];
       if(Boolean(present.leases)!==Boolean(present.members))throw Error('Inconsistent practice schema');
@@ -196,14 +206,41 @@ const { createEpicEvidenceVerifier } = require(
         if(fs.statSync(target).size!==bytes.length)throw Error('Incomplete local backup');
         await db.exec(fs.readFileSync(path.join(backend,'schema/003_game_team_reservations.sql'),'utf8'));
       }
-      practice=new (require(path.join(backend,'src/team-reservations.cjs')).GameTeamReservations)({accounts,mode:'test',prepareLinkedTeam:links?require("./game-team-authorization.cjs").createGameTeamVerifier({links,ErrorType:EconomyError}):undefined});
+      startupStage = "combat-state";
+      combat=await require(path.join(backend,'src/local-item-use.cjs')).prepareLocalItemUse({enabled:true,db,accounts,readLinkedInventory,
+        beforeFirstMigration:async(name)=>{
+          const backup=await db.dumpDataDir('gzip'),bytes=Buffer.from(await backup.arrayBuffer());if(!bytes.length)throw Error('Empty local backup');
+          const target=path.join(runRoot,'ItemsBefore-'+name.replace('.sql','')+'-'+Date.now()+'.tar.gz');fs.writeFileSync(target,bytes,{flag:'wx'});
+          if(fs.statSync(target).size!==bytes.length)throw Error('Incomplete local backup');
+        }});
+      practice=new (require(path.join(backend,'src/team-reservations.cjs')).GameTeamReservations)({accounts,mode:'test',recovery:combat,prepareLinkedTeam:links?require("./game-team-authorization.cjs").createGameTeamVerifier({links,ErrorType:EconomyError}):undefined});
+      startupStage = "casual-items";
+      casual=await require(path.join(backend,'src/local-casual-practice.cjs')).prepareLocalCasualPractice({enabled:true,db,accounts,reservations:practice,combat,economy,
+        prepareLinkedSpend:links?require("./game-team-authorization.cjs").createGameSpendVerifier({links,ErrorType:EconomyError}):undefined,
+        checkLinks:async(tx,playerId,checkpoint)=>{
+          const ids=(await tx.query('SELECT id FROM player.wallet_links WHERE player_id=$1 ORDER BY id',[playerId])).rows.map(r=>r.id).sort();
+          if(!Array.isArray(checkpoint)||JSON.stringify(ids)!==JSON.stringify(checkpoint))throw new EconomyError('TEAM_UNAVAILABLE');
+        },beforeFirstMigration:async(name)=>{
+          const backup=await db.dumpDataDir('gzip'),bytes=Buffer.from(await backup.arrayBuffer());if(!bytes.length)throw Error('Empty local backup');
+          const target=path.join(runRoot,'CasualBefore-'+name.replace('.sql','')+'-'+Date.now()+'.tar.gz');fs.writeFileSync(target,bytes,{flag:'wx'});
+          if(fs.statSync(target).size!==bytes.length)throw Error('Incomplete local backup');
+        }});
     }
+    startupStage = "operational-cleanup";
+    if(casual){
+      await casual.prune();
+      cleanupTimer=setInterval(()=>{
+        if(closing||cleanupPending)return;
+        cleanupPending=casual.prune().catch(()=>{}).finally(()=>{cleanupPending=undefined;});
+      },60*60*1000);
+    }
+    startupStage = "account-api";
     const accountApiFactory = gameStore
       ? require(path.join(backend, "src/http.cjs")).startLocalStoreApi
       : startLocalAccountApi;
     api = await accountApiFactory({
       economy,
-      ...(gameStore ? { store: gameStore, loadouts, practice } : {}),
+      ...(gameStore ? { store: gameStore, loadouts, practice, casual, combat, projectCombatInventory:(token,body)=>combat.project(token,body) } : {}),
       readLinkedInventory,
       accounts: {
         login: async (input) => {
@@ -247,12 +284,13 @@ const { createEpicEvidenceVerifier } = require(
       8 * 60 * 60 * 1000,
     );
     process.once("SIGINT", () => close().catch(() => (process.exitCode = 1)));
-  } catch {
+  } catch (error) {
+    const safeCode = typeof error?.code === "string" && /^[A-Z0-9_]{3,64}$/.test(error.code) ? error.code : "UNSPECIFIED";
     try {
       await close();
     } catch {}
     console.error(
-      "Local Epic service failed. Credentials and provider responses omitted.",
+      `Local Epic service failed at ${startupStage} (${safeCode}). Credentials and provider responses omitted.`,
     );
     process.exitCode = 1;
   }

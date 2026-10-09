@@ -198,3 +198,16 @@ Validation for this snapshot: 55 account/preview/wallet/game-feed tests, 16 inve
 **Deployment hold:** `vercel.json` at repository and website roots disables Git-triggered deployment for `dan-dev`, covering either configured Vercel project root. This implements the explicit request to push without deploying. Remove that branch hold only after deployment is authorised. See [Vercel's documented branch deployment setting](https://vercel.com/docs/project-configuration/git-configuration#gitdeploymentenabled). No other hosting action or production database migration is performed by this snapshot.
 
 **Next step:** check hosted account/economy service availability, production login configuration and payment mode before approving a beta deployment. The local launcher relies on the separate game backend checkout; pushing this website does not publish that service. Nursery still requires contract review/approved addresses and metadata rollout. Stripe remains sandbox-only, and EVO settlement remains disabled.
+
+
+## 9 October 2026 - inventory move unlock visibility
+
+Locked moves display only their unlock level; names and PP remain hidden until unlocked for all Evos. Fixed valid move IDs above 10,000 being rejected by the combat display parser. The 68-species source audit found no truncated website lists: 25 original learnsets finish by level 50. [Changes, evidence and the separate native migration backlog](docs/inventory-move-unlocks.md). Local only; hosting remains paused.
+
+### HP progression update — 9 October 2026
+
+Evo HP now begins at the species' old Level 10 HP at Level 1 and grows linearly to its old Level 100 HP. Inventory, HP previews and NFT asset maximum use derived/confirmed variable HP; genes and unrevealed moves are preserved. The companion account service supplies the mutable maximum separately from immutable birth records. Native game/backend work and schema 010 remain local on `Dan/beta-account-bridge`; this website work is prepared for GitHub on `dan-dev`. Twenty inventory checks and TypeScript passed. See `evoverses-beta-account-bridge/Documentation/evo-hp-progression.md` for the shared rule, database backup and battle checks.
+
+### GitHub sync and Vercel readiness — 9 October 2026
+
+Website inventory/combat updates are prepared for `dan-dev`; the separate game backend and local databases are not included. The production build and inventory/game-bridge/account/wallet checks pass. See [Vercel preview readiness](docs/vercel-preview-readiness.md) for concrete deployment blockers and setup order. Hosted account adapters and a framework security update are required before a functional public beta. No deployment or provider configuration was performed; automatic `dan-dev` deployments remain disabled.

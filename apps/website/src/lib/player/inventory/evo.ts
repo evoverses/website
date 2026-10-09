@@ -23,6 +23,11 @@ export type GeneratedEvoStats = {
   currentHealth: number;
   moves: number[];
 };
+// Same integer interpolation as the game and account service; Health genes do not alter HP.
+export function levelHealth(baseHealth: number, level: number, training = 0): number {
+  const end = baseHealth + Math.floor(training / 5), start = Math.max(1, Math.round(end / 10));
+  return Math.round((start * (100 - level) + end * (level - 1)) / 99);
+}
 const record = (v: unknown): v is Record<string, unknown> =>
   !!v && typeof v === "object" && !Array.isArray(v);
 const integer = (v: unknown, min = 0, max = 2147483647): v is number =>
@@ -76,7 +81,6 @@ export function parseEvoStats(
     return invalid();
   const values = stats(value.values, 1, 10000);
   if (
-    values.health !== 50 ||
     !integer(value.currentHealth ?? values.health, 0, values.health)
   )
     return invalid();
@@ -100,13 +104,15 @@ export function isGeneratedStats(
 ): value is GeneratedEvoStats {
   return value.schemaVersion === 1 && typeof value.values === "object";
 }
-export function evoProgression(species: string, stats: GeneratedEvoStats) {
+export function evoProgression(species: string, stats: GeneratedEvoStats, experience = 0) {
+  const rule = (catalogue.species as Record<string,{moves:Record<string,number>;maxXp:number}>)[species.toLowerCase()]!;
+  let level = 1;for(let next=2;next<=100;next++){if(experience < Math.round(next**3*rule.maxXp/1000000))break;level=next;}
   const nature = catalogue.natures.find((n) => n.name === stats.nature)!;
   const projected = Object.fromEntries(
     statKeys.map((k) => [
       k,
       k === "health"
-        ? stats.values.health
+        ? levelHealth(stats.baseStats.health,100,stats.trainingPoints.health)
         : Math.round(
             (stats.baseStats[k] +
               stats.genetics[k] +
@@ -119,22 +125,30 @@ export function evoProgression(species: string, stats: GeneratedEvoStats) {
     catalogue.species as Record<string, { moves: Record<string, number> }>
   )[species.toLowerCase()]!.moves;
   const moves = Object.entries(learnset)
-    .map(([id, level]) => ({
+    .map(([id, required]) => ({
       id: Number(id),
       name:
-        (catalogue.moveNames as Record<string, string>)[id] || `Move #${id}`,
-      level,
+        required <= level
+          ? (catalogue.moveNames as Record<string, string>)[id] || `Move #${id}`
+          : "New move",
+      level: required,
       equipped: stats.moves.includes(Number(id)),
-      unlocked: level <= stats.level,
+      unlocked: required <= level,
+      remainingPP: undefined as number | undefined,
+      maximumPP: undefined as number | undefined,
     }))
     .sort((a, b) => a.level - b.level || a.id - b.id);
   return {
-    level: Number(stats.level),
+    combatVerified: false,
+    recoverAt: null as string | null,
+    combatVersion: undefined as number | undefined,
+    level,
     geneticHealthAvailable: true,
     nature: stats.nature,
     gender: stats.gender,
+    maxHealth: levelHealth(stats.baseStats.health,level,stats.trainingPoints.health),
     currentHealth: stats.currentHealth,
-    values: stats.values,
+    values: {...stats.values,health:levelHealth(stats.baseStats.health,level,stats.trainingPoints.health)},
     projected,
     genetics: stats.genetics,
     moves,
@@ -178,7 +192,7 @@ export function nftProgression(
     statKeys.map((k) => [
       k,
       k === "health"
-        ? 50
+        ? levelHealth(entry.baseStats.health,100)
         : Math.round(
             (entry.baseStats[k] + genetics[k]) *
               (k === nature.increase ? 1.08 : k === nature.decrease ? 0.92 : 1),
@@ -189,7 +203,7 @@ export function nftProgression(
     statKeys.map((k) => [
       k,
       k === "health"
-        ? 50
+        ? levelHealth(entry.baseStats.health,level)
         : Math.round(
             (((entry.baseStats[k] + genetics[k]) * level) / 100) *
               (k === nature.increase ? 1.08 : k === nature.decrease ? 0.92 : 1),
@@ -199,25 +213,33 @@ export function nftProgression(
   // Current health is optional: never replace an explicitly recorded zero with full HP.
   if (
     Object.hasOwn(metadata, "currentHealth") &&
-    !integer(metadata.currentHealth, 0, 50)
+    !integer(metadata.currentHealth, 0, values.health)
   )
     return undefined;
   const moves = Object.entries(entry.moves)
     .map(([id, required]) => ({
       id: Number(id),
       name:
-        (catalogue.moveNames as Record<string, string>)[id] || `Move #${id}`,
+        required <= level
+          ? (catalogue.moveNames as Record<string, string>)[id] || `Move #${id}`
+          : "New move",
       level: required,
       equipped: false,
       unlocked: required <= level,
+      remainingPP: undefined as number | undefined,
+      maximumPP: undefined as number | undefined,
     }))
     .sort((a, b) => a.level - b.level || a.id - b.id);
   return {
+    combatVerified: false,
+    recoverAt: null as string | null,
+    combatVersion: undefined as number | undefined,
     level,
     nature: nature.name,
     gender:
       String(metadata.gender).toLowerCase() === "female" ? "Female" : "Male",
-    currentHealth: Number(metadata.currentHealth ?? 50),
+    maxHealth: values.health,
+    currentHealth: Number(metadata.currentHealth ?? values.health),
     values,
     projected,
     genetics,

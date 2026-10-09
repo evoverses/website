@@ -41,6 +41,7 @@ export function walletProjection(value: unknown): PrivateWalletProjection {
 }
 export type NftSources = {
   fetchIndexed: (owners: string[], page: number) => Promise<unknown>;
+  fetchByIds?: (tokenIds:string[])=>Promise<unknown[]>;
   readChain: (
     owners: string[],
     tokenIds: string[],

@@ -1,7 +1,7 @@
 "use strict";
 const {test}=require("node:test"),assert=require("node:assert/strict");
 const {compiledInventory}=require("../../scripts/game-linked-inventory.cjs");
-const {createGameTeamVerifier}=require("../../scripts/game-team-authorization.cjs");
+const {createGameTeamVerifier,createGameSpendVerifier}=require("../../scripts/game-team-authorization.cjs");
 const shared=compiledInventory(),address="0x"+"a".repeat(40),foreign="0x"+"b".repeat(40);
 const wallet={id:"11111111-1111-1111-1111-111111111111",chainId:43114,address,label:"0xaaaa…aaaa"};
 const snapshot={wallets:[wallet],version:"a".repeat(64)},member={chainId:43114,collection:"0x4151b8afa10653d304fdac9a781afccd45ec164c",tokenId:"7"};
@@ -26,4 +26,16 @@ test("transferred, egg, missing member and unavailable chain results cannot auth
 });
 test("unlink during the external read invalidates team proof before returning it",async()=>{
   await assert.rejects(prepare(verifier({after:{wallets:[],version:"b".repeat(64)}})),/TEAM_UNAVAILABLE/);
+});
+
+test("casual spending verifies current ownership without fetching metadata and rechecks links",async()=>{
+ let metadata=0,calls=0;
+ const verify=createGameSpendVerifier({links:{projection:async()=>{calls++;return snapshot;}},ErrorType:SafeError,projection:shared.walletProjection,
+  sources:()=>({fetchIndexed:async()=>{metadata++;throw Error("metadata must not be loaded");},readChain:async(owners,ids)=>{assert.deepEqual(owners,[address]);assert.deepEqual(ids,["7"]);return {owners:[address],counts:[1n]};}})});
+ const proof=await prepare(verify);assert.equal(metadata,0);assert.equal(calls,2);
+ await proof.assertCurrent({query:async()=>({rows:[{id:wallet.id}]})},"trainer");
+ await assert.rejects(proof.assertCurrent({query:async()=>({rows:[]})},"trainer"),/TEAM_UNAVAILABLE/);
+ assert.ok(!JSON.stringify(proof).includes(address));
+ const transferred=createGameSpendVerifier({links:{projection:async()=>snapshot},ErrorType:SafeError,projection:shared.walletProjection,sources:()=>({readChain:async()=>({owners:[foreign],counts:[1n]})})});
+ await assert.rejects(prepare(transferred),/TEAM_UNAVAILABLE/);
 });

@@ -6,7 +6,8 @@ function load(file,imports={}){
  return module.exports;
 }
 const evoCore=load('src/lib/player/inventory/evo.ts',{'@/data/evo-progression.json':require('../../src/data/evo-progression.json')});
-const core=load('src/lib/player/auth-core.ts',{'./inventory/evo':evoCore});
+const combatCore=load('src/lib/player/inventory/combat.ts');
+const core=load('src/lib/player/auth-core.ts',{'./inventory/evo':evoCore,'./inventory/combat':combatCore});
 const profile={player:{id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',displayName:'Test trainer',experience:40},balance:{evoros:125}};
 const token='a'.repeat(64);
 const config={clientId:'fixture-client',clientSecret:'synthetic-secret',applicationId:'fixture-app',deploymentId:'fixture-deployment',apiUrl:'http://127.0.0.1:50999'};
