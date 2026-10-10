@@ -1,0 +1,35 @@
+✔ only a verified explicitly selected Epic player can bootstrap; role persists across renamed display names (858.989ms)
+✔ ordinary, expired and revoked sessions cannot inspect players or grant anything (535.2233ms)
+✔ approval credits exactly 5000, preserves old money, and retries and reapproval never duplicate it (538.6121ms)
+✔ simultaneous approval and new request IDs cannot multiply starter currency (528.756ms)
+✔ repeated rewards are possible with different IDs; a changed retry fails (525.778ms)
+✔ consumables and unopened packs are granted atomically; pack opening uses saved random flow (593.8444ms)
+✔ unknown revisions, invented effects, prices, recipients and invalid quantities fail closed (597.9213ms)
+✔ beta revocation preserves login; reapproval preserves inventory and never repeats initial money (603.6061ms)
+✔ beta status is independent of the operator account; manual suspensions cannot be bypassed (607.972ms)
+✔ audit insert failure rolls money, item grant, and approval back together (593.0774ms)
+✔ ledger binds grant amount, recipient and source; audit and grants remain append-only (565.755ms)
+✔ management snapshot contains catalogue and audited reasons but no wallets, identities or sessions (587.0368ms)
+✔ admin routes enforce session and strict payload; read-only API never exposes administration (636.7178ms)
+✔ automatic reward seam stays disabled without trusted event resolver and has no public route (576.2459ms)
+✔ future verified milestone events use common unopened-pack grant and deduplicate the milestone across event IDs (587.8486ms)
+✔ reward audit failures also roll currency and stock back (578.0787ms)
+✔ first bootstrap fails for missing or ambiguous Epic name and refuses migration without backup (1004.7939ms)
+✔ active verified players can be made admin independently of beta, with an immutable idempotent receipt (632.0071ms)
+✔ account search sorts XP and balances and pages all accounts without accepting arbitrary SQL (575.4768ms)
+✔ admin revocation is independent of beta, immediately removes authority and protects the last active admin (634.1285ms)
+✔ protected master membership is visible and cannot be revoked by another administrator (640.2605ms)
+✔ ban revokes web/game sessions and login; unban preserves inventory, balance, beta and expired sessions (598.9324ms)
+✔ ban requires administrator authority and protects own and master accounts (563.7279ms)
+✔ delete permanently closes a player, hides it, revokes sessions and retains audited rewards on identical retry (613.8068ms)
+✔ delete is administrator-only, protects current/admin accounts and rejects stale status (579.6608ms)
+✔ deleting a shared-wallet account removes only its links and challenges with unlink audit (587.2045ms)
+✔ live battle reservation blocks deletion and preserves usable session and account state (573.3498ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16642.1999

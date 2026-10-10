@@ -274,3 +274,7 @@ The accumulated hosted beta, marketplace/indexer recovery and UI updates are sav
 ## Seven-day sessions, moderation and special-skin accents - 11 October 2026
 
 Deployed to the hosted beta: seven-day website/backend sessions with revocation, Ban/Unban admin controls, preserved beta/role/inventory state, violet Chroma/gold Epic frames and subtle profile artwork glows. Temporary account-service errors no longer return a signed-out account. 119 tests and production builds pass. AWS account API and Cloudflare Worker rollout completed after explicit approval; migration 016 preserves the concurrent Ranked migration 015. See [implementation and rollout log](docs/account-policy-and-skin-accents-2026-10-11.md).
+
+## Account cleanup and bulk actions — 11 October 2026
+
+Beta administration now supports confirmed account deletion and checkboxes for bulk actions, excluding Make admin. Closed accounts disappear from the list, lose sessions and wallet links, and retain immutable history. Protected admins and accounts in active battles cannot be deleted. Bulk requests retain their receipt IDs during uncertain retries. See [implementation, checks and rollout](docs/admin-account-management-2026-10-11.md).

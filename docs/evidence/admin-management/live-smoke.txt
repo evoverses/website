@@ -1,0 +1,8 @@
+/signin 200
+/store 200
+/marketplace 200
+/beta-admin 200
+Unauthenticated account list 401
+{"error":{"code":"INVALID_SESSION"}}
+Unauthenticated website admin 401
+{"error":{"code":"INVALID_SESSION"}}

@@ -1,0 +1,18 @@
+✔ disabled adapter, foreign origin, duplicate cookies and missing session never reach backend (3.8039ms)
+✔ grant payload is strict and excludes client-selected actors, free-form effects and invalid quantities (3.7275ms)
+✔ valid retries preserve request ID and payload, session travels only to backend, private output is stripped (1.5222ms)
+✔ backend role checks and safe errors are retained; arbitrary errors and malformed success fail closed (0.7951ms)
+✔ list removes identity/wallet fields and projects human and automated audit results (1.0743ms)
+✔ permanent admin changes have explicit actions, support non-beta accounts and reject forged permissions (0.7331ms)
+✔ list sorting and paging are restricted and XP is projected without provider identities (0.5511ms)
+✔ ordinary admin requests cannot assign protected master status (0.2391ms)
+✔ ban/unban require current status and forward only strict authenticated moderation payloads (0.7734ms)
+✔ delete uses strict status-bound payloads and accepts the closed receipt without leaking private fields (0.768ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 287.2861

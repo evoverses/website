@@ -67,3 +67,11 @@ test('ban/unban require current status and forward only strict authenticated mod
   assert.equal(calls,1);
  }
 });
+
+test('delete uses strict status-bound payloads and accepts the closed receipt without leaking private fields',async()=>{
+ const input={requestId:receipt,playerId:id,action:'delete',reason:'Test account cleanup',expectedAccountStatus:'active'};
+ let calls=0;const rpc=async()=>{calls++;return {status:200,value:{...result,action:'delete',accountStatus:'closed'}};};
+ const response=await betaAdminHandler(request({operation:'action',input}),{enabled:true,rpc});assert.equal(response.status,200);assert.equal((await response.json()).accountStatus,'closed');
+ for(const extra of [{expectedAccountStatus:'closed'},{hardDelete:true},{cascade:true}])assert.equal((await betaAdminHandler(request({operation:'action',input:{...input,...extra}}),{enabled:true,rpc})).status,400);
+ assert.equal(calls,1);
+});
