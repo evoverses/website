@@ -1,0 +1,22 @@
+{
+  "origin": "http://localhost:3127",
+  "fixture": true,
+  "note": "Skin flags are injected into read-only local responses; no account or metadata changes.",
+  "result": [
+    {
+      "tier": "common",
+      "filter": "none",
+      "text": "DauntlessHP:25ATK:5SP:43DEF:38RES:35SPD:36Breeds Left: 5"
+    },
+    {
+      "tier": "chroma",
+      "filter": "sepia(1) saturate(3) hue-rotate(210deg)",
+      "text": "LoyalHP:26ATK:46SP:38DEF:27RES:14SPD:31Total Breeds: 0"
+    },
+    {
+      "tier": "epic",
+      "filter": "sepia(1) saturate(3) hue-rotate(5deg)",
+      "text": "CuriousHP:33ATK:4SP:41DEF:36RES:44SPD:16Total Breeds: 0"
+    }
+  ]
+}

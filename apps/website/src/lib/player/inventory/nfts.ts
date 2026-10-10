@@ -185,6 +185,7 @@ export async function loadLinkedNfts(
         typeof m.chroma === "string" && /^[a-z0-9_-]{1,40}$/i.test(m.chroma)
           ? m.chroma
           : null,
+      rarity: typeof m.rarity === "string" && /^[a-z0-9_-]{1,40}$/i.test(m.rarity) ? m.rarity : null,
       walletId: wallet.id,
       walletLabel: wallet.label,
     });

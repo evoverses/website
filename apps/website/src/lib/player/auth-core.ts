@@ -111,8 +111,8 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     const { status, value } = await request(c.apiUrl + "/v1/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ proof, confirmNewPlayer }) });
     if (status === 409 && record(value) && record(value.error) && value.error.code === "NEW_PLAYER_CONFIRMATION_REQUIRED") return null;
     if (status !== 200 || !record(value)) return fail(status === 401 ? "EPIC_VERIFICATION_FAILED" : "SERVICE_UNAVAILABLE");
-    if (typeof value.sessionToken !== "string" || !hex.test(value.sessionToken) || !seconds(value.issuedAt) || !seconds(value.expiresAt) || value.issuedAt > now() / 1000 + 1 || value.expiresAt <= now() / 1000 || value.expiresAt <= value.issuedAt || value.expiresAt - value.issuedAt > 3600) return fail("SERVICE_UNAVAILABLE");
-    const result = { token: value.sessionToken, expiresAt: Math.min(value.expiresAt, now() / 1000 + 900), player: player(value.player) };
+    if (typeof value.sessionToken !== "string" || !hex.test(value.sessionToken) || !seconds(value.issuedAt) || !seconds(value.expiresAt) || value.issuedAt > now() / 1000 + 1 || value.expiresAt <= now() / 1000 || value.expiresAt <= value.issuedAt || value.expiresAt - value.issuedAt > 604800) return fail("SERVICE_UNAVAILABLE");
+    const result = { token: value.sessionToken, expiresAt: Math.min(value.expiresAt, now() / 1000 + 604800), player: player(value.player) };
     try {
       const snapshot = await readProfile(result.token);
       if (snapshot.player.id !== result.player.id) return fail("SERVICE_UNAVAILABLE");

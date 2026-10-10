@@ -1,4 +1,5 @@
 import "@workspace/evoverses/types/next";
+import { evoAppearance } from "@workspace/evoverses/lib/asset/appearance";
 import { currentLevelHealth } from "@workspace/evoverses/lib/asset/health";
 import { Element, StatNameAbbreviation } from "@workspace/database/types/evo";
 import { EvoImage } from "@workspace/evoverses/components/evo-image";
@@ -25,6 +26,7 @@ import type { ComponentProps } from "react";
 
 export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & { asset: SquidAsset }) => {
 
+  const appearance = isEvo(asset) ? evoAppearance(asset.metadata.chroma, asset.metadata.rarity) : evoAppearance();
   const age = daysSince(asset.metadata.createdAt);
   const stats = isEvo(asset) ? [
     { stat: StatNameAbbreviation.hp, value: currentLevelHealth(asset.metadata.species, asset.metadata.xp) ?? "—" },
@@ -41,6 +43,7 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
         className,
       )}
       data-evo-card
+      data-evo-card-rarity={appearance.tier}
       {...props}
     >
       <img
@@ -49,7 +52,7 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
         alt="background"
       />
       <EvoImage asset={asset} data-evo-card-art className="absolute w-[82cqw] h-[70cqw] object-contain top-[27cqw] left-1/2 -translate-x-1/2" />
-      <img className="absolute w-full select-none pointer-events-none" src={getEvoCardBorderUrl(asset)} alt="border" />
+      <img data-evo-card-border style={{ filter: appearance.borderFilter }} className="absolute w-full select-none pointer-events-none" src={getEvoCardBorderUrl(asset)} alt="border" />
       <img
         src={evoversesIconUrl}
         alt="logo"

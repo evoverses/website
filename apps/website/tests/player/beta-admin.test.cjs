@@ -56,3 +56,14 @@ test('ordinary admin requests cannot assign protected master status',async()=>{
  const r=await betaAdminHandler(request({operation:'action',input:data}),{enabled:true,rpc:async()=>{calls++;return {status:200,value:result};}});
  assert.equal(r.status,400);assert.equal(calls,0);
 });
+
+test('ban/unban require current status and forward only strict authenticated moderation payloads',async()=>{
+ for(const action of ['ban','unban']){
+  let calls=0;
+  const input={requestId:receipt,playerId:id,action,reason:'Moderation decision',expectedAccountStatus:action==='ban'?'active':'suspended'};
+  const rpc=async(op,t,data)=>{calls++;assert.equal(t,token);assert.equal(data.action,action);return {status:200,value:{...result,action,accountStatus:action==='ban'?'suspended':'active'}};};
+  assert.equal((await betaAdminHandler(request({operation:'action',input}),{enabled:true,rpc})).status,200);
+  assert.equal((await betaAdminHandler(request({operation:'action',input:{...input,expectedAccountStatus:'closed'}}),{enabled:true,rpc})).status,400);
+  assert.equal(calls,1);
+ }
+});

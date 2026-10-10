@@ -22,7 +22,7 @@ function setup(options={}){
    const input=JSON.parse(init.body);assert.equal(input.proof,'synthetic.signed.proof');
    if(confirmation&&!input.confirmNewPlayer)return json({error:{code:'NEW_PLAYER_CONFIRMATION_REQUIRED'}},409);
    if(options.loginDenied)return json({error:{code:'INVALID_PROVIDER_EVIDENCE'}},401);
-   return json({player:profile.player,sessionToken:token,issuedAt:options.fractional?(clock-10)/1000:Math.floor(clock/1000),expiresAt:options.fractional?(clock-10)/1000+900:Math.floor(clock/1000)+900});
+   return json({player:profile.player,sessionToken:token,issuedAt:options.fractional?(clock-10)/1000:Math.floor(clock/1000),expiresAt:options.longSession?Math.floor(clock/1000)+options.longSession:options.fractional?(clock-10)/1000+900:Math.floor(clock/1000)+900});
   }
   if(url.endsWith('/me'))return options.meDenied?json({error:{code:'INVALID_SESSION'}},401):json(profile);
   if(url.endsWith('/inventory')&&options.inventory)return json(options.inventory);
@@ -98,7 +98,7 @@ class Reply{
  static redirect(url,status){const r=new Reply(null,status);r.headers.set('location',String(url));return r;}
  static json(value,{status=200}={}){return new Reply(value,status);}
 }
-function routes(enabled=true,origin=core.playerWebOrigin){let starts=0,logouts=0;const auth={start:()=>{starts++;return{url:'https://www.epicgames.com/id/authorize?state=public-state',cookie:'a'.repeat(64)}},logout:async()=>{logouts++},callback:async()=>({session:{token,expiresAt:Date.now()/1000+899.125}})};
+function routes(enabled=true,origin=core.playerWebOrigin,lifetime=899.125){let starts=0,logouts=0;const auth={start:()=>{starts++;return{url:'https://www.epicgames.com/id/authorize?state=public-state',cookie:'a'.repeat(64)}},logout:async()=>{logouts++},callback:async()=>({session:{token,expiresAt:Date.now()/1000+lifetime}})};
  auth.startAsync=async()=>auth.start();
  const handlers=load('src/lib/player/handlers.ts',{'server-only':{},'next/server':{NextResponse:Reply},'./auth-core':core,'./server':{playerLoginEnabled:enabled,getPlayerWebOrigin:()=>origin,playerWebAuth:()=>auth}});
  return{handlers,count:()=>({starts,logouts})};}
@@ -230,4 +230,15 @@ test('account and OAuth transports refuse redirects without forwarding credentia
  const rpc=createOAuthRpc({connection:()=>({apiUrl:'https://accounts.example.com',serviceToken:'d'.repeat(64)}),fetchImpl});
  await reject(rpc.putState({keyHash:'a'.repeat(64),bindingHash:'b'.repeat(64),contextHash:'c'.repeat(64)}),'SERVICE_UNAVAILABLE');
  assert.equal(calls,2);
+});
+
+test('seven-day login preserves backend expiry and browser cookie lifetime; longer sessions are rejected',async()=>{
+ const s=setup({longSession:604800}),x=s.begin();
+ const result=await s.flow.callback({state:x.state,cookie:x.cookie,code:'code'});
+ assert.ok(result.session.expiresAt>Date.now()/1000+604790);
+ const {handlers}=routes(true,core.playerWebOrigin,604800);
+ const response=await handlers.epicCallback(req('http://localhost:3100/api/player/auth/epic/callback?state='+('b'.repeat(64))+'&code=synthetic-code',null));
+ const cookie=response.cookies.values.find(v=>v[0]===core.playerSessionCookie);
+ assert.ok(cookie[2].maxAge>=604790&&cookie[2].maxAge<=604800);
+ const bad=setup({longSession:604801}),y=bad.begin();await reject(bad.flow.callback({state:y.state,cookie:y.cookie,code:'code'}),'SERVICE_UNAVAILABLE');
 });

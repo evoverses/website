@@ -16,6 +16,7 @@ export type InventoryRow = {
   walletId?: string;
   walletLabel?: string;
   chroma?: string | null;
+  rarity?: string | null;
 };
 export type InventoryWallet = { id: string; label: string };
 export type NftInventoryPage = {

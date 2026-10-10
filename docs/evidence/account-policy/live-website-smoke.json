@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/signin",
+    "method": "GET",
+    "status": 200
+  },
+  {
+    "path": "/store",
+    "method": "GET",
+    "status": 200
+  },
+  {
+    "path": "/marketplace/evos",
+    "method": "GET",
+    "status": 200
+  },
+  {
+    "path": "/api/player/beta-admin",
+    "method": "POST",
+    "status": 401
+  }
+]

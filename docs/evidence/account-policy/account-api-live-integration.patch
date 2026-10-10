@@ -1,0 +1,97 @@
+--- a/Prototypes/player_economy/src/accounts.cjs
++++ b/Prototypes/player_economy/src/accounts.cjs
+@@ -25,7 +25,7 @@
+     if (![epic.issuer, epic.scope].every(s => typeof s === 'string' && s.length > 0 && s.length <= 200) ||
+         !Array.isArray(epic.audiences) || epic.audiences.length < 1 || epic.audiences.length > 8 ||
+         !epic.audiences.every(s => typeof s === 'string' && s.length > 0 && s.length <= 200) ||
+-        !Number.isInteger(sessionTtlSeconds) || sessionTtlSeconds < 1 || sessionTtlSeconds > 3600) fail('INVALID_CONFIGURATION');
++        !Number.isInteger(sessionTtlSeconds) || sessionTtlSeconds < 1 || sessionTtlSeconds > 604800) fail('INVALID_CONFIGURATION');
+     this.database = database;
+     this.verifyEpicEvidence = verifyEpicEvidence;
+     this.epic = Object.freeze({ ...epic, audiences: Object.freeze([...epic.audiences]) });
+--- a/Prototypes/player_economy/src/beta-administration.cjs
++++ b/Prototypes/player_economy/src/beta-administration.cjs
+@@ -44,17 +44,18 @@
+  }
+  async perform(token,input){
+   const action=input?.action;
+-  const keys=['requestId','playerId','action','reason',...(action==='grant_item'?['productId','revision','quantity']:action==='grant_evoros'?['amount']:['promote_admin','revoke_admin'].includes(action)?[]:['expectedVersion'])];
+-  fields(input,keys);if(!['approve','revoke','grant_evoros','grant_item','promote_admin','revoke_admin'].includes(action))fail('INVALID_REQUEST');
++  const keys=['requestId','playerId','action','reason',...(action==='grant_item'?['productId','revision','quantity']:action==='grant_evoros'?['amount']:['ban','unban'].includes(action)?['expectedAccountStatus']:['promote_admin','revoke_admin'].includes(action)?[]:['expectedVersion'])];
++  fields(input,keys);if(!['approve','revoke','grant_evoros','grant_item','promote_admin','revoke_admin','ban','unban'].includes(action))fail('INVALID_REQUEST');
+   const payload={playerId:uuid(input.playerId),action,reason:reason(input.reason)};
+-  if(action==='grant_evoros')payload.amount=positive(input.amount);
++  if(['ban','unban'].includes(action)){if(!['active','suspended'].includes(input.expectedAccountStatus))fail('INVALID_REQUEST');payload.expectedAccountStatus=input.expectedAccountStatus;}
++  else if(action==='grant_evoros')payload.amount=positive(input.amount);
+   else if(action==='grant_item'){
+    if(typeof input.productId!=='string')fail('INVALID_REQUEST');payload.productId=input.productId;payload.revision=positive(input.revision);payload.quantity=positive(input.quantity,1000);
+    if(!catalogue.items.some(p=>p.id===payload.productId&&p.revision===payload.revision))fail('PRODUCT_UNAVAILABLE');
+-  }else if(!['promote_admin','revoke_admin'].includes(action)){if(!Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>2147483647)fail('INVALID_REQUEST');payload.expectedVersion=input.expectedVersion;}
++  }else if(!['promote_admin','revoke_admin','ban','unban'].includes(action)){if(!Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>2147483647)fail('INVALID_REQUEST');payload.expectedVersion=input.expectedVersion;}
+   const requestId=uuid(input.requestId),hash=fingerprint(payload);
+   return this.accounts.transaction(async tx=>{
+-   if(['promote_admin','revoke_admin'].includes(action))await tx.query('SELECT pg_advisory_xact_lock(420000011)');
++   if(['promote_admin','revoke_admin','ban','unban'].includes(action))await tx.query('SELECT pg_advisory_xact_lock(420000011)');
+    const actor=await this.administrator(tx,token);
+    const previous=await first(tx,'SELECT payload_hash,result FROM player.beta_admin_operations WHERE administrator_id=$1 AND request_id=$2',[actor.id,requestId]);
+    if(previous){if(previous.payload_hash!==hash)fail('RETRY_CONFLICT');return previous.result;}
+@@ -71,7 +72,18 @@
+     await tx.query('INSERT INTO player.evoros_ledger(id,player_id,kind,delta,admin_grant_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),player.id,source==='beta_start'?'beta_credit':'reward_credit',amount,grantId]);
+     await tx.query('UPDATE player.balances SET evoros=evoros+$1 WHERE player_id=$2',[amount,player.id]);balance+=amount;granted=amount;
+    };
+-   if(action==='approve'||action==='revoke'){
++   if(['ban','unban'].includes(action)){
++    if(payload.expectedAccountStatus!==player.status)fail('STALE_ACCESS');
++    if(action==='ban'){
++     if(actor.id===player.id)fail('SELF_BAN_PROTECTED');
++     if(await first(tx,'SELECT 1 FROM player.beta_administrators WHERE player_id=$1 AND revoked_at IS NULL AND is_master',[player.id]))fail('MASTER_ADMINISTRATOR_PROTECTED');
++     const target=await first(tx,'SELECT player_id FROM player.beta_administrators WHERE player_id=$1 AND revoked_at IS NULL',[player.id]);
++     const count=Number((await first(tx,"SELECT count(*) AS n FROM player.beta_administrators d JOIN player.players p ON p.id=d.player_id WHERE d.revoked_at IS NULL AND p.status='active'")).n);
++     if(target&&player.status==='active'&&count<=1)fail('LAST_ADMINISTRATOR');
++     revoked=await this.accounts.revokePlayer(tx,player.id);
++    }
++    await tx.query('UPDATE player.players SET status=$1 WHERE id=$2',[action==='ban'?'suspended':'active',player.id]);
++   }else if(action==='approve'||action==='revoke'){
+     if(payload.expectedVersion!==version)fail('STALE_ACCESS');
+     if(action==='approve'){
+      if(player.status!=='active')fail('PLAYER_UNAVAILABLE');
+@@ -99,7 +111,7 @@
+      quantity=await grantItem(tx,{playerId:player.id,operationId,productId:payload.productId,revision:payload.revision,quantity:payload.quantity});
+     }
+    }
+-   const result={operationId,playerId:player.id,action,access:action==='approve'?'approved':action==='revoke'?'revoked':access?.status??'pending',version,evoros:balance,evorosGranted:granted,...(quantity!==null?{productId:payload.productId,revision:payload.revision,quantityGranted:payload.quantity,remainingQuantity:quantity}:{}),sessionsRevoked:revoked,...(['promote_admin','revoke_admin'].includes(action)?{administrator:action==='promote_admin'}:{})};
++   const result={operationId,playerId:player.id,action,access:action==='approve'?'approved':action==='revoke'?'revoked':access?.status??'pending',version,evoros:balance,evorosGranted:granted,...(quantity!==null?{productId:payload.productId,revision:payload.revision,quantityGranted:payload.quantity,remainingQuantity:quantity}:{}),sessionsRevoked:revoked,...(['promote_admin','revoke_admin'].includes(action)?{administrator:action==='promote_admin'}:{}),...(['ban','unban'].includes(action)?{accountStatus:action==='ban'?'suspended':'active'}:{})};
+    await tx.query('INSERT INTO player.beta_admin_operations(id,administrator_id,player_id,request_id,action,payload_hash,reason,result) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[operationId,actor.id,player.id,requestId,action,hash,payload.reason,JSON.stringify(result)]);
+    return result;
+   });
+--- a/Prototypes/player_economy/src/beta-admin-http.cjs
++++ b/Prototypes/player_economy/src/beta-admin-http.cjs
+@@ -9,7 +9,7 @@
+    const now=performance.now();while(budget.length&&budget[0]<now-60000)budget.shift();if(active>=4||budget.length>=60)throw new InputError(429,'RATE_LIMITED');budget.push(now);active++;admitted=true;
+    const input=await readJson(request,headerValues,{maxBodyBytes:4096,bodyTimeoutMs:2000},false);if(response.destroyed)return;
+    reply(response,200,await betaAdmin[route.endsWith('/list')?'list':'perform'](match[1],input));
+-  }catch(error){const status=error instanceof InputError?error.status:({INVALID_REQUEST:400,INVALID_SESSION:401,ACCOUNT_UNAVAILABLE:403,ADMIN_REQUIRED:403,PLAYER_UNAVAILABLE:409,TESTER_NOT_APPROVED:409,ADMIN_ACCOUNT_PROTECTED:409,LAST_ADMINISTRATOR:409,MASTER_ADMINISTRATOR_PROTECTED:409,STALE_ACCESS:409,RETRY_CONFLICT:409,CAPACITY_EXCEEDED:409,PRODUCT_UNAVAILABLE:409,BALANCE_HISTORY_MISMATCH:409})[error.code]||503;response.once('finish',()=>request.destroy());reply(response,status,{error:{code:status===503?'SERVICE_UNAVAILABLE':error.code}},{Connection:'close'});}
++  }catch(error){const status=error instanceof InputError?error.status:({INVALID_REQUEST:400,INVALID_SESSION:401,ACCOUNT_UNAVAILABLE:403,ADMIN_REQUIRED:403,PLAYER_UNAVAILABLE:409,TESTER_NOT_APPROVED:409,ADMIN_ACCOUNT_PROTECTED:409,LAST_ADMINISTRATOR:409,MASTER_ADMINISTRATOR_PROTECTED:409,SELF_BAN_PROTECTED:409,STALE_ACCESS:409,RETRY_CONFLICT:409,CAPACITY_EXCEEDED:409,PRODUCT_UNAVAILABLE:409,BALANCE_HISTORY_MISMATCH:409})[error.code]||503;response.once('finish',()=>request.destroy());reply(response,status,{error:{code:status===503?'SERVICE_UNAVAILABLE':error.code}},{Connection:'close'});}
+   finally{if(admitted)active--;}
+  }
+  return {routes,handle:(...args)=>{const task=perform(...args);pending.add(task);task.then(()=>pending.delete(task),()=>pending.delete(task));return task;},waitForIdle:()=>Promise.allSettled([...pending])};
+--- a/Prototypes/player_economy/src/hosted-account-service.cjs
++++ b/Prototypes/player_economy/src/hosted-account-service.cjs
+@@ -35,7 +35,7 @@
+  const economy=new PlayerEconomy({database,mode:'test',paymentScope:'acct_evoverses_public_beta',prices:{},
+   verifyCardPayment:unavailable,resolveEvoTemplate:unavailable});
+  const store=new GameStore({economy,mode:'local-test'});
+- const accounts=new PlayerAccounts({database,mode:'test',...verifier,grantNewPlayer:(tx,id)=>store.grantStarter(tx,id)});
++ const accounts=new PlayerAccounts({database,mode:'test',...verifier,sessionTtlSeconds:604800,grantNewPlayer:(tx,id)=>store.grantStarter(tx,id)});
+  const oauth=new WebOAuthStore({database,key:oauthKey});
+  // Validate service credential before any Store seeding or listener startup.
+  if(typeof serviceToken!=='string'||!/^[a-f0-9]{64}$/.test(serviceToken))throw new Error('Separate website service credential required');
+--- /dev/null
++++ b/Prototypes/player_economy/schema/016_account_bans.sql
+@@ -0,0 +1,6 @@
++-- Permanent moderation actions, independent of beta tester and administrator roles.
++BEGIN;
++ALTER TABLE player.beta_admin_operations DROP CONSTRAINT beta_admin_operations_action_check;
++ALTER TABLE player.beta_admin_operations ADD CONSTRAINT beta_admin_operations_action_check
++ CHECK(action IN ('bootstrap','approve','revoke','grant_evoros','grant_item','promote_admin','revoke_admin','ban','unban'));
++COMMIT;

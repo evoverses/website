@@ -1,0 +1,16 @@
+{
+  "apiImage": "sha256:a96de198cd55b17c62c8ff29e6699f9aea0b9d6a81d80a1d726c03659b74eeb5",
+  "baseAndRollbackImage": "sha256:0192d6a456c372971fb4c4b237c14c3948c86bebcbaaab84753f85158eadf78b",
+  "workerVersion": "2f21dfdd-9099-4110-8185-6127a039408f",
+  "rollbackWorkerVersion": "b755ef5a-a04f-480a-a0df-57e6c6f65a67",
+  "databaseVersion": 16,
+  "migrationApplied": "016_account_bans.sql",
+  "migrationExitCode": 0,
+  "backendCombinedCompositionTests": 3,
+  "accountModerationTests": 45,
+  "humanAcceptancePending": [
+    "fresh Epic session",
+    "authenticated profile glow",
+    "dedicated test account ban/unban"
+  ]
+}

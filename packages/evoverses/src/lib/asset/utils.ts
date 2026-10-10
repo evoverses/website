@@ -144,7 +144,7 @@ export const getEvoCardEvoImageUrl = (evo: SquidAsset) => {
 export const getEvoCardBorderUrl = (evo: SquidAsset) => {
   let color = "silver";
   if (hasRarity(evo)) {
-    color = "silver"; // TODO: metadata.rarity === TBD;
+    color = "silver"; // Existing metallic artwork is tinted by the skin appearance in EvoCard.
   }
   return asImageUrl(`/card/border/${color}-metallic/4`);
 };

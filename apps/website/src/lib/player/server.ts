@@ -46,7 +46,11 @@ export const getPlayerAccount = cache(async () => {
   if (!playerLoginEnabled) return null;
   const token = (await cookies()).get(playerSessionCookie)?.value;
   if (!token) return null;
-  try { return await playerWebAuth().readProfile(token); } catch { return null; }
+  try { return await playerWebAuth().readProfile(token); } catch (error) {
+    if (error instanceof PlayerWebError && error.code === "INVALID_SESSION") return null;
+    // A backend timeout is not a logout. Keep the cookie and let the page retry.
+    throw error;
+  }
 });
 export async function getPlayerInventory() {
   const token = (await cookies()).get(playerSessionCookie)?.value;

@@ -1,4 +1,5 @@
 "use client";
+import { evoAppearance } from "@workspace/evoverses/lib/asset/appearance";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -63,11 +64,14 @@ async function fetchInventory(
   return result;
 }
 function InventoryArt({ row }: { row: InventoryRow }) {
+  const appearance = row.kind === "nft" && row.form === "evo" ? evoAppearance(row.chroma, row.rarity) : evoAppearance();
   const [failed, setFailed] = useState(false);
   const Icon =
     row.kind === "item" ? Package : row.form === "egg" ? Egg : Sparkles;
   return (
     <div
+      data-evo-profile-rarity={appearance.tier}
+      style={{ backgroundImage: appearance.glow }}
       className={
         row.kind === "item"
           ? "flex h-16 items-center justify-center rounded-xl bg-primary/5 p-1"

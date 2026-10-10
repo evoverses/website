@@ -29,7 +29,7 @@ function failure(error: unknown) {
 }
 function session(result: { token: string; expiresAt: number }) {
   const response = redirect("/profile");
-  response.cookies.set(playerSessionCookie, result.token, { httpOnly: true, sameSite: "lax", secure: secure(), path: "/", maxAge: Math.max(0, Math.min(900, Math.floor(result.expiresAt - Date.now() / 1000))) });
+  response.cookies.set(playerSessionCookie, result.token, { httpOnly: true, sameSite: "lax", secure: secure(), path: "/", maxAge: Math.max(0, Math.min(604800, Math.floor(result.expiresAt - Date.now() / 1000))) });
   clear(response, epicStateCookie, "/api/player/auth/epic");
   clear(response, epicPendingCookie);
   return response;

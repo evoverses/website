@@ -270,3 +270,7 @@ Current-level card HP: removed fixed 50 from on-page and share-image cards; calc
 ## GitHub source checkpoint - 10 October 2026
 
 The accumulated hosted beta, marketplace/indexer recovery and UI updates are saved together on `dan-dev`. The current Cloudflare Worker is `b755ef5a-a04f-480a-a0df-57e6c6f65a67`; deployment remains separate from GitHub source storage. Push preparation passed 160 regression tests and the 68-species HP checks. Local secrets, databases and generated builds are excluded. See [sync evidence](docs/github-beta-sync-2026-10-10.md). Next: continue beta review from this checkpoint.
+
+## Seven-day sessions, moderation and special-skin accents - 11 October 2026
+
+Deployed to the hosted beta: seven-day website/backend sessions with revocation, Ban/Unban admin controls, preserved beta/role/inventory state, violet Chroma/gold Epic frames and subtle profile artwork glows. Temporary account-service errors no longer return a signed-out account. 119 tests and production builds pass. AWS account API and Cloudflare Worker rollout completed after explicit approval; migration 016 preserves the concurrent Ranked migration 015. See [implementation and rollout log](docs/account-policy-and-skin-accents-2026-10-11.md).

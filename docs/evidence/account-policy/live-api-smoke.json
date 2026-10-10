@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://beta-accounts.evoverses.com/health/live",
+    "status": 200,
+    "body": "{\"status\":\"ok\"}"
+  },
+  {
+    "url": "https://beta-accounts.evoverses.com/v1/beta/admin/list",
+    "status": 401,
+    "body": "{\"error\":{\"code\":\"INVALID_SESSION\"}}"
+  }
+]
