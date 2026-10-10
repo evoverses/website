@@ -38,3 +38,9 @@ AWS account API image: `sha256:01e001557c48bd9d3d6c95b3f90fb89b2230c921fdda66aa0
 Live smoke checks: sign-in, Store, Marketplace and admin page returned 200; both unauthenticated admin interfaces rejected access with 401. Next.js and OpenNext production builds passed.
 
 **Recommended next step:** use the beta admin table to review and select obsolete test accounts, then confirm deletion. Avoid deleting genuine testers merely because they are not beta-approved.
+
+## Table layout correction
+
+Account table text and row actions no longer wrap. Action buttons retain their width and remain in one row; the existing horizontal scroll container handles narrower screens. Account-ID and suspended-status secondary labels retain their intentional second lines. This is a presentation-only correction; administration behaviour is unchanged. Production build and Worker rollout evidence follows below.
+
+Next.js and OpenNext builds passed. Published Worker `d530b146-1739-4265-b3aa-1ce97108d30d`; the live admin page responds successfully and its published bundle contains both no-wrap layout rules. Recommended next step: refresh Beta Admin and check the rows at your usual window width.
