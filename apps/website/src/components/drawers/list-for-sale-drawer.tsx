@@ -5,7 +5,8 @@ import { useChain } from "@/hooks/use-chain";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
 import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
-import { createListing } from "@/lib/thirdweb/extensions/marketplace";
+import { checkListingDuplicates } from "@/lib/marketplace/listing-safety";
+import { createListing, getAllListings, totalListings } from "@/lib/thirdweb/extensions/marketplace";
 import { toAssetUrl, toCollectionUrl } from "@/utils/url";
 import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { formatNumberWithSuffix } from "@workspace/evoverses/utils/numbers";
@@ -30,6 +31,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
   const [amount, setAmount] = useState<string>("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<boolean>(false);
+  const [transactionHash, setTransactionHash] = useState<string>();
   const [progress, setProgress] = useState<string>();
 
   const account = useActiveAccount();
@@ -46,6 +48,16 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
     setProgress("Checking active chain");
     await switchChainIfNeeded(asset.chainId);
 
+    const checkExisting = async () => {
+      setProgress("Checking existing listings on Avalanche");
+      await checkListingDuplicates(
+        () => totalListings({ contract: marketplaceContract }),
+        (startId, endId) => getAllListings({ contract: marketplaceContract, startId, endId }),
+        { tokenId: BigInt(asset.tokenId), assetContract: evoNftContract.address, creator: account.address },
+        BigInt(Math.floor(Date.now() / 1000)),
+      );
+    };
+    await checkExisting();
     setProgress("Checking approval");
     const [isApproved, approvedTokenSpender] = await Promise.all([
       isApprovedForAll({
@@ -64,9 +76,9 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
       }));
     }
 
+    await checkExisting();
     setProgress("Creating listing");
     const startTimestamp = BigInt(Math.floor(Date.now() / 1000) + 60);
-    console.log("creatingListing", amount, parseUnits(amount, 18));
     return createListing({
       contract: marketplaceContract,
       params: {
@@ -110,7 +122,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
             <div className="relative size-45 aspect-card sm:size-90 bg-secondary rounded-xl overflow-hidden">
               <EvoCard asset={asset} />
             </div>
-            <h2 className="font-semibold text-xl sm:text-4xl">Just listed!</h2>
+            <h2 className="font-semibold text-xl sm:text-4xl">Listing confirmed on Avalanche</h2>
             <div className="flex gap-1 flex-wrap text-center items-center justify-center text-sm">
               <span>You Listed</span>
               <Link href={toAssetUrl(asset)}>
@@ -122,6 +134,8 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
               </Link>
               <span>collection!</span>
             </div>
+            <p className="text-sm text-muted-foreground text-center">The marketplace display may take time to update. Do not submit another listing.</p>
+            {transactionHash && <Button variant="secondary" asChild><a href={`https://snowscan.xyz/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer">View confirmed transaction</a></Button>}
             <Button variant="secondary" asChild>
               <Link href={toAssetUrl(asset)}>
                 View Item Page
@@ -298,7 +312,8 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
                     toast.error(e.message);
                     setProgress(undefined);
                   }}
-                  onTransactionConfirmed={() => {
+                  onTransactionConfirmed={receipt => {
+                    setTransactionHash(receipt.transactionHash);
                     setSuccess(true);
                   }}
                 >

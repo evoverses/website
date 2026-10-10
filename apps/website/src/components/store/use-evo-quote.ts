@@ -20,16 +20,16 @@ export function useEvoQuote(enabled: boolean) {
     active.current = controller;
     setLoading(true);
     setError(false);
-    setQuote(null);
+    // Keep the last verified price visible while its replacement is pending.
     try {
       const response = await fetch("/api/store/evo-quote", {
         cache: "no-store",
-        signal: controller.signal,
+        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]),
       });
       if (!response.ok) throw new Error("Quote unavailable.");
       const data: EvoMarketQuote = await response.json();
       positiveDecimal(data.priceUsd);
-      if (data.source !== "GeckoTerminal" || !quoteIsFresh(data.fetchedAt))
+      if (!["GeckoTerminal", "DexScreener"].includes(data.source) || !quoteIsFresh(data.fetchedAt))
         throw new Error("Invalid quote.");
       if (!controller.signal.aborted) {
         setQuote(data);

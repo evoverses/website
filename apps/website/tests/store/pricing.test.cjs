@@ -8,7 +8,7 @@ const {
   formatEvoEstimate,
   quoteIsFresh,
 } = require(path.join(process.env.EVOROS_TEST_LIB, "lib/store/pricing.js"));
-const { parseEvoMarketQuote, fetchEvoMarketQuote, EVO_MARKET_POOL } = require(
+const { parseEvoMarketQuote, parseDexEvoMarketQuote, createEvoMarketQuoteFetcher, fetchEvoMarketQuote, EVO_MARKET_POOL } = require(
   path.join(process.env.EVOROS_TEST_LIB, "lib/store/evo-price.js"),
 );
 const token = "0x42006ab57701251b580bdfc24778c43c9ff589a1";
@@ -82,4 +82,39 @@ test("EVO display rounds to integers at 100 and one decimal below, without free 
   assert.equal(formatEvoEstimate(12355n * 10n ** 15n), "12.4");
   assert.equal(formatEvoEstimate(9996n * 10n ** 16n), "100");
   assert.equal(formatEvoEstimate(1n), "0.1");
+});
+
+const dexData = () => ({ pairs: [{ chainId: "avalanche", pairAddress: EVO_MARKET_POOL, baseToken: { address: token }, priceUsd: "0.00006612" }] });
+test("provider failure or invalid market falls back to a live price from the same verified pool", async () => {
+  for (const first of [new Response("rate limit", {status:429}), Response.json({data:null})]) {
+    let calls=0;
+    const q=await fetchEvoMarketQuote(async url => {
+      calls++;
+      if(calls===1)return first;
+      assert.match(url,/api.dexscreener.com.*avalanche/);
+      return Response.json(dexData());
+    });
+    assert.equal(q.source,"DexScreener");assert.equal(q.priceUsd,"0.00006612");assert.equal(calls,2);
+  }
+});
+test("fallback rejects wrong chain, pool, token, missing and non-positive prices", () => {
+  for(const change of [p=>p.chainId="ethereum",p=>p.pairAddress="wrong",p=>p.baseToken.address="wrong",p=>p.priceUsd=null,p=>p.priceUsd="0"]){
+    const d=dexData();change(d.pairs[0]);assert.throws(()=>parseDexEvoMarketQuote(d));
+  }
+});
+test("concurrent refreshes share a request; short cache preserves timestamp and expiry", async () => {
+  let clock=Date.now(),calls=0,release;
+  const hold=new Promise(r=>release=r);
+  const fetchQuote=createEvoMarketQuoteFetcher(async()=>{calls++;await hold;return Response.json(data());},()=>clock);
+  const a=fetchQuote(),b=fetchQuote();assert.equal(a,b);release();
+  const q=await a;await b;assert.equal(calls,1);
+  clock+=29_999;assert.deepEqual(await fetchQuote(),q);assert.equal(calls,1);
+  clock+=1;const newer=await fetchQuote();assert.equal(calls,2);assert.notEqual(newer.fetchedAt,q.fetchedAt);
+});
+test("failed refresh cannot renew an expired cache timestamp and can be retried",async()=>{
+  let clock=Date.now(),fail=false,calls=0;
+  const fetchQuote=createEvoMarketQuoteFetcher(async()=>{calls++;return fail?new Response("down",{status:503}):Response.json(data());},()=>clock);
+  const q=await fetchQuote();fail=true;clock+=300_000;
+  await assert.rejects(fetchQuote());assert.equal(quoteIsFresh(q.fetchedAt,clock),false);
+  fail=false;assert.notEqual((await fetchQuote()).fetchedAt,q.fetchedAt);assert.equal(calls,4);
 });

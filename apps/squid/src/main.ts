@@ -1,6 +1,7 @@
+import { FinalizedPortalDatabase } from "./finalized-database";
 import { parseNurseryEvents, processNurseryEvents } from "./handlers/asset/nursery";
 import { NurseryEvo } from "./model/nurseryEvo.model";
-import { TypeormDatabase, TypeormDatabaseOptions } from "@subsquid/typeorm-store";
+import { TypeormDatabaseOptions } from "@subsquid/typeorm-store";
 import { DB_ISOLATION_LEVEL, SQUID_STATE_SCHEMA, NURSERY_CONFIG } from "./utils/constants";
 import { loadNftEntities, parseNftEvents, processNftEvents } from "./handlers/asset/nfts";
 import { getOrCreateChain } from "./handlers/core/chains";
@@ -26,7 +27,15 @@ import {
   Transaction,
   Wallet, Marketplace, MarketplaceAsset, MarketplaceAdmin, MarketplaceLister, BreedingRequest,
 } from "./model";
-import { processor } from "./processor";
+import { dataSource } from "./processor";
+import { run } from "@subsquid/batch-processor";
+import { augmentBlock } from "@subsquid/evm-objects";
+import { createLogger } from "@subsquid/logger";
+import { RpcClient } from "@subsquid/rpc-client";
+import { CHAIN_ID, RPC_URLS } from "./utils/constants";
+
+const logger = createLogger("sqd:processor:mapping");
+const rpcClient = new RpcClient({ url: RPC_URLS[CHAIN_ID!]!, rateLimit: 100, capacity: 10, requestTimeout: 30000 });
 import { Context } from "./model/context";
 import { EntityManager } from "./model/entity-manager";
 import { loadBreedingEntities, parseBreedingEvents, processBreedingEvents } from "./handlers/asset/breeding";
@@ -34,12 +43,14 @@ import { loadBreedingEntities, parseBreedingEvents, processBreedingEvents } from
 let chain: Chain;
 
 const options: TypeormDatabaseOptions = {
-  supportHotBlocks: true,
+  // Finalized Portal batches may skip empty blocks; preserve the existing state schema.
+  supportHotBlocks: false,
   stateSchema: SQUID_STATE_SCHEMA,
   isolationLevel: DB_ISOLATION_LEVEL,
 };
 
-processor.run(new TypeormDatabase(options), async context => {
+run(dataSource, new FinalizedPortalDatabase(options), async simpleContext => {
+  const context = { ...simpleContext, blocks: simpleContext.blocks.map(augmentBlock), log: logger, _chain: { client: rpcClient } };
 
   if (!chain) {
     chain = await getOrCreateChain(context);

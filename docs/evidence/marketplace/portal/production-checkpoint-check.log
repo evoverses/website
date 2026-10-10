@@ -1,0 +1,4 @@
+{"level":2,"time":1791597693772,"ns":"sqd:batch-processor","msg":"last processed block was 100"}
+{"level":2,"time":1791597693778,"ns":"sqd:batch-processor","msg":"prometheus metrics are served on port 3002"}
+{"level":2,"time":1791597693790,"ns":"sqd:batch-processor","msg":"200 / 200, rate: 5636 blocks/sec, mapping: 170 blocks/sec, 85 items/sec, eta: 0s"}
+{"sparseFinalizedBatches":true,"checkpointPreserved":true,"oldHotRecordsSafelyCleared":true,"restartResume":true,"atomicRollback":true,"productionDatabaseConnections":0}

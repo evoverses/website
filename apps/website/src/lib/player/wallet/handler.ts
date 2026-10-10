@@ -81,6 +81,7 @@ export async function walletHandler(
   request: Request,
   dependencies: {
     enabled: boolean;
+    webOrigin?: "http://localhost:3100" | "https://beta.evoverses.com";
     rpc: (
       operation: string,
       sessionToken: string,
@@ -100,14 +101,15 @@ export async function walletHandler(
     });
   try {
     const url = new URL(request.url);
+    const origin = dependencies.webOrigin ?? playerWebOrigin;
+    const matchingUrl = origin === playerWebOrigin ? url.protocol === "http:" && url.port === "3100" : url.origin === origin;
     if (
       !dependencies.enabled ||
-      url.protocol !== "http:" ||
-      url.port !== "3100" ||
+      !matchingUrl ||
       url.pathname !== "/api/player/wallet" ||
       url.search ||
-      request.headers.get("host") !== "localhost:3100" ||
-      request.headers.get("origin") !== playerWebOrigin
+      request.headers.get("host") !== new URL(origin).host ||
+      request.headers.get("origin") !== origin
     )
       return reply(403, { error: { code: "ORIGIN_NOT_ALLOWED" } });
     if (request.method !== "POST")

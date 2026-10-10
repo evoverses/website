@@ -1,4 +1,4 @@
-import type { BlockHeader } from "@subsquid/evm-processor";
+import type { Block as BlockHeader } from "../../types/processor";
 import { Block } from "../../model";
 import { toDate } from "../../utils";
 import type { Context } from "../../model/context";

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { isAddress } from "viem";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -72,7 +73,9 @@ export function Hatchery() {
     enabled: nurseryConfigured && Boolean(w.account),
     refetchInterval: 15_000,
     queryFn: async ({ signal }) => {
-      const onChain = await discoverNurseryEggs(w.account!.address, signal);
+      const address = w.account?.address;
+      if (!address || !isAddress(address)) throw new Error("Connect a valid wallet.");
+      const onChain = await discoverNurseryEggs(address, signal);
       signal.throwIfAborted();
       // Indexed/remembered IDs retain recovery cards; ownership is rechecked by each tile.
       const result = await nurseryClient.multicall({

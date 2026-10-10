@@ -356,7 +356,7 @@ const checkoutRequest = (body = checkoutBody) =>
 test("signed-out requests never open checkout, even with a wallet or a supplied recipient", async () => {
   const f = fixture();
   f.players.authenticate = async () => null;
-  const handle = createCheckoutHandler(() => f);
+  const handle = createCheckoutHandler(() => f, () => true);
   const response = await handle(
     checkoutRequest({
       ...input,
@@ -371,7 +371,7 @@ test("signed-out requests never open checkout, even with a wallet or a supplied 
 test("the authenticated game account owns checkout; client account and price overrides are rejected", async () => {
   const f = fixture();
   f.players.authenticate = async () => ({ playerId: "player1" });
-  const handle = createCheckoutHandler(() => f);
+  const handle = createCheckoutHandler(() => f, () => true);
   for (const extra of [
     { playerId: "attacker" },
     { unitAmount: 1 },
@@ -451,4 +451,22 @@ test("webhook handler verifies raw signatures, rejects live/oversized payloads a
     413,
   );
   assert.equal(f.credits.size, 0);
+});
+
+
+test("beta pause rejects new Checkout before runtime, authentication or Stripe, including forged enable flags", async () => {
+  const { createCheckoutHandler } = require(path.join(process.env.EVOROS_TEST_LIB, "lib/store/stripe/checkout-handler.js"));
+  let calls = 0;
+  const handler = createCheckoutHandler(() => { calls++; throw Error("Must not construct Stripe"); });
+  for (const url of ["http://localhost:3100/api/store/stripe/checkout", "http://localhost:3100/api/store/stripe/checkout?enabled=true"]) {
+    const response = await handler(new Request(url, {method:"POST",headers:{"content-type":"application/json",origin:"http://localhost:3100"},body:JSON.stringify({...input,enabled:true})}));
+    assert.equal(response.status,403);assert.equal((await response.json()).code,"PURCHASES_PAUSED");
+    assert.equal(response.headers.get("cache-control"),"no-store");
+  }
+  assert.equal(calls,0);
+});
+test("breeding approval gate rejects before any wallet or approval work", () => {
+  const policy = require(path.join(process.env.EVOROS_TEST_LIB, "lib/beta/release-policy.js"));
+  assert.equal(policy.evorosPurchasesEnabled,false);
+  assert.throws(policy.requireBreedingApproval,/until the contracts are approved/);
 });

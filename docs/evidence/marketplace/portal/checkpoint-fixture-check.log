@@ -1,0 +1,3 @@
+{"level":2,"time":1791597628273,"ns":"sqd:batch-processor","msg":"last processed block was 100"}
+{"level":2,"time":1791597628284,"ns":"sqd:batch-processor","msg":"200 / 200, rate: 9378 blocks/sec, mapping: 188 blocks/sec, 94 items/sec, eta: 0s"}
+{"sparseFinalizedBatches":true,"checkpointPreserved":true,"oldHotRecordsSafelyCleared":true,"restartResume":true,"atomicRollback":true,"productionDatabaseConnections":0}

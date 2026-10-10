@@ -6,6 +6,13 @@ const fs = require("node:fs"),
 const root = path.resolve(__dirname, ".."),
   out = path.join(root, "node_modules/.inventory-test-lib");
 fs.mkdirSync(out, { recursive: true });
+// Compile the shared HP helper into the isolated CommonJS fixture tree.
+const health = ts.transpileModule(
+  fs.readFileSync(path.resolve(root, "../../packages/evoverses/src/lib/asset/health.ts"), "utf8"),
+  { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
+);
+fs.writeFileSync(path.join(out, "health.js"), health.outputText);
+
 fs.writeFileSync(
   path.join(out, "package.json"),
   JSON.stringify({ type: "commonjs" }),
@@ -40,6 +47,7 @@ for (const file of [
   fs.writeFileSync(
     dest,
     result.outputText
+      .replaceAll('require("@workspace/evoverses/lib/asset/health")', 'require("../../../health.js")')
       .replace(
         'require("@/data/inventory-items.json")',
         'require("../../../data/inventory-items.json")',

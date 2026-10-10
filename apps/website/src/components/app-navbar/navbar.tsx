@@ -22,14 +22,6 @@ export const navigation: NavItem[] = [
   // { name: "Explore", href: "/assets", description: "Explore all EvoVerses assets" },
   { name: "Profile", href: "/profile", description: "Manage your EvoVerses account and assets", authRequired: true },
   {
-    name: "About",
-    href: "https://docs.evoverses.com/general/meet-the-team",
-    description: "The team, vision, and history",
-    comingSoon: true,
-  },
-  { name: "Docs", href: "https://docs.evoverses.com", description: "Everything you need to know about EvoVerses" },
-  { name: "Liquidity", href: "/liquidity", description: "Quick wallet-only access to liquidity management", proOnly: true },
-  {
     name: "Marketplace",
     href: "/marketplace",
     description: "Buy and sell Evos",

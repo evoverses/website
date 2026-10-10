@@ -8,7 +8,7 @@ export const EVO_MARKET_URL =
 export type EvoMarketQuote = {
   priceUsd: string;
   fetchedAt: string;
-  source: "GeckoTerminal";
+  source: "GeckoTerminal" | "DexScreener";
   poolAddress: string;
 };
 const schema = z.object({
@@ -46,17 +46,60 @@ export function parseEvoMarketQuote(
     poolAddress: EVO_MARKET_POOL,
   };
 }
-export async function fetchEvoMarketQuote(
-  fetcher: typeof fetch = fetch,
-): Promise<EvoMarketQuote> {
-  const response = await fetcher(EVO_MARKET_URL, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(10_000),
-    headers: {
-      Accept: "application/json;version=20230302",
-      "User-Agent": "EvoVersesStore/1.0",
-    },
-  });
-  if (!response.ok) throw new Error("EVO market data unavailable.");
-  return parseEvoMarketQuote(await response.json());
+export const EVO_DEX_MARKET_URL =
+  "https://api.dexscreener.com/latest/dex/pairs/avalanche/" + EVO_MARKET_POOL;
+const dexSchema = z.object({
+  pairs: z.array(z.object({
+    chainId: z.string(),
+    pairAddress: z.string(),
+    baseToken: z.object({ address: z.string() }),
+    priceUsd: z.string().nullable(),
+  })),
+});
+export function parseDexEvoMarketQuote(raw: unknown, now = Date.now()): EvoMarketQuote {
+  const pair = dexSchema.parse(raw).pairs.find(p =>
+    p.chainId === "avalanche" &&
+    p.pairAddress.toLowerCase() === EVO_MARKET_POOL &&
+    p.baseToken.address.toLowerCase() === evoContractAddress.toLowerCase(),
+  );
+  if (!pair?.priceUsd) throw new Error("Unexpected EVO market.");
+  positiveDecimal(pair.priceUsd);
+  return { priceUsd: pair.priceUsd, fetchedAt: new Date(now).toISOString(), source: "DexScreener", poolAddress: EVO_MARKET_POOL };
+}
+
+// Share requests within a warm Worker and retain the original observation time.
+// No historical/default price and no relabelling an old quote as newly fetched.
+export function createEvoMarketQuoteFetcher(fetcher: typeof fetch = fetch, now = Date.now) {
+  let cached: EvoMarketQuote | undefined;
+  let pending: Promise<EvoMarketQuote> | undefined;
+  const fetchLive = async (): Promise<EvoMarketQuote> => {
+    for (const [url, parse] of [
+      [EVO_MARKET_URL, parseEvoMarketQuote],
+      [EVO_DEX_MARKET_URL, parseDexEvoMarketQuote],
+    ] as const) {
+      try {
+        const response = await fetcher(url, {
+          cache: "no-store",
+          signal: AbortSignal.timeout(5_000),
+          headers: { Accept: "application/json;version=20230302" },
+        });
+        if (!response.ok) throw new Error("EVO market data unavailable.");
+        cached = parse(await response.json(), now());
+        return cached;
+      } catch {
+        // Try the same verified Avalanche pool with the independent provider.
+      }
+    }
+    throw new Error("EVO market data unavailable.");
+  };
+  return (): Promise<EvoMarketQuote> => {
+    if (cached && now() - Date.parse(cached.fetchedAt) < 30_000)
+      return Promise.resolve(cached);
+    if (!pending) pending = fetchLive().finally(() => { pending = undefined; });
+    return pending;
+  };
+}
+const liveFetcher = createEvoMarketQuoteFetcher();
+export function fetchEvoMarketQuote(fetcher?: typeof fetch): Promise<EvoMarketQuote> {
+  return fetcher ? createEvoMarketQuoteFetcher(fetcher)() : liveFetcher();
 }

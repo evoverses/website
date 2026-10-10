@@ -12,6 +12,7 @@ fs.writeFileSync(
 for (const file of [
   "data/evoros-bundles.ts",
   "data/addresses.ts",
+  "lib/beta/release-policy.ts",
   "lib/store/pricing.ts",
   "lib/store/evo-price.ts",
   "lib/store/stripe/checkout-handler.ts",
@@ -42,6 +43,7 @@ const result = spawnSync(
     "--test",
     path.join(root, "tests/store/stripe.test.cjs"),
     path.join(root, "tests/store/pricing.test.cjs"),
+    path.join(root, "tests/store/evo-quote-client.test.cjs"),
     ...(process.argv.includes("--with-local-accounts")
       ? [path.join(root, "tests/store/local-payments.test.cjs")]
       : []),

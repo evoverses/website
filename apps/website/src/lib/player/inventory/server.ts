@@ -1,7 +1,7 @@
 import "server-only";
 import { species as knownSpecies } from "@workspace/database/types/evo";
 import { createNftSources } from "./sources";
-import { localPlayerLogin, playerWebAuth } from "../server";
+import { playerLoginEnabled, getPlayerWebOrigin, playerWebAuth } from "../server";
 import { walletRpc } from "../wallet/server";
 import { inventoryHandler } from "./handler";
 import type { InventoryRow } from "./types";
@@ -34,7 +34,8 @@ export function inventoryImage(row: InventoryRow): string | null {
 }
 export function playerInventory(request: Request) {
   return inventoryHandler(request, {
-    enabled: localPlayerLogin,
+    enabled: playerLoginEnabled,
+    webOrigin: getPlayerWebOrigin(),
     readInventory: (token) => playerWebAuth().readInventory(token),
     readCombat: (token,members) => playerWebAuth().readCombat(token,members),
     projection: (token) => walletRpc("projection", token, {}),

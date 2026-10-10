@@ -14,6 +14,9 @@ import { cn } from "@workspace/ui/lib/utils";
 import { FilterIcon, SettingsIcon, TrendingUpIcon, XIcon } from "lucide-react";
 import { Fragment } from "react";
 
+// Original toolbar placeholders; enable only after their intended behaviour is defined.
+const SHOW_UNFINISHED_MARKETPLACE_TOOLS = false;
+
 const CollectionItemsFilterBar = ({ itemCount = 0, className }: { itemCount?: number, className?: string }) => {
   const view = useBoundedStore.use.layout();
   return (
@@ -26,13 +29,17 @@ const CollectionItemsFilterBar = ({ itemCount = 0, className }: { itemCount?: nu
           <div className="flex items-center gap-4">
             <SortOrderSelect />
             <LayoutToggleGroup />
-            <Button variant="outline" size="icon" className="size-8 cursor-pointer">
-              <SettingsIcon />
-            </Button>
-            <Button variant="outline" size="sm" className="h-8">
-              <TrendingUpIcon />
-              <span className="hidden @4xl:block">Insights</span>
-            </Button>
+            {SHOW_UNFINISHED_MARKETPLACE_TOOLS && (
+              <Fragment>
+                <Button variant="outline" size="icon" className="size-8 cursor-pointer">
+                  <SettingsIcon />
+                </Button>
+                <Button variant="outline" size="sm" className="h-8">
+                  <TrendingUpIcon />
+                  <span className="hidden @4xl:block">Insights</span>
+                </Button>
+              </Fragment>
+            )}
           </div>
         </div>
       </div>

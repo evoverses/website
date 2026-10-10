@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { WalletCardsIcon } from "lucide-react";
 
-// This page is here solely for those who think they are somehow elite anonymous hackers -.-
+// Uses the root wallet provider shared with Profile and the menu.
 
 const LiquidityPage = () => {
   return (
@@ -21,7 +21,7 @@ const LiquidityPage = () => {
         <ConnectButton wallets="chain" hideConnected asChild>
           <Button variant="default">
             <WalletCardsIcon className="size-5 hidden md:inline-flex" />
-            <span>Connect</span>
+            <span>Connect wallet</span>
           </Button>
         </ConnectButton>
       </div>

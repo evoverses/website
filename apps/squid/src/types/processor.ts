@@ -1,17 +1,12 @@
-import {
-  type BlockData,
-  BlockHeader,
-  DataHandlerContext,
-  EvmBatchProcessorFields,
-  Log as _Log,
-  Transaction as _Transaction,
-} from "@subsquid/evm-processor";
-import { Store } from "@subsquid/typeorm-store";
-import { processor } from "../processor";
-
-export type Fields = EvmBatchProcessorFields<typeof processor>
-export type Block = BlockHeader<Fields>
-export type Blocks = BlockData<Fields>[]
-export type Log = _Log<Fields>
-export type Transaction = _Transaction<Fields>
-export type ProcessorContext = DataHandlerContext<Store, Fields>
+import type { BlockHeader, Block as BlockData, Log as _Log, Transaction as _Transaction } from "@subsquid/evm-objects";
+import type { DataHandlerContext } from "@subsquid/batch-processor";
+import type { Logger } from "@subsquid/logger";
+import type { RpcClient } from "@subsquid/rpc-client";
+import type { Store } from "@subsquid/typeorm-store";
+import type { fields } from "../processor";
+export type Fields = typeof fields;
+export type Block = BlockHeader<Fields>;
+export type Blocks = BlockData<Fields>[];
+export type Log = _Log<Fields>;
+export type Transaction = _Transaction<Fields>;
+export type ProcessorContext = DataHandlerContext<BlockData<Fields>, Store> & { log: Logger; _chain: { client: RpcClient } };

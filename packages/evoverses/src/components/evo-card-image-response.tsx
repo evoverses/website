@@ -1,4 +1,5 @@
 import "@workspace/evoverses/types/next";
+import { currentLevelHealth } from "@workspace/evoverses/lib/asset/health";
 import { Element, StatNameAbbreviation } from "@workspace/database/types/evo";
 import { ElementIcon } from "@workspace/evoverses/components/icons/element-icon";
 import { GenderIcon } from "@workspace/evoverses/components/icons/gender-icon";
@@ -25,7 +26,7 @@ export const evoCardImageResponse = (asset: SquidAsset) => <EvoCardImageResponse
 export const EvoCardImageResponse = ({ asset }: { asset: SquidAsset }) => {
   const age = daysSince(asset.metadata.createdAt);
   const stats = isEvo(asset) ? [
-    { stat: StatNameAbbreviation.hp, value: 50 },
+    { stat: StatNameAbbreviation.hp, value: currentLevelHealth(asset.metadata.species, asset.metadata.xp) ?? "—" },
     { stat: StatNameAbbreviation.atk, value: asset.metadata.attack },
     { stat: StatNameAbbreviation.sp, value: asset.metadata.special },
     { stat: StatNameAbbreviation.def, value: asset.metadata.defense },

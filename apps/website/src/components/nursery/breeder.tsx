@@ -1,4 +1,5 @@
 "use client";
+import { breedingTransactionsApproved, breedingApprovalMessage, requireBreedingApproval } from "@/lib/beta/release-policy";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -101,7 +102,9 @@ export function Breeder() {
     ? parentCost(first.parent) + parentCost(second.parent)
     : null;
   const priceMatches = quote.data && calculated === quote.data.cost;
-  const breedUnavailable = !nurseryConfigured
+  const breedUnavailable = !breedingTransactionsApproved
+    ? breedingApprovalMessage
+    : !nurseryConfigured
     ? "Breeding is not live yet. The Breed button will be enabled when the Nursery opens."
     : !w.account
       ? "Connect your wallet to breed."
@@ -120,6 +123,7 @@ export function Breeder() {
                   : undefined;
   const breed = () =>
     w.run(async () => {
+      requireBreedingApproval();
       if (!w.account || !first || !second || !quote.data || !priceMatches)
         return;
       const account = w.account;
@@ -359,6 +363,7 @@ export function Breeder() {
             size="lg"
             aria-describedby={breedUnavailable ? "breed-availability" : undefined}
             disabled={
+              !breedingTransactionsApproved ||
               !nurseryConfigured ||
               !w.account ||
               !validPair ||
@@ -496,6 +501,7 @@ function BreedProgress({ hash, owner }: { hash: Hex; owner: string }) {
   }, [completedEgg, rememberEgg]);
   const complete = () =>
     w.run(async () => {
+      requireBreedingApproval();
       if (!w.account || !requestId) return;
       await w.guard();
       await sendNurseryTransaction(
@@ -558,7 +564,7 @@ function BreedProgress({ hash, owner }: { hash: Hex; owner: string }) {
           <p>
             Bertha’s egg is ready. Collect it to begin the three-day incubation.
           </p>
-          <Button disabled={w.busy} onClick={complete}>
+          <Button disabled={!breedingTransactionsApproved || w.busy} title={!breedingTransactionsApproved ? breedingApprovalMessage : undefined} onClick={complete}>
             {w.busy ? "Confirm in your wallet…" : "Collect egg"}
           </Button>
         </>

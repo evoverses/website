@@ -6,13 +6,20 @@ export const playerWebOrigin = "http://localhost:3100";
 export const playerSessionCookie = "ev:player-session";
 export const epicStateCookie = "ev:epic-state";
 export const epicPendingCookie = "ev:epic-pending";
-const callbackUrl = playerWebOrigin + "/api/player/auth/epic/callback";
 const hex = /^[0-9a-f]{64}$/;
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 export type Player = { id: string; displayName: string; experience: number };
 export type PlayerSnapshot = { player: Player; balance: { evoros: number } };
 export type Inventory = { items: { productId: string; revision: number; quantity: number }[]; evos: { id: string; speciesKey: string; experience: number; displayId?: string; combat?: CombatState; stats: Record<string, number> | GeneratedEvoStats }[] };
-export type LocalEpicConfig = { clientId: string; clientSecret: string; deploymentId: string; applicationId: string; apiUrl: string };
+export type LocalEpicConfig = { clientId: string; clientSecret: string; deploymentId: string; applicationId: string; apiUrl: string; hosted?: { origin: "https://beta.evoverses.com"; serviceToken: string } };
+type OAuthBinding = { keyHash: string; bindingHash: string; contextHash: string };
+export type OAuthTransactionStore = {
+  putState: (input: OAuthBinding) => Promise<unknown>;
+  takeState: (input: OAuthBinding) => Promise<unknown>;
+  putPending: (input: OAuthBinding & { proof: string }) => Promise<unknown>;
+  takePending: (input: OAuthBinding) => Promise<string>;
+  hasPending: (input: OAuthBinding) => Promise<boolean>;
+};
 export class PlayerWebError extends Error {
   constructor(public code: string) { super(code); }
 }
@@ -28,18 +35,24 @@ function player(value: unknown): Player {
 
 // Single-process, development-only OAuth transactions. Provider evidence never reaches browser storage.
 export type AuthDiagnostic = { stage: "epic-token" | "account-login" | "account-profile" | "account-inventory" | "account-logout"; outcome: "http-error" | "timeout" | "invalid-response" | "network-error"; status?: number; elapsedMs: number };
-export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Date.now, diagnostic }: {
-  configuration: () => LocalEpicConfig | null; fetchImpl?: typeof fetch; now?: () => number; diagnostic?: (value: AuthDiagnostic) => void;
+export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Date.now, diagnostic, transactions }: {
+  configuration: () => LocalEpicConfig | null; fetchImpl?: typeof fetch; now?: () => number; diagnostic?: (value: AuthDiagnostic) => void; transactions?: OAuthTransactionStore;
 }) {
   const states = new Map<string, { cookieHash: string; expires: number; context: string }>();
   const pending = new Map<string, { proof: string; expires: number; context: string }>();
   let starts: number[] = [], active = 0;
   const config = () => {
     const value = configuration();
-    if (!value || !/^http:\/\/127\.0\.0\.1:[1-9][0-9]{0,4}$/.test(value.apiUrl) || new URL(value.apiUrl).port === "0") return fail("SIGNIN_UNAVAILABLE");
+    if (!value) return fail("SIGNIN_UNAVAILABLE");
+    if (value.hosted) {
+      const url = new URL(value.apiUrl);
+      if (!transactions || value.hosted.origin !== "https://beta.evoverses.com" || !hex.test(value.hosted.serviceToken) || url.protocol !== "https:" || url.origin !== value.apiUrl || url.username || url.password || url.port || !/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/.test(url.hostname) || url.hostname.endsWith(".localhost") || url.hostname === "localhost" || /^[\d.]+$/.test(url.hostname)) return fail("SIGNIN_UNAVAILABLE");
+    } else if (!/^http:\/\/127\.0\.0\.1:[1-9][0-9]{0,4}$/.test(value.apiUrl) || new URL(value.apiUrl).port === "0") return fail("SIGNIN_UNAVAILABLE");
     return value;
   };
-  const context = (c: LocalEpicConfig) => hash(JSON.stringify([c.clientId, c.applicationId, c.deploymentId, c.apiUrl]));
+  const context = (c: LocalEpicConfig) => hash(JSON.stringify([c.clientId, c.applicationId, c.deploymentId, c.apiUrl, c.hosted?.origin ?? playerWebOrigin]));
+  const callbackUrl = (c: LocalEpicConfig) => (c.hosted?.origin ?? playerWebOrigin) + "/api/player/auth/epic/callback";
+  const binding = (key: string, cookie: string, c: LocalEpicConfig): OAuthBinding => ({ keyHash: hash(key), bindingHash: hash(cookie), contextHash: context(c) });
   function cleanup() {
     for (const map of [states, pending]) for (const [key, value] of map) if (value.expires <= now()) map.delete(key);
   }
@@ -71,7 +84,12 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     try {
       return await Promise.race([
         (async () => {
-          const response = await fetchImpl(url, { ...init, cache: "no-store", redirect: "error", credentials: "omit", signal: controller.signal });
+          const c = config();
+          const headers = c.hosted ? new Headers(init.headers) : init.headers;
+          if (c.hosted && url.startsWith(c.apiUrl + "/")) (headers as Headers).set("X-EvoVerses-Service", c.hosted.serviceToken);
+          // Workers supports manual redirects; never follow credentials to another URL.
+          const response = await fetchImpl(url, { ...init, headers, cache: "no-store", redirect: "manual", credentials: "omit", signal: controller.signal });
+          if (response.status >= 300 && response.status < 400) throw new PlayerWebError("SERVICE_UNAVAILABLE");
           if (response.status >= 500 || ((stage === "epic-token" || stage === "account-login") && response.status >= 400)) report("http-error", response.status);
           const value = response.status === 204 ? null : await boundedResponse(response, controller.signal, stage === "account-inventory" ? 1048576 : 65536);
           return { status: response.status, value };
@@ -104,29 +122,43 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
       return fail("SERVICE_UNAVAILABLE");
     }
   }
-  function start() {
+  function prepareStart() {
     const c = config(); cleanup();
     starts = starts.filter(time => time > now() - 60000);
     if (starts.length >= 30 || states.size >= 64 || pending.size >= 64) return fail("SIGNIN_BUSY");
     starts.push(now());
     const state = randomBytes(32).toString("hex"), cookie = randomBytes(32).toString("hex");
-    states.set(hash(state), { cookieHash: hash(cookie), expires: now() + 300000, context: context(c) });
     const url = new URL("https://www.epicgames.com/id/authorize");
-    url.search = new URLSearchParams({ client_id: c.clientId, response_type: "code", scope: "basic_profile friends_list presence country", redirect_uri: callbackUrl, state }).toString();
-    return { url: url.toString(), cookie };
+    url.search = new URLSearchParams({ client_id: c.clientId, response_type: "code", scope: "basic_profile friends_list presence country", redirect_uri: callbackUrl(c), state }).toString();
+    return { url: url.toString(), cookie, state, c };
+  }
+  function start() {
+    const { url, cookie, state, c } = prepareStart();
+    if (c.hosted || transactions) return fail("SIGNIN_UNAVAILABLE");
+    states.set(hash(state), { cookieHash: hash(cookie), expires: now() + 300000, context: context(c) });
+    return { url, cookie };
+  }
+  async function startAsync() {
+    if (!transactions) return start();
+    const { url, cookie, state, c } = prepareStart();
+    await transactions.putState(binding(state, cookie, c));
+    return { url, cookie };
   }
   async function callback(input: { state: string; cookie: string; code?: string; cancelled?: boolean }) {
     const c = config(); cleanup();
     if (!hex.test(input.state) || !hex.test(input.cookie)) return fail("SIGNIN_EXPIRED");
-    const key = hash(input.state), saved = states.get(key);
-    if (!saved || saved.context !== context(c) || !timingSafeEqual(Buffer.from(saved.cookieHash, "hex"), Buffer.from(hash(input.cookie), "hex"))) return fail("SIGNIN_EXPIRED");
-    states.delete(key); // Consume BEFORE upstream requests, including provider errors.
+    if (transactions) await transactions.takeState(binding(input.state, input.cookie, c));
+    else {
+      const key = hash(input.state), saved = states.get(key);
+      if (!saved || saved.context !== context(c) || !timingSafeEqual(Buffer.from(saved.cookieHash, "hex"), Buffer.from(hash(input.cookie), "hex"))) return fail("SIGNIN_EXPIRED");
+      states.delete(key); // Consume BEFORE upstream requests, including provider errors.
+    }
     if (input.cancelled) return fail("EPIC_CANCELLED");
     if (!input.code || !/^[A-Za-z0-9._~-]{1,2048}$/.test(input.code)) return fail("SIGNIN_EXPIRED");
     return admit(async () => {
       const { status, value } = await request("https://api.epicgames.dev/epic/oauth/v2/token", { method: "POST", headers: {
         "content-type": "application/x-www-form-urlencoded", authorization: "Basic " + Buffer.from(c.clientId + ":" + c.clientSecret).toString("base64"),
-      }, body: new URLSearchParams({ grant_type: "authorization_code", code: input.code!, deployment_id: c.deploymentId, redirect_uri: callbackUrl }).toString() });
+      }, body: new URLSearchParams({ grant_type: "authorization_code", code: input.code!, deployment_id: c.deploymentId, redirect_uri: callbackUrl(c) }).toString() });
       if (status !== 200 || !record(value) || value.client_id !== c.clientId || value.application_id !== c.applicationId || typeof value.account_id !== "string" || !/^[0-9a-f]{32}$/.test(value.account_id) || typeof value.token_type !== "string" || value.token_type.toLowerCase() !== "bearer" || typeof value.access_token !== "string" || value.access_token.length > 16384 || value.access_token.split(".").length !== 3) return fail("EPIC_VERIFICATION_FAILED");
       // The backend checks the JWT signature, issuer, client and ALL signed game-context claims.
       // Token response account_id/display text are never used as authentication evidence.
@@ -134,20 +166,30 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
       if (result) return { session: result };
       cleanup(); if (pending.size >= 64) return fail("SIGNIN_BUSY");
       const cookie = randomBytes(32).toString("hex");
-      pending.set(hash(cookie), { proof: value.access_token, expires: now() + 60000, context: context(c) });
+      if (transactions) await transactions.putPending({ ...binding(cookie, cookie, c), proof: value.access_token });
+      else pending.set(hash(cookie), { proof: value.access_token, expires: now() + 60000, context: context(c) });
       return { pendingCookie: cookie };
     });
   }
   function hasPending(cookie: string | undefined) {
     cleanup(); return !!cookie && hex.test(cookie) && pending.has(hash(cookie));
   }
+  async function hasPendingAsync(cookie: string | undefined) {
+    if (!transactions) return hasPending(cookie);
+    if (!cookie || !hex.test(cookie)) return false;
+    return transactions.hasPending(binding(cookie, cookie, config()));
+  }
   async function confirm(cookie: string) {
     const c = config(); cleanup();
     if (!hex.test(cookie)) return fail("SIGNIN_EXPIRED");
-    const key = hash(cookie), saved = pending.get(key);
-    if (!saved || saved.context !== context(c)) return fail("SIGNIN_EXPIRED");
-    pending.delete(key);
-    const result = await admit(() => login(c, saved.proof, true));
+    let proof: string;
+    if (transactions) proof = await transactions.takePending(binding(cookie, cookie, c));
+    else {
+      const key = hash(cookie), saved = pending.get(key);
+      if (!saved || saved.context !== context(c)) return fail("SIGNIN_EXPIRED");
+      pending.delete(key); proof = saved.proof;
+    }
+    const result = await admit(() => login(c, proof, true));
     if (!result) return fail("SERVICE_UNAVAILABLE");
     return result;
   }
@@ -191,5 +233,5 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     const { status } = await request(config().apiUrl + "/v1/auth/logout", { method: "POST", headers: { authorization: "Bearer " + token, "content-type": "application/json" }, body: "{}" });
     if (status !== 204) return fail(status === 401 ? "INVALID_SESSION" : "SERVICE_UNAVAILABLE");
   }
-  return { start, callback, confirm, hasPending, readProfile, readInventory, readCombat, logout };
+  return { start, startAsync, callback, confirm, hasPending, hasPendingAsync, readProfile, readInventory, readCombat, logout };
 }

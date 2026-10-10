@@ -1,0 +1,48 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "evoverses-beta",
+  "account_id": "3d3ab7e213d8eaf914dbdd43d7eb38ea",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-09",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "beta.evoverses.com/*",
+      "zone_id": "3adca176848846d97901677ea588989b"
+    }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "evoverses-beta"
+    }
+  ],
+  "observability": {
+    "enabled": false
+  },
+  "vars": {
+    "EVOVERSES_HOSTED_BETA": "1",
+    "EVOVERSES_ACCOUNT_API_ORIGIN": "https://beta-accounts.evoverses.com",
+    "EVOVERSES_EPIC_DEPLOYMENT_ID": "6452c3b6b95844609351018f0cf003ec",
+    "EVOVERSES_EPIC_APPLICATION_ID": "fghi4567d1yDjn0tjuMtOqkL1USlMIC4",
+    "AUTH_EPIC_ID": "xyza7891pYyJBBWl9JM5GaAOt7zWIaiK",
+    "NEXT_PUBLIC_THIRDWEB_AUTH_DOMAIN": "beta.evoverses.com",
+    "NEXT_PUBLIC_THIRDWEB_CLIENT_ID": "e9cc45db934afb8275fa2b1da8ce6ab6",
+    "NEXT_PUBLIC_EVOVERSES_GRAPHQL_URL": "https://api.evoverses.com/graphql",
+    "NEXT_PUBLIC_BASE_API_IMAGE_URL": "https://imagedelivery.net/rnUCH_14xCvfZoyELQslRQ",
+    "NEXT_PUBLIC_API_IMAGE_SUFFIX": "public",
+    "NEXT_PUBLIC_AUTH_URL": "https://beta.evoverses.com"
+  },
+  "limits": {
+    "cpu_ms": 3000
+  }
+}

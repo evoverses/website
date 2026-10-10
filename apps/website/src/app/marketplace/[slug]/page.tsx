@@ -7,6 +7,7 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { buildSquidAttributeFilters, fetchSquidAssets } from "@/lib/evo/fetch";
 import { staleTimeMinutes } from "@/utils/numbers";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { Button } from "@workspace/ui/components/button";
 import { Fragment, useMemo } from "react";
 import { TableView } from "@/components/views/table-view";
 
@@ -41,8 +42,10 @@ const MarketplaceAssetsPage = () => {
     isFetchingNextPage,
     isLoading,
     isPlaceholderData,
+    isError,
+    refetch,
   } = useInfiniteQuery({
-    queryKey: ["marketplace-evos", sort, listingStatus, stage, price, gender, generation, species, nature, element,
+    queryKey: ["marketplace-evos", wallets, sort, listingStatus, stage, price, gender, generation, species, nature, element,
       chroma, totalBreeds, attack, special, defense, resistance, speed, size, level, treated],
     queryFn: ({ pageParam }: { pageParam?: number }) => fetchSquidAssets({
       page: pageParam || undefined,
@@ -83,17 +86,30 @@ const MarketplaceAssetsPage = () => {
     <Fragment>
       <div className="@container">
         <CollectionItemsFilterBar itemCount={data.pages[0]?.total} />
-        <GridView
-          items={items}
-          isLoading={isLoading || isPlaceholderData}
-          isFetchingNextPage={isFetchingNextPage}
-          bottomRef={bottomRef}
-        />
-        <TableView items={items}
-          isLoading={isLoading || isPlaceholderData}
-          isFetchingNextPage={isFetchingNextPage}
-          bottomRef={bottomRef}
-        />
+        {isError && (
+          <div role="alert" className="rounded-xl border bg-card p-6 space-y-3 my-4">
+            <p>We couldn’t load Marketplace items. Please try again.</p>
+            <Button variant="outline" disabled={isFetching} onClick={() => void refetch()}>
+              {isFetching ? "Retrying…" : "Retry loading items"}
+            </Button>
+          </div>
+        )}
+        {(!isError || items.length > 0) && (
+          <>
+            <GridView
+              items={items}
+              isLoading={isLoading || isPlaceholderData}
+              isFetchingNextPage={isFetchingNextPage}
+              bottomRef={bottomRef}
+            />
+            <TableView
+              items={items}
+              isLoading={isLoading || isPlaceholderData}
+              isFetchingNextPage={isFetchingNextPage}
+              bottomRef={bottomRef}
+            />
+          </>
+        )}
       </div>
     </Fragment>
   );

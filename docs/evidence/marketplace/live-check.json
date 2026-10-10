@@ -1,0 +1,16 @@
+{
+  "cards": 18,
+  "directGraphql": 0,
+  "noItemsShown": false,
+  "retryRecovered": true,
+  "replies": [
+    {
+      "status": 200
+    },
+    {
+      "status": 200,
+      "total": 5108,
+      "items": 25
+    }
+  ]
+}

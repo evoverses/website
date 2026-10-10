@@ -1,0 +1,10 @@
+{
+  "checkpoint": 65545961,
+  "checkpointHash": "0x741e052f4080f9689452e253301f09011d8b6f751c0fb36fa683c1e776056099",
+  "listingBlock": 97164188,
+  "transactionHash": "0x829616bcf0f799430cb1b21fc837d017ec350e32118b133b0c248e7677cbb53c",
+  "listingId": 4,
+  "logDataMatches": true,
+  "transactionRelationshipsVerified": true,
+  "databaseWrites": 0
+}

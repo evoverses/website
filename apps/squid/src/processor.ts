@@ -1,87 +1,21 @@
 import { events as nurseryEvents } from "./abi/generated/hatcher-hermann";
-import { EvmBatchProcessor } from "@subsquid/evm-processor";
-import { assertNotNull } from "@subsquid/util-internal";
-import {
-  CHAIN_ID,
-  GATEWAY_URL,
-  MARKETPLACE_ADDRESSES,
-  NFT_ADDRESSES,
-  NURSERY_CONFIG,
-  RPC_CAPACITY,
-  RPC_MAX_BATCH_CALL_SIZE,
-  RPC_RATE_LIMIT,
-  RPC_URLS,
-  watchedMarketplaceTopics,
-  watchedNftTopics,
-} from "./utils/constants";
+import { DataSourceBuilder, type FieldSelection } from "@subsquid/evm-stream";
+import { CHAIN_ID, MARKETPLACE_ADDRESSES, NFT_ADDRESSES, watchedMarketplaceTopics, watchedNftTopics, NURSERY_CONFIG } from "./utils/constants";
 
-export const processor = new EvmBatchProcessor()
-  .setGateway(GATEWAY_URL)
-  .setRpcEndpoint({
-    url: assertNotNull(
-      RPC_URLS[assertNotNull(CHAIN_ID, "CHAIN ID not supplied")],
-      "NO RPC URL FOR CHAIN ID ${CHAIN_ID}",
-    ),
-    rateLimit: RPC_RATE_LIMIT,
-    maxBatchCallSize: RPC_MAX_BATCH_CALL_SIZE,
-    capacity: RPC_CAPACITY,
-    requestTimeout: 5_5000,
-    retryAttempts: 3,
-  })
-  .setFinalityConfirmation(1)
-  .addLog({ address: MARKETPLACE_ADDRESSES, topic0: watchedMarketplaceTopics, transaction: true })
-  .addLog({ address: NFT_ADDRESSES, topic0: watchedNftTopics, transaction: true })
-  .setFields({
-    log: { transactionHash: true },
-    transaction: {
-      gas: true,
-      gasPrice: true,
-      maxFeePerGas: true,
-      maxPriorityFeePerGas: true,
-      input: true,
-      nonce: true,
-      value: true,
-      v: true,
-      r: true,
-      s: true,
-      yParity: true,
-      chainId: true,
-      gasUsed: true,
-      cumulativeGasUsed: true,
-      effectiveGasUsed: true,
-      contractAddress: true,
-      type: true,
-      status: true,
-      sighash: true,
-      // l1Fee: true
-      // l1FeeScalar: true
-      // l1GasPrice: true
-      // l1GasUsed: true
-      // l1BlobBaseFee: true
-      // l1BlobBaseFeeScalar: true
-      // l1BaseFeeScalar: true
-    },
-    block: {
-      nonce: true,
-      sha3Uncles: true,
-      logsBloom: true,
-      transactionsRoot: true,
-      stateRoot: true,
-      receiptsRoot: true,
-      mixHash: true,
-      miner: true,
-      difficulty: true,
-      totalDifficulty: true,
-      extraData: true,
-      size: true,
-      gasLimit: true,
-      gasUsed: true,
-      baseFeePerGas: true,
-      // l1BlockNumber: number
-    },
-  });
+export const fields = {
+  block: { timestamp: true },
+  log: { address: true, topics: true, data: true, transactionHash: true },
+  transaction: { hash: true, from: true, status: true },
+} as const satisfies FieldSelection;
 
-if (NURSERY_CONFIG) processor.addLog({
-  address: [NURSERY_CONFIG.hatcher], topic0: Object.values(nurseryEvents).map(event => event.topic),
-  range: { from: NURSERY_CONFIG.fromBlock }, transaction: true,
-});
+export function buildDataSource() {
+  if (CHAIN_ID !== "43114") throw new Error("Portal migration currently supports Avalanche C-chain only");
+  const builder = new DataSourceBuilder()
+    .setPortal(process.env.PORTAL_URL || "https://portal.sqd.dev/datasets/avalanche-mainnet")
+    .addLog({ where: { address: MARKETPLACE_ADDRESSES, topic0: watchedMarketplaceTopics }, include: { transaction: true } })
+    .addLog({ where: { address: NFT_ADDRESSES, topic0: watchedNftTopics }, include: { transaction: true } })
+    .setFields(fields);
+  if (NURSERY_CONFIG) builder.addLog({ where: { address: [NURSERY_CONFIG.hatcher], topic0: Object.values(nurseryEvents).map(event => event.topic) }, include: { transaction: true }, range: { from: NURSERY_CONFIG.fromBlock } });
+  return builder.build();
+}
+export const dataSource = buildDataSource();

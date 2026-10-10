@@ -1,0 +1,1294 @@
+{
+  "origin": "https://beta.evoverses.com",
+  "backReturned": true,
+  "results": [
+    {
+      "label": "grid-desktop",
+      "geometry": [
+        {
+          "width": 209.1875,
+          "artTop": 0.26994323274574245,
+          "artHeight": 0.6999551837466388,
+          "infoWidth": 0.3999850612488796,
+          "infoHeight": 0.3099790857484314,
+          "infoLeft": 0.09605616970421273,
+          "bufferLeft": 0.03000002390200179,
+          "infoBottom": 0.0957573946818046,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777412608305945,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "level",
+              "top": 0.1955482521661189,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "number",
+              "top": 1.178966238422468,
+              "height": 0.04795339109650433
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694950702121304,
+              "height": 0.049746041230953095
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.1875,
+          "artTop": 0.26994323274574245,
+          "artHeight": 0.6999551837466388,
+          "infoWidth": 0.3999850612488796,
+          "infoHeight": 0.3099790857484314,
+          "infoLeft": 0.09605616970421273,
+          "bufferLeft": 0.03000002390200179,
+          "infoBottom": 0.0957573946818046,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777412608305945,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "level",
+              "top": 0.1955482521661189,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "number",
+              "top": 1.178966238422468,
+              "height": 0.04795339109650433
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694950702121304,
+              "height": 0.049746041230953095
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.1875,
+          "artTop": 0.26994323274574245,
+          "artHeight": 0.6999551837466388,
+          "infoWidth": 0.3999850612488796,
+          "infoHeight": 0.3099790857484314,
+          "infoLeft": 0.09605616970421273,
+          "bufferLeft": 0.03000002390200179,
+          "infoBottom": 0.0957573946818046,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777412608305945,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "level",
+              "top": 0.1955482521661189,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "number",
+              "top": 1.178966238422468,
+              "height": 0.04795339109650433
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694950702121304,
+              "height": 0.049746041230953095
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        }
+      ]
+    },
+    {
+      "label": "compact-desktop",
+      "geometry": [
+        {
+          "width": 145.421875,
+          "artTop": 0.2699043730525411,
+          "artHeight": 0.6999032985924573,
+          "infoWidth": 0.3999140431932954,
+          "infoHeight": 0.3099817341785753,
+          "infoLeft": 0.09605673149242505,
+          "bufferLeft": 0.03000002578704201,
+          "infoBottom": 0.09573439346728269,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777586762651767,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "level",
+              "top": 0.19555173525303535,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "number",
+              "top": 1.1790050499623939,
+              "height": 0.04792091973783174
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474589019018,
+              "height": 0.04974750188030515
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.421875,
+          "artTop": 0.2699043730525411,
+          "artHeight": 0.6999032985924573,
+          "infoWidth": 0.3999140431932954,
+          "infoHeight": 0.3099817341785753,
+          "infoLeft": 0.09605673149242505,
+          "bufferLeft": 0.03000002578704201,
+          "infoBottom": 0.09573439346728269,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777586762651767,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "level",
+              "top": 0.19555173525303535,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "number",
+              "top": 1.1790050499623939,
+              "height": 0.04792091973783174
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474589019018,
+              "height": 0.04974750188030515
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.4375,
+          "artTop": 0.2699828104856038,
+          "artHeight": 0.6999355393210142,
+          "infoWidth": 0.3999785131070047,
+          "infoHeight": 0.30994843145681134,
+          "infoLeft": 0.09604641168886979,
+          "bufferLeft": 0.02999996562097121,
+          "infoBottom": 0.0957241082939407,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776536312849161,
+              "height": 0.049742157284056725
+            },
+            {
+              "bar": "level",
+              "top": 0.19553072625698323,
+              "height": 0.049742157284056725
+            },
+            {
+              "bar": "number",
+              "top": 1.178985818650623,
+              "height": 0.04791577137945853
+            },
+            {
+              "bar": "generation",
+              "top": 1.269445638160722,
+              "height": 0.049742157284056725
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.421875,
+          "artTop": 0.2699043730525411,
+          "artHeight": 0.6999032985924573,
+          "infoWidth": 0.3999140431932954,
+          "infoHeight": 0.3099817341785753,
+          "infoLeft": 0.09605673149242505,
+          "bufferLeft": 0.03000002578704201,
+          "infoBottom": 0.09573439346728269,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777586762651767,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "level",
+              "top": 0.19555173525303535,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "number",
+              "top": 1.1790050499623939,
+              "height": 0.04792091973783174
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474589019018,
+              "height": 0.04974750188030515
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.4375,
+          "artTop": 0.2699828104856038,
+          "artHeight": 0.6999355393210142,
+          "infoWidth": 0.3999785131070047,
+          "infoHeight": 0.30994843145681134,
+          "infoLeft": 0.09604641168886979,
+          "bufferLeft": 0.02999996562097121,
+          "infoBottom": 0.0957241082939407,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776536312849161,
+              "height": 0.049742157284056725
+            },
+            {
+              "bar": "level",
+              "top": 0.19553072625698323,
+              "height": 0.049742157284056725
+            },
+            {
+              "bar": "number",
+              "top": 1.178985818650623,
+              "height": 0.04791577137945853
+            },
+            {
+              "bar": "generation",
+              "top": 1.269445638160722,
+              "height": 0.049742157284056725
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.421875,
+          "artTop": 0.2699043730525411,
+          "artHeight": 0.6999032985924573,
+          "infoWidth": 0.3999140431932954,
+          "infoHeight": 0.3099817341785753,
+          "infoLeft": 0.09605673149242505,
+          "bufferLeft": 0.03000002578704201,
+          "infoBottom": 0.09573439346728269,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777586762651767,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "level",
+              "top": 0.19555173525303535,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "number",
+              "top": 1.1790050499623939,
+              "height": 0.04792091973783174
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474589019018,
+              "height": 0.04974750188030515
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.4375,
+          "artTop": 0.2699828104856038,
+          "artHeight": 0.6999355393210142,
+          "infoWidth": 0.3999785131070047,
+          "infoHeight": 0.30994843145681134,
+          "infoLeft": 0.09604641168886979,
+          "bufferLeft": 0.02999996562097121,
+          "infoBottom": 0.0957241082939407,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776536312849161,
+              "height": 0.049742157284056725
+            },
+            {
+              "bar": "level",
+              "top": 0.19553072625698323,
+              "height": 0.049742157284056725
+            },
+            {
+              "bar": "number",
+              "top": 1.178985818650623,
+              "height": 0.04791577137945853
+            },
+            {
+              "bar": "generation",
+              "top": 1.269445638160722,
+              "height": 0.049742157284056725
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 145.421875,
+          "artTop": 0.2699043730525411,
+          "artHeight": 0.6999032985924573,
+          "infoWidth": 0.3999140431932954,
+          "infoHeight": 0.3099817341785753,
+          "infoLeft": 0.09605673149242505,
+          "bufferLeft": 0.03000002578704201,
+          "infoBottom": 0.09573439346728269,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777586762651767,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "level",
+              "top": 0.19555173525303535,
+              "height": 0.04974750188030515
+            },
+            {
+              "bar": "number",
+              "top": 1.1790050499623939,
+              "height": 0.04792091973783174
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474589019018,
+              "height": 0.04974750188030515
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        }
+      ]
+    },
+    {
+      "label": "mosaic-desktop",
+      "geometry": [
+        {
+          "width": 209.1875,
+          "artTop": 0.26994323274574245,
+          "artHeight": 0.6999551837466388,
+          "infoWidth": 0.3999850612488796,
+          "infoHeight": 0.3099790857484314,
+          "infoLeft": 0.09605616970421273,
+          "bufferLeft": 0.03000002390200179,
+          "infoBottom": 0.0957573946818046,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777412608305945,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "level",
+              "top": 0.1955482521661189,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "number",
+              "top": 1.178966238422468,
+              "height": 0.04795339109650433
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694950702121304,
+              "height": 0.049746041230953095
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.1875,
+          "artTop": 0.26994323274574245,
+          "artHeight": 0.6999551837466388,
+          "infoWidth": 0.3999850612488796,
+          "infoHeight": 0.3099790857484314,
+          "infoLeft": 0.09605616970421273,
+          "bufferLeft": 0.03000002390200179,
+          "infoBottom": 0.0957573946818046,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777412608305945,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "level",
+              "top": 0.1955482521661189,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "number",
+              "top": 1.178966238422468,
+              "height": 0.04795339109650433
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694950702121304,
+              "height": 0.049746041230953095
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.1875,
+          "artTop": 0.26994323274574245,
+          "artHeight": 0.6999551837466388,
+          "infoWidth": 0.3999850612488796,
+          "infoHeight": 0.3099790857484314,
+          "infoLeft": 0.09605616970421273,
+          "bufferLeft": 0.03000002390200179,
+          "infoBottom": 0.0957573946818046,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09777412608305945,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "level",
+              "top": 0.1955482521661189,
+              "height": 0.049746041230953095
+            },
+            {
+              "bar": "number",
+              "top": 1.178966238422468,
+              "height": 0.04795339109650433
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694950702121304,
+              "height": 0.049746041230953095
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 209.203125,
+          "artTop": 0.26999775935469417,
+          "artHeight": 0.6999775935469416,
+          "infoWidth": 0.39995518709388306,
+          "infoHeight": 0.30995593397565163,
+          "infoLeft": 0.0960489954440212,
+          "bufferLeft": 0.029999982074837554,
+          "infoBottom": 0.0957502427365748,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09776682351183807,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "level",
+              "top": 0.19553364702367615,
+              "height": 0.04974232578982747
+            },
+            {
+              "bar": "number",
+              "top": 1.1789528717604003,
+              "height": 0.047949809545149005
+            },
+            {
+              "bar": "generation",
+              "top": 1.269474942116663,
+              "height": 0.04974232578982747
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        }
+      ]
+    },
+    {
+      "label": "detail-desktop",
+      "geometry": [
+        {
+          "width": 672,
+          "artTop": 0.26999627976190477,
+          "artHeight": 0.6999860491071429,
+          "infoWidth": 0.39999534970238093,
+          "infoHeight": 0.3099888392857143,
+          "infoLeft": 0.09609840029761904,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.09579613095238096,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09779575892857142,
+              "height": 0.04978143601190476
+            },
+            {
+              "bar": "level",
+              "top": 0.19559151785714285,
+              "height": 0.04978143601190476
+            },
+            {
+              "bar": "number",
+              "top": 1.1789202008928572,
+              "height": 0.04799107142857143
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694149925595237,
+              "height": 0.04978143601190476
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        }
+      ]
+    },
+    {
+      "label": "list-mobile",
+      "geometry": [
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        },
+        {
+          "width": 356,
+          "artTop": 0.269970154494382,
+          "artHeight": 0.6999648876404494,
+          "infoWidth": 0.3999736657303371,
+          "infoHeight": 0.30999824438202245,
+          "infoLeft": 0.09607619382022473,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.0957689606741573,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.09778792134831461,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "level",
+              "top": 0.19557584269662923,
+              "height": 0.04977176966292135
+            },
+            {
+              "bar": "number",
+              "top": 1.1789413623595506,
+              "height": 0.047972261235955056
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694434691011236,
+              "height": 0.04977176966292135
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        }
+      ]
+    },
+    {
+      "label": "detail-mobile",
+      "geometry": [
+        {
+          "width": 326,
+          "artTop": 0.2699865797546012,
+          "artHeight": 0.6999616564417178,
+          "infoWidth": 0.39997124233128833,
+          "infoHeight": 0.30995973926380366,
+          "infoLeft": 0.09609854294478527,
+          "bufferLeft": 0.03,
+          "infoBottom": 0.09576303680981595,
+          "artClear": true,
+          "numberClear": true,
+          "generationAligned": true,
+          "barGeometry": [
+            {
+              "bar": "species",
+              "top": 0.0977760736196319,
+              "height": 0.049798696319018405
+            },
+            {
+              "bar": "level",
+              "top": 0.1955521472392638,
+              "height": 0.049798696319018405
+            },
+            {
+              "bar": "number",
+              "top": 1.1789206288343559,
+              "height": 0.047977377300613494
+            },
+            {
+              "bar": "generation",
+              "top": 1.2694114263803682,
+              "height": 0.049798696319018405
+            }
+          ],
+          "statsLayout": true,
+          "textFits": true
+        }
+      ]
+    }
+  ]
+}

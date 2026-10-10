@@ -1,3 +1,4 @@
+import { evorosPurchasesEnabled, betaPurchaseMessage } from "../../beta/release-policy";
 import { z } from "zod";
 import {
   createCardCheckout,
@@ -18,9 +19,12 @@ export function createCheckoutHandler(
     gateway: StripeGateway;
     players: StorePlayerService;
   } | null,
+  purchasesEnabled: () => boolean = () => evorosPurchasesEnabled,
 ) {
   return async function POST(request: Request) {
     try {
+      if (!purchasesEnabled())
+        return respond({ error: betaPurchaseMessage, code: "PURCHASES_PAUSED" }, 403);
       const service = getRuntime();
       if (!service)
         return respond({ error: "Card purchases are not open yet." }, 503);

@@ -2,10 +2,11 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 function load(file,imports={}){
  const source=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
  const module={exports:{}};
- vm.runInNewContext(source,{module,exports:module.exports,Buffer,AbortController,URL,URLSearchParams,TextDecoder,setTimeout,clearTimeout,fetch,Date,require:name=>Object.hasOwn(imports,name)?imports[name]:require(name)});
+ vm.runInNewContext(source,{module,exports:module.exports,Buffer,Headers,AbortController,URL,URLSearchParams,TextDecoder,setTimeout,clearTimeout,fetch,Date,require:name=>Object.hasOwn(imports,name)?imports[name]:require(name)});
  return module.exports;
 }
-const evoCore=load('src/lib/player/inventory/evo.ts',{'@/data/evo-progression.json':require('../../src/data/evo-progression.json')});
+const healthCore=load('../../packages/evoverses/src/lib/asset/health.ts');
+const evoCore=load('src/lib/player/inventory/evo.ts',{'@/data/evo-progression.json':require('../../src/data/evo-progression.json'),'@workspace/evoverses/lib/asset/health':healthCore});
 const combatCore=load('src/lib/player/inventory/combat.ts');
 const core=load('src/lib/player/auth-core.ts',{'./inventory/evo':evoCore,'./inventory/combat':combatCore});
 const profile={player:{id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',displayName:'Test trainer',experience:40},balance:{evoros:125}};
@@ -56,7 +57,7 @@ test('state consumed before exchange prevents parallel/replayed callbacks; no br
  assert.equal(calls.filter(c=>c.url.endsWith('/token')).length,1);
  assert.deepEqual(Object.keys(JSON.parse(calls.find(c=>c.url.endsWith('/login')).init.body)).sort(),['confirmNewPlayer','proof']);
  assert.equal(new URLSearchParams(calls[0].init.body).get('deployment_id'),config.deploymentId);
- assert.equal(calls.every(c=>c.init.redirect==='error'&&c.init.cache==='no-store'),true);
+ assert.equal(calls.every(c=>c.init.redirect==='manual'&&c.init.cache==='no-store'),true);
 });
 test('new player needs explicit confirmation; proof stays server-side and confirmation is single-use',async()=>{
  const {flow,begin}=setup({confirmation:true});const x=begin();
@@ -97,8 +98,9 @@ class Reply{
  static redirect(url,status){const r=new Reply(null,status);r.headers.set('location',String(url));return r;}
  static json(value,{status=200}={}){return new Reply(value,status);}
 }
-function routes(enabled=true){let starts=0,logouts=0;const auth={start:()=>{starts++;return{url:'https://www.epicgames.com/id/authorize?state=public-state',cookie:'a'.repeat(64)}},logout:async()=>{logouts++},callback:async()=>({session:{token,expiresAt:Date.now()/1000+899.125}})};
- const handlers=load('src/lib/player/handlers.ts',{'server-only':{},'next/server':{NextResponse:Reply},'./auth-core':core,'./server':{localPlayerLogin:enabled,playerWebAuth:()=>auth}});
+function routes(enabled=true,origin=core.playerWebOrigin){let starts=0,logouts=0;const auth={start:()=>{starts++;return{url:'https://www.epicgames.com/id/authorize?state=public-state',cookie:'a'.repeat(64)}},logout:async()=>{logouts++},callback:async()=>({session:{token,expiresAt:Date.now()/1000+899.125}})};
+ auth.startAsync=async()=>auth.start();
+ const handlers=load('src/lib/player/handlers.ts',{'server-only':{},'next/server':{NextResponse:Reply},'./auth-core':core,'./server':{playerLoginEnabled:enabled,getPlayerWebOrigin:()=>origin,playerWebAuth:()=>auth}});
  return{handlers,count:()=>({starts,logouts})};}
 const req=(url='http://localhost:3100/api/player/auth/epic/start',origin='http://localhost:3100',cookie=token)=>({url,headers:new Headers({host:new URL(url).host,...(origin?{origin}: {})}),cookies:{get:()=>cookie?{value:cookie}:undefined}});
 test('cross-site or wrong-host mutations cannot issue or clear any cookies or revoke a session',async()=>{
@@ -155,4 +157,77 @@ test('failure diagnostics report fixed stage/status only and cannot expose proof
  assert.equal(JSON.stringify(events).includes('synthetic'),false);
  const broken=core.createPlayerWebAuth({configuration:()=>config,diagnostic:()=>{throw Error('logger failed')},fetchImpl:async()=>{throw Error('synthetic-private-response')}});
  const y=broken.start();await reject(broken.callback({state:new URL(y.url).searchParams.get('state'),cookie:y.cookie,code:'synthetic-private-code'}),'SERVICE_UNAVAILABLE');
+});
+
+test('hosted cookies are Secure and exact HTTPS origin checks reject local, forwarded and cross-site requests',async()=>{
+ const origin='https://beta.evoverses.com',{handlers,count}=routes(true,origin);
+ const r=await handlers.startEpic(req(origin+'/api/player/auth/epic/start',origin));
+ assert.equal(r.status,303);assert.equal(r.cookies.values.find(v=>v[0]===core.epicStateCookie)[2].secure,true);
+ const callback=await handlers.epicCallback(req(origin+'/api/player/auth/epic/callback?state='+('b'.repeat(64))+'&code=code',null));
+ assert.equal(callback.headers.get('location'),origin+'/profile');assert.equal(callback.cookies.values.find(v=>v[0]===core.playerSessionCookie)[2].secure,true);
+ for(const input of [req(),req(origin+'/api/player/auth/epic/start','https://evoverses.com'),req('http://beta.evoverses.com/api/player/auth/epic/start',origin)])assert.equal((await handlers.startEpic(input)).status,403);
+ assert.equal(count().starts,1);
+});
+
+test('hosted OAuth survives multiple instances using the real encrypted database store and does not send service credentials to Epic',async()=>{
+ const path=require('node:path'),backend=path.join(process.env.EVOVERSES_ACCOUNT_TEST_REPO||path.resolve(__dirname,'../../../../..','evoverses-beta-account-bridge'),'Prototypes/player_economy');
+ const {localPGlite}=require(path.join(backend,'scripts/local-pglite.cjs')),{embeddedDatabase}=require(path.join(backend,'src/database.cjs')),{WebOAuthStore}=require(path.join(backend,'src/web-oauth-store.cjs'));
+ const db=new (localPGlite())();
+ try{
+  await db.exec('CREATE SCHEMA player');await db.exec(fs.readFileSync(path.join(backend,'schema/012_web_oauth.sql'),'utf8'));
+  const hosted={...config,apiUrl:'https://accounts.example.com',hosted:{origin:'https://beta.evoverses.com',serviceToken:'d'.repeat(64)}};
+  let exchanges=0;
+  const fetchImpl=async(url,init)=>{
+   const headers=new Headers(init.headers);
+   if(url.endsWith('/token')){exchanges++;assert.equal(headers.has('x-evoverses-service'),false);assert.equal(new URLSearchParams(init.body).get('redirect_uri'),'https://beta.evoverses.com/api/player/auth/epic/callback');return Response.json({client_id:config.clientId,application_id:config.applicationId,account_id:'a'.repeat(32),token_type:'bearer',access_token:'synthetic.signed.proof'});}
+   assert.equal(headers.get('x-evoverses-service'),'d'.repeat(64));
+   if(url.endsWith('/login')){if(!JSON.parse(init.body).confirmNewPlayer)return Response.json({error:{code:'NEW_PLAYER_CONFIRMATION_REQUIRED'}},{status:409});return Response.json({player:profile.player,sessionToken:token,issuedAt:Date.now()/1000,expiresAt:Date.now()/1000+899});}
+   if(url.endsWith('/me'))return Response.json(profile);
+   throw Error('Unexpected endpoint');
+  };
+  const instance=()=>core.createPlayerWebAuth({configuration:()=>hosted,fetchImpl,transactions:new WebOAuthStore({database:embeddedDatabase(db),key:Buffer.alloc(32,1)})});
+  const first=instance();assert.throws(()=>first.start(),e=>e.code==='SIGNIN_UNAVAILABLE');
+  const started=await first.startAsync(),input={state:new URL(started.url).searchParams.get('state'),cookie:started.cookie,code:'code'};
+  const second=instance(),result=await second.callback(input);assert.equal(exchanges,1);
+  await reject(first.callback(input),'SIGNIN_EXPIRED');
+  const third=instance();assert.equal(await third.hasPendingAsync(result.pendingCookie),true);
+  assert.equal((await third.confirm(result.pendingCookie)).player.id,profile.player.id);
+  await reject(second.confirm(result.pendingCookie),'SIGNIN_EXPIRED');
+ }finally{await db.close();}
+});
+
+test('hosted configuration refuses incomplete credentials, HTTP, IP addresses, URL paths and production local switches',()=>{
+ const {hostedAccountConfig}=load('src/lib/player/hosted-config.ts');
+ const env={NODE_ENV:'production',EVOVERSES_HOSTED_BETA:'1',AUTH_EPIC_ID:'syntheticclient00000001',AUTH_EPIC_SECRET:'synthetic-secret',EVOVERSES_EPIC_APPLICATION_ID:'fixture-app',EVOVERSES_EPIC_DEPLOYMENT_ID:'fixture-deployment',EVOVERSES_ACCOUNT_API_ORIGIN:'https://accounts.example.com',EVOVERSES_ACCOUNT_SERVICE_TOKEN:'d'.repeat(64)};
+ assert.equal(hostedAccountConfig(env).hosted.origin,'https://beta.evoverses.com');
+ for(const patch of [{NODE_ENV:'development'},{EVOVERSES_HOSTED_BETA:'0'},{AUTH_EPIC_SECRET:undefined},{EVOVERSES_ACCOUNT_SERVICE_TOKEN:undefined},{EVOVERSES_ACCOUNT_API_ORIGIN:'http://accounts.example.com'},{EVOVERSES_ACCOUNT_API_ORIGIN:'https://127.0.0.1'},{EVOVERSES_ACCOUNT_API_ORIGIN:'https://accounts.example.com/'},{EVOVERSES_ACCOUNT_API_ORIGIN:'https://accounts.example.com/path'},{EVOVERSES_ACCOUNT_API_ORIGIN:'https://user:password@accounts.example.com'}])assert.equal(hostedAccountConfig({...env,...patch}),null);
+});
+
+test('OAuth RPC authenticates only to fixed HTTPS service and projects bounded, safe results',async()=>{
+ const {createOAuthRpc}=load('src/lib/player/oauth-rpc.ts',{'./auth-core':core});
+ const input={keyHash:'a'.repeat(64),bindingHash:'b'.repeat(64),contextHash:'c'.repeat(64)};
+ const connection=()=>({apiUrl:'https://accounts.example.com',serviceToken:'d'.repeat(64)});
+ const calls=[];const rpc=createOAuthRpc({connection,fetchImpl:async(url,init)=>{calls.push({url,init});return Response.json({value:url.endsWith('take-pending')?'synthetic.signed.proof':true});}});
+ await rpc.putState(input);assert.equal(await rpc.takePending(input),'synthetic.signed.proof');
+ assert.equal(calls[0].url,'https://accounts.example.com/internal/web-oauth/put-state');assert.equal(calls[0].init.headers['X-EvoVerses-Service'],'d'.repeat(64));
+ assert.equal(calls[0].init.redirect,'manual');assert.equal(calls[0].init.cache,'no-store');assert.equal(calls[0].init.credentials,'omit');
+ assert.deepEqual(JSON.parse(calls[0].init.body),input);
+ for(const response of [Response.json({value:'wrong-type'}),Response.json({value:true,proof:'unexpected'}),Response.json({value:'x'.repeat(24001)}),Response.json({error:{code:'raw-database-error'}},{status:500})]){
+  await reject(createOAuthRpc({connection,fetchImpl:async()=>response}).hasPending(input),'SERVICE_UNAVAILABLE');
+ }
+ await reject(createOAuthRpc({connection,fetchImpl:async()=>Response.json({error:{code:'SIGNIN_EXPIRED'}},{status:409})}).takeState(input),'SIGNIN_EXPIRED');
+ for(const apiUrl of ['http://accounts.example.com','https://accounts.example.com/path','https://127.0.0.1'])await reject(createOAuthRpc({connection:()=>({...connection(),apiUrl}),fetchImpl:async()=>{throw Error('Must not call');}}).putState(input),'SIGNIN_UNAVAILABLE');
+});
+
+
+test('account and OAuth transports refuse redirects without forwarding credentials',async()=>{
+ const response=()=>Response.json({value:true,...profile},{status:307,headers:{location:'https://attacker.invalid/collect'}});
+ let calls=0;
+ const fetchImpl=async(url,init)=>{calls++;assert.equal(init.redirect,'manual');return response();};
+ const flow=core.createPlayerWebAuth({configuration:()=>config,fetchImpl});
+ await reject(flow.readProfile(token),'SERVICE_UNAVAILABLE');
+ const {createOAuthRpc}=load('src/lib/player/oauth-rpc.ts',{'./auth-core':core});
+ const rpc=createOAuthRpc({connection:()=>({apiUrl:'https://accounts.example.com',serviceToken:'d'.repeat(64)}),fetchImpl});
+ await reject(rpc.putState({keyHash:'a'.repeat(64),bindingHash:'b'.repeat(64),contextHash:'c'.repeat(64)}),'SERVICE_UNAVAILABLE');
+ assert.equal(calls,2);
 });

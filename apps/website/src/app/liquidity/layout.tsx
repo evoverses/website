@@ -1,12 +1,6 @@
-import { AccountProvider } from "@/components/providers/account-provider";
 import type { PropsWithChildren } from "react";
 
-const Layout = ({ children }: Readonly<PropsWithChildren>) => {
-  return (
-    <AccountProvider>
-      {children}
-    </AccountProvider>
-  );
-};
-
-export default Layout;
+// Keep the root wallet/query providers: a nested provider isolates the menu wallet.
+export default function LiquidityLayout({ children }: Readonly<PropsWithChildren>) {
+  return children;
+}

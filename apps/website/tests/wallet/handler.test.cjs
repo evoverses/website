@@ -27,6 +27,18 @@ new Function("module", "exports", "require", compiled)(
 const { walletHandler, WalletWebError, walletReply } = moduleValue.exports;
 const token = "a".repeat(64),
   address = "0x" + "11".repeat(20);
+test("hosted wallet actions require the pinned HTTPS beta Host and Origin", async () => {
+  let calls = 0;
+  const deps = {enabled:true,webOrigin:"https://beta.evoverses.com",rpc:async()=>{calls++;return {links:[]};}};
+  const headers={Host:"beta.evoverses.com",Origin:"https://beta.evoverses.com"};
+  assert.equal((await walletHandler(request(undefined,headers,"https://beta.evoverses.com/api/player/wallet"),deps)).status,200);
+  for(const [host,origin,url] of [
+    ["beta.evoverses.com","http://beta.evoverses.com","https://beta.evoverses.com/api/player/wallet"],
+    ["evil.example","https://beta.evoverses.com","https://beta.evoverses.com/api/player/wallet"],
+    ["beta.evoverses.com","https://beta.evoverses.com","https://evil.example/api/player/wallet"],
+  ]) assert.equal((await walletHandler(request(undefined,{Host:host,Origin:origin},url),deps)).status,403);
+  assert.equal(calls,1);
+});
 function request(
   body = { operation: "status", connectedAddress: address },
   headers = {},

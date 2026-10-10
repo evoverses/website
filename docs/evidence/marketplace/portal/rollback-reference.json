@@ -1,0 +1,1 @@
+{"taskDefinition": "arn:aws:ecs:us-east-2:934769272164:task-definition/ProdEcsStackIndexerEcsTaskStackIndexerTaskDefF963D605:2", "image": "934769272164.dkr.ecr.us-east-2.amazonaws.com/prod-squidecrstack-repo02ac86cf-2yz4xodabtx5@sha256:ad282cb1f0790e2b67bab29c667bd7ff35823229be9e7956bf4d3edbfc7fe871"}

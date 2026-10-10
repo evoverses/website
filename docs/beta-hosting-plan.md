@@ -1,14 +1,16 @@
 # EvoVerses hosted beta plan
 
-**Status: PAUSED by Dan on 8 October 2026 (Brisbane).**
+**Status: Dan requested the public beta release on 9 October 2026 (Brisbane). Local implementation is underway; nothing deployed. See [hosted account progress](hosted-account-progress.md) for current evidence and remaining blockers.**
 
-The website snapshot is on `dan-dev` at `d7406ec`. No hosting implementation, AWS provisioning, provider configuration or deployment is authorised by this saved plan. Automatic `dan-dev` Vercel deployments remain blocked.
+The policy below is historical where superseded by [beta preparation](beta-preparation.md): all Evoros purchasing is disabled, Stripe stays on standby, and administration may grant currency, consumables and unopened packs. Automated milestone rewards have a trusted-event extension point but are not active. The account server, database and website are still local.
 
-**Priority correction:** implement useful item consumption in the game and authoritative account backend before resuming the beta hosting/admin sprint. The store and pack-opening flow do not establish that potions, remedies or buffs work. Preserve the hosting decisions below for later; this document does not authorise starting them now.
+The historical website snapshot below was `dan-dev` at `d7406ec`. The user has since authorised hosting implementation and requested release. AWS provisioning still needs a concrete infrastructure/cost review and required secret handling. Automatic `dan-dev` Vercel deployment is not the chosen path; Cloudflare Workers is being prepared.
+
+**Historical pause:** item consumption work was prioritised before hosting. The user has now resumed website release preparation; do not interpret the earlier pause as a current instruction to stop this work.
 
 ## 1. Intended result
 
-An invited-tester website at **https://beta.evoverses.com**, with fresh accounts and inventory stored on AWS. Every approved tester receives **5,000 Evoros once**, plus the existing starter pack.
+A public beta website at **https://beta.evoverses.com**, with accounts and inventory stored on AWS. Anyone with the address can browse and sign in. Every approved tester receives **5,000 Evoros once**, plus the existing starter pack. Approval controls rewards, not an invitation gate.
 
 Stripe uses test payments. Nursery transactions remain disabled until the separate contract approval. Dedicated battle hosting and real-money launch are later steps.
 
@@ -23,14 +25,14 @@ The AWS reuse proposal is based on the **5 October audit**; refresh capacity and
 
 ## 2. Accounts and management
 
-- Admit testers through single-use invitations. After verified Epic login, bind access to their permanent Epic identity. Revocation blocks access and invalidates their sessions.
+- Permit public browsing and verified Epic account creation/sign-in. Bind each account to its permanent Epic identity. Administrator revocation still suspends an account and invalidates its sessions; a pending tester does not require approval to sign in.
 - Grant **5,000 Evoros once per beta player**. Record a unique grant and ledger entry transactionally; repeat logins, concurrent requests and re-invitations cannot repeat it. Keep the existing once-only starter pack.
-- Add Beta Admin controls for invitations, access revocation, player search, balances, inventory, payment history and Evoros adjustments.
+- Add Beta Admin controls for tester rewards, account revocation, player search, balances, inventory and audited Evoros/item adjustments. Do not build invitation management.
 - Adjustments require a reason and confirmation, preserve a non-negative balance, and record administrator, amount, previous/new balance and time. Repeated submissions apply once.
 - Restrict administration to Dan's verified Epic identity initially. Check permissions in the AWS service on every operation.
 - Keep item/Evo inventory read-only in Admin. No raw SQL editor, account deletion, inventory grants or price editor in this first version.
 
-**Database additions:** invitation/access records, administrator permissions, once-only beta grants and audited adjustments. Extend the existing ledger's source validation; never disguise grants as Stripe purchases.
+**Database additions:** tester reward approval records, administrator permissions, once-only beta grants and audited adjustments. Extend the existing ledger's source validation; never disguise grants as Stripe purchases. Public sign-in does not depend on a beta approval record.
 
 ## 3. Hosted connections and provider configuration
 
@@ -61,7 +63,7 @@ The AWS reuse proposal is based on the **5 October audit**; refresh capacity and
 
 Before release, verify:
 
-- Invited login succeeds; uninvited/revoked accounts fail.
+- Public Epic login succeeds without tester approval; suspended/revoked accounts fail. Only authorised administrators can issue tester rewards.
 - Each account receives exactly 5,000 Evoros and one starter pack, including simultaneous first logins.
 - Administration rejects ordinary users, forged requests and duplicate adjustments.
 - Balances, inventory and wallet links persist across service restarts.

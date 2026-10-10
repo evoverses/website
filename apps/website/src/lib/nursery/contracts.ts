@@ -1,3 +1,4 @@
+import { requireBreedingApproval } from "../beta/release-policy";
 import { evoContractAddress, evoNftContractAddress } from "@/data/addresses";
 import { client, chain } from "@/lib/thirdweb/config";
 import berthaJson from "./abi/Breeder_Bertha.json";
@@ -217,6 +218,7 @@ export async function sendNurseryTransaction(
     beforeSend?: () => Promise<void>;
   } = {},
 ) {
+  if (["breed", "completeBreed"].includes(functionName)) requireBreedingApproval();
   const data = encodeFunctionData({ abi, functionName, args });
   // A successful simulation is required before any wallet confirmation is requested.
   await nurseryClient.call({

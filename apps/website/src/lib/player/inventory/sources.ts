@@ -23,7 +23,7 @@ export function createNftSources(
           variables: { owners, limit: 48, page },
         }),
         cache: "no-store",
-        redirect: "error",
+        redirect: "manual",
         signal: AbortSignal.any([AbortSignal.timeout(8000), signal]),
       },
     );
@@ -95,7 +95,7 @@ export function createNftSources(
         const response=await fetch(process.env.NEXT_PUBLIC_EVOVERSES_GRAPHQL_URL||"",{
           method:"POST",headers:{"Content-Type":"application/json"},
           body:JSON.stringify({operationName:"EvoByIdQuery",query:evoByIdQuery,variables:{tokenId}}),
-          cache:"no-store",redirect:"error",signal:AbortSignal.any([AbortSignal.timeout(8000),signal]),
+          cache:"no-store",redirect:"manual",signal:AbortSignal.any([AbortSignal.timeout(8000),signal]),
         });
         if(!response.ok)throw Error("Metadata unavailable");
         const reader=response.body?.getReader();if(!reader)throw Error("Missing metadata");

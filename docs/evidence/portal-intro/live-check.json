@@ -1,0 +1,10 @@
+{
+  "status": 200,
+  "desktop": {
+    "youtubeEmbeds": 0,
+    "overflow": false,
+    "portal": "0",
+    "logo": "1"
+  },
+  "mobileOverflow": false
+}

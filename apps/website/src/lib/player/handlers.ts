@@ -1,7 +1,7 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { epicPendingCookie, epicStateCookie, PlayerWebError, playerSessionCookie, playerWebOrigin } from "./auth-core";
-import { playerWebAuth, getPlayerAccount, getPlayerInventory, localPlayerLogin } from "./server";
+import { epicPendingCookie, epicStateCookie, PlayerWebError, playerSessionCookie } from "./auth-core";
+import { playerWebAuth, getPlayerAccount, getPlayerInventory, playerLoginEnabled, getPlayerWebOrigin } from "./server";
 
 function protect(response: NextResponse) {
   response.headers.set("Cache-Control", "no-store");
@@ -11,11 +11,14 @@ function protect(response: NextResponse) {
   return response;
 }
 function allowedHost(request: NextRequest, mutation = false) {
-  return localPlayerLogin && new URL(request.url).protocol === "http:" && new URL(request.url).port === "3100" && request.headers.get("host") === "localhost:3100" && (!mutation || request.headers.get("origin") === playerWebOrigin);
+  const origin = getPlayerWebOrigin(), url = new URL(request.url);
+  const matchingUrl = origin === "http://localhost:3100" ? url.protocol === "http:" && url.port === "3100" : url.origin === origin;
+  return playerLoginEnabled && matchingUrl && request.headers.get("host") === new URL(origin).host && (!mutation || request.headers.get("origin") === origin);
 }
 function forbidden() { return protect(NextResponse.json({ error: { code: "ORIGIN_NOT_ALLOWED" } }, { status: 403 })); }
-function redirect(path: string) { return protect(NextResponse.redirect(new URL(path, playerWebOrigin), 303)); }
-function clear(response: NextResponse, name: string, path = "/") { response.cookies.set(name, "", { path, maxAge: 0, httpOnly: true, sameSite: "lax" }); }
+function redirect(path: string) { return protect(NextResponse.redirect(new URL(path, getPlayerWebOrigin()), 303)); }
+const secure = () => getPlayerWebOrigin().startsWith("https:");
+function clear(response: NextResponse, name: string, path = "/") { response.cookies.set(name, "", { path, maxAge: 0, httpOnly: true, sameSite: "lax", secure: secure() }); }
 const statuses = new Set(["SIGNIN_UNAVAILABLE", "SIGNIN_EXPIRED", "SIGNIN_BUSY", "EPIC_CANCELLED", "EPIC_VERIFICATION_FAILED", "SERVICE_UNAVAILABLE", "INVALID_SESSION"]);
 function failure(error: unknown) {
   const code = error instanceof PlayerWebError && statuses.has(error.code) ? error.code : "SERVICE_UNAVAILABLE";
@@ -26,7 +29,7 @@ function failure(error: unknown) {
 }
 function session(result: { token: string; expiresAt: number }) {
   const response = redirect("/profile");
-  response.cookies.set(playerSessionCookie, result.token, { httpOnly: true, sameSite: "lax", path: "/", maxAge: Math.max(0, Math.min(900, Math.floor(result.expiresAt - Date.now() / 1000))) });
+  response.cookies.set(playerSessionCookie, result.token, { httpOnly: true, sameSite: "lax", secure: secure(), path: "/", maxAge: Math.max(0, Math.min(900, Math.floor(result.expiresAt - Date.now() / 1000))) });
   clear(response, epicStateCookie, "/api/player/auth/epic");
   clear(response, epicPendingCookie);
   return response;
@@ -34,9 +37,9 @@ function session(result: { token: string; expiresAt: number }) {
 export async function startEpic(request: NextRequest) {
   try {
     if (!allowedHost(request, true)) return forbidden();
-    const result = playerWebAuth().start();
+    const result = await playerWebAuth().startAsync();
     const response = protect(NextResponse.redirect(result.url, 303));
-    response.cookies.set(epicStateCookie, result.cookie, { httpOnly: true, sameSite: "lax", path: "/api/player/auth/epic", maxAge: 300 });
+    response.cookies.set(epicStateCookie, result.cookie, { httpOnly: true, sameSite: "lax", secure: secure(), path: "/api/player/auth/epic", maxAge: 300 });
     clear(response, epicPendingCookie);
     return response;
   } catch (error) { return failure(error); }
@@ -49,7 +52,7 @@ export async function epicCallback(request: NextRequest) {
     const result = await playerWebAuth().callback({ state: params.get("state") || "", cookie: request.cookies.get(epicStateCookie)?.value || "", code: params.get("code") || undefined, cancelled: params.has("error") });
     if (result.session) return session(result.session);
     const response = redirect("/signin?confirm=1");
-    response.cookies.set(epicPendingCookie, result.pendingCookie!, { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 });
+    response.cookies.set(epicPendingCookie, result.pendingCookie!, { httpOnly: true, sameSite: "lax", secure: secure(), path: "/", maxAge: 60 });
     clear(response, epicStateCookie, "/api/player/auth/epic");
     return response;
   } catch (error) { return failure(error); }

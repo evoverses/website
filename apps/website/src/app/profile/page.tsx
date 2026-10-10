@@ -1,4 +1,4 @@
-import { getPlayerAccount, getPlayerInventory, getLocalWalletConnection, localPlayerLogin } from "@/lib/player/server";
+import { getPlayerAccount, getPlayerInventory, getLocalWalletConnection, playerLoginEnabled } from "@/lib/player/server";
 import { PlayerProfile } from "@/components/player/player-profile";
 import { ProOnly } from "@/components/providers/pro-mode-provider";
 import { LinkedProfiles } from "@/app/profile/_components/linked-profiles";
@@ -14,7 +14,7 @@ const AccountPage = async () => {
     const inventory = await getPlayerInventory().catch(() => null);
     return <PlayerProfile account={account} inventory={inventory} walletLinkEnabled={Boolean(getLocalWalletConnection())} />;
   }
-  if (localPlayerLogin) redirect("/signin");
+  if (playerLoginEnabled) redirect("/signin");
   const loggedIn = await isLoggedIn();
   if (!loggedIn) {
     unauthorized();

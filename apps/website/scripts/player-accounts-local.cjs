@@ -226,6 +226,19 @@ const { createEpicEvidenceVerifier } = require(
           if(fs.statSync(target).size!==bytes.length)throw Error('Incomplete local backup');
         }});
     }
+    startupStage = "beta-administration";
+    let betaAdmin;
+    const betaReviewPath = path.join(runRoot,"beta-admin-reviewed.json");
+    if(gameStore && fs.existsSync(betaReviewPath)) {
+      if(fs.statSync(betaReviewPath).size>512)throw Error("Invalid beta administration review");
+      const review=JSON.parse(fs.readFileSync(betaReviewPath,"utf8"));
+      if(Object.keys(review).sort().join(",")!=="administratorDisplayName,enabled"||review.enabled!==true||typeof review.administratorDisplayName!=="string")throw Error("Invalid beta administration review");
+      betaAdmin=await require(path.join(backend,"src/local-beta-administration.cjs")).prepareLocalBetaAdministration({enabled:true,db,accounts,economy,administratorDisplayName:review.administratorDisplayName,
+        beforeFirstMigration:async()=>{
+          const backup=await db.dumpDataDir("gzip"),bytes=Buffer.from(await backup.arrayBuffer());if(!bytes.length)throw Error("Empty local backup");
+          const target=path.join(runRoot,"BetaAdminBefore-011-"+Date.now()+".tar.gz");fs.writeFileSync(target,bytes,{flag:"wx"});if(fs.statSync(target).size!==bytes.length)throw Error("Incomplete local backup");
+        }});
+    }
     startupStage = "operational-cleanup";
     if(casual){
       await casual.prune();
@@ -240,7 +253,7 @@ const { createEpicEvidenceVerifier } = require(
       : startLocalAccountApi;
     api = await accountApiFactory({
       economy,
-      ...(gameStore ? { store: gameStore, loadouts, practice, casual, combat, projectCombatInventory:(token,body)=>combat.project(token,body) } : {}),
+      ...(gameStore ? { store: gameStore, loadouts, practice, casual, combat, betaAdmin, projectCombatInventory:(token,body)=>combat.project(token,body) } : {}),
       readLinkedInventory,
       accounts: {
         login: async (input) => {

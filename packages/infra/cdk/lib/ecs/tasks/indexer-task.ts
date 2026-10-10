@@ -39,7 +39,7 @@ export class EcsIndexerTaskStack extends CStack {
     const dbName = this.getContext("dbName");
 
     this.task.addContainer("IndexerContainer", {
-      image: ContainerImage.fromEcrRepository(props.containerRepository, "dev"),
+      image: ContainerImage.fromEcrRepository(props.containerRepository, this.getContext("indexerImage", "dev")),
       logging: LogDrivers.awsLogs({ streamPrefix: "indexer" }),
       command: [ "process:prod" ],
       environment: {
@@ -53,7 +53,9 @@ export class EcsIndexerTaskStack extends CStack {
         SQD_ALLOW_SENTINEL: "BlockHeader.totalDifficulty,BlockHeader.baseFeePerGas",
         MARKETPLACE_ADDRESSES: "0x888BEB2C914657B1eA2cCC91555C5800eecdD4c0",
         NFT_ADDRESSES: "0x4151b8afa10653d304fdac9a781afccd45ec164c",
+        // Retained for the existing processor checkpoint schema.
         GATEWAY_NETWORK_SLUG: "avalanche-mainnet",
+        PORTAL_URL: "https://portal.sqd.dev/datasets/avalanche-mainnet",
         CHAIN_ID: "43114",
       },
       secrets: {

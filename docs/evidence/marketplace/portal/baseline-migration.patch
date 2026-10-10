@@ -1,0 +1,216 @@
+--- a/apps/squid/package.json
++++ b/apps/squid/package.json
+@@ -18,9 +18,12 @@
+     "@clerk/express": "^1.7.0",
+     "@graphile-contrib/pg-simplify-inflector": "^6.1.0",
+     "@graphile/pg-aggregates": "^0.1.1",
++    "@subsquid/batch-processor": "1.1.0",
+     "@subsquid/evm-abi": "^0.3.1",
+     "@subsquid/evm-codec": "^0.3.0",
++    "@subsquid/evm-objects": "0.0.3",
+     "@subsquid/evm-processor": "^1.27.0",
++    "@subsquid/evm-stream": "0.1.5",
+     "@subsquid/logger": "^1.3.3",
+     "@subsquid/rpc-client": "^4.11.0",
+     "@subsquid/typeorm-migration": "^1.3.0",
+--- a/apps/squid/src/processor.ts
++++ b/apps/squid/src/processor.ts
+@@ -1,80 +1,19 @@
+-import { EvmBatchProcessor } from "@subsquid/evm-processor";
+-import { assertNotNull } from "@subsquid/util-internal";
+-import {
+-  CHAIN_ID,
+-  GATEWAY_URL,
+-  MARKETPLACE_ADDRESSES,
+-  NFT_ADDRESSES,
+-  RPC_CAPACITY,
+-  RPC_MAX_BATCH_CALL_SIZE,
+-  RPC_RATE_LIMIT,
+-  RPC_URLS,
+-  watchedMarketplaceTopics,
+-  watchedNftTopics,
+-} from "./utils/constants";
++import { DataSourceBuilder, type FieldSelection } from "@subsquid/evm-stream";
++import { CHAIN_ID, MARKETPLACE_ADDRESSES, NFT_ADDRESSES, watchedMarketplaceTopics, watchedNftTopics } from "./utils/constants";
+ 
+-export const processor = new EvmBatchProcessor()
+-  .setGateway(GATEWAY_URL)
+-  .setRpcEndpoint({
+-    url: assertNotNull(
+-      RPC_URLS[assertNotNull(CHAIN_ID, "CHAIN ID not supplied")],
+-      "NO RPC URL FOR CHAIN ID ${CHAIN_ID}",
+-    ),
+-    rateLimit: RPC_RATE_LIMIT,
+-    maxBatchCallSize: RPC_MAX_BATCH_CALL_SIZE,
+-    capacity: RPC_CAPACITY,
+-    requestTimeout: 5_5000,
+-    retryAttempts: 3,
+-  })
+-  .setFinalityConfirmation(1)
+-  .addLog({ address: MARKETPLACE_ADDRESSES, topic0: watchedMarketplaceTopics, transaction: true })
+-  .addLog({ address: NFT_ADDRESSES, topic0: watchedNftTopics, transaction: true })
+-  .setFields({
+-    log: { transactionHash: true },
+-    transaction: {
+-      gas: true,
+-      gasPrice: true,
+-      maxFeePerGas: true,
+-      maxPriorityFeePerGas: true,
+-      input: true,
+-      nonce: true,
+-      value: true,
+-      v: true,
+-      r: true,
+-      s: true,
+-      yParity: true,
+-      chainId: true,
+-      gasUsed: true,
+-      cumulativeGasUsed: true,
+-      effectiveGasUsed: true,
+-      contractAddress: true,
+-      type: true,
+-      status: true,
+-      sighash: true,
+-      // l1Fee: true
+-      // l1FeeScalar: true
+-      // l1GasPrice: true
+-      // l1GasUsed: true
+-      // l1BlobBaseFee: true
+-      // l1BlobBaseFeeScalar: true
+-      // l1BaseFeeScalar: true
+-    },
+-    block: {
+-      nonce: true,
+-      sha3Uncles: true,
+-      logsBloom: true,
+-      transactionsRoot: true,
+-      stateRoot: true,
+-      receiptsRoot: true,
+-      mixHash: true,
+-      miner: true,
+-      difficulty: true,
+-      totalDifficulty: true,
+-      extraData: true,
+-      size: true,
+-      gasLimit: true,
+-      gasUsed: true,
+-      baseFeePerGas: true,
+-      // l1BlockNumber: number
+-    },
+-  });
++export const fields = {
++  block: { timestamp: true },
++  log: { address: true, topics: true, data: true, transactionHash: true },
++  transaction: { hash: true, from: true, status: true },
++} as const satisfies FieldSelection;
++
++export function buildDataSource() {
++  if (CHAIN_ID !== "43114") throw new Error("Portal migration currently supports Avalanche C-chain only");
++  return new DataSourceBuilder()
++    .setPortal(process.env.PORTAL_URL || "https://portal.sqd.dev/datasets/avalanche-mainnet")
++    .addLog({ where: { address: MARKETPLACE_ADDRESSES, topic0: watchedMarketplaceTopics }, include: { transaction: true } })
++    .addLog({ where: { address: NFT_ADDRESSES, topic0: watchedNftTopics }, include: { transaction: true } })
++    .setFields(fields)
++    .build();
++}
++export const dataSource = buildDataSource();
+--- a/apps/squid/src/main.ts
++++ b/apps/squid/src/main.ts
+@@ -1,4 +1,5 @@
+-import { TypeormDatabase, TypeormDatabaseOptions } from "@subsquid/typeorm-store";
++import { FinalizedPortalDatabase } from "./finalized-database";
++import { TypeormDatabaseOptions } from "@subsquid/typeorm-store";
+ import { DB_ISOLATION_LEVEL, SQUID_STATE_SCHEMA } from "./utils/constants";
+ import { loadNftEntities, parseNftEvents, processNftEvents } from "./handlers/asset/nfts";
+ import { getOrCreateChain } from "./handlers/core/chains";
+@@ -24,7 +25,15 @@
+   Transaction,
+   Wallet, Marketplace, MarketplaceAsset, MarketplaceAdmin, MarketplaceLister, BreedingRequest,
+ } from "./model";
+-import { processor } from "./processor";
++import { dataSource } from "./processor";
++import { run } from "@subsquid/batch-processor";
++import { augmentBlock } from "@subsquid/evm-objects";
++import { createLogger } from "@subsquid/logger";
++import { RpcClient } from "@subsquid/rpc-client";
++import { CHAIN_ID, RPC_URLS } from "./utils/constants";
++
++const logger = createLogger("sqd:processor:mapping");
++const rpcClient = new RpcClient({ url: RPC_URLS[CHAIN_ID!]!, rateLimit: 100, capacity: 10, requestTimeout: 30000 });
+ import { Context } from "./model/context";
+ import { EntityManager } from "./model/entity-manager";
+ import { loadBreedingEntities, parseBreedingEvents, processBreedingEvents } from "./handlers/asset/breeding";
+@@ -32,12 +41,14 @@
+ let chain: Chain;
+ 
+ const options: TypeormDatabaseOptions = {
+-  supportHotBlocks: true,
++  // Finalized Portal batches may skip empty blocks; preserve the existing state schema.
++  supportHotBlocks: false,
+   stateSchema: SQUID_STATE_SCHEMA,
+   isolationLevel: DB_ISOLATION_LEVEL,
+ };
+ 
+-processor.run(new TypeormDatabase(options), async context => {
++run(dataSource, new FinalizedPortalDatabase(options), async simpleContext => {
++  const context = { ...simpleContext, blocks: simpleContext.blocks.map(augmentBlock), log: logger, _chain: { client: rpcClient } };
+ 
+   if (!chain) {
+     chain = await getOrCreateChain(context);
+--- a/apps/squid/src/types/processor.ts
++++ b/apps/squid/src/types/processor.ts
+@@ -1,17 +1,12 @@
+-import {
+-  type BlockData,
+-  BlockHeader,
+-  DataHandlerContext,
+-  EvmBatchProcessorFields,
+-  Log as _Log,
+-  Transaction as _Transaction,
+-} from "@subsquid/evm-processor";
+-import { Store } from "@subsquid/typeorm-store";
+-import { processor } from "../processor";
+-
+-export type Fields = EvmBatchProcessorFields<typeof processor>
+-export type Block = BlockHeader<Fields>
+-export type Blocks = BlockData<Fields>[]
+-export type Log = _Log<Fields>
+-export type Transaction = _Transaction<Fields>
+-export type ProcessorContext = DataHandlerContext<Store, Fields>
++import type { BlockHeader, Block as BlockData, Log as _Log, Transaction as _Transaction } from "@subsquid/evm-objects";
++import type { DataHandlerContext } from "@subsquid/batch-processor";
++import type { Logger } from "@subsquid/logger";
++import type { RpcClient } from "@subsquid/rpc-client";
++import type { Store } from "@subsquid/typeorm-store";
++import type { fields } from "../processor";
++export type Fields = typeof fields;
++export type Block = BlockHeader<Fields>;
++export type Blocks = BlockData<Fields>[];
++export type Log = _Log<Fields>;
++export type Transaction = _Transaction<Fields>;
++export type ProcessorContext = DataHandlerContext<BlockData<Fields>, Store> & { log: Logger; _chain: { client: RpcClient } };
+--- a/apps/squid/src/handlers/core/blocks.ts
++++ b/apps/squid/src/handlers/core/blocks.ts
+@@ -1,4 +1,4 @@
+-import type { BlockHeader } from "@subsquid/evm-processor";
++import type { Block as BlockHeader } from "../../types/processor";
+ import { Block } from "../../model";
+ import { toDate } from "../../utils";
+ import type { Context } from "../../model/context";
+--- /dev/null
++++ b/apps/squid/src/finalized-database.ts
+@@ -0,0 +1,14 @@
++import { TypeormDatabase, type TypeormDatabaseOptions } from "@subsquid/typeorm-store";
++
++/** Resume from the durable finalized checkpoint, not the old provisional tail.
++ * The unchanged TypeORM transaction rolls back that tail before replaying finalized events.
++ */
++export class FinalizedPortalDatabase extends TypeormDatabase {
++  constructor(options: TypeormDatabaseOptions) {
++    super({ ...options, supportHotBlocks: false });
++  }
++  override async connect() {
++    const state = await super.connect();
++    return { ...state, top: [] };
++  }
++}

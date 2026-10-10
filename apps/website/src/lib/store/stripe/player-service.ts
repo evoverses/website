@@ -24,7 +24,7 @@ export function getStorePlayerService(): StorePlayerService | null {
       },
       body: JSON.stringify({ operation, ...body }),
       cache: "no-store",
-      redirect: "error",
+      redirect: "manual",
       credentials: "omit",
       signal: AbortSignal.timeout(30_000),
     });

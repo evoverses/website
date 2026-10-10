@@ -8,7 +8,7 @@ import type {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { useRef, useState } from "react";
-import { parseSiweMessage } from "viem/siwe";
+import { walletChallengeMatches } from "@/lib/player/wallet/challenge";
 
 const messages: Record<string, string> = {
   INVALID_SESSION: "Sign in with Epic again before managing your wallet link.",
@@ -71,17 +71,7 @@ export function WalletLink({ playerId }: { playerId: string }) {
       const challenge = await command<WalletLinkChallenge>("challenge", {
         address: account.address,
       });
-      const parsed = parseSiweMessage(challenge.message);
-      if (
-        parsed.scheme !== "http" ||
-        parsed.domain !== "localhost:3100" ||
-        parsed.uri !== "http://localhost:3100/profile" ||
-        parsed.chainId !== 43114 ||
-        parsed.address?.toLowerCase() !== account.address.toLowerCase() ||
-        parsed.requestId !== challenge.challengeId ||
-        parsed.expirationTime?.getTime() !== Date.parse(challenge.expiresAt) ||
-        Date.parse(challenge.expiresAt) <= Date.now()
-      )
+      if (!walletChallengeMatches(challenge, account.address, window.location.origin))
         throw new Error("The wallet request could not be verified. Try again.");
       let signature: string;
       try {

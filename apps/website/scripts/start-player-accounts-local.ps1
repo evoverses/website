@@ -15,10 +15,13 @@ if ($Mode -eq 'Stop') {
  if (!(Test-Path $ownerPath)) { throw 'No website-owned service record exists.' }
  $owner=Get-Content $ownerPath -Raw | ConvertFrom-Json
  $ownedScript=if ($owner.serviceScript) {$owner.serviceScript} else {$legacyServiceScript}
+ # Newer PowerShell versions deserialize ISO JSON dates into DateTime values.
+ # Compare the full UTC timestamp rather than its culture-dependent display string.
+ $recordedCreated=if ($owner.created -is [DateTime]) {$owner.created.ToUniversalTime().ToString('o')} else {[string]$owner.created}
  if ($ownedScript -ne $serviceScript -and $ownedScript -ne $legacyServiceScript) { throw 'Unrecognised service ownership record.' }
  $service=Get-CimInstance Win32_Process -Filter "ProcessId=$($owner.pid)"
  if ($service) {
-  if ($service.Name -ne 'node.exe' -or !$service.CommandLine.Contains($ownedScript) -or !$service.CommandLine.Contains($RunRoot) -or $service.CreationDate.ToUniversalTime().ToString('o') -ne $owner.created) { throw 'Process ownership changed; nothing was stopped.' }
+  if ($service.Name -ne 'node.exe' -or !$service.CommandLine.Contains($ownedScript) -or !$service.CommandLine.Contains($RunRoot) -or $service.CreationDate.ToUniversalTime().ToString('o') -ne $recordedCreated) { throw 'Process ownership changed; nothing was stopped.' }
   Set-Content (Join-Path $RunRoot 'stop.txt') 'Stop owned website account test' -Encoding ASCII
   $deadline=[DateTime]::UtcNow.AddSeconds(15)
   while (!(Test-Path (Join-Path $RunRoot 'stopped.json')) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 100 }

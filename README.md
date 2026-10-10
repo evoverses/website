@@ -211,3 +211,62 @@ Evo HP now begins at the species' old Level 10 HP at Level 1 and grows linearly 
 ### GitHub sync and Vercel readiness — 9 October 2026
 
 Website inventory/combat updates were pushed to `dan-dev` at `ae1b50b`; the separate game backend and local databases are not included. The production build and inventory/game-bridge/account/wallet checks pass. See [Vercel preview readiness](docs/vercel-preview-readiness.md) for concrete deployment blockers and setup order. Hosted account adapters and a framework security update are required before a functional public beta. No deployment or provider configuration was performed; automatic `dan-dev` deployments remain disabled.
+
+### Local beta administration and release preparation - 9 October 2026
+
+Next/React were upgraded and the production build passes. Beta purchases and breeding transactions are disabled; Nursery browsing remains available and Stripe stays on standby. Local Beta Admin supports once-only 5,000-Evoros tester approval, revocation and audited repeat rewards of Evoros, consumables and unopened packs. Future verified milestone rewards have a disabled extension point. DanMancs is selected as the local operator. [Completed work, test evidence and remaining release steps](docs/beta-preparation.md). Nothing has been deployed; hosted account connections and enforced invitation admission still require implementation.
+
+### Cloudflare compatibility - 9 October 2026
+
+Hosted beta deployment is now underway: a separate AWS player database is migrated, and its HTTPS account API responds successfully. The Cloudflare website Worker is published at `https://beta.evoverses.com`, with its two approved server-side credentials in encrypted Worker secrets. Public pages and unauthenticated guards pass; real Epic login and administrator reward checks remain to be completed. Wallet links use encrypted storage and HTTPS beta signing context. See [current hosted release checkpoint](docs/hosted-account-progress.md); the older local-only entries below describe their original sprint state. Purchases and breeding transactions remain disabled by source-controlled release gates.
+
+The clean Linux Next/OpenNext build and local Workers page/API smoke checks pass. A reproducible `pnpm --filter website check:cloudflare` command builds a temporary source copy without local credentials or data and dry-runs bundling. No hosting/DNS changes were made. [Measured bundle size, runtime evidence and the remaining hosted-account work](docs/cloudflare-compatibility.md).
+# Hosted beta account work
+
+The beta is public to anyone with its address. Epic sign-in protects personal account actions; tester approval controls rewards, not admission. Hosted login preparation, verification evidence and remaining release blockers are recorded in [hosted account progress](docs/hosted-account-progress.md). Payments and breeding transactions remain disabled pending their separate approvals.
+
+### Beta wallet signing and Store previews - 10 October 2026
+
+Wallet challenge validation now accepts the matching HTTPS beta page while keeping localhost and cross-origin protections. Pro users can select FIAT/EVO to preview pricing; purchase submission remains disabled. The database-backed Beta Admin page exists at `/beta-admin`, with role-checked tester approval and audited Evoros/item/pack rewards; hosted Danmancs administrator membership still needs verified identity pinning. See [repair details and verification](docs/beta-ui-fixes-2026-10-10.md).
+
+### Persistent account administration - 10 October 2026
+
+`/beta-admin` now verifies administrator access before rendering. A searchable/sortable account table exposes tester status, XP, administrator role and Evoros balance, with confirmed role and reward actions. Administration is independent of beta approval; protected masters are assigned through a verified private operator job. Docs/About navigation links are hidden. [Role rules, database safeguards and verification](docs/account-administration-2026-10-10.md).
+
+### One wallet connection - 10 October 2026
+
+Removed legacy wallet sign-in from the Epic sign-in page. Liquidity now uses the root wallet context shared with Profile/Store/Nursery, and Epic accounts can reach it through Pro navigation. [Changes and validation](docs/shared-wallet-connection-2026-10-10.md).
+
+### Landing portal intro - 10 October 2026
+
+Replaced the YouTube carousel with a responsive 2.8-second plasma-whirlpool portal animation using the supplied EvoVerses logo. Plays once and leaves the logo visible; reduced-motion users see a static logo. [Implementation and desktop/mobile visual evidence](docs/landing-portal-intro.md).
+
+### Marketplace data connection - 10 October 2026
+
+The AWS indexer now uses SQD public Portal in finalized mode, preserving its checkpoint and database. Its historical backlog is still catching up; listing visibility is not yet confirmed. See [migration and evidence](docs/marketplace-portal-migration-2026-10-10.md) and [duplicate-listing safeguards](docs/marketplace-listing-recovery-2026-10-10.md).
+
+### Marketplace toolbar placeholders - 10 October 2026
+
+Settings and Insights are hidden behind `SHOW_UNFINISHED_MARKETPLACE_TOOLS = false` in the shared collection filter bar. Their original markup remains for later reinstatement once behaviour is defined. Applies to Marketplace and the older Profile Evo collection screen; sorting, layouts, filters and banner statistics remain available.
+
+Published to `beta.evoverses.com` as Worker version `abe88af1-3c4e-4223-8ba4-a5e7e34af126`. Production Next/OpenNext builds passed. Headless live-marketplace check found neither placeholder button, retained all five layout choices, and loaded 18 Evo cards. Check: `docs/evidence/marketplace/check-toolbar.cjs`. Recommended next step: verify the delayed marketplace listings after indexer catch-up.
+
+### Marketplace card alignment and navigation - 10 October 2026
+
+Added asset-detail Back navigation and a shared proportional Evo card layout: raised, contained artwork and a smaller information island with aligned text. Desktop/compact/mobile screenshot and geometry checks pass. See [changes and evidence](docs/marketplace-card-layout-2026-10-10.md).
+
+Published to `beta.evoverses.com` as `0c0b6df9-908a-478c-bb7b-5c643f48b0cb`. Live checks pass six desktop/mobile card views and both Back navigation paths. Blank/external history entries use the marketplace fallback.
+
+Card panel polish: slightly wider stat spacing, content-sized island with equal side padding, and a small downward adjustment clear of the Evo number. Published beta version `869a0f50-4a1f-40a5-8990-cb08dc7cae9b`; six live desktop/mobile checks pass. Recommended next step: review the refined spacing on beta.
+
+Rounded lower-left card panel: three rows of two stats, full-width breed count and 70% background opacity. Compressed the original panel height by about 30% through tighter line/row spacing, with unchanged font sizes. Published as `6baac3cb-4cdb-4e2c-af74-cc007688f1a7`; all six live visual/layout checks pass. See the card-layout log for screenshots and measurements. Next: review the compact panel on beta.
+
+Frame alignment polish: panel centred between the inner border and generation-bar tip, bottom aligned with that bar; all four frame-bar labels and the owner footer vertically centred. Published beta version `5ddae49c-24d8-4ce6-8c1c-e3c862e05fa7`; production builds and six live layout checks pass. Screenshots/log refreshed. Next: visual review on beta.
+
+Evo artwork centring: lowered artwork within the available area above the stats panel, retaining size and horizontal alignment. Published beta version `34bf350c-f8aa-4f2a-89f5-e04c4247430d`; production builds and six local/live desktop/mobile checks pass. Evidence and work log refreshed. Next: visual review on beta.
+
+Current-level card HP: removed fixed 50 from on-page and share-image cards; calculate HP from species and XP using the existing L1-to-L100 interpolation shared with inventory. This represents HP at the current level, not battle damage. All 68 species across 100 levels and six local/live card views pass. Published beta version `b755ef5a-a04f-480a-a0df-57e6c6f65a67`. Next: visual check on beta.
+
+## GitHub source checkpoint - 10 October 2026
+
+The accumulated hosted beta, marketplace/indexer recovery and UI updates are saved together on `dan-dev`. The current Cloudflare Worker is `b755ef5a-a04f-480a-a0df-57e6c6f65a67`; deployment remains separate from GitHub source storage. Push preparation passed 160 regression tests and the 68-species HP checks. Local secrets, databases and generated builds are excluded. See [sync evidence](docs/github-beta-sync-2026-10-10.md). Next: continue beta review from this checkpoint.

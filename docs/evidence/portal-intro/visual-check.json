@@ -1,0 +1,27 @@
+{
+  "evidence": [
+    {
+      "time": 600,
+      "portalOpacity": "1",
+      "logoOpacity": "0.250304",
+      "overflow": false
+    },
+    {
+      "time": 1300,
+      "portalOpacity": "1",
+      "logoOpacity": "0.969242",
+      "overflow": false
+    },
+    {
+      "time": 2800,
+      "portalOpacity": "0",
+      "logoOpacity": "1",
+      "overflow": false
+    }
+  ],
+  "reduced": {
+    "portal": "none",
+    "logoOpacity": "1",
+    "animations": 0
+  }
+}

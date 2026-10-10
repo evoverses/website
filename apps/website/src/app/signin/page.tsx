@@ -5,9 +5,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Button } from "@workspace/ui/components/button";
 import { epicPendingCookie } from "@/lib/player/auth-core";
-import { getLocalEpicConfig, getPlayerAccount, playerWebAuth } from "@/lib/player/server";
-import { ProOnly } from "@/components/providers/pro-mode-provider";
-import { ConnectEmbed } from "@/components/connect-embed";
+import { getEpicConfig, getPlayerAccount, playerWebAuth } from "@/lib/player/server";
 
 export const metadata: Metadata = { title: "Sign In", referrer: "same-origin" };
 const messages: Record<string, string> = {
@@ -23,8 +21,8 @@ const messages: Record<string, string> = {
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ status?: string; confirm?: string }> }) {
   if (await getPlayerAccount()) redirect("/profile");
   const params = await searchParams;
-  const ready = !!getLocalEpicConfig();
-  const confirmation = params.confirm === "1" && playerWebAuth().hasPending((await cookies()).get(epicPendingCookie)?.value);
+  const ready = !!getEpicConfig();
+  const confirmation = params.confirm === "1" && await playerWebAuth().hasPendingAsync((await cookies()).get(epicPendingCookie)?.value);
   const message = typeof params.status === "string" ? messages[params.status] : undefined;
   return (
     <main className="relative isolate grid min-h-[calc(100svh-4rem)] items-center gap-10 px-5 py-12 sm:px-10 lg:grid-cols-2 lg:px-20">
@@ -48,7 +46,6 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
         {!ready && <p className="mt-3 text-sm text-muted-foreground">Sign-in is temporarily unavailable. Please try again soon.</p>}
         <p className="mt-5 text-xs leading-relaxed text-muted-foreground">{confirmation ? "Your account starts with an empty inventory. Creating it does not make a purchase." : "Your password stays with Epic."}</p>
         <Button variant="ghost" asChild className="mt-4 w-full"><Link href="/store">Browse the Store</Link></Button>
-        <ProOnly><div className="mt-5 border-t pt-5"><ConnectEmbed /></div></ProOnly>
       </section>
     </main>
   );

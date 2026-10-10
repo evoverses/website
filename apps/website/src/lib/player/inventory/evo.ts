@@ -1,3 +1,4 @@
+import { levelHealth } from "@workspace/evoverses/lib/asset/health";
 import catalogue from "@/data/evo-progression.json";
 export const statKeys = [
   "health",
@@ -23,11 +24,8 @@ export type GeneratedEvoStats = {
   currentHealth: number;
   moves: number[];
 };
-// Same integer interpolation as the game and account service; Health genes do not alter HP.
-export function levelHealth(baseHealth: number, level: number, training = 0): number {
-  const end = baseHealth + Math.floor(training / 5), start = Math.max(1, Math.round(end / 10));
-  return Math.round((start * (100 - level) + end * (level - 1)) / 99);
-}
+// Shared with marketplace cards: Health genes do not alter HP.
+export { levelHealth } from "@workspace/evoverses/lib/asset/health";
 const record = (v: unknown): v is Record<string, unknown> =>
   !!v && typeof v === "object" && !Array.isArray(v);
 const integer = (v: unknown, min = 0, max = 2147483647): v is number =>

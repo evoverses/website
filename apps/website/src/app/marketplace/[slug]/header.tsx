@@ -51,7 +51,7 @@ const CollectionHeader = ({ slug }: { slug: Slug }) => {
     { title: "Listed", value: formatNumberWithSuffix(data.activeListings) },
     {
       title: "Owners (Unique)",
-      value: `${formatNumberWithSuffix(data.uniqueOwners)} (${(data.uniqueOwners / data.total).toLocaleString(
+      value: `${formatNumberWithSuffix(data.uniqueOwners)} (${(data.total > 0 ? data.uniqueOwners / data.total : 0).toLocaleString(
         "en",
         { style: "percent" },
       )})`,
@@ -59,19 +59,16 @@ const CollectionHeader = ({ slug }: { slug: Slug }) => {
   ];
   return (
     <div
-      className="sticky pb-2 -top-50 h-80 p-4 bg-cover bg-center z-10 dark"
+      className="sticky pb-2 -top-50 h-80 p-4 bg-cover bg-center z-10"
       style={{ backgroundImage: `url(${EvoBannerOpensea.src})` }}
     >
-      <div className="flex h-full justify-between items-end ">
-        <div className="sm:max-w-[50%]">
-          <h1>{collection.name}</h1>
-          <h4>{collection.description}</h4>
-        </div>
-        <div className="hidden sm:flex space-x-4 items-end">
+      <h1 className="sr-only">{collection.name} Marketplace</h1>
+      <div className="flex h-full justify-end items-end">
+        <div className="hidden sm:flex flex-wrap justify-end gap-4 items-end rounded-xl bg-black/75 px-4 py-3 backdrop-blur-sm" data-testid="marketplace-banner-stats">
           {stats.map(s => (
             <div className="flex flex-col text-right gap-1" key={s.title}>
-              <span className="text-muted-foreground font-">{s.title}</span>
-              <span className="font-medium font-mono">{s.value}</span>
+              <span className="text-slate-200 text-sm">{s.title}</span>
+              <span className="text-white font-medium font-mono">{s.value}</span>
             </div>
           ))}
         </div>

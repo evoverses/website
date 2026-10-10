@@ -40,7 +40,10 @@
     "reflect-metadata": "^0.2.2",
     "type-graphql": "1.2.0-rc.1",
     "typeorm": "^0.3.20",
-    "typeorm-naming-strategies": "^4.1.0"
+    "typeorm-naming-strategies": "^4.1.0",
+    "@subsquid/evm-stream": "0.1.5",
+    "@subsquid/evm-objects": "0.0.3",
+    "@subsquid/batch-processor": "1.1.0"
   },
   "devDependencies": {
     "@subsquid/evm-typegen": "^4.3.0",

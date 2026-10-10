@@ -2,7 +2,7 @@
 
 Assessment: 9 October 2026 (Brisbane). Target: `https://beta.evoverses.com`, repository `evoverses/website`, branch `dan-dev`.
 
-**Planning only. No deployment, domain/provider configuration, AWS provisioning or database migration is authorised by this document.** The [saved hosting plan](beta-hosting-plan.md) remains paused. This assessment supersedes its historical readiness statements, not its deployment approval requirement.
+**Local preparation resumed on 9 October. Nothing has been deployed.** AWS provisioning, public database migration and DNS/provider changes still require review and explicit approval. See the [current preparation log](beta-preparation.md) and [saved hosting plan](beta-hosting-plan.md).
 
 ## Current position
 
@@ -12,16 +12,16 @@ A working localhost beta is not yet a working hosted beta. Account login is deli
 
 | Area | Verified state | Required before functional hosted beta |
 | --- | --- | --- |
-| Website build | Next.js 15.3.3 production build passes locally | Upgrade to a currently patched supported Next/React combination, update the lockfile and verify the Linux/Vercel build. |
+| Website build | Next.js 15.5.27 / React 19.1.9 production build passes locally, including Admin | Check current advisories and verify the clean Linux/Vercel build. Local success used ignored development configuration. |
 | Automatic deployment | Both `vercel.json` files disable Git deployment of `dan-dev` | Preserve this block while preparing. Deploy a reviewed commit manually only after approval. |
 | Epic/account access | Development gate, localhost-only requests, local readiness files, process-local OAuth Maps | Explicit hosted adapter, beta HTTPS origin and durable one-time OAuth/confirmation state. |
 | Backend/database | Account code and data live in the separate game checkout; local PGlite/database files are not website source | Package and review the backend independently; host an HTTPS account API and a separate PostgreSQL player database. |
 | Wallet links/inventory | Local private bridge, encrypted shared links, authoritative metadata and ownership checks | Hosted authenticated bridge, configured encryption, beta-bound signatures and fresh ownership checks; preserve shared links and exclusive Evo reservations. |
-| Card payments | Sandbox integration exists; fulfillment adapter calls the local account bridge | Hosted transactional order/ledger service, permanent signed webhook and beta return origin. |
-| Tester management | Once-only starter flow exists; 5,000-Evoros beta grant and Beta Admin are not implemented | Add invited-tester admission and unique audited grants; minimum protected management controls from the saved plan. |
+| Card payments | Sandbox integration retained; beta Checkout is blocked in the server handler and UI | Keep Stripe on standby. Hosted fulfillment and activation are later work. |
+| Tester management | Local Admin approves/revokes access, grants 5,000 once and gives repeat currency/item/pack rewards | Connect hosted administration and add enforced invited-tester admission. Approval records alone do not block every unapproved route. |
 | Vercel account | No linked `.vercel/project.json` or dashboard settings verified | Inspect the existing team/project, Git access, root, environment, plan, domain and protection settings. |
 
-**Known deployment blocker:** Next.js 15.3.3 is affected by the React2Shell advisory. Vercel states that new deployments of vulnerable versions are blocked. Its original 15.3.x fix was 15.3.6; that is not a claim that 15.3.6 covers every later advisory. Select the upgrade against current security advisories at implementation time. [Official Vercel bulletin](https://vercel.com/kb/bulletin/react2shell).
+**Framework upgrade completed locally:** the retired Next.js 15.3.3 version was affected by React2Shell. The beta now pins Next.js 15.5.27 and React/ReactDOM 19.1.9. This is not a completed dependency-security audit; review current advisories before exposure. [Official Vercel bulletin](https://vercel.com/kb/bulletin/react2shell).
 
 GitHub also reported **290 dependency alerts on the default branch (22 critical, 140 high, 103 moderate, 25 low)** during the push. These are provider-reported default-branch counts, not a completed audit of `dan-dev`. Review the beta lockfile and reachable dependencies before exposure, alongside the confirmed Next.js issue. [Repository dependency alerts](https://github.com/evoverses/website/security/dependabot).
 
@@ -32,7 +32,7 @@ GitHub also reported **290 dependency alerts on the default branch (22 critical,
 3. Replace the fixed localhost origin in `lib/player/auth-core.ts` and the local-only Host/Origin guards in account, wallet and inventory handlers with explicit environment-bound configuration. Use Secure, HttpOnly, host-only cookies and exact mutation-origin checks. Do not set `NODE_ENV=development` or remove checks to make Vercel work.
 4. Replace the process-local OAuth state/pending confirmation Maps with durable, expiring, single-use transactions. Verify callback/confirmation replay, concurrent callbacks, multiple web instances and restarts. Keep the existing Epic-to-game account identity mapping and session revocation.
 5. Package the backend currently imported by `scripts/player-accounts-local.cjs` from `evoverses-beta-account-bridge/Prototypes/player_economy`, including authored Store/progression/combat data and schema migrations. Remove sibling checkout and Windows path dependencies from the hosted package. Preserve existing catalogue revisions, purchase receipts and PP keyed by move identity.
-6. Implement the invited-beta and once-only 5,000-Evoros grant/admin slice locally. A repeated login or invitation cannot repeat a grant. Test permissions, revocation and audited adjustments.
+6. Finish invited-beta admission around the implemented local administration slice. Approval grants 5,000 once; repeat login/reapproval cannot repeat it. Enforce pending/revoked access across account, inventory and game actions before hosting.
 
 The website push does not publish or back up the separate game backend's uncommitted work or local database. Secure a reviewed backend revision before preparing a hosted image. Do not upload real local account data, backups or ignored configuration to GitHub/Vercel.
 
@@ -88,4 +88,4 @@ Names below describe configuration requirements, not secret values or proof that
 - Updated the integration fixture's retired 50-HP expectation to Kitsul's level-curve 25 HP, and taught the authentication test harness to load the new real combat parser.
 - No live provider configuration, Vercel deployment, database migration or hosted sign-in test was performed. The local build used ignored development configuration; it is not evidence of a clean Vercel build or functional hosted account access.
 
-**Recommended next small sprint:** update Next/React to a currently patched compatible release and rerun these checks. Then implement hosted-ready account configuration and durable OAuth locally, before any AWS/Vercel setup.
+**Recommended next sprint:** package the account service independently and implement environment-bound HTTPS connections, durable OAuth and invited-beta admission. Obtain Vercel access and restore AWS Toolkit/Secrets Manager guidance before configuring hosted credentials. Review IaC and costs before provisioning.

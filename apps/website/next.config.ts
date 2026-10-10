@@ -4,6 +4,7 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 const nextConfig = (phase: string) => {
   const config: NextConfig = {
+    output: process.env.EVOVERSES_CLOUDFLARE_BUILD_CHECK === "1" ? "standalone" : undefined,
     // Isolate the local production check from the running development preview.
     distDir: phase !== PHASE_DEVELOPMENT_SERVER && process.env.EVOVERSES_LOCAL_BUILD_CHECK === "1" ? ".next-beta-check" : ".next",
     transpilePackages: [ "@workspace/ui", "@workspace/database", "thirdweb" ],
@@ -58,6 +59,8 @@ const nextConfig = (phase: string) => {
       config.externals.push("pino-pretty", "lokijs", "encoding");
       return config;
     };
+    // The isolated Workers compatibility check never uploads source maps.
+    if (process.env.EVOVERSES_CLOUDFLARE_BUILD_CHECK === "1") return config;
     return withSentryConfig(
       config,
       {

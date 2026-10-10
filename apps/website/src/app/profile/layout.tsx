@@ -31,8 +31,8 @@ const navigation = [
 ];
 
 const Layout = async ({ children }: PropsWithChildren) => {
-  const loggedIn = await isLoggedIn();
   const playerAccount = await getPlayerAccount();
+  const loggedIn = playerAccount ? false : await isLoggedIn();
   if (!loggedIn && !playerAccount) redirect("/signin");
   return (
     <div className="flex flex-col space-y-6 px-4 sm:px-10 pt-6">
@@ -45,7 +45,7 @@ const Layout = async ({ children }: PropsWithChildren) => {
       <Separator className="my-6" />
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0 lg:flex-grow">
         <aside className="lg:w-1/5">
-          <AccountNavigation items={navigation.filter(item => !item.proOnly || loggedIn)} />
+          <AccountNavigation items={navigation.filter(item => !item.proOnly || loggedIn || (!!playerAccount && item.href === "/profile/liquidity"))} />
         </aside>
         <div className="flex-1 overflow-y-scroll">{children}</div>
       </div>

@@ -1,0 +1,24 @@
+const assert=require('node:assert/strict');
+process.chdir(require('node:path').resolve(__dirname,'..'));
+const {Client}=require('pg');
+const {TypeormDatabase}=require('@subsquid/typeorm-store');
+const {Processor}=require('@subsquid/batch-processor');
+const {FinalizedPortalDatabase}=require('../lib/finalized-database');
+const {Chain}=require('../lib/model');
+(async()=>{
+ assert.equal(process.env.DB_NAME,'portal_check');assert.equal(process.env.DB_HOST,'127.0.0.1');
+ const pg=new Client({host:process.env.DB_HOST,port:Number(process.env.DB_PORT),user:'postgres',database:'portal_check'});await pg.connect();
+ await pg.query('CREATE TABLE IF NOT EXISTS chain (id text PRIMARY KEY,name text,symbol text,icon text)');
+ const schema='portal_checkpoint_fixture';await pg.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);const bootstrap=new TypeormDatabase({supportHotBlocks:true,stateSchema:schema});await bootstrap.connect();await bootstrap.disconnect();
+ await pg.query(`UPDATE ${schema}.status SET height=100,hash='h100' WHERE id=0`);
+ await pg.query(`INSERT INTO ${schema}.hot_block(height,hash) VALUES(101,'h101')`);
+ const db=new FinalizedPortalDatabase({stateSchema:schema});let admissions=0;
+ const src={getHead:async()=>({number:200,hash:'h200'}),getFinalizedHead:async()=>({number:200,hash:'h200'}),getStream:()=>{throw Error('Unfinalized stream must not be used')},async *getFinalizedStream(opts){assert.equal(opts.from,101);assert.equal(opts.parentHash,'h100');admissions++;yield{blocks:[{header:{number:102,height:102,hash:'h102'}},{header:{number:200,height:200,hash:'h200'}}],finalizedHead:{number:200,hash:'h200'}}}};
+ await new Processor(src,db,async({store})=>{await store.upsert(new Chain({id:'fixture',name:'saved'}))}).run();await db.disconnect();
+ let state=(await pg.query(`SELECT height,hash FROM ${schema}.status WHERE id=0`)).rows[0];assert.equal(state.height,200);assert.equal(state.hash,'h200');assert.equal((await pg.query(`SELECT count(*) FROM ${schema}.hot_block`)).rows[0].count,'0');
+ assert.equal((await pg.query("SELECT name FROM chain WHERE id='fixture'")).rows[0].name,'saved');
+ const restart=new FinalizedPortalDatabase({stateSchema:schema});assert.equal((await restart.connect()).height,200);
+ await assert.rejects(()=>restart.transact({prevHead:{height:200,hash:'h200'},nextHead:{height:201,hash:'h201'}},async(store)=>{await store.upsert(new Chain({id:'fixture',name:'should rollback'}));throw Error('injected failure')}),/injected failure/);
+ assert.equal((await pg.query("SELECT name FROM chain WHERE id='fixture'")).rows[0].name,'saved');assert.equal((await pg.query(`SELECT height FROM ${schema}.status WHERE id=0`)).rows[0].height,200);
+ await restart.disconnect();await pg.end();console.log(JSON.stringify({sparseFinalizedBatches:true,checkpointPreserved:true,oldHotRecordsSafelyCleared:true,restartResume:true,atomicRollback:true,productionDatabaseConnections:0}));process.exit(0);
+})().catch(e=>{console.error(e.message);process.exit(1)});

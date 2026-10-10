@@ -1,5 +1,6 @@
 "use client";
 
+import { evorosPurchasesEnabled, betaPurchaseMessage } from "@/lib/beta/release-policy";
 import { useProMode } from "@/components/providers/pro-mode-provider";
 import { walletConnectionAvailable } from "@/lib/thirdweb/preview";
 import { evorosBundles } from "@/data/evoros-bundles";
@@ -196,7 +197,7 @@ export default function EvorosStore({
     };
   }, [router]);
   async function buyByCard() {
-    if (inFlight.current || !playerAccount || !sandboxCheckoutReady) return;
+    if (!evorosPurchasesEnabled || inFlight.current || !playerAccount || !sandboxCheckoutReady) return;
     inFlight.current = true;
     setPurchasing(true);
     setPurchaseError(null);
@@ -281,10 +282,9 @@ export default function EvorosStore({
               Stock up on Evoros
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              Top up your Evoros with{" "}
-              {account ? "EVO or a card payment" : "a card payment"}. Potions,
-              revives and the supplies for your next battle—all from one game
-              balance.
+              Browse Evoros bundles for the in-game shop. Purchases are paused
+              during beta; approved testers receive 5,000 Evoros to try potions,
+              revives and other supplies.
             </p>
           </div>
         </div>
@@ -460,7 +460,7 @@ export default function EvorosStore({
                   </Button>
                   <Button
                       disabled={!account}
-                      title={account ? undefined : "Connect a wallet to pay with EVO"}
+                      title={account ? undefined : "Connect a wallet to see EVO prices"}
                       variant={payment === "evo" ? "default" : "outline"}
                       aria-pressed={payment === "evo"}
                       onClick={() => setPayment("evo")}
@@ -497,13 +497,14 @@ export default function EvorosStore({
                         <a
                           className="underline"
                           href={
-                            "https://www.geckoterminal.com/avax/pools/" +
-                            rate.quote.poolAddress
+                            rate.quote.source === "DexScreener"
+                              ? "https://dexscreener.com/avalanche/" + rate.quote.poolAddress
+                              : "https://www.geckoterminal.com/avax/pools/" + rate.quote.poolAddress
                           }
                           target="_blank"
                           rel="noreferrer"
                         >
-                          GeckoTerminal
+                          {rate.quote.source}
                         </a>
                         . This estimate lasts five minutes. AVAX network gas is
                         extra.
@@ -518,13 +519,18 @@ export default function EvorosStore({
                           : "We couldn’t fetch the market rate. No EVO amount is shown until a valid rate is available."}
                     </p>
                   )}
+                  {rate.error && rate.quote && (
+                    <p className="text-muted-foreground">
+                      Refresh failed. Your previous estimate remains valid until it expires.
+                    </p>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={rate.loading}
                     onClick={() => void rate.refresh()}
                   >
-                    Refresh EVO quote
+                    {rate.loading ? "Refreshing EVO quote…" : "Refresh EVO quote"}
                   </Button>
                 </div>
               )}
@@ -537,9 +543,11 @@ export default function EvorosStore({
                 >
                   <p className="font-bold text-sm">Card payments with Stripe</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {sandboxCheckoutReady
-                      ? "Sandbox checkout opens Stripe’s secure payment page. Payments are simulated; no real money is charged."
-                      : "Card checkout is being prepared for local testing."}
+                    {!evorosPurchasesEnabled
+                      ? "Card payments are on standby. Checkout is disabled during beta."
+                      : sandboxCheckoutReady
+                        ? "Sandbox checkout opens Stripe’s secure payment page. Payments are simulated; no real money is charged."
+                        : "Card checkout is being prepared for local testing."}
                   </p>
                 </div>
               )}
@@ -568,6 +576,7 @@ export default function EvorosStore({
                 <Button
                   className="w-full font-bold"
                   disabled={
+                    !evorosPurchasesEnabled ||
                     payment === "evo" ||
                     !sandboxCheckoutReady ||
                     !playerAccount ||
@@ -582,7 +591,9 @@ export default function EvorosStore({
                   ) : (
                     <CreditCard className="size-4" aria-hidden="true" />
                   )}
-                  {payment === "evo"
+                  {!evorosPurchasesEnabled
+                    ? "Purchases paused for beta"
+                    : payment === "evo"
                     ? "Buy with EVO · Coming soon"
                     : purchasing
                       ? "Opening Stripe…"
@@ -594,7 +605,9 @@ export default function EvorosStore({
                   id="purchase-disabled-reason"
                   className="text-xs text-muted-foreground leading-relaxed"
                 >
-                  {!playerAccount
+                  {!evorosPurchasesEnabled
+                    ? betaPurchaseMessage
+                    : !playerAccount
                     ? "Sign in with Epic before buying Evoros."
                     : payment === "evo"
                       ? "EVO purchases are coming soon."

@@ -1,0 +1,1 @@
+{"task": "arn:aws:ecs:us-east-2:934769272164:task-definition/ProdEcsStackIndexerEcsTaskStackIndexerTaskDefF963D605:4", "imageDigest": "sha256:a31ca2f2416b8ba92bfa02e72324d5ba9ebc86a363ba51c3e84fdf9c2394ce82", "cpu": "256", "memory": "512", "schemaChanged": false, "mode": "finalized"}

@@ -8,6 +8,7 @@ export async function inventoryHandler(
   request: Request,
   dependencies: {
     enabled: boolean;
+    webOrigin?: "http://localhost:3100" | "https://beta.evoverses.com";
     readInventory: (token: string) => Promise<Inventory>;
     readCombat?: (token:string,members:{chainId:43114;collection:string;tokenId:string}[])=>Promise<CombatState[]>;
     projection: (token: string) => Promise<unknown>;
@@ -27,14 +28,15 @@ export async function inventoryHandler(
     });
   try {
     const url = new URL(request.url);
+    const origin = dependencies.webOrigin ?? "http://localhost:3100";
+    const matchingUrl = origin === "http://localhost:3100" ? url.protocol === "http:" && url.port === "3100" : url.origin === origin;
     if (
       !dependencies.enabled ||
-      url.protocol !== "http:" ||
-      url.port !== "3100" ||
+      !matchingUrl ||
       url.pathname !== "/api/player/inventory" ||
       url.search ||
-      request.headers.get("host") !== "localhost:3100" ||
-      request.headers.get("origin") !== "http://localhost:3100"
+      request.headers.get("host") !== new URL(origin).host ||
+      request.headers.get("origin") !== origin
     )
       return reply(403, { error: { code: "ORIGIN_NOT_ALLOWED" } });
     if (request.method !== "POST")

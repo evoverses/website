@@ -1,5 +1,5 @@
 import "server-only";
-import { getLocalWalletConnection, localPlayerLogin } from "../server";
+import { getLocalWalletConnection, getPlayerWebOrigin, playerLoginEnabled } from "../server";
 import { walletHandler, WalletWebError } from "./handler";
 
 export async function walletRpc(
@@ -17,10 +17,11 @@ export async function walletRpc(
     },
     body: JSON.stringify({ operation, sessionToken, ...input }),
     cache: "no-store",
-    redirect: "error",
+    redirect: "manual",
     credentials: "omit",
     signal: AbortSignal.timeout(10_000),
   });
+  if (response.status >= 300 && response.status < 400) throw new WalletWebError("SERVICE_UNAVAILABLE");
   const text = await response.text();
   if (text.length > 16_384) throw new WalletWebError("SERVICE_UNAVAILABLE");
   const result = JSON.parse(text);
@@ -44,5 +45,5 @@ export async function walletRpc(
   return result.value;
 }
 export async function playerWallet(request: Request) {
-  return walletHandler(request, { enabled: localPlayerLogin, rpc: walletRpc });
+  return walletHandler(request, { enabled: playerLoginEnabled, webOrigin: getPlayerWebOrigin(), rpc: walletRpc });
 }

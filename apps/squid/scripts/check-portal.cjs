@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict');
+const {DataSourceBuilder}=require('@subsquid/evm-stream');
+const {augmentBlock}=require('@subsquid/evm-objects');
+const {fields,dataSource}=require('../lib/processor');
+const fs=require('node:fs');
+(async()=>{
+ const checkpoint=65545961;
+ const src=new DataSourceBuilder().setPortal('https://portal.sqd.dev/datasets/avalanche-mainnet').includeAllBlocks().setFields(fields).build();
+ const headers=[];
+ for await(const batch of src.getFinalizedStream({from:checkpoint,to:checkpoint+1}))headers.push(...batch.blocks.map(b=>b.header));
+ assert.equal(headers[0].height,checkpoint);assert.equal(headers.length,2);
+ const rpc=async(method,params)=>{const r=await fetch('https://api.avax.network/ext/bc/C/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});const j=await r.json();assert.ok(!j.error);return j.result};
+ const saved=await rpc('eth_getBlockByNumber',['0x'+checkpoint.toString(16),false]);assert.equal(headers[0].hash,saved.hash);
+ const txHash='0x829616bcf0f799430cb1b21fc837d017ec350e32118b133b0c248e7677cbb53c';
+ const receipt=await rpc('eth_getTransactionReceipt',[txHash]);const number=Number(BigInt(receipt.blockNumber));
+ const blocks=[];
+ for await(const batch of dataSource.getFinalizedStream({from:number,to:number}))blocks.push(...batch.blocks.map(augmentBlock));
+ const tx=blocks.flatMap(b=>b.transactions).find(t=>t.hash===txHash);assert.ok(tx);assert.equal(tx.status,1);
+ const log=tx.logs.find(l=>l.address.toLowerCase()==='0x888beb2c914657b1ea2ccc91555c5800eecdd4c0'&&BigInt(l.topics[2])===4n);assert.ok(log);assert.equal(log.block.height,number);assert.equal(log.getTransaction().hash,txHash);
+ const {parseDirectListingEvents}=require('../lib/handlers/marketplace/listings');
+ const deferred=[];const decoded=parseDirectListingEvents({entities:{defer:(...args)=>deferred.push(args)}},[log]).newDirectListingEvents[0];
+ assert.equal(decoded.listingId,4n);assert.equal(decoded.tokenId,4503n);assert.equal(decoded.quantity,1n);assert.equal(decoded.pricePerToken,20000n*10n**18n);
+ fs.writeFileSync('/tmp/evoverses-portal-listing-fixture.json',JSON.stringify({receipt,blocks:blocks.map(b=>({header:{height:b.header.height,hash:b.header.hash,timestamp:b.header.timestamp},transactions:b.transactions.map(t=>({hash:t.hash,from:t.from,status:t.status,logs:t.logs.map(l=>({address:l.address,topics:l.topics,data:l.data,transactionHash:l.transactionHash,logIndex:l.logIndex,transactionIndex:l.transactionIndex}))}))}))}));
+ const chainLog=receipt.logs.find(l=>l.address.toLowerCase()===log.address&&l.topics[0]===log.topics[0]);assert.deepEqual(log.topics,chainLog.topics);assert.equal(log.data,chainLog.data);
+ const evidence={checkpoint,checkpointHash:headers[0].hash,listingBlock:number,transactionHash:txHash,listingId:4,logDataMatches:true,transactionRelationshipsVerified:true,databaseWrites:0};
+ fs.writeFileSync('/tmp/evoverses-portal-read-check.json',JSON.stringify(evidence,null,2));console.log(evidence);
+})().catch(e=>{console.error(e.message);process.exit(1)});

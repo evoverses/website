@@ -5,8 +5,14 @@ import path from "node:path";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { createPlayerWebAuth, PlayerWebError, playerSessionCookie, type LocalEpicConfig } from "./auth-core";
+import { hostedAccountConfig, betaWebOrigin } from "./hosted-config";
+import { createOAuthRpc } from "./oauth-rpc";
 
 export const localPlayerLogin = process.env.NODE_ENV === "development" && process.env.EVOVERSES_LOCAL_EPIC_ACCOUNT_LOGIN === "1" && process.env.NEXT_PUBLIC_EVOVERSES_LOCAL_PLAYER_LOGIN === "1";
+export const hostedPlayerLogin = process.env.NODE_ENV === "production" && process.env.EVOVERSES_HOSTED_BETA === "1";
+export const playerLoginEnabled = localPlayerLogin || hostedPlayerLogin;
+export function getPlayerWebOrigin() { return hostedPlayerLogin ? betaWebOrigin : "http://localhost:3100"; }
+export function getEpicConfig() { return hostedPlayerLogin ? hostedAccountConfig(process.env) : getLocalEpicConfig(); }
 function read(file: string) {
   if (statSync(file).size > 1024 * 1024) throw new PlayerWebError("SIGNIN_UNAVAILABLE");
   return readFileSync(file, "utf8");
@@ -31,12 +37,13 @@ export function getLocalEpicConfig(): LocalEpicConfig | null {
 const key = Symbol.for("evoverses.local.epic.web.flow.v2");
 const shared = globalThis as unknown as Record<symbol, ReturnType<typeof createPlayerWebAuth> | undefined>;
 export function playerWebAuth() {
-  return shared[key] ??= createPlayerWebAuth({ configuration: getLocalEpicConfig, diagnostic: value => {
+  return shared[key] ??= createPlayerWebAuth({ configuration: getEpicConfig,
+    ...(hostedPlayerLogin ? {transactions:createOAuthRpc({connection:()=>{const c=getEpicConfig();return c?.hosted?{apiUrl:c.apiUrl,serviceToken:c.hosted.serviceToken}:null;}})} : {}), diagnostic: value => {
     if (localPlayerLogin) console.warn("[local account auth]", JSON.stringify(value));
   } });
 }
 export const getPlayerAccount = cache(async () => {
-  if (!localPlayerLogin) return null;
+  if (!playerLoginEnabled) return null;
   const token = (await cookies()).get(playerSessionCookie)?.value;
   if (!token) return null;
   try { return await playerWebAuth().readProfile(token); } catch { return null; }
@@ -61,6 +68,10 @@ export function getLocalStoreConnection() {
 }
 
 export function getLocalWalletConnection() {
+  if (hostedPlayerLogin) {
+    const config = getEpicConfig();
+    return config?.hosted ? {apiUrl: config.apiUrl, token: config.hosted.serviceToken} : null;
+  }
   if (!localPlayerLogin || process.env.EVOVERSES_LOCAL_WALLET_LINKING !== "1") return null;
   const config = getLocalEpicConfig(), root = process.env.EVOVERSES_LOCAL_EPIC_RUN_ROOT;
   const key = process.env.EVOVERSES_LOCAL_WALLET_KEY;

@@ -309,6 +309,15 @@ test("ordinary-mode endpoint bypasses wallet decryption/indexer/RPC entirely", a
   assert.equal(json.rows.length, 2);
   assert.equal(json.nfts, null);
 });
+
+test("hosted inventory accepts the exact beta origin and rejects other hosts before account reads", async () => {
+ const origin="https://beta.evoverses.com";let reads=0;
+ const d=deps({webOrigin:origin,readInventory:async()=>{reads++;return owned;}});
+ const make=(url,host,source)=>new Request(url+"/api/player/inventory",{method:"POST",headers:{Host:host,Origin:source,"Content-Type":"application/json",Cookie:"ev:player-session="+"f".repeat(64)},body:JSON.stringify({includeNfts:false,page:0,linksVersion:null})});
+ assert.equal((await inventoryHandler(make(origin,"beta.evoverses.com",origin),d)).status,200);
+ for(const input of [make(origin,"evoverses.com",origin),make(origin,"beta.evoverses.com","https://evoverses.com"),make("http://beta.evoverses.com","beta.evoverses.com",origin)])assert.equal((await inventoryHandler(input,d)).status,403);
+ assert.equal(reads,1);
+});
 test("endpoint uses authenticated account links only and exposes masked IDs, never full wallet addresses", async () => {
   let verified = 0;
   const response = await inventoryHandler(

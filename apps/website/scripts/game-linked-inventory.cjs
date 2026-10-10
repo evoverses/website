@@ -6,6 +6,13 @@ function compiledInventory() {
   const root = path.resolve(__dirname, ".."),
     out = path.join(root, "node_modules/.game-inventory-lib", String(process.pid));
   fs.mkdirSync(out, { recursive: true });
+// Compile the shared HP helper into the isolated CommonJS fixture tree.
+const health = ts.transpileModule(
+  fs.readFileSync(path.resolve(root, "../../packages/evoverses/src/lib/asset/health.ts"), "utf8"),
+  { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
+);
+fs.writeFileSync(path.join(out, "health.js"), health.outputText);
+
   fs.writeFileSync(
     path.join(out, "package.json"),
     JSON.stringify({ type: "commonjs" }),
@@ -38,7 +45,7 @@ function compiledInventory() {
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(
       dest,
-      result.outputText.replace(
+      result.outputText.replaceAll('require("@workspace/evoverses/lib/asset/health")', 'require("../../../health.js")').replace(
         'require("@/data/evo-progression.json")',
         'require("../../../data/evo-progression.json")',
       ),

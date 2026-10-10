@@ -7,4 +7,4 @@ export const fetchSquid = <TData = unknown>(
   query: string,
   variables: Record<string, unknown> = {},
   next: NextFetchRequestConfig = {},
-) => fetchGraphQl<TData, SquidErrorResponse>(squidUrl, operationName, query, variables, next);
+) => fetchGraphQl<TData, SquidErrorResponse>(typeof window === "undefined" ? squidUrl : "/api/marketplace/query", operationName, query, variables, next);
