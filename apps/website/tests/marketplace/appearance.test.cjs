@@ -10,5 +10,5 @@ test('skin and rarity flags select consistent common, Chroma and Epic accents',(
  assert.equal(evoAppearance('none','epic').tier,'epic');
  assert.equal(evoAppearance('chroma','epic').tier,'epic');
  assert.notEqual(evoAppearance('chroma').borderFilter,evoAppearance('super').borderFilter);
- assert.match(evoAppearance('chroma').glow,/0\.18/);assert.equal(evoAppearance().glow,'none');
+ assert.match(evoAppearance('chroma').glow,/0\.48/);assert.equal(evoAppearance().glow,'none');
 });

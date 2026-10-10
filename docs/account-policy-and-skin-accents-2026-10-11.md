@@ -47,3 +47,9 @@ The first migration attempt detected an already-applied `015_ranked_friends.sql`
 - Live desktop/mobile border fixtures pass ordinary/Chroma/Epic rendering; read responses are substituted only in the test browser, without changing metadata. Evidence is in `docs/evidence/account-policy/live-*`.
 - The exact four-file API patch plus migration is saved in `docs/evidence/account-policy/account-api-live-integration.patch`, against the current Ranked image. The combined source/image retains its Ranked runtime changes, gated modes and catalogue semantics; this avoids deploying the older local composition over it.
 - No production accounts were banned or unbanned to test this release. Fresh real Epic sign-in, authenticated profile glow and a dedicated test-account Ban/Unban check remain human acceptance steps. Old cookies do not automatically gain seven days.
+
+## Brighter profile accents
+
+Following visual feedback, Chroma and Epic profile artwork now uses a brighter layered radial halo (48% centre opacity, 28% inner spread, fading outward), a low coloured floor glow and two soft silhouette drop shadows. Chroma stays violet, Epic stays gold; common artwork has no special glow. Card dimensions, skins, typography and marketplace frame filters are unchanged. Appearance mapping and production Next/OpenNext builds passed. `docs/evidence/account-policy/brighter-glow-examples.png` compares previous/new artwork in light/dark layouts, rendered from the actual InventoryArt component with fixture rows. The same common Kitsul artwork is deliberately used in every example to isolate lighting; these are presentation examples, not changed NFT metadata or account records.
+
+Published brighter accents in Worker `884fe112-0329-4bcb-9e88-1a34ed11048a`; public Marketplace HTTP check passed. No account-service deployment or database change was needed.

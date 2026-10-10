@@ -1,0 +1,10 @@
+{
+  "fixture": true,
+  "component": "Actual InventoryArt rendered with fixture rows",
+  "artwork": "Same common Kitsul used across comparisons to isolate glow changes",
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "allImagesLoaded": true
+}

@@ -85,6 +85,7 @@ function InventoryArt({ row }: { row: InventoryRow }) {
           unoptimized
           src={row.image}
           alt={row.name}
+          style={{ filter: appearance.artShadow }}
           className={
             row.kind === "item"
               ? "size-14 max-w-full object-contain"
