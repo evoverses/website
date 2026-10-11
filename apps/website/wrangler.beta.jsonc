@@ -44,5 +44,11 @@
   },
   "limits": {
     "cpu_ms": 3000
-  }
+  },
+  "r2_buckets": [
+    {
+      "binding": "GAME_BUILDS",
+      "bucket_name": "evoverses-beta-builds"
+    }
+  ]
 }

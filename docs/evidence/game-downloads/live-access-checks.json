@@ -1,0 +1,32 @@
+[
+  {
+    "path": "/download",
+    "method": "GET",
+    "status": 200
+  },
+  {
+    "path": "/beta-admin/downloads",
+    "method": "GET",
+    "status": 200
+  },
+  {
+    "path": "/api/downloads/admin",
+    "method": "GET",
+    "status": 401
+  },
+  {
+    "path": "/api/downloads/file",
+    "method": "GET",
+    "status": 401
+  },
+  {
+    "path": "/api/downloads/file",
+    "method": "HEAD",
+    "status": 401
+  },
+  {
+    "path": "/api/downloads/admin?action=start",
+    "method": "POST",
+    "status": 403
+  }
+]

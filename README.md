@@ -286,3 +286,9 @@ The top menu rounds the connected wallet's EVO balance to the nearest whole toke
 ## Explicit sign-out and fresh Epic login — 11 October 2026
 
 Explicit website logout revokes the account session and clears the account and pending OAuth cookies. New Epic authorization requests now include `prompt=login` to request reauthentication instead of silently reusing Epic's remembered browser session. Seven-day EvoVerses sessions continue until expiry or explicit logout. All 24 web-auth tests pass, covering the prompt, session revocation, cookie cleanup, state binding, approved origins and hosted OAuth transport. Epic's security check blocks the automated browser, so the real remembered-session credential prompt must be confirmed in a normal browser. Recommended next step: sign out on beta, then sign in again and verify the fresh Epic login prompt.
+
+### Protected beta game downloads (2026-10-11)
+
+Play Now now opens `/download`. Current approved beta accounts may download a published Windows build; other accounts receive a sign-in/access message. Administrators manage private multipart ZIP uploads and explicitly publish releases at `/beta-admin/downloads`, linked from the account admin page. R2 storage uses `GAME_BUILDS`; account permissions remain in the existing AWS service. No game binary is committed or uploaded. See [upload and infrastructure notes](docs/beta-game-downloads.md).
+
+Validation: nine targeted download/upload tests; production build and live restrictions recorded in the deployment work log. Recommended next step: upload the first Windows ZIP, publish it, then verify a tester download, resumed download and game launch.
