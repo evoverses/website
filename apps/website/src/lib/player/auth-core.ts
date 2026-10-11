@@ -129,7 +129,7 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     starts.push(now());
     const state = randomBytes(32).toString("hex"), cookie = randomBytes(32).toString("hex");
     const url = new URL("https://www.epicgames.com/id/authorize");
-    url.search = new URLSearchParams({ client_id: c.clientId, response_type: "code", scope: "basic_profile friends_list presence country", redirect_uri: callbackUrl(c), state }).toString();
+    url.search = new URLSearchParams({ client_id: c.clientId, response_type: "code", prompt: "login", scope: "basic_profile friends_list presence country", redirect_uri: callbackUrl(c), state }).toString();
     return { url: url.toString(), cookie, state, c };
   }
   function start() {

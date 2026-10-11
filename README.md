@@ -282,3 +282,7 @@ Beta administration now supports confirmed account deletion and checkboxes for b
 ## Menu EVO balance rounding — 11 October 2026
 
 The top menu rounds the connected wallet's EVO balance to the nearest whole token, with comma separators. Exact integer arithmetic preserves large balances. Store balances, quotes and payment amounts retain their existing precision. All five balance-format tests pass. Recommended next step: refresh beta with Pro mode enabled and check the menu balance.
+
+## Explicit sign-out and fresh Epic login — 11 October 2026
+
+Explicit website logout revokes the account session and clears the account and pending OAuth cookies. New Epic authorization requests now include `prompt=login` to request reauthentication instead of silently reusing Epic's remembered browser session. Seven-day EvoVerses sessions continue until expiry or explicit logout. All 24 web-auth tests pass, covering the prompt, session revocation, cookie cleanup, state binding, approved origins and hosted OAuth transport. Epic's security check blocks the automated browser, so the real remembered-session credential prompt must be confirmed in a normal browser. Recommended next step: sign out on beta, then sign in again and verify the fresh Epic login prompt.

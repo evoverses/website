@@ -38,6 +38,7 @@ test('authorization uses fixed Epic endpoint, registered callback, reviewed depl
  const {begin}=setup();const first=begin(),second=begin(),url=new URL(first.url);
  assert.equal(url.origin,'https://www.epicgames.com');assert.equal(url.pathname,'/id/authorize');
  assert.equal(url.searchParams.get('redirect_uri'),'http://localhost:3100/api/player/auth/epic/callback');
+ assert.equal(url.searchParams.get('prompt'),'login');
  assert.equal(url.searchParams.get('client_id'),config.clientId);assert.equal(url.searchParams.get('scope'),'basic_profile friends_list presence country');
  assert.match(first.cookie,/^[a-f0-9]{64}$/);assert.notEqual(first.cookie,first.state);assert.notEqual(first.state,second.state);
  assert.equal(first.url.includes(config.clientSecret),false);
