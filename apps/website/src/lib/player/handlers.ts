@@ -80,6 +80,7 @@ export async function playerMe(request: NextRequest) {
     if (!allowedHost(request)) return forbidden();
     const account = await getPlayerAccount();
     if (!account) return protect(NextResponse.json({ error: { code: "INVALID_SESSION" } }, { status: 401 }));
-    return protect(NextResponse.json({ ...account, inventory: await getPlayerInventory() }));
+    // Currency reads must not fail because a separate inventory projection is unavailable.
+    return protect(NextResponse.json(account));
   } catch { return protect(NextResponse.json({ error: { code: "SERVICE_UNAVAILABLE" } }, { status: 503 })); }
 }

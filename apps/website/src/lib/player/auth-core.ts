@@ -214,7 +214,7 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
       let stats: Record<string, number> | GeneratedEvoStats;
       try { stats = parseEvoStats(evo.stats, evo.speciesKey); } catch { return fail("SERVICE_UNAVAILABLE"); }
       if ("values" in stats && typeof stats.values === "object" &&
-          (typeof evo.displayId !== "string" || !/^E-[0-9]{10,20}$/.test(evo.displayId) || evo.breedable !== false || evo.generation !== null || evo.experience !== stats.experience)) return fail("SERVICE_UNAVAILABLE");
+          (typeof evo.displayId !== "string" || !/^E-[0-9]{10,20}$/.test(evo.displayId) || evo.breedable !== false || evo.generation !== null)) return fail("SERVICE_UNAVAILABLE");
       return { id: evo.id, speciesKey: evo.speciesKey, experience: evo.experience, stats, ...(evo.combat === undefined ? {} : {combat:parseCombat(evo.combat,"account:"+evo.id)}), ...(typeof evo.displayId === "string" && /^E-[0-9]{10,20}$/.test(evo.displayId) ? {displayId: evo.displayId} : {}) };
     });
     return { items, evos };

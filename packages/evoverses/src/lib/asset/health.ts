@@ -276,7 +276,7 @@ const speciesHealth: Record<string, { health: number; maxXp: number }> = {
 };
 
 export function levelHealth(baseHealth: number, level: number, training = 0): number {
-  const end = baseHealth + Math.floor(training / 5), start = Math.max(1, Math.round(end / 10));
+  const end = baseHealth + Math.floor(training / 5), start = Math.max(1, Math.round(end / 20));
   return Math.round((start * (100 - level) + end * (level - 1)) / 99);
 }
 

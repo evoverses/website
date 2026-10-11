@@ -1,4 +1,5 @@
 import { combatDetails, type CombatState } from "./combat";
+import { nftProgression } from "./evo";
 import { playerSessionCookie } from "../auth-core";
 import type { Inventory } from "../auth-core";
 import { ordinaryInventory } from "./model";
@@ -126,8 +127,13 @@ export async function inventoryHandler(
       try { for(let start=0;start<evos.length;start+=6){
         states.push(...await dependencies.readCombat(token,evos.slice(start,start+6).map(row=>({chainId:43114 as const,collection:"0x4151b8afa10653d304fdac9a781afccd45ec164c",tokenId:row.tokenId!}))));
       }
-      const verified=evos.map(row=>{const state=states.find(s=>s.resourceKey===`chain:43114:0x4151b8afa10653d304fdac9a781afccd45ec164c:${row.tokenId}`);if(!state)throw Error("Combat state unavailable");return combatDetails(row.details!,state);});
-      evos.forEach((row,index)=>{row.details=verified[index];});
+      const verified=evos.map(row=>{const state=states.find(s=>s.resourceKey===`chain:43114:0x4151b8afa10653d304fdac9a781afccd45ec164c:${row.tokenId}`);if(!state)throw Error("Combat state unavailable");const original=row.details!;
+        const details=state.experience===undefined ? original : nftProgression(row.species!,{
+          ...original.genetics,xp:state.experience,nature:original.nature,gender:original.gender,
+        });
+        if(!details || (state.level!==undefined && details.level!==state.level))throw Error("Invalid Evo progression");
+        return {details:combatDetails(details,state),xp:state.experience??row.xp};});
+      evos.forEach((row,index)=>{row.details=verified[index]!.details;row.xp=verified[index]!.xp;});
       }catch(error){if(error&&typeof error==="object"&&"code" in error&&error.code==="INVALID_SESSION")throw error;nfts.warnings.push("COMBAT_STATE_UNAVAILABLE");}
     }
     // Logout/unlink/new-link during upstream reads must not release a stale projection.

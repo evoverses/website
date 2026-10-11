@@ -243,3 +243,15 @@ test('seven-day login preserves backend expiry and browser cookie lifetime; long
  assert.ok(cookie[2].maxAge>=604790&&cookie[2].maxAge<=604800);
  const bad=setup({longSession:604801}),y=bad.begin();await reject(bad.flow.callback({state:y.state,cookie:y.cookie,code:'code'}),'SERVICE_UNAVAILABLE');
 });
+
+test('menu balance remains available without reading a broken inventory projection',async()=>{
+ let inventoryReads=0;
+ const handlers=load('src/lib/player/handlers.ts',{'server-only':{},'next/server':{NextResponse:Reply},'./auth-core':core,'./server':{
+  playerLoginEnabled:true,getPlayerWebOrigin:()=>core.playerWebOrigin,
+  getPlayerAccount:async()=>profile,
+  getPlayerInventory:async()=>{inventoryReads++;throw Error('Invalid unlocked combat move');}
+ }});
+ const response=await handlers.playerMe(req('http://localhost:3100/api/player/me'));
+ assert.equal(response.status,200);assert.equal(response.body.balance.evoros,125);
+ assert.equal(inventoryReads,0);assert.equal(response.body.inventory,undefined);
+});

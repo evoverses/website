@@ -294,3 +294,7 @@ Play Now now opens `/download`. Current approved beta accounts may download a pu
 Validation: nine targeted download/upload tests; production build and live restrictions recorded in the deployment work log. Recommended next step: upload the first Windows ZIP, publish it, then verify a tester download, resumed download and game launch.
 
 Game-download administration now includes confirmed **Unpublish** and **Delete** actions. Unpublish retains the file but disables downloads; Delete removes the file and upload receipts, with protection for the active published build. Lifecycle operations are serialised and audited in R2. See the [download operator notes](docs/beta-game-downloads.md).
+
+## Ranked profile/inventory compatibility - 11 October 2026
+
+Synced Lamphal/Kaos starter moves with the current game; accepted earned Evo XP independently of birth stats; used verified account-service XP for NFT move/stat projection; separated the menu balance response from inventory loading; matched the level-HP display curve to account policy revision 2. No saved balances, Evos, HP/PP or recovery deadlines were changed. Inventory (24), player/admin/auth and marketplace (66) checks and production Next/OpenNext builds pass. See `docs/profile-ranked-progression-2026-10-11.md`. Next: signed-in checks of the reported profiles, including Chalkrunner.

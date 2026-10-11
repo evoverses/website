@@ -2,6 +2,7 @@
 export type CombatState = {
   resourceKey: string; currentHealth: number; maxHealth: number; version: number;
   recoverAt: string | null; equipped: number[];
+  level?: number; experience?: number;
   moves: { id: number; remaining: number; maximum: number; equipped: boolean }[];
 };
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -15,6 +16,9 @@ export function parseCombat(value: unknown, expectedKey?: string): CombatState {
       !Array.isArray(value.moves) || !value.moves.length || value.moves.length > 300 ||
       !Array.isArray(value.equipped) || !value.equipped.length || value.equipped.length > 4 ||
       new Set(value.equipped).size !== value.equipped.length || value.equipped.some(id => !whole(id, 1, 2147483647))) return invalid();
+  // Older responses may omit progression; current responses must supply a valid pair.
+  const hasProgression = value.level !== undefined || value.experience !== undefined;
+  if (hasProgression && (!whole(value.level, 1, 100) || !whole(value.experience, 0, Number.MAX_SAFE_INTEGER))) return invalid();
   const equipped = value.equipped as number[];
   const moves = value.moves.map(m => {
     if (!record(m) || !whole(m.id, 1, 2147483647) || !whole(m.maximum, 1, 1000) || !whole(m.remaining, 0, Number(m.maximum)) ||
@@ -22,7 +26,7 @@ export function parseCombat(value: unknown, expectedKey?: string): CombatState {
     return {id:m.id, remaining:m.remaining, maximum:m.maximum, equipped:m.equipped};
   });
   if(new Set(moves.map(m=>m.id)).size!==moves.length || equipped.some(id=>!moves.some(m=>m.id===id))) return invalid();
-  return {resourceKey:value.resourceKey,currentHealth:value.currentHealth,maxHealth:value.maxHealth as number,version:value.version,recoverAt:value.recoverAt as string|null,equipped,moves};
+  return {...(hasProgression ? {level:value.level as number,experience:value.experience as number} : {}),resourceKey:value.resourceKey,currentHealth:value.currentHealth,maxHealth:value.maxHealth as number,version:value.version,recoverAt:value.recoverAt as string|null,equipped,moves};
 }
 export function combatDetails<T extends {currentHealth:number; values?:Record<string,number>; moves:{id:number;equipped:boolean;unlocked:boolean}[]}>(details:T, state:CombatState): T & {maxHealth:number;combatVerified:true;recoverAt:string|null;combatVersion:number} {
   // Existing level/unlock rules stay authoritative; a malformed projection is never displayed as full PP.

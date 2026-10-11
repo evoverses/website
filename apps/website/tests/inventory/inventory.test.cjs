@@ -551,9 +551,9 @@ test("website account reader accepts the real nested pack format without forward
   assert.equal(inventory.evos[0].stats.privateOperatorNote, undefined);
 });
 test("same Epic identity in game and website reads one saved pack roster; other accounts cannot see it", async () => {
-  const gameRoot = path.resolve(
-    __dirname,
-    "../../../../../evoverses-beta-account-bridge/Prototypes/player_economy",
+  const gameRoot = path.join(
+    process.env.EVOVERSES_ACCOUNT_TEST_REPO || path.resolve(__dirname, "../../../../../evoverses-beta-account-bridge"),
+    "Prototypes/player_economy",
   );
   const { localPGlite, setup } = require(
     path.join(gameRoot, "scripts/fixtures.cjs"),
@@ -804,8 +804,8 @@ test("owned NFT details use genes and real XP unlocks; preserve zero HP and omit
   };
   const one = nftProgression("nissel", m);
   assert.equal(one.level, 1);
-  assert.equal(one.currentHealth, 28);
-  assert.equal(one.values.health, 28);
+  assert.equal(one.currentHealth, 14);
+  assert.equal(one.values.health, 14);
   assert.equal(one.geneticHealthAvailable, false);
   assert.equal(one.moves.filter((v) => v.unlocked).length, 2);
   const seven = nftProgression("nissel", { ...m, xp: 309, currentHealth: 0 });
@@ -896,9 +896,76 @@ test("high authored move IDs retain verified website HP and PP without admitting
 test('variable HP projects the level curve and verified combat maximum without changing genes or PP',()=>{
  const {levelHealth,nftProgression}=require(path.join(base,'lib/player/inventory/evo.js'));
  const {parseCombat,combatDetails}=require(path.join(base,'lib/player/inventory/combat.js'));
- for(const b of [210,215,240,280,355]){assert.equal(levelHealth(b,1),Math.round(b/10));assert.equal(levelHealth(b,100),b);for(let l=1;l<=100;l++)assert.equal(levelHealth(b,l),Math.round(Math.round(b/10)+(b-Math.round(b/10))*(l-1)/99));}
- const details=nftProgression('kitsul',{xp:0,nature:'loyal',gender:'male',attack:25,special:25,defense:25,resistance:25,speed:25});assert.equal(details.maxHealth,21);assert.equal(details.projected.health,210);
+ for(const b of [210,215,240,280,355]){assert.equal(levelHealth(b,1),Math.round(b/20));assert.equal(levelHealth(b,100),b);for(let l=1;l<=100;l++)assert.equal(levelHealth(b,l),Math.round(Math.round(b/20)+(b-Math.round(b/20))*(l-1)/99));}
+ const details=nftProgression('kitsul',{xp:0,nature:'loyal',gender:'male',attack:25,special:25,defense:25,resistance:25,speed:25});assert.equal(details.maxHealth,11);assert.equal(details.projected.health,210);
  const state={resourceKey:'fixture',currentHealth:7,maxHealth:21,version:3,recoverAt:null,equipped:[4001],moves:[{id:4001,remaining:0,maximum:42,equipped:true}]};
  const projected=combatDetails(details,parseCombat(state));assert.equal(projected.currentHealth,7);assert.equal(projected.values.health,21);assert.equal(projected.moves.find(m=>m.id===4001).remainingPP,0);assert.deepEqual(projected.genetics,details.genetics);
  for(const bad of [{...state,currentHealth:22},{...state,maxHealth:0},{...state,maxHealth:21.1},{...state,maxHealth:10001}])assert.throws(()=>parseCombat(bad));
+});
+
+// Ranked state uses the current authored learnsets. Website projections must
+// accept starter damaging moves without resetting persisted battle HP or PP.
+test("Lamphal Drainage and Kaos Tackle unlock at level one in account and NFT profiles", () => {
+  const { nftProgression } = require(path.join(base, "lib/player/inventory/evo.js"));
+  const { parseCombat, combatDetails } = require(path.join(base, "lib/player/inventory/combat.js"));
+  for (const [species, id, name] of [["lamphal", 2001, "Drainage"], ["kaos", 4001, "Tackle"]]) {
+    const stats = parseEvoStats({ ...generatedStats(), moves: [id] }, species);
+    const generated = evoProgression(species, stats, 0);
+    const nft = nftProgression(species, {xp:0,nature:"loyal",gender:"female",attack:25,special:25,defense:25,resistance:25,speed:25});
+    for (const details of [generated, nft]) {
+      const move = details.moves.find(m => m.id === id);
+      assert.equal(move.level, 1); assert.equal(move.unlocked, true); assert.equal(move.name, name);
+      const state = parseCombat({resourceKey:"account:starter-fixture",currentHealth:0,maxHealth:details.maxHealth,version:9,recoverAt:"2026-10-12T00:00:00.000Z",equipped:[id],moves:[{id,remaining:0,maximum:42,equipped:true}]});
+      const projected = combatDetails(details, state);
+      assert.equal(projected.currentHealth, 0);
+      assert.equal(projected.moves.find(m=>m.id===id).remainingPP, 0);
+      assert.equal(projected.recoverAt, state.recoverAt);
+      assert.equal(projected.combatVersion, 9);
+      const locked = details.moves.find(m => !m.unlocked);
+      if (locked) assert.throws(()=>combatDetails(details,{...state,equipped:[locked.id],moves:[{...state.moves[0],id:locked.id}]}),/Invalid unlocked combat move/);
+      assert.throws(()=>combatDetails(details,{...state,equipped:[2147483647],moves:[{...state.moves[0],id:2147483647}]}),/Invalid unlocked combat move/);
+    }
+    const rows = ordinaryInventory({items:[],evos:[{id:owned.evos[0].id,speciesKey:species,experience:0,stats,combat:{resourceKey:"account:"+owned.evos[0].id,currentHealth:0,maxHealth:generated.maxHealth,version:9,recoverAt:null,equipped:[id],moves:[{id,remaining:0,maximum:42,equipped:true}]}}]});
+    assert.equal(rows[0].details.currentHealth, 0);
+    assert.equal(rows[0].details.moves.find(m=>m.id===id).remainingPP, 0);
+  }
+});
+
+test("ranked XP is independent of immutable birth stats and preserves account HP and PP", async () => {
+  const id = owned.evos[0].id;
+  const stats = { ...generatedStats(), moves: [2001] };
+  const combat = {resourceKey:"account:"+id,currentHealth:0,maxHealth:11,version:7,recoverAt:null,equipped:[2001],moves:[{id:2001,remaining:0,maximum:42,equipped:true}]};
+  const auth = createPlayerWebAuth({configuration:()=>({apiUrl:"http://127.0.0.1:50999",clientId:"fixture",clientSecret:"synthetic",applicationId:"fixture",deploymentId:"fixture"}),fetchImpl:async()=>Response.json({items:[],evos:[{id,speciesKey:"lamphal",experience:20,stats,combat,displayId:"E-0000000042",breedable:false,generation:null}]})});
+  const inventory = await auth.readInventory("a".repeat(64));
+  assert.equal(inventory.evos[0].experience,20);
+  assert.equal(inventory.evos[0].stats.experience,0);
+  assert.equal(inventory.evos[0].stats.level,1);
+  const row = ordinaryInventory(inventory)[0];
+  assert.equal(row.details.level,2);
+  assert.equal(row.details.currentHealth,0);
+  assert.equal(row.details.moves.find(m=>m.id===2001).remainingPP,0);
+  assert.equal(row.details.combatVersion,7);
+});
+
+test("NFT inventory uses verified ranked XP instead of stale metadata without resetting combat state", async () => {
+  const { parseCombat } = require(path.join(base, "lib/player/inventory/combat.js"));
+  const catalogue = require(path.join(base, "data/evo-progression.json"));
+  const experience = Math.round((8 ** 3 * catalogue.species.kitsul.maxXp) / 1000000);
+  const metadata = {type:"EVO",species:"kitsul",generation:0,chroma:"none",xp:0,nature:"loyal",gender:"female",attack:25,special:25,defense:25,resistance:25,speed:25};
+  const raw = {resourceKey:`chain:43114:${collection}:1`,level:8,experience,currentHealth:0,maxHealth:23,version:12,recoverAt:"2026-10-12T00:00:00.000Z",equipped:[1005],moves:[{id:1005,remaining:0,maximum:20,equipped:true}]};
+  const state = parseCombat(raw);
+  const response = await inventoryHandler(request(),deps({sources:sources([asset(1,a,{metadata})]),readCombat:async()=>[state]}));
+  assert.equal(response.status,200);
+  const {nfts} = await response.json();
+  assert.equal(nfts.warnings.includes("COMBAT_STATE_UNAVAILABLE"),false);
+  const row=nfts.rows[0];
+  assert.equal(row.xp,experience);assert.equal(row.details.level,8);
+  assert.equal(row.details.currentHealth,0);assert.equal(row.details.maxHealth,23);
+  assert.equal(row.details.recoverAt,raw.recoverAt);assert.equal(row.details.combatVersion,12);
+  const move=row.details.moves.find(m=>m.id===1005);
+  assert.equal(move.unlocked,true);assert.equal(move.name,catalogue.moveNames[1005]);assert.equal(move.remainingPP,0);
+  assert.ok(row.details.moves.filter(m=>!m.unlocked).every(m=>m.name==="New move"));
+  for(const patch of [{level:0},{level:101},{experience:-1},{experience:0.5},{level:undefined},{experience:undefined}])assert.throws(()=>parseCombat({...raw,...patch}));
+  const mismatch=await inventoryHandler(request(),deps({sources:sources([asset(1,a,{metadata})]),readCombat:async()=>[{...state,level:9}]}));
+  assert.ok((await mismatch.json()).nfts.warnings.includes("COMBAT_STATE_UNAVAILABLE"));
 });
