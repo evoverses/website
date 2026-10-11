@@ -8,7 +8,7 @@ async function serve(request:Request,head=false){
   if(id&&!buildIdPattern.test(id))throw new AccessError(400,'INVALID_BUILD');
   let build=current;
   if(id&&id!==current?.id){if(!(await b.head(`released/${id}.json`)))throw new AccessError(404,'BUILD_NOT_FOUND');const record=await b.get(recordKey(id));build=record?await record.json<NonNullable<typeof current>>():null;}
-  if(!build)return Response.json({error:'NO_BUILD_AVAILABLE'},{status:404,headers:privateHeaders()});
+  if(!build||build.deleted||!(await b.head(`released/${build.id}.json`)))return Response.json({error:'NO_BUILD_AVAILABLE'},{status:404,headers:privateHeaders()});
   const metadata=await b.head(fileKey(build.id));if(!metadata)throw new AccessError(503,'FILE_UNAVAILABLE');
   const headers=privateHeaders();headers.set('Accept-Ranges','bytes');headers.set('Content-Type','application/zip');headers.set('Content-Disposition',`attachment; filename="${build.filename}"`);headers.set('ETag',metadata.httpEtag);
   let range;

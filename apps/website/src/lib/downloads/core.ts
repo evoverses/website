@@ -2,7 +2,7 @@
 export const partSize = 16 * 1024 * 1024;
 export const maximumSize = 5 * 1024 * 1024 * 1024;
 export const buildIdPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
-export type Build = { id:string; version:string; filename:string; size:number; notes:string; createdAt:string; administratorId:string; uploadId:string; ready?:boolean; aborted?:boolean };
+export type Build = { id:string; version:string; filename:string; size:number; notes:string; createdAt:string; administratorId:string; uploadId:string; ready?:boolean; aborted?:boolean; deleted?:boolean; deletionComplete?:boolean; available?:boolean };
 export function validateBuild(value:unknown) {
  const v=value as Record<string,unknown>;
  if(!v || Object.keys(v).some(k=>!['version','filename','size','notes'].includes(k)) || typeof v.version!=='string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,63}$/.test(v.version) || typeof v.filename!=='string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,119}\.zip$/i.test(v.filename) || typeof v.size!=='number' || !Number.isSafeInteger(v.size) || v.size<1 || v.size>maximumSize || typeof v.notes!=='string' || v.notes.length>2000) throw Error('INVALID_BUILD');

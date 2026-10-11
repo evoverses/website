@@ -26,7 +26,7 @@ export async function permission(admin=false) {
 // A narrow structural interface avoids depending on global Worker types in Next.js.
 export type ObjectInfo={size:number;etag:string;httpEtag:string};
 export type StoredObject=ObjectInfo & {body:ReadableStream<Uint8Array>;json:<T>()=>Promise<T>};
-export type Bucket={get:(key:string,options?:{range:{offset:number;length:number}})=>Promise<StoredObject|null>;head:(key:string)=>Promise<ObjectInfo|null>;put:(key:string,value:string|ArrayBuffer,options?:{onlyIf:{etagMatches?:string;etagDoesNotMatch?:string}})=>Promise<ObjectInfo|null>;list:(options:{prefix:string;limit:number;cursor?:string})=>Promise<{objects:{key:string}[];truncated:boolean;cursor?:string}>;createMultipartUpload:(key:string)=>Promise<{uploadId:string}>;resumeMultipartUpload:(key:string,id:string)=>{uploadPart:(part:number,data:ArrayBuffer)=>Promise<{partNumber:number;etag:string}>;complete:(parts:{partNumber:number;etag:string}[])=>Promise<ObjectInfo>;abort:()=>Promise<void>}};
+export type Bucket={delete:(key:string|string[])=>Promise<void>;get:(key:string,options?:{range:{offset:number;length:number}})=>Promise<StoredObject|null>;head:(key:string)=>Promise<ObjectInfo|null>;put:(key:string,value:string|ArrayBuffer,options?:{onlyIf:{etagMatches?:string;etagDoesNotMatch?:string}})=>Promise<ObjectInfo|null>;list:(options:{prefix:string;limit:number;cursor?:string})=>Promise<{objects:{key:string}[];truncated:boolean;cursor?:string}>;createMultipartUpload:(key:string)=>Promise<{uploadId:string}>;resumeMultipartUpload:(key:string,id:string)=>{uploadPart:(part:number,data:ArrayBuffer)=>Promise<{partNumber:number;etag:string}>;complete:(parts:{partNumber:number;etag:string}[])=>Promise<ObjectInfo>;abort:()=>Promise<void>}};
 export async function bucket():Promise<Bucket> {
  const context=await getCloudflareContext({async:true});
  const b=(context.env as unknown as {GAME_BUILDS?:Bucket}).GAME_BUILDS;
@@ -36,7 +36,22 @@ export const recordKey=(id:string)=>`records/${id}.json`;
 export const fileKey=(id:string)=>`files/${id}.zip`;
 export async function currentBuild(b:Bucket):Promise<Build|null>{
  const pointer=await b.get('published.json');if(!pointer)return null;
- const p=await pointer.json<{id:string}>();
+ const p=await pointer.json<{id:string|null}>();
+ if(!p.id||!(await b.head(`released/${p.id}.json`)))return null;
  const record=await b.get(recordKey(p.id));if(!record)return null;
- const build=await record.json<Build>();return build.ready?build:null;
+ const build=await record.json<Build>();return build.ready&&!build.deleted?build:null;
+}
+
+// R2 has no transaction spanning the release pointer and file objects. Serialise
+// lifecycle changes with a conditional lease; a crashed request expires safely.
+export async function withBuildLease<T>(b:Bucket,operation:()=>Promise<T>):Promise<T> {
+ const key='build-lifecycle-lease.json',prior=await b.get(key),now=Date.now();
+ if(prior&&(await prior.json<{expiresAt:number}>()).expiresAt>now)throw new AccessError(409,'BUILD_OPERATION_BUSY');
+ const lease=await b.put(key,JSON.stringify({expiresAt:now+120000,owner:crypto.randomUUID()}),{onlyIf:prior?{etagMatches:prior.etag}:{etagDoesNotMatch:'*'}});
+ if(!lease)throw new AccessError(409,'BUILD_OPERATION_BUSY');
+ const claimedAt=Date.now();
+ try{return await operation();}finally{
+  // R2 allows one write per second to an object: space claim/release writes.
+  await new Promise(resolve=>setTimeout(resolve,Math.max(0,1100-(Date.now()-claimedAt))));
+  await b.put(key,JSON.stringify({expiresAt:0}),{onlyIf:{etagMatches:lease.etag}});}
 }

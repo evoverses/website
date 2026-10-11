@@ -24,10 +24,20 @@ The server generates storage paths from a validated request UUID, fixes expected
 
 Chunk requests stay below the Cloudflare front-door body limit. Administrator authorisation can be rate limited: the UI retries transient 429/503 responses. Chunks are bounded in memory; the full game is never sent through a single Worker request.
 
-Old complete builds are retained; no automatic destructive retention policy is enabled. Monitor R2 usage and remove obsolete builds through reviewed maintenance. At approximately 1.6 GB each, six builds are near the 10 GB-month free Standard storage allowance. Incomplete R2 multipart data uses R2's default expiry; cancelled record metadata remains for traceability. No game data has been imported as part of setup.
+Old complete builds are retained unless an administrator explicitly deletes them; no automatic destructive retention policy is enabled. Monitor R2 usage and remove obsolete builds through the admin Delete control. At approximately 1.6 GB each, six builds are near the 10 GB-month free Standard storage allowance. Incomplete R2 multipart data uses R2's default expiry; cancelled record metadata remains for traceability. No game data has been imported as part of setup.
 
 ## Evidence and remaining checks
 
 `apps/website/tests/player/downloads.test.cjs` covers access denial, origin restrictions, sizes/ranges, repeated start/completion, changed chunk rejection, incomplete publication, private ranged downloads, immediate denial after session revocation, stale publication and cancellation.
 
 Production compilation and live anonymous restrictions are checked before rollout. A real 1.6 GB upload, download/resume and launch must be checked when the release ZIP is available. ZIP validation is a format check, not malware scanning or a code-signing guarantee. Build signing/checksums can be added to release tooling later.
+
+## Unpublish and Delete (2026-10-11)
+
+- **Unpublish** withdraws a build from downloads, including its previously issued stable URL. The ZIP remains stored and may be published again. With no current publication, approved testers see “No build available yet”. Existing streams/downloaded copies cannot be recalled.
+- **Delete** permanently removes the ZIP and multipart receipts. The currently published build must be unpublished first. The confirmation names the version and file. Incomplete and cancelled uploads may also be deleted.
+- Any current administrator may manage builds, including those uploaded by another administrator. Origin/session/role checks apply to both operations.
+- Small deletion tombstones and publication/deletion audit records are retained; deleted builds disappear from the list after cleanup succeeds. A failed cleanup stays visible as “Deletion pending” and may be retried. Tombstones prevent delayed upload/completion retries from restoring deleted builds.
+- Publication, unpublication, completion, cancellation and deletion share an R2 conditional lease, preventing concurrent lifecycle changes. An abandoned lease expires after two minutes. No account database migration is involved.
+
+Regression evidence includes withdrawn old links, retained/re-published files, active-build protection, explicit delete confirmation, incomplete/cancelled cleanup, stale unpublication and concurrent lifecycle protection. No existing beta build was unpublished or deleted during automated checks.
