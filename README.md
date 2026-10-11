@@ -278,3 +278,7 @@ Deployed to the hosted beta: seven-day website/backend sessions with revocation,
 ## Account cleanup and bulk actions — 11 October 2026
 
 Beta administration now supports confirmed account deletion and checkboxes for bulk actions, excluding Make admin. Closed accounts disappear from the list, lose sessions and wallet links, and retain immutable history. Protected admins and accounts in active battles cannot be deleted. Bulk requests retain their receipt IDs during uncertain retries. See [implementation, checks and rollout](docs/admin-account-management-2026-10-11.md).
+
+## Menu EVO balance rounding — 11 October 2026
+
+The top menu rounds the connected wallet's EVO balance to the nearest whole token, with comma separators. Exact integer arithmetic preserves large balances. Store balances, quotes and payment amounts retain their existing precision. All five balance-format tests pass. Recommended next step: refresh beta with Pro mode enabled and check the menu balance.

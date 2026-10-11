@@ -33,7 +33,7 @@ export function CurrencyBalances({ playerId, evoros }: { playerId?: string; evor
     if (playerId && evoros !== undefined) queries.setQueryData(["player-menu-balance", playerId], { evoros });
   }, [playerId, evoros, queries]);
   const evorosText = !playerId || balance.data === null ? "—" : balance.isError ? "Unavailable" : balance.data?.evoros.toLocaleString("en-US") ?? "…";
-  const evoText = !account ? "—" : evo.isError ? "Unavailable" : evo.data === undefined ? "…" : formatEvoBalance(evo.data);
+  const evoText = !account ? "—" : evo.isError ? "Unavailable" : evo.data === undefined ? "…" : formatEvoBalance(evo.data, true);
   const badge = "flex items-center gap-1.5 rounded-md border bg-muted/30 px-2 py-1.5 text-xs sm:text-sm tabular-nums min-w-0";
   return <div className="flex items-center gap-1 sm:gap-2" aria-label="Currency balances">
     <Link href={playerId && balance.data !== null ? "/store" : "/signin"} className={badge} data-testid="navbar-evoros" title={playerId && balance.data !== null ? "Your Evoros game balance" : "Sign in to see your Evoros"} aria-label={`Evoros balance: ${evorosText}`}>

@@ -32,3 +32,11 @@ test("missing, malformed and negative balances are rejected instead of fabricate
     assert.throws(() => formatEvoBalance(value), /Invalid EVO balance/);
   }
 });
+
+ test("menu balance rounds to the nearest whole EVO without losing large integer precision", () => {
+  assert.equal(formatEvoBalance("1234.499999999999999999", true), "1,234");
+  assert.equal(formatEvoBalance("1234.5", true), "1,235");
+  assert.equal(formatEvoBalance("999.999", true), "1,000");
+  assert.equal(formatEvoBalance("0.000000000000000001", true), "0");
+  assert.equal(formatEvoBalance("9007199254740993123456.75", true), "9,007,199,254,740,993,123,457");
+ });
