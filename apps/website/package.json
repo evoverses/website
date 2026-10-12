@@ -23,7 +23,8 @@
     "test:inventory": "node scripts/test-inventory.cjs",
     "dev:beta": "next dev --hostname 0.0.0.0 --port 3100",
     "test:game-inventory": "node --test tests/inventory/game-feed.test.cjs tests/inventory/game-team.test.cjs",
-    "test:game-store:local": "node --test tests/inventory/game-store.test.cjs"
+    "test:game-store:local": "node --test tests/inventory/game-store.test.cjs",
+    "test:leaderboard": "node --test tests/leaderboard/*.test.cjs"
   },
   "dependencies": {
     "@auth/core": "0.39.1",

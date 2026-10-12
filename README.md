@@ -298,3 +298,7 @@ Game-download administration now includes confirmed **Unpublish** and **Delete**
 ## Ranked profile/inventory compatibility - 11 October 2026
 
 Synced Lamphal/Kaos starter moves with the current game; accepted earned Evo XP independently of birth stats; used verified account-service XP for NFT move/stat projection; separated the menu balance response from inventory loading; matched the level-HP display curve to account policy revision 2. No saved balances, Evos, HP/PP or recovery deadlines were changed. Inventory (24), player/admin/auth and marketplace (66) checks and production Next/OpenNext builds pass. See `docs/profile-ranked-progression-2026-10-11.md`. Next: signed-in checks of the reported profiles, including Chalkrunner.
+
+## Trainer leaderboard - 12 October 2026
+
+Implemented a public trainer leaderboard with UTC Day/Week/Month/All-time tabs, uncapped earned-XP scores, capped levels, ranked competitive statistics, tied rankings, pagination and a private own-position summary. Uses the existing account database and service credential, with read-only queries and 60-second public caching. Local tests, production builds and desktop/mobile layout checks pass. Publishing is pending the expired AWS login being renewed; this feature is not live yet. See `docs/trainer-leaderboard.md` for interfaces, evidence and rollout steps.

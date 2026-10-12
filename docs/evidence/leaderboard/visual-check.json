@@ -1,0 +1,27 @@
+{
+  "fixture": "Actual leaderboard component and production CSS; synthetic rankings/query results and a Button style double. No player data changed.",
+  "views": [
+    {
+      "name": "desktop",
+      "pageWidth": 1440,
+      "viewport": 1440,
+      "tableWidth": 1230,
+      "tabs": 4,
+      "rows": 8,
+      "own": true,
+      "selected": 1,
+      "keyboardTabs": 1
+    },
+    {
+      "name": "mobile",
+      "pageWidth": 390,
+      "viewport": 390,
+      "tableWidth": 920,
+      "tabs": 4,
+      "rows": 8,
+      "own": true,
+      "selected": 1,
+      "keyboardTabs": 1
+    }
+  ]
+}
