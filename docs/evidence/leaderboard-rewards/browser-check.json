@@ -1,0 +1,17 @@
+{
+  "fixture": "Actual React components, query library, Radix dialogs, shared UI and production CSS. Local item artwork. Synthetic API only; no real accounts or grants.",
+  "checks": [
+    "Both dialogs open; all three prize periods show loaded item artwork; Escape restores trigger focus; archive loads only when opened.",
+    "390px prize dialog fits the viewport and scrolls vertically.",
+    "Admin approval stops on a changed preview and requires confirmation of its new hash before displaying success."
+  ],
+  "screenshots": [
+    "prizes-daily.png",
+    "prizes-weekly.png",
+    "prizes-monthly.png",
+    "past-winners.png",
+    "prizes-mobile.png",
+    "approval-changed-preview.png",
+    "admin-awarded.png"
+  ]
+}

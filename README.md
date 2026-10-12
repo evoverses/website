@@ -302,3 +302,9 @@ Synced Lamphal/Kaos starter moves with the current game; accepted earned Evo XP 
 ## Trainer leaderboard - 12 October 2026
 
 Implemented a public trainer leaderboard with UTC Day/Week/Month/All-time tabs, uncapped earned-XP scores, capped levels, ranked competitive statistics, tied rankings, pagination and a private own-position summary. Uses the existing account database and service credential, with read-only queries and 60-second public caching. Local tests, production builds and desktop/mobile layout checks pass. Publishing is pending the expired AWS login being renewed; this feature is not live yet. See `docs/trainer-leaderboard.md` for interfaces, evidence and rollout steps.
+
+### Leaderboard rewards checkpoint — 2026-10-12
+
+Daily prizes are automatic; weekly/monthly prizes require administrator approval. The beta-admin reward table previews eligible winners and confirms transactional grants; profiles show permanent monthly medals and reward history. The leaderboard's **View prizes** and **Past winners** buttons open graphic, mobile-friendly dialogs using the existing item artwork. Packs enter Inventory unopened. Public rank stays left and scoring XP stays right.
+
+See [reward rules, interfaces, tests and release log](docs/leaderboard-rewards.md). Backend migration 022 and the account-service update must be deployed before publishing these website changes. No real reward grants or hosted changes were made during implementation; AWS sign-in is still required for release.

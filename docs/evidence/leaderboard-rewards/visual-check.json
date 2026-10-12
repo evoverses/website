@@ -1,0 +1,10 @@
+{
+  "fixture": "Actual components and production CSS; synthetic query results and primitive style doubles. No real account activity or grants.",
+  "views": [
+    {
+      "name": "profile-badges",
+      "pageWidth": 900,
+      "viewport": 900
+    }
+  ]
+}

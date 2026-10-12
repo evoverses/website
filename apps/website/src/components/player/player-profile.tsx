@@ -1,3 +1,4 @@
+import { TrainerRewards } from "./leaderboard-rewards";
 import { WalletLink } from "./wallet-link";
 import { AccountInventoryView } from "./account-inventory";
 import { ProOnly } from "@/components/providers/pro-mode-provider";
@@ -49,6 +50,7 @@ export function PlayerProfile({
           </p>
         </section>
       </div>
+      <TrainerRewards playerId={account.player.id} />
       <ProOnly>
         {walletLinkEnabled && <WalletLink playerId={account.player.id} />}
       </ProOnly>

@@ -1,4 +1,5 @@
 "use client";
+import { LeaderboardPrizes } from "@/components/player/leaderboard-rewards";
 import { useState, type KeyboardEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy, RefreshCw } from "lucide-react";
@@ -40,5 +41,6 @@ export function TrainerLeaderboard({signedIn}:{signedIn:boolean}){
    {data?.entries.length===0&&<p className="p-8 text-center text-muted-foreground">{data.total===0?"No ranked activity in this period yet. Play a ranked battle to join the leaderboard.":"No trainers on this page."}</p>}
   </section>
   {data&&<div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground"><span>{data.periodStart?`From ${new Date(data.periodStart).toUTCString()} · `:""}Updated {new Date(data.calculatedAt).toUTCString()}</span><div className="flex items-center gap-3"><Button variant="outline" disabled={page===0||board.isFetching} onClick={()=>setPage(p=>p-1)}>Previous</Button><span>Page {page+1} of {Math.max(1,Math.ceil(data.total/50))}</span><Button variant="outline" disabled={(page+1)*50>=data.total||board.isFetching} onClick={()=>setPage(p=>p+1)}>Next</Button></div></div>}
+  <LeaderboardPrizes />
  </main>;
 }

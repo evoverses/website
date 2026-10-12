@@ -4,7 +4,7 @@ const React=require('react'),{renderToStaticMarkup}=require('react-dom/server'),
 const compiled=ts.transpileModule(fs.readFileSync('src/app/leaderboard/trainer-leaderboard.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
 function render(period){
  const entries=[1,2,3,4].map(rank=>({rank,name:`Trainer ${rank}`,level:10,periodXp:period==='all'?900:100,lifetimeXp:900,battles:2,wins:1,losses:1,winRate:50}));
- const stubs={react:{...React,useState:value=>[value==='day'?period:value,()=>{}]},'@tanstack/react-query':{useQuery:({queryKey})=>({data:queryKey[0]==='trainer-leaderboard-own'?undefined:{period,page:0,total:4,entries,calculatedAt:'2026-10-12T10:00:00Z'},isFetching:false})},'@workspace/ui/components/button':{Button:({variant,...props})=>React.createElement('button',props)},'@/lib/leaderboard/core':{}};
+ const stubs={'@/components/player/leaderboard-rewards':{LeaderboardPrizes:()=>null},react:{...React,useState:value=>[value==='day'?period:value,()=>{}]},'@tanstack/react-query':{useQuery:({queryKey})=>({data:queryKey[0]==='trainer-leaderboard-own'?undefined:{period,page:0,total:4,entries,calculatedAt:'2026-10-12T10:00:00Z'},isFetching:false})},'@workspace/ui/components/button':{Button:({variant,...props})=>React.createElement('button',props)},'@/lib/leaderboard/core':{}};
  const module={exports:{}};vm.runInNewContext(compiled,{module,exports:module.exports,require:name=>stubs[name]??require(name)});
  return renderToStaticMarkup(React.createElement(module.exports.TrainerLeaderboard,{signedIn:false}));
 }
