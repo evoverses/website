@@ -1,0 +1,11 @@
+{
+  "mode": "Actual React panel with synthetic wallet SDK and API; no blockchain transaction",
+  "checks": [
+    "Standby blocks sending",
+    "Pending receipt retries reuse the hash",
+    "Timely payment can verify after the displayed deadline",
+    "Unknown send outcome blocks automatic repeat transfer",
+    "Manual hash recovery confirms the original intent",
+    "No page errors"
+  ]
+}

@@ -6,7 +6,8 @@
     "Admin reviews and confirms winners and first linked wallet addresses",
     "Paid checkbox requires transaction hash and note before confirmation",
     "Confirmed status and audit log refresh together",
-    "390px layout contains table scrolling"
+    "390px layout contains table scrolling",
+    "Discretionary rollover requires reason and confirmation, then refreshes remaining reserve"
   ],
   "screenshots": [
     "monthly-pro.png",
@@ -14,6 +15,7 @@
     "confirm-winners.png",
     "record-payment.png",
     "admin-paid-audit.png",
-    "monthly-pro-mobile.png"
+    "monthly-pro-mobile.png",
+    "rollover-confirmation.png"
   ]
 }

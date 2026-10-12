@@ -22,7 +22,7 @@ test('Monthly Pro rules are a readable list covering scoring, eligibility, ties 
  const React=require('react'),{renderToStaticMarkup}=require('react-dom/server');const mod={exports:{}};
  const compiled=ts.transpileModule(fs.readFileSync('src/components/player/pro-leaderboard.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
  const stubs={react:{...React,useState:v=>[typeof v==='function'?v():v,()=>{}]},'@tanstack/react-query':{useQuery:()=>({data:{pool:'1000',entries:[],total:0},isFetching:false})},'@workspace/ui/components/button':{Button:({variant,...props})=>React.createElement('button',props)},'@workspace/ui/components/input':{Input:props=>React.createElement('input',props)},'./pro-entry-panel':{ProEntryPanel:()=>null},'@/lib/leaderboard/pro-core':core};
- vm.runInNewContext(compiled,{module:mod,exports:mod.exports,Date,require:name=>stubs[name]??require(name)});const html=renderToStaticMarkup(React.createElement(mod.exports.ProLeaderboard));assert.equal((html.match(/<li>/g)||[]).length,7);for(const text of ['10 all-NFT ranked matches','Mixed teams','50%, 30% and 20%','40% each','first linked wallet','Friendly battles and PvBot'])assert.ok(html.includes(text),text);
+ vm.runInNewContext(compiled,{module:mod,exports:mod.exports,Date,require:name=>stubs[name]??require(name)});const html=renderToStaticMarkup(React.createElement(mod.exports.ProLeaderboard));assert.equal((html.match(/<li>/g)||[]).length,7);for(const text of ['10 all-NFT ranked matches','Mixed teams','50%, 30% and 20%','40% each','first linked wallet','Friendly battles and PvBot','Entry fees are not refunded','including when nobody qualifies','rollover is not automatic'])assert.ok(html.includes(text),text);
 });
 
 test('entry gateway rejects forged fields and origins and validates private receipts',async()=>{
@@ -35,4 +35,12 @@ test('entry gateway rejects forged fields and origins and validates private rece
  assert.deepEqual(await (await entryHandler(request(body),deps)).json(),{enrolled:true});
  assert.equal((await entryHandler(request(body),{origin,rpc:async()=>({status:200,value:{enrolled:true,wallet:'private'}})})).status,503);
  assert.equal((await entryHandler(request(body),{origin,rpc:async()=>({status:409,value:{error:{code:'PAYMENTS_DISABLED'}}})})).status,409);
+});
+
+test('reserve rollover is authenticated, strictly shaped and never accepts client commission',async()=>{
+ const input={requestId:id,action:'rollover',month:'2026-09',targetMonth:'2026-10',amount:'30',expectedVersion:2,reason:'Carry available reserve forward'};let calls=0;
+ const deps={origin,rpc:async(operation,body,session)=>{calls++;assert.equal(operation,'change');assert.equal(body.action,'rollover');assert.equal(session,token);return {status:200,value:{saved:true,month:'2026-09'}};}};
+ for(const bad of [{...input,commission:'0'},{...input,amount:'-1'},{...input,targetMonth:'2026-13'},{...input,reason:''}])assert.equal((await proHandler(request({operation:'change',input:bad}),deps)).status,400);assert.equal(calls,0);
+ assert.equal((await proHandler(request({operation:'change',input}),deps)).status,200);assert.equal(calls,1);
+ const denied=await proHandler(request({operation:'change',input}),{origin,rpc:async()=>({status:409,value:{error:{code:'INSUFFICIENT_RESERVE'}}})});assert.equal(denied.status,409);assert.equal((await denied.json()).error.code,'INSUFFICIENT_RESERVE');
 });
