@@ -35,3 +35,7 @@ Current BETA implementation, setup, test commands and release boundaries are doc
 | ENGINE_BASE_URL                      |       API        |    ❌     |
 | ENGINE_FACTORY_MANAGER               |       API        |    ❌     |
 | ENGINE_ACCOUNT_FACTORY               |       API        |    ❌     |
+
+## Ranked league update — 12 October 2026
+
+See [ranked league implementation and release preflight](../../docs/ranked-leagues-and-pro-entry.md). Wins/losses now rank trainers. Monthly Pro requires an all-NFT team and verified monthly EVO entry; fee publication, bonus, cancellation/refund and payout audit controls are implemented locally. Real entry payments and deployment remain paused.

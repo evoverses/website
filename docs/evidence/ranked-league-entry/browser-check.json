@@ -1,0 +1,19 @@
+{
+  "fixture": "Actual React, query library, shared UI and CSS with synthetic API and synthetic wallet addresses only. No token transfers.",
+  "checks": [
+    "Monthly rank left, Wins right",
+    "Pool changes require confirmation and refresh amounts",
+    "Admin reviews and confirms winners and first linked wallet addresses",
+    "Paid checkbox requires transaction hash and note before confirmation",
+    "Confirmed status and audit log refresh together",
+    "390px layout contains table scrolling"
+  ],
+  "screenshots": [
+    "monthly-pro.png",
+    "admin-preview.png",
+    "confirm-winners.png",
+    "record-payment.png",
+    "admin-paid-audit.png",
+    "monthly-pro-mobile.png"
+  ]
+}

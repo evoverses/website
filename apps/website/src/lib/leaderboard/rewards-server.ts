@@ -1,6 +1,7 @@
 import "server-only";
 import { getEpicConfig } from "@/lib/player/server";
 import type { RewardsOperation } from "./rewards-handler";
+export async function entryRpc(operation:'status'|'intent'|'verify',input:unknown,token:string){return accountRpc('/internal/leaderboard/pro/entry/'+operation,input,token);}
 export async function proRpc(operation:'read'|'list'|'change',input:unknown,token?:string){return accountRpc('/internal/leaderboard/pro'+(operation==='read'?'':`/admin/${operation}`),input,token);}
 export async function rewardsRpc(operation:RewardsOperation,input:unknown,token?:string){
  const suffix=operation==="archive"?"":operation==="mine"?"/me":`/admin/${operation}`;

@@ -1,5 +1,7 @@
 # Trainer leaderboard
 
+> Historical implementation note: scoring and release advice below are superseded by the ranked-leagues-and-pro-entry document. Current ranking uses wins, Pro requires paid entry and an all-NFT team, and deployment remains paused.
+
 ## Behaviour
 
 `/leaderboard` is a public website page linked from the main menu in standard and Pro modes. Day, Week, Month and All-time rank trainers by verified **earned trainer XP**, including XP earned after level 100. Trainer level uses the existing account XP policy and remains capped. Evo XP is not counted again. Day starts at 00:00 UTC, Week starts Monday at 00:00 UTC, and Month starts on its first day at 00:00 UTC. Timestamp ranges include their start and exclude the calculation time.

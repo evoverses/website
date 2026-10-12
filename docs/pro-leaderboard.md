@@ -1,5 +1,7 @@
 # Monthly Pro leaderboard and manual EVO prizes
 
+> Historical implementation note: scoring and release advice below are superseded by the ranked-leagues-and-pro-entry document. Current ranking uses wins, Pro requires paid entry and an all-NFT team, and deployment remains paused.
+
 ## Behaviour
 
 - Monthly Pro appears on the website leaderboard only with Pro mode enabled. Public scores contain names, levels, NFT XP and ranked battle statistics; wallets and player IDs are never exposed publicly.
@@ -22,7 +24,7 @@ All mutations require a current administrator session, a unique request ID and a
 
 ## Technical connections
 
-- Additive migration `023_pro_monthly_prizes.sql`: indexed NFT XP reads, monthly pools, encrypted payout snapshots and immutable admin audit. Database triggers prevent changing finalized pools or payout recipient/amount data.
+- Additive migration `024_pro_monthly_prizes.sql`: indexed NFT XP reads, monthly pools, encrypted payout snapshots and immutable admin audit. Database triggers prevent changing finalized pools or payout recipient/amount data.
 - `pro-leaderboard.cjs` reuses the trusted ranked award tables; `hosted-wallet-links.cjs` decrypts payouts only within authorized administration. No real credential or wallet encryption key was read during development; tests use synthetic keys and accounts.
 - Service-authenticated internal endpoints: `/internal/leaderboard/pro`, `/internal/leaderboard/pro/admin/list`, `/internal/leaderboard/pro/admin/change`. Administration additionally requires an authenticated admin session. The website adapter is `/api/leaderboard/pro` (public GET; authenticated, same-origin POST).
 - Public pages have 50-row database pagination, a bounded 60-second API cache and a 60-second public response cache. Prize previews are private and uncached. No new server, scheduled worker, blockchain transaction or automatic token payout is introduced. At most 1,000 tied prize recipients are supported; larger previews fail explicitly.

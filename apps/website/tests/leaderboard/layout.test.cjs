@@ -11,12 +11,12 @@ function render(period,proMode=false){
 test('rank stays left, score stays right and trophies distinguish the podium',()=>{
  for(const period of ['day','week','month','all']){
   const html=render(period),headers=[...html.matchAll(/<th[^>]*scope="col"[^>]*>([^<]*)<\/th>/g)].map(m=>m[1]);
-  assert.equal(headers[0],'Rank');assert.equal(headers.at(-1),period==='all'?'Lifetime XP':'Period XP');
+  assert.equal(headers[0],'Rank');assert.equal(headers.at(-1),'Wins');
   assert.equal(headers.filter(h=>h==='Lifetime XP').length,1);
   for(const [label,color]of [["Gold trophy","text-yellow-400"],["Silver trophy","text-slate-300"],["Bronze trophy","text-amber-600"]]){const icon=html.match(new RegExp(`<svg[^>]*aria-label="${label}"[^>]*>`));assert.ok(icon);assert.ok(icon[0].includes(color));}
   const rows=[...html.matchAll(/<tr[^>]*>(.*?)<\/tr>/g)].slice(1);
   assert.equal(rows.length,4);
-  for(const row of rows)assert.match(row[1],new RegExp(`text-primary[^>]*>${period==='all'?900:100}<\\/td>$`));
+  for(const row of rows)assert.match(row[1],new RegExp(`text-primary[^>]*>1<\\/td>$`));
  }
 });
 
