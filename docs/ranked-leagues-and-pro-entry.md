@@ -1,6 +1,6 @@
 # Ranked leagues and monthly Pro entry — 12 October 2026
 
-## Scope and current release state
+## Original implementation checkpoint
 
 Local implementation on game/backend `Dan/2026_BETA` and website `dan-dev`. No AWS database migration, Cloudflare publication, provider reconfiguration or real EVO payment activation is included. Hosted Pro entry is explicitly disabled in the service composition. Store and breeding beta transaction restrictions remain separate and unchanged.
 
@@ -58,3 +58,15 @@ Recommended next step: resolve the reported ranked server dropout, then authoriz
 - Standard prize reviews use current wins ranking, with period-specific farming flags. Entrant administration is paginated.
 - Browser fixtures verify standby payment controls, pending-receipt retries and uncertain wallet responses without a second transfer. They use synthetic SDK/API responses, not real payments.
 - Remaining release gates: ranked server dropout diagnosis, coordinated deployment authorization, and deployed signed-in/test-wallet checks before enabling fees. Hosting and actual entry payments remain unchanged.
+
+## Deployed beta release — 12 October 2026
+
+Owner authorized deploying the website and matching account service. Applied migrations 021–026 transactionally; the live ledger now contains 26 entries, all matching canonical Git checksums. AWS account API stack reached UPDATE_COMPLETE; ECS API task revision 25 is serving healthy traffic. Backend source: `d4673532224ace754ba2b7d97c13934e50214b62`; image digest: `sha256:98bdf6b001dece7bd40e30ad7f3b7aa0dc3ff9f0acdd4bccf9734b37426cee5f`. The migration job used the same schema from the immediately preceding source checkpoint.
+
+Published website `dan-dev` source `ed5b8a16ad94b3e92bc52004c0ae556cd7726451` to Cloudflare Worker `evoverses-beta`, version `5fc69284-4497-4352-a8e1-77703f915be1`, at https://beta.evoverses.com. Existing bindings, secrets and payment/breeding beta controls were retained.
+
+Owner separately approved removing the extra global Pro payment block: availability now requires published, non-cancelled monthly terms; intent creation still enforces the UTC registration window and account/wallet checks. No fee or bonus was published and no payment was made. Current-month public Pro response has no configured pool.
+
+Live checks: homepage, sign-in, Store, leaderboard and account-admin pages return HTTP 200; Day/Week/Month/All-time, Pro and past-winner APIs return valid public responses. Private Pro administration and entry return 401 without a session. Epic authorization start returns 303 to Epic with a browser-bound cookie. No account impersonation, grants, purchases or competition finalization was used in verification. Signed-in administrator interaction and full Epic credential entry require human review.
+
+No game ZIP, game-server image, provider matchmaking configuration or DNS change was published. Rollback: restore the previous compatible API image and Cloudflare Worker version, retaining the additive schema and immutable ledgers; do not remove migrations. Next: review the leaderboard and beta-admin controls while signed in on beta.evoverses.com. Ranked-dropout resolution and matching game/provider release remain separate.
