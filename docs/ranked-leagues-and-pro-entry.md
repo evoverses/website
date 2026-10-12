@@ -74,3 +74,5 @@ No game ZIP, game-server image, provider matchmaking configuration or DNS change
 ### Administration layout
 
 Account administration now links to **Manage leaderboards** beside **Manage game downloads**, instead of embedding the reward and Pro prize controls beneath the player list. `/beta-admin/leaderboard` keeps the same administrator access requirement and includes a link back. Standard rewards, monthly EVO entries, prizes and rollover controls are unchanged.
+
+The weekly/monthly preparation button is labelled **Find rewards to review**, with an explanation that it creates review lists without awarding prizes. The result reports new weekly/monthly reviews; actual grants still require Approve and confirmation. Daily automatic grants are unchanged.
