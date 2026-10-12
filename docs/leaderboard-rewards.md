@@ -56,3 +56,9 @@ Hosting remains unchanged. Recommended next step: restore AWS access, reconcile 
 ## Final verification checkpoint
 
 52 backend leaderboard/administration/hosted/pack-store tests and 19 website leaderboard/admin tests pass. Four existing hosted startup checks pass again after adding policy validation. Interactive browser checks additionally verify both prize/history dialogs, artwork loading, all three prize periods, keyboard focus, a 390px viewport and changed-preview confirmation. These are local synthetic checks; no hosted release or real grants occurred.
+
+### Past winners period tabs
+
+Past winners has independent Daily, Weekly and Monthly tabs. The API filters awarded periods before pagination; changing tabs returns to page one. Arrow keys, Home and End navigate the tabs. Closed dialogs do not load history. Existing unfiltered API callers remain supported. No database migration is required.
+
+Verification: six backend leaderboard tests and ten website leaderboard tests passed, as did the production build. Headless browser checks used real components with synthetic responses to verify each period, pagination reset, keyboard navigation and dialog focus. Screenshots are in website docs/evidence/leaderboard-rewards. Deployment remains pending AWS login renewal.

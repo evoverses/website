@@ -26,3 +26,13 @@ test('changed approval previews and already awarded receipts survive projection 
  const body={operation:'approve',input:{periodId:id,previewHash:'b'.repeat(64)}};
  for(const status of ['preview_changed','awarded']){const response=await rewardsHandler(request('admin',body),'admin',{origin,rpc:async(operation,input,session)=>{assert.equal(operation,'approve');assert.equal(input.periodId,id);assert.equal(session,token);return {status:200,value:{status,period:adminPeriod}};}});assert.equal(response.status,200);assert.equal((await response.json()).status,status);}
 });
+
+test('archive period filters are validated and forwarded before pagination',async()=>{
+ let calls=0;
+ for(const selected of ['day','week','month']){
+  const response=await rewardsHandler(new Request(origin+'/api/leaderboard/rewards/archive?period='+selected+'&page=2',{headers:{host:'beta.evoverses.com'}}),'archive',{origin,rpc:async(operation,input)=>{calls++;assert.equal(operation,'archive');assert.equal(input.period,selected);assert.equal(input.page,2);return {status:200,value:{page:2,more:false,periods:[]}};}});
+  assert.equal(response.status,200);
+ }
+ for(const query of ['period=all','period=year','period=day&period=week','period=','period=day&extra=1'])assert.equal((await rewardsHandler(new Request(origin+'/api/leaderboard/rewards/archive?'+query,{headers:{host:'beta.evoverses.com'}}),'archive',{origin,rpc:async()=>{throw Error('Invalid filter forwarded');}})).status,400);
+ assert.equal(calls,3);
+});

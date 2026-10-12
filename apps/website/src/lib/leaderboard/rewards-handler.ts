@@ -13,7 +13,7 @@ export async function rewardsHandler(request:Request,kind:"archive"|"mine"|"admi
   if(!token||!/^[a-f0-9]{64}$/.test(token))return respond(401,{error:{code:"INVALID_SESSION"}});
  }
  try{
-  if(kind==="archive") {if([...url.searchParams.keys()].some(k=>k!=="page")||url.searchParams.getAll("page").length>1)return respond(400,{error:{code:"INVALID_REQUEST"}});const page=url.searchParams.get("page")??"0";if(!/^(0|[1-9]\d{0,5})$/.test(page)||Number(page)>100000)return respond(400,{error:{code:"INVALID_REQUEST"}});input={page:Number(page)};}
+  if(kind==="archive") {if([...url.searchParams.keys()].some(k=>k!=="page"&&k!=="period")||url.searchParams.getAll("page").length>1||url.searchParams.getAll("period").length>1)return respond(400,{error:{code:"INVALID_REQUEST"}});const page=url.searchParams.get("page")??"0";if(!/^(0|[1-9]\d{0,5})$/.test(page)||Number(page)>100000)return respond(400,{error:{code:"INVALID_REQUEST"}});const period=url.searchParams.get("period");if(period!==null&&!["day","week","month"].includes(period))return respond(400,{error:{code:"INVALID_REQUEST"}});input={page:Number(page),...(period===null?{}:{period})};}
   else if(url.search)return respond(400,{error:{code:"INVALID_REQUEST"}});
   if(kind==="admin"){
    if(!request.headers.get("content-type")?.startsWith("application/json"))return respond(415,{error:{code:"INVALID_REQUEST"}});
