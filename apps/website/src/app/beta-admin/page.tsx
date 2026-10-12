@@ -1,6 +1,4 @@
-import { ProPrizesAdmin } from "@/components/player/pro-prizes-admin";
 import Link from "next/link";
-import { LeaderboardRewardsAdmin } from "@/components/player/leaderboard-rewards-admin";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { BetaAdmin } from "@/components/player/beta-admin";
@@ -18,6 +16,6 @@ export default async function BetaAdminPage() {
     if ([401, 403].includes(response.status)) return <main className="page p-10"><h1 className="text-3xl font-bold">Unauthorised</h1><p className="mt-3">An administrator account is required.</p></main>;
     if (response.status !== 200) throw Error("Unavailable");
     const initialSnapshot = betaAdminSnapshotSchema.parse(response.value);
-    return <main className="page mx-auto max-w-7xl space-y-6 px-4 py-10"><h1 className="text-3xl font-extrabold">Account administration</h1><Link className="inline-block rounded-lg border px-4 py-2" href="/beta-admin/downloads">Manage game downloads</Link><BetaAdmin initialSnapshot={initialSnapshot} /><LeaderboardRewardsAdmin /><ProPrizesAdmin /></main>;
+    return <main className="page mx-auto max-w-7xl space-y-6 px-4 py-10"><h1 className="text-3xl font-extrabold">Account administration</h1><nav aria-label="Administration tools" className="flex flex-wrap gap-3"><Link className="inline-block rounded-lg border px-4 py-2" href="/beta-admin/downloads">Manage game downloads</Link><Link className="inline-block rounded-lg border px-4 py-2" href="/beta-admin/leaderboard">Manage leaderboards</Link></nav><BetaAdmin initialSnapshot={initialSnapshot} /></main>;
   } catch { return <main className="page p-10"><h1 className="text-3xl font-bold">Administration unavailable</h1><p className="mt-3">Please try again. No account changes were made.</p></main>; }
 }

@@ -70,3 +70,7 @@ Owner separately approved removing the extra global Pro payment block: availabil
 Live checks: homepage, sign-in, Store, leaderboard and account-admin pages return HTTP 200; Day/Week/Month/All-time, Pro and past-winner APIs return valid public responses. Private Pro administration and entry return 401 without a session. Epic authorization start returns 303 to Epic with a browser-bound cookie. No account impersonation, grants, purchases or competition finalization was used in verification. Signed-in administrator interaction and full Epic credential entry require human review.
 
 No game ZIP, game-server image, provider matchmaking configuration or DNS change was published. Rollback: restore the previous compatible API image and Cloudflare Worker version, retaining the additive schema and immutable ledgers; do not remove migrations. Next: review the leaderboard and beta-admin controls while signed in on beta.evoverses.com. Ranked-dropout resolution and matching game/provider release remain separate.
+
+### Administration layout
+
+Account administration now links to **Manage leaderboards** beside **Manage game downloads**, instead of embedding the reward and Pro prize controls beneath the player list. `/beta-admin/leaderboard` keeps the same administrator access requirement and includes a link back. Standard rewards, monthly EVO entries, prizes and rollover controls are unchanged.
