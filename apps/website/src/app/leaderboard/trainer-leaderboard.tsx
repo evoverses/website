@@ -1,4 +1,6 @@
 "use client";
+import { ProLeaderboard } from "@/components/player/pro-leaderboard";
+import { useProMode } from "@/components/providers/pro-mode-provider";
 import { LeaderboardPrizes } from "@/components/player/leaderboard-rewards";
 import { useState, type KeyboardEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +21,7 @@ function RankTrophy({rank}:{rank:number}){
 }
 function Position({entry}:{entry:TrainerEntry}){return <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4"><span>Your position: <strong>#{n(entry.rank)} · {entry.name}</strong></span><span className="font-bold tabular-nums">{n(entry.periodXp)} XP · Level {entry.level}</span></div>;}
 export function TrainerLeaderboard({signedIn}:{signedIn:boolean}){
+ const {proMode}=useProMode();const [proSelected,setProSelected]=useState(false);
  const [period,setPeriod]=useState<Period>("day"),[page,setPage]=useState(0);
  const board=useQuery({queryKey:["trainer-leaderboard",period,page],queryFn:async()=>{
   const response=await fetch(`/api/leaderboard?period=${period}&page=${page}`,{cache:"no-store",credentials:"omit"});if(!response.ok)throw Error("Leaderboard unavailable");return parseLeaderboard(await response.json(),{period,page});
@@ -28,8 +31,10 @@ export function TrainerLeaderboard({signedIn}:{signedIn:boolean}){
  },staleTime:60000,retry:1});
  const data=board.data,showingCurrent=data?.period===period&&data.page===page;
  const allTime=(data?.period??period)==="all";
+ if(proMode&&proSelected)return <main className="mx-auto max-w-7xl space-y-5 px-3 py-6 sm:px-6"><div className="flex flex-wrap gap-3"><Button variant="outline" onClick={()=>setProSelected(false)}>Trainer leaderboard</Button><Button aria-pressed>Monthly Pro</Button></div><ProLeaderboard/></main>;
  return <main className="mx-auto max-w-7xl space-y-5 px-3 py-6 sm:px-6">
   <header className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/15 to-card p-6"><div className="flex items-center gap-3"><Trophy className="size-9 text-primary"/><h1 className="text-3xl font-extrabold">Trainer Leaderboard</h1></div><p className="mt-3 text-muted-foreground">Earn XP in ranked battles and climb the leaderboard. Your level stops at 100; your leaderboard XP keeps growing.</p></header>
+  {proMode&&<Button variant="outline" onClick={()=>setProSelected(true)}>Monthly Pro leaderboard</Button>}
   <div className="flex flex-wrap items-center justify-between gap-3"><div role="tablist" aria-label="Ranking period" className="flex flex-wrap gap-2">{tabs.map(([id,label])=><Button key={id} role="tab" id={`leaderboard-tab-${id}`} aria-controls="leaderboard-panel" tabIndex={period===id?0:-1} onKeyDown={tabKey} aria-selected={period===id} variant={period===id?"default":"outline"} onClick={()=>{setPeriod(id);setPage(0);}}>{label}</Button>)}</div><Button variant="outline" disabled={board.isFetching} onClick={()=>{void board.refetch();if(signedIn)void own.refetch();}}><RefreshCw className={`mr-2 size-4 ${board.isFetching?"animate-spin":""}`}/>Refresh</Button></div>
   <p className="text-sm text-muted-foreground">{period==="all"?"All recorded trainer XP awards.":period==="day"?"Today from midnight UTC.":period==="week"?"This week from Monday at midnight UTC.":"This month from the first day at midnight UTC."} Battle statistics use the same period. Updates may take up to a minute.</p>
   {signedIn&&(own.data?.own?<Position entry={own.data.own}/>:<p className="text-sm text-muted-foreground">{own.isError?"Your position is temporarily unavailable.":own.isPending?"Loading your position…":"You have no ranked activity in this period yet."}</p>)}
