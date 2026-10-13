@@ -75,3 +75,8 @@ test('delete uses strict status-bound payloads and accepts the closed receipt wi
  for(const extra of [{expectedAccountStatus:'closed'},{hardDelete:true},{cascade:true}])assert.equal((await betaAdminHandler(request({operation:'action',input:{...input,...extra}}),{enabled:true,rpc})).status,400);
  assert.equal(calls,1);
 });
+
+test('delete preserves the master-admin denial from the backend',async()=>{
+ const response=await betaAdminHandler(request({operation:'action',input:{requestId:receipt,playerId:id,action:'delete',reason:'Test cleanup',expectedAccountStatus:'active'}}),{enabled:true,rpc:async()=>({status:403,value:{error:{code:'MASTER_ADMIN_REQUIRED'}}})});
+ assert.equal(response.status,403);assert.equal((await response.json()).error.code,'MASTER_ADMIN_REQUIRED');
+});

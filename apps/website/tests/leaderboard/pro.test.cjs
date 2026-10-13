@@ -44,3 +44,10 @@ test('reserve rollover is authenticated, strictly shaped and never accepts clien
  assert.equal((await proHandler(request({operation:'change',input}),deps)).status,200);assert.equal(calls,1);
  const denied=await proHandler(request({operation:'change',input}),{origin,rpc:async()=>({status:409,value:{error:{code:'INSUFFICIENT_RESERVE'}}})});assert.equal(denied.status,409);assert.equal((await denied.json()).error.code,'INSUFFICIENT_RESERVE');
 });
+
+test('Pro admin forwards master-admin denials for both reads and writes',async()=>{
+ for(const body of [{operation:'list',input:{month:'2026-09'}},{operation:'change',input:{requestId:id,action:'bonus',month:'2026-09',expectedVersion:1,amount:'1000'}}]){
+  const response=await proHandler(request(body),{origin,rpc:async()=>({status:403,value:{error:{code:'MASTER_ADMIN_REQUIRED'}}})});
+  assert.equal(response.status,403);assert.equal((await response.json()).error.code,'MASTER_ADMIN_REQUIRED');
+ }
+});

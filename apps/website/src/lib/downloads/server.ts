@@ -6,14 +6,15 @@ import { betaAdminRpc } from '@/lib/player/beta-admin-server';
 import { getEpicConfig, playerLoginEnabled } from '@/lib/player/server';
 import type { Build } from './core';
 export class AccessError extends Error { constructor(public status:number,public code:string){super(code);} }
-export async function permission(admin=false) {
+export async function permission(admin=false,master=false) {
  const token=(await cookies()).get(playerSessionCookie)?.value;
  if(!playerLoginEnabled||!token||!/^[a-f0-9]{64}$/.test(token))throw new AccessError(401,'SIGN_IN_REQUIRED');
  if(admin) {
   const result=await betaAdminRpc('list',token,{});
   if(result.status!==200)throw new AccessError([401,403,429].includes(result.status)?result.status:503,result.status===403?'ADMIN_REQUIRED':'SERVICE_UNAVAILABLE');
-  const id=(result.value as {administratorId?:string}).administratorId;
+  const id=(result.value as {administratorId?:string;masterAdministrator?:boolean}).administratorId;
   if(!id||!/^[-a-f0-9]{36}$/.test(id))throw new AccessError(503,'SERVICE_UNAVAILABLE');
+  if(master&&(result.value as {masterAdministrator?:boolean}).masterAdministrator!==true)throw new AccessError(403,'MASTER_ADMIN_REQUIRED');
   return id;
  }
  const config=getEpicConfig();if(!config)throw new AccessError(503,'SERVICE_UNAVAILABLE');

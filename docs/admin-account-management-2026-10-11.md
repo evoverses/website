@@ -1,5 +1,7 @@
 # Account deletion and bulk administration
 
+As of 13 October 2026, game download management, NFT EVO prize leaderboard management and player deletion require a master administrator. Single-account and bulk deletion controls are hidden from regular administrators, and backend checks apply before mutations or replayed receipts. Regular administrators retain account tools and trainer leaderboard rewards.
+
 ## Behaviour
 
 The beta administration table supports row checkboxes and selection of up to 50 accounts on the current page. Search, sorting and pagination retain their existing behaviour; refreshing or changing page clears selection.

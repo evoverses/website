@@ -3,15 +3,15 @@ function load(file,imports={}){const module={exports:{}};vm.runInNewContext(ts.t
 const core=load('src/lib/downloads/core.ts');
 const id='11111111-1111-4111-8111-111111111111';
 class AccessError extends Error{constructor(status,code){super(code);this.status=status;this.code=code;}}
-function setup(){const objects=new Map(),uploaded=new Map();let allow=true,role=true,assembled=0,version=0;
+function setup(){const objects=new Map(),uploaded=new Map();let allow=true,role=true,master=true,assembled=0,version=0;
  const object=(key,value)=>({etag:String(value.version),httpEtag:`"${value.version}"`,size:value.binary?.byteLength??Buffer.byteLength(value.text),json:async()=>JSON.parse(value.text),body:new Blob([value.binary??value.text]).stream()});
  const b={delete:async keys=>{for(const key of Array.isArray(keys)?keys:[keys])objects.delete(key);},get:async(k,o)=>{const v=objects.get(k);if(!v)return null;const result=object(k,v);if(o?.range){result.body=new Blob([v.binary.slice(o.range.offset,o.range.offset+o.range.length)]).stream();}return result;},head:async k=>objects.has(k)?object(k,objects.get(k)):null,list:async({prefix})=>({objects:[...objects.keys()].filter(k=>k.startsWith(prefix)).map(key=>({key})),truncated:false}),put:async(k,text,o)=>{const old=objects.get(k);if(o?.onlyIf?.etagDoesNotMatch==='*'&&old||o?.onlyIf?.etagMatches&&String(old?.version)!==o.onlyIf.etagMatches)return null;objects.set(k,{text,version:++version});return object(k,objects.get(k));},createMultipartUpload:async()=>({uploadId:'synthetic-upload'}),resumeMultipartUpload:k=>({uploadPart:async(n,data)=>{uploaded.set(n,data);return{partNumber:n,etag:'part-'+n};},complete:async(parts)=>{assembled++;const binary=Buffer.concat(parts.map(p=>Buffer.from(uploaded.get(p.partNumber))));objects.set(k,{binary,version:++version});return object(k,objects.get(k));},abort:async()=>uploaded.clear()})};
- const server={AccessError,bucket:async()=>b,permission:async(admin)=>{if(!allow)throw new AccessError(401,'SIGN_IN_REQUIRED');if(admin&&!role)throw new AccessError(403,'ADMIN_REQUIRED');return 'admin-fixture';},recordKey:id=>'records/'+id+'.json',fileKey:id=>'files/'+id+'.zip',currentBuild:async()=>{const p=objects.get('published.json'),id=p&&JSON.parse(p.text).id;return id&&objects.has('released/'+id+'.json')?JSON.parse(objects.get('records/'+id+'.json').text):null;}};
+ const server={AccessError,bucket:async()=>b,permission:async(admin,requireMaster)=>{if(!allow)throw new AccessError(401,'SIGN_IN_REQUIRED');if(admin&&!role)throw new AccessError(403,'ADMIN_REQUIRED');if(requireMaster&&!master)throw new AccessError(403,'MASTER_ADMIN_REQUIRED');return 'admin-fixture';},recordKey:id=>'records/'+id+'.json',fileKey:id=>'files/'+id+'.zip',currentBuild:async()=>{const p=objects.get('published.json'),id=p&&JSON.parse(p.text).id;return id&&objects.has('released/'+id+'.json')?JSON.parse(objects.get('records/'+id+'.json').text):null;}};
  const real=load('src/lib/downloads/server.ts',{'server-only':{},'next/headers':{},'@opennextjs/cloudflare':{},'@/lib/player/auth-core':{},'@/lib/player/beta-admin-server':{},'@/lib/player/server':{}});AccessError=real.AccessError;server.AccessError=AccessError;server.withBuildLease=real.withBuildLease;
  const imports={'@/lib/downloads/core':core,'@/lib/downloads/server':server,'@/lib/player/server':{getPlayerWebOrigin:()=> 'https://beta.evoverses.com'}};
  const admin=load('src/app/api/downloads/admin/route.ts',imports),file=load('src/app/api/downloads/file/route.ts',imports);
  const post=(action,body={},extra='')=>admin.POST(new Request('https://beta.evoverses.com/api/downloads/admin?action='+action+'&id='+id+extra,{method:'POST',headers:{Origin:'https://beta.evoverses.com'},body:Buffer.isBuffer(body)?body:JSON.stringify(body)}));
- return{admin,file,post,objects,storage:b,deny:()=>allow=false,nonadmin:()=>role=false,assembled:()=>assembled};}
+ return{admin,file,post,objects,storage:b,deny:()=>allow=false,nonadmin:()=>role=false,regularAdmin:()=>master=false,assembled:()=>assembled};}
 const input={requestId:id,version:'Beta 0.1',filename:'EvoVerses.zip',size:8,notes:'Test build'};
 const zip=Buffer.from([80,75,3,4,0,0,0,0]);
 async function ready(s){assert.equal((await s.post('start',input)).status,200);assert.equal((await s.post('part',zip,'&part=1')).status,200);assert.equal((await s.post('complete')).status,200);}
@@ -33,3 +33,20 @@ test('stale unpublish cannot withdraw a changed current release',async()=>{const
 test('withdrawing an older release leaves the newer current download intact',async()=>{const s=setup(),next='22222222-2222-4222-8222-222222222222';await ready(s);await s.post('publish',{expectedPublishedId:null});const record=JSON.parse(s.objects.get('records/'+id+'.json').text);s.objects.set('records/'+next+'.json',{text:JSON.stringify({...record,id:next,version:'Beta 0.2'}),version:999});s.objects.set('files/'+next+'.zip',s.objects.get('files/'+id+'.zip'));s.objects.set('released/'+next+'.json',{text:JSON.stringify({id:next}),version:998});s.objects.set('published.json',{text:JSON.stringify({id:next}),version:997});assert.equal((await s.post('unpublish',{expectedPublishedId:next})).status,200);assert.equal(JSON.parse(s.objects.get('published.json').text).id,next);assert.equal((await s.file.GET(new Request('https://beta.evoverses.com/api/downloads/file?id='+id))).status,404);assert.equal((await s.file.GET(new Request('https://beta.evoverses.com/api/downloads/file?id='+next))).status,200);});
 
 test('failed deletion stays visible and retries complete cleanup without resurrecting the build',async()=>{const s=setup();await ready(s);const remove=s.storage.delete;s.storage.delete=async()=>{s.storage.delete=remove;throw Error('synthetic storage interruption');};assert.equal((await s.post('delete',{confirmVersion:'Beta 0.1'})).status,503);const pending=await (await s.admin.GET()).json();assert.equal(pending.builds.length,1);assert.equal(pending.builds[0].deleted,true);assert.equal((await s.post('complete')).status,404);assert.equal((await s.post('delete',{confirmVersion:'Beta 0.1'})).status,200);assert.equal(s.objects.has('files/'+id+'.zip'),false);assert.equal((await (await s.admin.GET()).json()).builds.length,0);});
+
+test('regular admins cannot list or mutate downloads and storage is untouched',async()=>{
+ const s=setup();s.regularAdmin();assert.equal((await s.admin.GET()).status,403);
+ for(const action of ['start','part','complete','publish','unpublish','delete','abort']){
+  const response=await s.post(action,input);assert.equal(response.status,403);assert.equal((await response.json()).error,'MASTER_ADMIN_REQUIRED');
+ }
+ assert.equal(s.objects.size,0);
+});
+test('download permission uses authenticated master status and fails closed when absent',async()=>{
+ let value={administratorId:id,masterAdministrator:false},status=200;
+ const real=load('src/lib/downloads/server.ts',{'server-only':{},'next/headers':{cookies:async()=>({get:()=>({value:'a'.repeat(64)})})},'@opennextjs/cloudflare':{},'@/lib/player/auth-core':{playerSessionCookie:'ev:player-session'},'@/lib/player/beta-admin-server':{betaAdminRpc:async()=>({status,value})},'@/lib/player/server':{playerLoginEnabled:true}});
+ assert.equal(await real.permission(true),id);
+ await assert.rejects(real.permission(true,true),e=>e.status===403&&e.code==='MASTER_ADMIN_REQUIRED');
+ value={administratorId:id};await assert.rejects(real.permission(true,true),e=>e.code==='MASTER_ADMIN_REQUIRED');
+ value={administratorId:id,masterAdministrator:true};assert.equal(await real.permission(true,true),id);
+ status=403;await assert.rejects(real.permission(true,true),e=>e.status===403);
+});

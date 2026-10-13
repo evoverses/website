@@ -2,7 +2,7 @@
 
 ## Operator workflow
 
-1. Sign in with an administrator account and open **Account administration → Manage game downloads** (`/beta-admin/downloads`).
+1. Sign in with a master administrator account and open **Account administration → Manage game downloads** (`/beta-admin/downloads`).
 2. Enter a release version and concise notes. Choose a Windows game ZIP (maximum 5 GiB).
 3. Upload. The browser sends 16 MiB chunks; keep this tab open. The Retry button continues completed chunks in this tab. Reloading loses browser retry state: start a new upload. Cancel abandons an unfinished upload.
 4. When the status is **Ready**, click **Publish** and confirm. This changes the download offered by Play Now. Upload completion alone does not publish anything.
@@ -12,7 +12,7 @@
 
 - Private Standard R2 bucket `evoverses-beta-builds`, bound to the existing beta Worker as `GAME_BUILDS`. No public domain, r2.dev access, bucket CORS or additional storage API credentials are required.
 - Game files use generated UUID paths. R2 stores upload records, verified part receipts, release pointers and publication audit entries separately from the account PostgreSQL database.
-- Every admin request checks the current account-service administrator permission. POST requests require the website origin. Account administrators need not be approved beta testers to upload.
+- Every admin request checks the current account-service master administrator permission. POST requests require the website origin. Master administrators need not be approved beta testers to upload.
 - Every download/HEAD/range request checks the current `/v1/game/access` response, including active session and beta approval. Download permission is not granted by knowing a file URL. All download responses are private/no-store.
 - Downloads stream from R2; the Worker never buffers the complete ZIP. Range requests support resume. URLs pin the build ID so publishing a different version cannot mix files during a resumed download.
 - Earlier published builds remain downloadable to approved testers and may be republished. Drafts are never available to testers.
@@ -24,7 +24,7 @@ The server generates storage paths from a validated request UUID, fixes expected
 
 Chunk requests stay below the Cloudflare front-door body limit. Administrator authorisation can be rate limited: the UI retries transient 429/503 responses. Chunks are bounded in memory; the full game is never sent through a single Worker request.
 
-Old complete builds are retained unless an administrator explicitly deletes them; no automatic destructive retention policy is enabled. Monitor R2 usage and remove obsolete builds through the admin Delete control. At approximately 1.6 GB each, six builds are near the 10 GB-month free Standard storage allowance. Incomplete R2 multipart data uses R2's default expiry; cancelled record metadata remains for traceability. No game data has been imported as part of setup.
+Old complete builds are retained unless a master administrator explicitly deletes them; no automatic destructive retention policy is enabled. Monitor R2 usage and remove obsolete builds through the admin Delete control. At approximately 1.6 GB each, six builds are near the 10 GB-month free Standard storage allowance. Incomplete R2 multipart data uses R2's default expiry; cancelled record metadata remains for traceability. No game data has been imported as part of setup.
 
 ## Evidence and remaining checks
 
@@ -36,7 +36,7 @@ Production compilation and live anonymous restrictions are checked before rollou
 
 - **Unpublish** withdraws a build from downloads, including its previously issued stable URL. The ZIP remains stored and may be published again. With no current publication, approved testers see “No build available yet”. Existing streams/downloaded copies cannot be recalled.
 - **Delete** permanently removes the ZIP and multipart receipts. The currently published build must be unpublished first. The confirmation names the version and file. Incomplete and cancelled uploads may also be deleted.
-- Any current administrator may manage builds, including those uploaded by another administrator. Origin/session/role checks apply to both operations.
+- Any current master administrator may manage builds, including those uploaded by another administrator. Origin/session/role checks apply to both operations.
 - Small deletion tombstones and publication/deletion audit records are retained; deleted builds disappear from the list after cleanup succeeds. A failed cleanup stays visible as “Deletion pending” and may be retried. Tombstones prevent delayed upload/completion retries from restoring deleted builds.
 - Publication, unpublication, completion, cancellation and deletion share an R2 conditional lease, preventing concurrent lifecycle changes. An abandoned lease expires after two minutes. No account database migration is involved.
 

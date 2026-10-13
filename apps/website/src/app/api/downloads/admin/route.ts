@@ -12,7 +12,7 @@ async function bounded(request:Request,limit:number){
  const result=new Uint8Array(size);let offset=0;for(const c of chunks){result.set(c,offset);offset+=c.length;}return result.buffer;
 }
 export async function GET(){try{
- await permission(true);const b=await bucket();
+ await permission(true,true);const b=await bucket();
  const list=await b.list({prefix:'records/',limit:100});
  const builds=[];for(const item of list.objects){const record=await b.get(item.key);if(record){const {uploadId:_,...build}=await record.json<Build>();if(!build.deleted||!(await b.head(`deletions/${build.id}.json`))){build.available=!!(await b.head(`released/${build.id}.json`));builds.push(build);}}}
  const pointer=await b.get('published.json');const published=pointer?await pointer.json<{id:string}>():null;
@@ -20,7 +20,7 @@ export async function GET(){try{
  }catch(e){return failure(e);}}
 export async function POST(request:Request){try{
  if(request.headers.get('origin')!==getPlayerWebOrigin()||new URL(request.url).origin!==getPlayerWebOrigin())throw new AccessError(403,'ORIGIN_NOT_ALLOWED');
- const administratorId=await permission(true),b=await bucket();
+ const administratorId=await permission(true,true),b=await bucket();
  const url=new URL(request.url),action=url.searchParams.get('action');
  if(action==='start'){
   const raw=await json(request),id=raw.requestId;
