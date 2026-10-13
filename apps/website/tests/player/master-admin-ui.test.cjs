@@ -23,3 +23,21 @@ test('single and bulk deletion controls appear only for master admins',()=>{
  const regular=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(false)}));assert.equal((regular.match(/>Delete<\/button>/g)||[]).length,0);assert.ok(regular.includes('Approve beta'));assert.ok(regular.includes('Make admin'));
  const master=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(true)}));assert.equal((master.match(/>Delete<\/button>/g)||[]).length,2);
 });
+
+test('account audit shows operator names, stable ID fallback and automatic attribution',()=>{
+ const Button=({variant,size,...props})=>React.createElement('button',props),Input=props=>React.createElement('input',props);
+ const dialogs=Object.fromEntries(['Dialog','DialogContent','DialogHeader','DialogTitle','DialogDescription','DialogFooter'].map(n=>[n,()=>null]));
+ const {BetaAdmin}=load('src/components/player/beta-admin.tsx',{'@workspace/ui/components/button':{Button},'@workspace/ui/components/input':{Input},'@workspace/ui/components/label':{Label:props=>React.createElement('label',props)},'@workspace/ui/components/dialog':dialogs});
+ const initial=snapshot(true),row={id:'audit1',administratorId:id,administratorName:'Operator <script>',ruleId:null,playerId,displayName:'Recipient',action:'approve',reason:'Testing attribution',createdAt:'2026-10-13T00:00:00.000Z'};
+ initial.history=[row,{...row,id:'audit2',administratorName:null},{...row,id:'audit3',administratorId:null,administratorName:null,ruleId:'reward-rule'}];
+ const html=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:initial}));
+ assert.ok(html.includes('Operator &lt;script&gt;'));assert.ok(!html.includes('Operator <script>'));assert.ok(html.includes('title="'+id+'"'));assert.ok(html.includes('Automatic reward'));assert.ok(html.includes('>'+id+'</span>'));
+});
+
+test('EVO prize audit displays the server-resolved operator name with its ID retained',()=>{
+ const Button=({variant,size,...props})=>React.createElement('button',props),Input=props=>React.createElement('input',props);
+ const dialogs=Object.fromEntries(['Dialog','DialogContent','DialogHeader','DialogTitle','DialogDescription','DialogFooter'].map(n=>[n,()=>null]));
+ const data={pool:null,finalized:false,version:0,flags:[],winners:[],entry:{fee:null,bonus:'0',reserve:'0',rollover:'0',collected:'0',commission:'0',cancelled:false,entrants:[],more:false},audit:[{id:'audit1',administratorId:id,administratorName:'Prize operator',action:'bonus',createdAt:'2026-10-13T00:00:00.000Z',details:{}}]};
+ const {ProPrizesAdmin}=load('src/components/player/pro-prizes-admin.tsx',{'@tanstack/react-query':{useQuery:()=>({data}),useQueryClient:()=>({})},'@workspace/ui/components/button':{Button},'@workspace/ui/components/input':{Input},'@workspace/ui/components/dialog':dialogs,'@/lib/leaderboard/pro-core':{}});
+ const html=renderToStaticMarkup(React.createElement(ProPrizesAdmin));assert.ok(html.includes('Prize operator'));assert.ok(html.includes('title="'+id+'"'));
+});

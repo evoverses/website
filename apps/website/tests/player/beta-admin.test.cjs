@@ -80,3 +80,11 @@ test('delete preserves the master-admin denial from the backend',async()=>{
  const response=await betaAdminHandler(request({operation:'action',input:{requestId:receipt,playerId:id,action:'delete',reason:'Test cleanup',expectedAccountStatus:'active'}}),{enabled:true,rpc:async()=>({status:403,value:{error:{code:'MASTER_ADMIN_REQUIRED'}}})});
  assert.equal(response.status,403);assert.equal((await response.json()).error.code,'MASTER_ADMIN_REQUIRED');
 });
+
+test('actor names are projected from server audit output and cannot be supplied in actions',async()=>{
+ const snapshot={administratorId:id,masterAdministrator:true,players:[],more:false,total:0,page:1,products:[],history:[{id:receipt,administratorId:id,administratorName:'Recorded operator',ruleId:null,eventKey:null,playerId:id,displayName:'Recipient',action:'grant_item',reason:'Event reward',createdAt:'2026-10-13T00:00:00.000Z',result}]};
+ const response=await betaAdminHandler(request({operation:'list',input:{}}),{enabled:true,rpc:async()=>({status:200,value:snapshot})});
+ assert.equal(response.status,200);assert.equal((await response.json()).history[0].administratorName,'Recorded operator');
+ let calls=0;const forged=await betaAdminHandler(request({operation:'action',input:{...input,administratorName:'Someone else'}}),{enabled:true,rpc:async()=>{calls++;throw Error('Unexpected');}});
+ assert.equal(forged.status,400);assert.equal(calls,0);
+});
