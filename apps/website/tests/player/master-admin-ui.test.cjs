@@ -20,7 +20,7 @@ test('single and bulk deletion controls appear only for master admins',()=>{
  const Button=({variant,size,...props})=>React.createElement('button',props),Input=props=>React.createElement('input',props);
  const dialogs=Object.fromEntries(['Dialog','DialogContent','DialogHeader','DialogTitle','DialogDescription','DialogFooter'].map(n=>[n,()=>null]));
  const {BetaAdmin}=load('src/components/player/beta-admin.tsx',{'@workspace/ui/components/button':{Button},'@workspace/ui/components/input':{Input},'@workspace/ui/components/label':{Label:props=>React.createElement('label',props)},'@workspace/ui/components/dialog':dialogs});
- const regular=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(false)}));assert.equal((regular.match(/>Delete<\/button>/g)||[]).length,0);assert.ok(regular.includes('Approve beta'));assert.ok(regular.includes('Make admin'));
+ const regular=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(false)}));assert.equal((regular.match(/>Delete<\/button>/g)||[]).length,0);assert.ok(regular.includes('Approve beta'));assert.ok(!regular.includes('Make admin'));
  const master=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(true)}));assert.equal((master.match(/>Delete<\/button>/g)||[]).length,2);
 });
 
@@ -40,4 +40,18 @@ test('EVO prize audit displays the server-resolved operator name with its ID ret
  const data={pool:null,finalized:false,version:0,flags:[],winners:[],entry:{fee:null,bonus:'0',reserve:'0',rollover:'0',collected:'0',commission:'0',cancelled:false,entrants:[],more:false},audit:[{id:'audit1',administratorId:id,administratorName:'Prize operator',action:'bonus',createdAt:'2026-10-13T00:00:00.000Z',details:{}}]};
  const {ProPrizesAdmin}=load('src/components/player/pro-prizes-admin.tsx',{'@tanstack/react-query':{useQuery:()=>({data}),useQueryClient:()=>({})},'@workspace/ui/components/button':{Button},'@workspace/ui/components/input':{Input},'@workspace/ui/components/dialog':dialogs,'@/lib/leaderboard/pro-core':{}});
  const html=renderToStaticMarkup(React.createElement(ProPrizesAdmin));assert.ok(html.includes('Prize operator'));assert.ok(html.includes('title="'+id+'"'));
+});
+
+
+test('grant and single/bulk revoke admin controls require master status and fail closed without it',()=>{
+ const Button=({variant,size,...props})=>React.createElement('button',props),Input=props=>React.createElement('input',props);
+ const dialogs=Object.fromEntries(['Dialog','DialogContent','DialogHeader','DialogTitle','DialogDescription','DialogFooter'].map(n=>[n,()=>null]));
+ const {BetaAdmin}=load('src/components/player/beta-admin.tsx',{'@workspace/ui/components/button':{Button},'@workspace/ui/components/input':{Input},'@workspace/ui/components/label':{Label:props=>React.createElement('label',props)},'@workspace/ui/components/dialog':dialogs});
+ for(const master of [false,undefined,true]){
+  const initial=snapshot(master);initial.players.push({...initial.players[0],id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',displayName:'Regular operator',administrator:true});
+  const html=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:initial}));
+  assert.equal((html.match(/>Make admin<\/button>/g)||[]).length,master?1:0);
+  assert.equal((html.match(/>Revoke admin<\/button>/g)||[]).length,master?2:0);
+  assert.ok(html.includes('Approve beta'));assert.ok(html.includes('Add Evoros'));assert.ok(html.includes('>Ban</button>'));
+ }
 });

@@ -88,3 +88,11 @@ test('actor names are projected from server audit output and cannot be supplied 
  let calls=0;const forged=await betaAdminHandler(request({operation:'action',input:{...input,administratorName:'Someone else'}}),{enabled:true,rpc:async()=>{calls++;throw Error('Unexpected');}});
  assert.equal(forged.status,400);assert.equal(calls,0);
 });
+
+
+test('granting and revoking admin preserve server master-only denials',async()=>{
+ for(const action of ['promote_admin','revoke_admin']){
+  const response=await betaAdminHandler(request({operation:'action',input:{requestId:receipt,playerId:id,action,reason:'Role change'}}),{enabled:true,rpc:async()=>({status:403,value:{error:{code:'MASTER_ADMIN_REQUIRED'}}})});
+  assert.equal(response.status,403);assert.deepEqual(await response.json(),{error:{code:'MASTER_ADMIN_REQUIRED'}});
+ }
+});
