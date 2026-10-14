@@ -42,7 +42,7 @@ const Navbar = ({ accountCookie, player, evoros }: { accountCookie: IAccountCook
         <nav className="items-center ml-2 sm:space-x-4 sm:mx-6 lg:space-x-6">
           <NavItems navItems={navigation} isConnected={!!player || accountCookie.loggedIn} />
         </nav>
-        <div className="ml-auto flex flex-wrap items-center gap-1 sm:gap-2 max-sm:w-full max-sm:ml-0 max-sm:justify-between">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-1 sm:gap-2 max-sm:w-full max-sm:ml-0">
           <CurrencyBalances playerId={player?.id} evoros={evoros} />
           <AccountButton player={player} walletLoggedIn={accountCookie.loggedIn} />
           <ModeButton />
