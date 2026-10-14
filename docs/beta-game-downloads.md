@@ -41,3 +41,11 @@ Production compilation and live anonymous restrictions are checked before rollou
 - Publication, unpublication, completion, cancellation and deletion share an R2 conditional lease, preventing concurrent lifecycle changes. An abandoned lease expires after two minutes. No account database migration is involved.
 
 Regression evidence includes withdrawn old links, retained/re-published files, active-build protection, explicit delete confirmation, incomplete/cancelled cleanup, stale unpublication and concurrent lifecycle protection. No existing beta build was unpublished or deleted during automated checks.
+
+## Native ZIP delivery repair - 14 October 2026
+
+The Cloudflare entrypoint now checks downloads through the existing authenticated HEAD route, then streams the R2 object through a native fixed-length stream. ZIP bytes bypass the Next.js response adapter. The native stream applies client backpressure, preserves the declared byte count and fails a truncated transfer instead of reporting completion.
+
+The administrator Upload, Publish, Unpublish and Delete workflow is unchanged. The same release pointer, released-build marker, account approval checks, pinned build ID and If-Range handling remain authoritative. A changed object ETag or size is rejected before streaming. HEAD reports file size without reading ZIP bytes. Existing ready published builds do not need another upload or publication.
+
+Validation: 27 download/publication/access regression checks, TypeScript, production Next build, OpenNext packaging and Wrangler dry run passed. The actual production Worker completed a 1,701,615,119-byte transfer from isolated R2 storage using a synthetic approved account. A resumed transfer split after 350 MiB returned the same SHA-256, `cab04fcb89e8ecd76c0c49bc47c67a5316fa88eaeb7045ec54c8794446773f41`. Native HEAD, invalid ranges, anonymous denial, approval revocation and publication withdrawal passed. No real account approval or build publication was changed by those checks.

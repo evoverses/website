@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "evoverses-beta",
   "account_id": "3d3ab7e213d8eaf914dbdd43d7eb38ea",
-  "main": ".open-next/worker.js",
+  "main": "cloudflare-worker.ts",
   "compatibility_date": "2026-10-09",
   "compatibility_flags": [
     "nodejs_compat",

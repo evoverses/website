@@ -15,7 +15,13 @@ async function serve(request:Request,head=false){
   try{range=byteRange(request.headers.get('if-range')&&request.headers.get('if-range')!==metadata.httpEtag?null:request.headers.get('range'),metadata.size);}catch{headers.set('Content-Range',`bytes */${metadata.size}`);return new Response(null,{status:416,headers});}
   headers.set('Content-Length',String(range?.length??metadata.size));
   if(range)headers.set('Content-Range',`bytes ${range.offset}-${range.offset+range.length-1}/${metadata.size}`);
-  if(head)return new Response(null,{status:range?206:200,headers});
+  if(head){
+   // The native Worker uses this authorised metadata without sending the ZIP through Next.js.
+   headers.set('X-EvoVerses-Download-Build',build.id);
+   headers.set('X-EvoVerses-Download-Length',String(range?.length??metadata.size));
+   headers.set('X-EvoVerses-Download-Object-Size',String(metadata.size));
+   return new Response(null,{status:range?206:200,headers});
+  }
   const object=await b.get(fileKey(build.id),range?{range}:undefined);if(!object)throw new AccessError(503,'FILE_UNAVAILABLE');
   return new Response(object.body,{status:range?206:200,headers});
  }catch(e){return Response.json({error:e instanceof AccessError?e.code:'SERVICE_UNAVAILABLE'},{status:e instanceof AccessError?e.status:503,headers:privateHeaders()});}
