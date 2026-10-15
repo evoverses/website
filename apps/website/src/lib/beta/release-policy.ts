@@ -1,7 +1,7 @@
-// Release gates are reviewed source decisions, never browser/query/env overrides.
+// Source release decisions. Nursery additionally requires a live master-admin check and configured contracts.
 // Stripe configuration can remain present while creation of new purchases is paused.
 export const evorosPurchasesEnabled: boolean = false;
-export const breedingTransactionsApproved: boolean = false;
+export const breedingTransactionsApproved: boolean = true;
 export const betaPurchaseMessage =
   "Evoros purchases are paused during beta. Approved testers receive 5,000 Evoros.";
 export const breedingApprovalMessage =

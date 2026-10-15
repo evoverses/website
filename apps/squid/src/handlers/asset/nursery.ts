@@ -37,6 +37,7 @@ export function parseNurseryEvents(
       });
     } else if (log.address.toLowerCase() === config.hatcher) {
       for (const name of [
+        "GenesisEggRegistered",
         "AdultImported",
         "EggRecorded",
         "EggTreated",

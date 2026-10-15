@@ -49,16 +49,15 @@ export function NativeCredits({ keeper }: { keeper: "bertha" | "hermann" }) {
       await credit.refetch();
     });
   return (
-    <div className="rounded-xl border p-4 space-y-3">
-      <p className="text-sm">
-        Unused randomness surcharge:{" "}
-        <strong>{avaxAmount(credit.data)} AVAX</strong>. Reclaiming it costs
-        network gas.
+    <details className="rounded-xl border p-4 text-sm">
+      <summary className="cursor-pointer w-fit font-semibold">AVAX refunds</summary>
+      <p className="mt-3 mb-3 text-xs text-muted-foreground break-words">
+        You have <strong>{avaxAmount(credit.data)} AVAX</strong> to reclaim. Network fees apply.
       </p>
-      <Button variant="outline" disabled={w.busy} onClick={claim}>
-        {w.busy ? "Confirm in your wallet…" : "Reclaim unused AVAX"}
+      <Button variant="outline" disabled={!w.canAct || w.busy} onClick={claim}>
+        {w.busy ? "Confirm in your wallet…" : "Claim refund"}
       </Button>
       <ErrorMessage message={w.error} />
-    </div>
+    </details>
   );
 }

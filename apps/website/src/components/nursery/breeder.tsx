@@ -1,4 +1,10 @@
 "use client";
+import { useNurseryAction, NurseryActionProgress } from "./action-progress";
+import { useEvoApprovalPreference, EvoApprovalChoice } from "./approval-choice";
+import { TestRandomness } from "./test-randomness";
+import { startNurseryAudit, recordNurseryEvent } from "@/lib/nursery/audit-client";
+import { nurseryChain } from "@/lib/nursery/network";
+import { nurseryAccessMessage } from "@/lib/nursery/access";
 import { breedingTransactionsApproved, breedingApprovalMessage, requireBreedingApproval } from "@/lib/beta/release-policy";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -13,6 +19,7 @@ import {
 } from "@workspace/ui/components/card";
 import { Heart, Egg, ArrowRight } from "lucide-react";
 import { type Hex } from "viem";
+import { breedHatchProgress } from "@/lib/nursery/breed-hatch-progress";
 import { breedingRequest } from "@/lib/nursery/events";
 import { submitBreed } from "@/lib/nursery/actions";
 import {
@@ -29,6 +36,7 @@ import {
   verifyNursery,
   vrfQuote,
   type BreedRequest,
+  type Egg as NurseryEgg,
 } from "@/lib/nursery/contracts";
 import { parentCost, parentUnavailable, compatible } from "@/lib/nursery/rules";
 import {
@@ -45,13 +53,15 @@ import {
   Loading,
   Notice,
   VrfPrice,
-  evoAmount,
 } from "./shared";
+import { BreedingPrice } from "./breeding-price";
 import { ParentSelector } from "./parent-selector";
 import { NativeCredits } from "./native-credits";
 
 export function Breeder() {
   const w = useNurseryWallet();
+  const action = useNurseryAction();
+  const approval = useEvoApprovalPreference(berthaAddress!, w.account?.address);
   const now = useNow();
   const queryClient = useQueryClient();
   const owned = useOwnedEvos(w.account?.address);
@@ -102,31 +112,34 @@ export function Breeder() {
     ? parentCost(first.parent) + parentCost(second.parent)
     : null;
   const priceMatches = quote.data && calculated === quote.data.cost;
-  const breedUnavailable = !breedingTransactionsApproved
+  const breedUnavailable = !w.canAct
+    ? nurseryAccessMessage
+    : !breedingTransactionsApproved
     ? breedingApprovalMessage
     : !nurseryConfigured
-    ? "Breeding is not live yet. The Breed button will be enabled when the Nursery opens."
+    ? "Breeding opens soon."
     : !w.account
       ? "Connect your wallet to breed."
       : !first || !second
         ? "Choose both parents to breed."
         : !validPair
-          ? "One of these Evos cannot breed right now. Check the messages on the parents above."
+          ? "Choose two Evos that are ready to breed."
           : quote.isFetching
-            ? "Checking the latest price before you can breed…"
+            ? "Checking price…"
             : quote.isError
-              ? "Refresh the quote above before you can breed."
+              ? "Refresh the price to continue."
               : !priceMatches
-                ? "Waiting for a verified price. If the breeding history changed, refresh your Evos."
+                ? "Refresh your Evos to check the price."
                 : w.busy
                   ? "Complete the current step in your wallet."
                   : undefined;
   const breed = () =>
-    w.run(async () => {
+    action.execute("breed", w.run, async () => {
       requireBreedingApproval();
-      if (!w.account || !first || !second || !quote.data || !priceMatches)
+      if (!w.account || !approval.ready || !first || !second || !quote.data || !priceMatches)
         return;
       const account = w.account;
+      let approvalNeeded = false;
       await submitBreed(quote.data, {
         guard: w.guard,
         preview: async () =>
@@ -137,8 +150,12 @@ export function Breeder() {
               account.address,
             ])
           )[0],
-        approve: (cost) => approveEvo(account, berthaAddress!, cost, w.guard),
-        quote: () => vrfQuote(berthaAddress!, berthaAbi),
+        approve: (cost) => approveEvo(account, berthaAddress!, cost, w.guard, {
+          persistent: approval.persistent,
+          onRequired: () => { approvalNeeded = true; action.update({ kind: "breed", step: "approval", phase: "preparing" }); },
+          onProgress: phase => action.update({ kind: "breed", step: "approval", phase }),
+        }),
+        quote: async () => { action.update({ kind: "breed", step: "action", phase: "preparing", approvalNeeded }); return vrfQuote(berthaAddress!, berthaAbi); },
         send: (payment) =>
           sendNurseryTransaction(
             account,
@@ -154,6 +171,7 @@ export function Breeder() {
               value: payment.value,
               gasPrice: payment.gasPrice,
               beforeSend: w.guard,
+              onProgress: phase => action.update({ kind: "breed", step: "action", phase, approvalNeeded }),
               submitted: (hash) => {
                 history.remember(hash);
                 setFirstId(undefined);
@@ -168,6 +186,7 @@ export function Breeder() {
     w.run(async () => {
       if (!w.account || !/^0x[\da-fA-F]{64}$/.test(recoverHash))
         throw new Error("Enter a valid breeding transaction hash.");
+      const attemptId = await startNurseryAudit({ action: "recoverBreed", wallet: w.account.address, args: [recoverHash], value: "0" });
       const receipt = await nurseryClient.getTransactionReceipt({
         hash: recoverHash as Hex,
       });
@@ -182,6 +201,7 @@ export function Breeder() {
           "This transaction is not a breeding request from this wallet.",
         );
       history.remember(recoverHash);
+      await recordNurseryEvent({ attemptId, phase: "completed", transactionHash: recoverHash });
       setRecoverHash("");
     });
   const selector = (number: 1 | 2, selected?: ParentOption) => (
@@ -217,10 +237,10 @@ export function Breeder() {
   );
   return (
     <div className="space-y-6">
+      {!w.canAct && <Notice>{nurseryAccessMessage}</Notice>}
       {!nurseryConfigured && (
         <Notice>
-          Breeding is not live yet. You can choose your Evos and preview the
-          price. No payments can be made here yet.
+          Breeding opens soon. You can preview prices for now.
         </Notice>
       )}
       <ConnectNursery connectedAddress={w.account?.address} />
@@ -233,108 +253,15 @@ export function Breeder() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Breeding price</CardTitle>
+          <CardTitle>Breeding cost</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
-          <p className="text-sm text-muted-foreground">
-            You pay a fee for each parent. Add the two fees to get the EVO
-            price of creating one egg. A higher generation or more previous
-            breeds makes a parent more expensive.
-          </p>
-          {first && second ? (
-            <>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[first, second].map((option, i) => {
-                  const p = option.parent;
-                  const count =
-                    p.generation === 0n && p.totalBreeds > 4n
-                      ? 4n
-                      : p.totalBreeds;
-                  return (
-                    <div
-                      key={p.tokenId}
-                      className="rounded-lg bg-muted/40 p-4 space-y-1"
-                    >
-                      <p className="font-bold">
-                        Parent {i + 1} · #{p.tokenId}
-                      </p>
-                      <ol className="list-decimal pl-5 space-y-2 text-sm">
-                        <li>
-                          <strong>Generation {String(p.generation)}</strong> sets
-                          this parent’s starting price at{" "}
-                          <strong>{evoAmount(500n * 10n ** 18n * 2n ** p.generation)} EVO</strong>.
-                          <span className="block text-muted-foreground">
-                            The starting price doubles each generation:
-                            Gen 0 = 500 EVO, Gen 1 = 1,000 EVO, Gen 2 = 2,000 EVO.
-                          </span>
-                        </li>
-                        <li>
-                          <strong>
-                            Already bred {String(p.totalBreeds)}{" "}
-                            {p.totalBreeds === 1n ? "time" : "times"}:
-                          </strong>{" "}
-                          {p.generation === 0n && p.totalBreeds > 4n
-                            ? "the price stays at 5 times the starting price, because Generation 0 has reached its price cap."
-                            : p.totalBreeds === 0n
-                              ? "this is their first breed, so you pay the starting price."
-                              : `this will be breed number ${String(p.totalBreeds + 1n)}, so the cost is ${String(count + 1n)} times the starting price.`}
-                          <span className="block text-muted-foreground">
-                            First breed = starting price; second breed = twice
-                            that price; third breed = three times that price.
-                          </span>
-                        </li>
-                      </ol>
-                      <p className="text-sm pt-3 break-words">
-                        {evoAmount(500n * 10n ** 18n * 2n ** p.generation)} EVO ×{" "}
-                        {String(count + 1n)} = <strong>{evoAmount(parentCost(p))} EVO</strong>
-                      </p>
-                      <p className="text-lg font-bold">
-                        This parent costs {evoAmount(parentCost(p))} EVO
-                      </p>
-                      {p.generation === 0n && p.totalBreeds >= 4n && (
-                        <p className="text-xs text-muted-foreground">
-                          Generation 0’s fee stops increasing at 2,500 EVO per parent.
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="text-xl font-black">
-                Total:{" "}
-                {evoAmount(
-                  parentCost(first.parent) + parentCost(second.parent),
-                )}{" "}
-                EVO
-              </p>
-              <p className="text-sm">
-                Parent 1 ({evoAmount(parentCost(first.parent))} EVO) + Parent 2
-                ({evoAmount(parentCost(second.parent))} EVO) = the total above.
-                This creates <strong>one egg</strong>.
-              </p>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
-                <li>
-                  Breeding also requires an AVAX randomness-generation fee,
-                  separate from the EVO total. You will see the amount before
-                  you breed. Your wallet also charges a network fee.
-                </li>
-                <li>
-                  Hatching requires another AVAX randomness-generation fee,
-                  paid later when you request hatching. It is not an additional
-                  EvoVerses hatching fee, and it is not included in the total above.
-                </li>
-              </ul>
-            </>
-          ) : (
-            <p className="text-muted-foreground">
-              Choose both parents to see their individual prices and the total.
-            </p>
-          )}
+          <BreedingPrice parents={first && second ? [first.parent, second.parent] : undefined} />
           {quote.isFetching && validPair && nurseryConfigured ? (
-            <Loading>Checking the current price…</Loading>
+            <Loading>Checking price…</Loading>
           ) : validPair && quote.isError ? (
             <>
-              <ErrorMessage message="The pair or price could not be verified. Your Evos may still be recovering or already breeding." />
+              <ErrorMessage message="Couldn’t check this pair. Refresh your Evos and try again." />
               <Button
                 variant="outline"
                 onClick={() => {
@@ -342,7 +269,7 @@ export function Breeder() {
                   void parents.refetch();
                 }}
               >
-                Refresh quote
+                Refresh price
               </Button>
             </>
           ) : (
@@ -353,16 +280,19 @@ export function Breeder() {
           )}
           {validPair && quote.data && !priceMatches && (
             <Notice>
-              Your Evos’ breeding history changed. Refresh them to see the
-              latest calculation.
+              The price changed. Refresh your Evos to continue.
             </Notice>
           )}
+          <EvoApprovalChoice keeper="Bertha" {...approval} disabled={!w.canAct || !w.account || !approval.ready || w.busy || action.progress !== null} />
+          <NurseryActionProgress progress={action.progress} />
           <ErrorMessage message={w.error} />
           <Button
             className="w-full sm:w-auto min-w-48 font-bold"
             size="lg"
             aria-describedby={breedUnavailable ? "breed-availability" : undefined}
             disabled={
+              !w.canAct ||
+              !approval.ready ||
               !breedingTransactionsApproved ||
               !nurseryConfigured ||
               !w.account ||
@@ -375,24 +305,19 @@ export function Breeder() {
             onClick={breed}
           >
             <Egg className="size-5" />
-            {w.busy ? "Confirm in your wallet…" : "Breed"}
+            {action.copy ? action.copy.button : "Breed"}
           </Button>
           {breedUnavailable && (
             <p id="breed-availability" className="text-sm text-muted-foreground">
               {breedUnavailable}
             </p>
           )}
-          {w.account && (
-            <p className="text-xs text-muted-foreground">
-              If needed, your wallet will first ask you to approve the exact EVO
-              cost.
-            </p>
-          )}
+
         </CardContent>
       </Card>
       {w.account && history.values.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-xl font-bold">Your breeding requests</h2>
+          <h2 className="text-xl font-bold">Your breeding</h2>
           {history.values.map((hash) => (
             <BreedProgress
               key={`${w.account!.address}:${hash}`}
@@ -405,11 +330,10 @@ export function Breeder() {
       {w.account && nurseryConfigured && (
         <details className="rounded-xl border p-4">
           <summary className="text-sm font-bold cursor-pointer">
-            Recover a breeding request
+            Find a previous breed
           </summary>
           <p className="text-sm text-muted-foreground mt-3">
-            Use the transaction hash from your wallet if you bred on another
-            device.
+            Paste the transaction hash from your wallet.
           </p>
           <form
             className="flex gap-2 mt-3"
@@ -425,10 +349,10 @@ export function Breeder() {
               onChange={(event) => setRecoverHash(event.target.value)}
             />
             <Button
-              disabled={w.busy || !/^0x[\da-fA-F]{64}$/.test(recoverHash)}
+              disabled={!w.canAct || w.busy || !/^0x[\da-fA-F]{64}$/.test(recoverHash)}
               type="submit"
             >
-              Recover
+              Find breed
             </Button>
           </form>
         </details>
@@ -495,6 +419,27 @@ function BreedProgress({ hash, owner }: { hash: Hex; owner: string }) {
   });
   const data = request.data?.data;
   const completedEgg = data?.[8] === 3 ? data[7].toString() : undefined;
+  const now = useNow();
+  const hatch = useQuery({
+    queryKey: ["nursery-breed-hatch-progress", nurseryScope, completedEgg],
+    enabled: Boolean(completedEgg),
+    refetchInterval: (query) => query.state.data?.egg[5] === 3 ? false : 10_000,
+    queryFn: async () => {
+      const [egg, incubation] = await Promise.all([
+        readHermann<NurseryEgg>("eggs", [BigInt(completedEgg!)]),
+        readHermann<bigint>("INCUBATION_TIME"),
+      ]);
+      const fulfilled = egg[5] === 2
+        ? (await readHermann<readonly [boolean, boolean, bigint]>("randomness", [egg[6]]))[1]
+        : false;
+      // Reject unrecorded/unknown states instead of describing an old breeding receipt as current progress.
+      breedHatchProgress(egg, fulfilled, now, incubation);
+      return { egg, incubation, fulfilled };
+    },
+  });
+  const hatchProgress = !hatch.isError && hatch.data
+    ? breedHatchProgress(hatch.data.egg, hatch.data.fulfilled, now, hatch.data.incubation)
+    : undefined;
   const rememberEgg = eggs.remember;
   useEffect(() => {
     if (completedEgg) rememberEgg(completedEgg);
@@ -521,12 +466,12 @@ function BreedProgress({ hash, owner }: { hash: Hex; owner: string }) {
       <div className="flex flex-wrap gap-2 items-center justify-between">
         <p className="font-bold">
           {requestId
-            ? `Breeding request #${requestId}`
+            ? `Breed #${requestId}`
             : "Breeding transaction"}
         </p>
         <a
           className="text-xs text-primary"
-          href={`https://snowtrace.io/tx/${hash}`}
+          href={`${nurseryChain.blockExplorers.default.url}/tx/${hash}`}
           target="_blank"
           rel="noreferrer"
         >
@@ -535,7 +480,7 @@ function BreedProgress({ hash, owner }: { hash: Hex; owner: string }) {
       </div>
       {receipt.isError || request.isError ? (
         <>
-          <ErrorMessage message="Could not check your request. Your transaction is saved; retry before breeding again." />
+          <ErrorMessage message="Couldn’t check this breed. It’s saved — try checking again." />
           <Button
             variant="outline"
             onClick={() => {
@@ -547,33 +492,39 @@ function BreedProgress({ hash, owner }: { hash: Hex; owner: string }) {
           </Button>
         </>
       ) : receipt.data?.status === "reverted" ? (
-        <p>The transaction reverted. No breeding payment was taken.</p>
+        <p>Breeding failed. Your EVO wasn’t spent.</p>
       ) : !receipt.data ? (
-        <Loading>Waiting for transaction confirmation…</Loading>
+        <Loading>Confirming your transaction…</Loading>
       ) : requestId === undefined ? (
         <ErrorMessage message="This transaction is not a breeding request from this wallet." />
       ) : data?.[8] === 3 ? (
-        <p className="text-primary font-bold">
-          Egg #{String(data[7])} is ready for the nursery.{" "}
-          <Link className="underline" href={`/nursery/hermann?egg=${data[7]}`}>
-            Visit Hermann
-          </Link>
-        </p>
+        hatch.isError ? (
+          <div className="space-y-2">
+            <ErrorMessage message={`Couldn’t check Egg #${completedEgg}. Try again.`} />
+            <Button variant="outline" onClick={() => void hatch.refetch()}>Check again</Button>
+          </div>
+        ) : hatchProgress ? (
+          <div className="space-y-2">
+            <p className="text-primary font-bold">{hatchProgress.title} · {hatchProgress.complete ? "Evo" : "Egg"} #{completedEgg}</p>
+            <p className="text-sm text-muted-foreground">{hatchProgress.advice}</p>
+            {!hatchProgress.complete && <Link className="text-sm text-primary underline" href={`/nursery/hermann?egg=${completedEgg}`}>Visit Hermann</Link>}
+          </div>
+        ) : <Loading>Checking Egg #{completedEgg}…</Loading>
       ) : request.data?.fulfilled ? (
         <>
           <p>
-            Bertha’s egg is ready. Collect it to begin the three-day incubation.
+            Your egg is ready to collect.
           </p>
-          <Button disabled={!breedingTransactionsApproved || w.busy} title={!breedingTransactionsApproved ? breedingApprovalMessage : undefined} onClick={complete}>
+          <Button disabled={!w.canAct || !breedingTransactionsApproved || w.busy} title={!breedingTransactionsApproved ? breedingApprovalMessage : undefined} onClick={complete}>
             {w.busy ? "Confirm in your wallet…" : "Collect egg"}
           </Button>
         </>
       ) : (
-        <Loading>
-          Waiting for randomness. Your parents are reserved and your EVO is held
-          safely.
-        </Loading>
+        <div className="space-y-3"><Loading>
+          Preparing your egg…
+        </Loading></div>
       )}
+      {data && data[8] >= 2 && data[8] <= 3 && <TestRandomness keeper="bertha" requestId={data[6]} fulfilled={request.data?.fulfilled || data[8] === 3} refreshed={() => request.refetch()} />}
       <ErrorMessage message={w.error} />
     </div>
   );

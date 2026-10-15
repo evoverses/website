@@ -63,7 +63,7 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
             { trait_type: "Resistance", value: asset.metadata.resistance, max_value: 50 },
             { trait_type: "Speed", value: asset.metadata.speed, max_value: 50 },
             { trait_type: "Size", value: asset.metadata.size, display_type: "boost_percentage" },
-            { trait_type: "Created At", value: toTimestampSeconds(asset.metadata.createdAt), display_type: "date" },
+            { trait_type: "Created At", value: asset.metadata.createdAt ? toTimestampSeconds(asset.metadata.createdAt) : null, display_type: "date" },
             { trait_type: "Stage", value: isEvoAsset ? "Evo" : "Egg" },
           ] : isEgg(asset)
             ? [ { trait_type: "Treated", value: asset.metadata.treated ? "Yes" : "No" } ]

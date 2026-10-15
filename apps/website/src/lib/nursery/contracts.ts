@@ -1,46 +1,38 @@
+import { requireNurseryAccess } from "./access";
+import { runAuditedTransaction } from "./audit-client";
+import type { TransactionPhase } from "./progress";
+import { nurseryGasBudget } from "./gas-budget";
+import { nurseryAction } from "./audit-core";
 import { requireBreedingApproval } from "../beta/release-policy";
-import { evoContractAddress, evoNftContractAddress } from "@/data/addresses";
-import { client, chain } from "@/lib/thirdweb/config";
+import { nurseryTokenAddress as evoContractAddress, nurseryNftAddress as evoNftContractAddress, nurseryBerthaAddress, nurseryHermannAddress, nurseryNetworkConfigured, nurseryWrapperAddress, nurseryChain, usesChainlinkRandomness, nurseryRegistryVersion } from "./network";
+import { client } from "@/lib/thirdweb/config";
 import berthaJson from "./abi/Breeder_Bertha.json";
 import hermannJson from "./abi/Hatcher_Hermann.json";
 import {
   createPublicClient,
   http,
-  isAddress,
-  zeroAddress,
   type Abi,
   type Address,
   type Hex,
   encodeFunctionData,
   erc20Abi,
+  maxUint256,
   erc721Abi,
 } from "viem";
-import { avalanche } from "viem/chains";
-import { prepareTransaction, sendTransaction } from "thirdweb";
+import { defineChain, prepareTransaction, sendTransaction } from "thirdweb";
 import type { Account } from "thirdweb/wallets";
 import { nativeBudget } from "./rules";
 import { discoverOwnedEggs } from "./discovery";
+const chain = defineChain(nurseryChain.id);
 
 export const berthaAbi = berthaJson as Abi;
 export const hermannAbi = hermannJson as Abi;
 export const TREASURY = "0x9F64C4bECa7BBda647B9A755B29F7F9687bc4303" as Address;
-const configuredAddress = (value?: string): Address | undefined =>
-  value && isAddress(value, { strict: true }) && value !== zeroAddress
-    ? (value as Address)
-    : undefined;
-export const berthaAddress = configuredAddress(
-  process.env.NEXT_PUBLIC_BREEDER_BERTHA_ADDRESS,
-);
-export const hermannAddress = configuredAddress(
-  process.env.NEXT_PUBLIC_HATCHER_HERMANN_ADDRESS,
-);
-export const nurseryConfigured = Boolean(
-  berthaAddress &&
-    hermannAddress &&
-    berthaAddress.toLowerCase() !== hermannAddress.toLowerCase(),
-);
+export const berthaAddress = nurseryBerthaAddress;
+export const hermannAddress = nurseryHermannAddress;
+export const nurseryConfigured = nurseryNetworkConfigured;
 export const nurseryClient = createPublicClient({
-  chain: avalanche,
+  chain: nurseryChain,
   transport: http(),
 });
 const enumerableNftAbi = [
@@ -83,7 +75,7 @@ export const discoverNurseryEggs = (owner: Address, signal?: AbortSignal) => {
 
 export const sameAddress = (a: string, b: string) =>
   a.toLowerCase() === b.toLowerCase();
-export const nurseryScope = `43114:${berthaAddress?.toLowerCase()}:${hermannAddress?.toLowerCase()}`;
+export const nurseryScope = `${nurseryChain.id}:${berthaAddress?.toLowerCase()}:${hermannAddress?.toLowerCase()}`;
 export type Adult = {
   species: bigint;
   generation: bigint;
@@ -147,6 +139,7 @@ export const readBertha = <T>(
     args,
   }) as Promise<T>;
 export async function verifyNursery() {
+  if (nurseryRegistryVersion === 2 && await readHermann<bigint>("registryVersion") !== 2n) throw new Error("The configured OG nursery version could not be verified.");
   if (!nurseryConfigured) throw new Error("The nursery is opening soon.");
   const [
     chainId,
@@ -160,6 +153,8 @@ export async function verifyNursery() {
     hTreasury,
     bPaused,
     hPaused,
+    bWrapper,
+    hWrapper,
   ] = await Promise.all([
     nurseryClient.getChainId(),
     readBertha<Address>("evoToken"),
@@ -172,9 +167,11 @@ export async function verifyNursery() {
     readHermann<Address>("TREASURY"),
     readBertha<boolean>("paused"),
     readHermann<boolean>("paused"),
+    readBertha<Address>("vrfWrapper"),
+    readHermann<Address>("vrfWrapper"),
   ]);
   if (
-    chainId !== 43114 ||
+    chainId !== nurseryChain.id ||
     !sameAddress(bToken, evoContractAddress) ||
     !sameAddress(hToken, evoContractAddress) ||
     !sameAddress(bNft, evoNftContractAddress) ||
@@ -182,7 +179,9 @@ export async function verifyNursery() {
     !sameAddress(hatcher, hermannAddress!) ||
     !sameAddress(breeder, berthaAddress!) ||
     !sameAddress(bTreasury, TREASURY) ||
-    !sameAddress(hTreasury, TREASURY)
+    !sameAddress(hTreasury, TREASURY) ||
+    !sameAddress(bWrapper, nurseryWrapperAddress) ||
+    !sameAddress(hWrapper, nurseryWrapperAddress)
   )
     throw new Error("The nursery is not ready. Please try again later.");
   if (bPaused || hPaused) throw new Error("The nursery is temporarily paused.");
@@ -216,46 +215,52 @@ export async function sendNurseryTransaction(
     gasPrice?: bigint;
     submitted?: (hash: Hex) => void;
     beforeSend?: () => Promise<void>;
+    onProgress?: (phase: TransactionPhase) => void;
   } = {},
 ) {
   if (["breed", "completeBreed"].includes(functionName)) requireBreedingApproval();
+  await requireNurseryAccess();
+  // A ready user action records the automatic callback even if the pending view was closed.
+  if (usesChainlinkRandomness && ["completeBreed", "completeHatch"].includes(functionName)) {
+    const keeper = functionName === "completeBreed" ? "bertha" : "hermann";
+    const requestId = keeper === "bertha"
+      ? (await readBertha<BreedRequest>("requests", args))[6]
+      : (await readHermann<Egg>("eggs", args))[6];
+    const response = await fetch(`/api/nursery/randomness?keeper=${keeper}&id=${requestId}`, { method: "POST", cache: "no-store", redirect: "error" });
+    if (!response.ok || (await response.json()).status !== "fulfilled") throw new Error("The Chainlink callback audit is still being checked. Refresh before finishing this request.");
+  }
   const data = encodeFunctionData({ abi, functionName, args });
-  // A successful simulation is required before any wallet confirmation is requested.
-  await nurseryClient.call({
-    account: account.address as Address,
-    to,
-    data,
-    value: options.value ?? 0n,
-    gasPrice: options.gasPrice,
+  const request = { account: account.address as Address, to, data, value: options.value ?? 0n, gasPrice: options.gasPrice };
+  let gas: bigint | undefined;
+  return runAuditedTransaction({
+    action: nurseryAction.parse(functionName), wallet: account.address,
+    target: to, args: args.map(String), value: String(options.value ?? 0n),
+  }, {
+    simulate: async () => {
+      gas = nurseryGasBudget(await nurseryClient.estimateGas(request));
+      // Check the exact gas allowance we will send, rather than an unlimited eth_call.
+      await nurseryClient.call({ ...request, gas });
+    },
+    guard: async () => { await options.beforeSend?.(); await requireNurseryAccess(); },
+    send: async () => {
+      if (gas === undefined) throw new Error("Transaction gas has not been checked.");
+      options.onProgress?.("wallet");
+      return (await sendTransaction({ account, transaction: prepareTransaction({ client, chain, to, data, value: options.value ?? 0n, gasPrice: options.gasPrice, gas }) })).transactionHash;
+    },
+    submitted: hash => { options.submitted?.(hash as Hex); options.onProgress?.("confirming"); },
+    wait: async hash => {
+      const receipt = await nurseryClient.waitForTransactionReceipt({ hash: hash as Hex, confirmations: 1 });
+      if (receipt.status === "success") options.onProgress?.("confirmed");
+      return receipt;
+    },
   });
-  await options.beforeSend?.();
-  const sent = await sendTransaction({
-    account,
-    transaction: prepareTransaction({
-      client,
-      chain,
-      to,
-      data,
-      value: options.value ?? 0n,
-      gasPrice: options.gasPrice,
-    }),
-  });
-  options.submitted?.(sent.transactionHash);
-  const receipt = await nurseryClient.waitForTransactionReceipt({
-    hash: sent.transactionHash,
-    confirmations: 1,
-  });
-  if (receipt.status !== "success")
-    throw new Error(
-      "The transaction did not complete. Please refresh before trying again.",
-    );
-  return receipt;
 }
 export async function approveEvo(
   account: Account,
   spender: Address,
   amount: bigint,
   guard: () => Promise<void>,
+  options: { persistent?: boolean; onRequired?: () => void; onProgress?: (phase: TransactionPhase) => void } = {},
 ) {
   await guard();
   const [balance, allowance] = await Promise.all([
@@ -273,15 +278,17 @@ export async function approveEvo(
     }),
   ]);
   if (balance < amount) throw new Error("You need more EVO in this wallet.");
-  if (allowance >= amount) return;
-  // Approval is limited to this action's exact cost, and confirmation precedes spending.
+  const approvalAmount = options.persistent ? maxUint256 : amount;
+  if (allowance >= approvalAmount) return;
+  options.onRequired?.();
+  // Persistent permission is explicit in the UI; every actual action still requires a signature.
   await sendNurseryTransaction(
     account,
     evoContractAddress,
     erc20Abi,
     "approve",
-    [spender, amount],
-    { beforeSend: guard },
+    [spender, approvalAmount],
+    { beforeSend: guard, onProgress: options.onProgress },
   );
   await guard();
 }

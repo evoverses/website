@@ -3,6 +3,7 @@ import { event, fun, viewFun, indexed, ContractBase } from '@subsquid/evm-abi'
 import type { EventParams as EParams, FunctionArguments, FunctionReturn } from '@subsquid/evm-abi'
 
 export const events = {
+    GenesisEggRegistered: event("0xa748915fd2fd09116fabf9a4306752a1ee4be88742c273187496d6d3d9fe3143", "GenesisEggRegistered(uint256,bool,uint256,bytes32)", {"tokenId": indexed(p.uint256), "treated": p.bool, "createdAt": p.uint256, "snapshotRoot": indexed(p.bytes32)}),
     AdultImported: event("0x97ef5d5fe239e2c88ce1e42c63a1dbbf4fcd7bf7d599a42d06b6b1d12a0be4cb", "AdultImported(uint256,bytes32)", {"tokenId": indexed(p.uint256), "snapshotHash": p.bytes32}),
     EggHatched: event("0x3b12f0ccbfa0cf610dfd1a9d1cfac260675b6a537f4b3e0ebd25d6e973bca92e", "EggHatched(uint256,uint256,bytes32)", {"tokenId": indexed(p.uint256), "vrfRequestId": indexed(p.uint256), "traitsHash": p.bytes32}),
     EggRecorded: event("0xeb8243379058ae36db8b08169e91465d5df1ba09ae046f963c19170374dbd1fd", "EggRecorded(uint256,uint256,uint256,uint256,uint256)", {"tokenId": indexed(p.uint256), "parent1": p.uint256, "parent2": p.uint256, "species": p.uint256, "generation": p.uint256}),
@@ -11,6 +12,7 @@ export const events = {
 }
 
 export const functions = {
+    eggKind: viewFun("0x4b0d8115", "eggKind(uint256)", {"_0": p.uint256}, p.uint8),
     adultOf: viewFun("0xc95ad283", "adultOf(uint256)", {"tokenId": p.uint256}, p.struct({"species": p.uint256, "generation": p.uint256, "totalBreeds": p.uint256, "lastBreedTime": p.uint256, "attributes": p.struct({"gender": p.uint256, "rarity": p.uint256, "primaryType": p.uint256, "secondaryType": p.uint256, "nature": p.uint256, "size": p.uint256}), "stats": p.struct({"health": p.uint256, "attack": p.uint256, "defense": p.uint256, "special": p.uint256, "resistance": p.uint256, "speed": p.uint256})})),
     eggs: viewFun("0xbb654efa", "eggs(uint256)", {"_0": p.uint256}, {"parent1": p.uint256, "parent2": p.uint256, "speciesVersion": p.uint256, "createdAt": p.uint256, "treated": p.bool, "status": p.uint8, "vrfRequestId": p.uint256}),
     evoNft: viewFun("0xa99d47bc", "evoNft()", {}, p.address),

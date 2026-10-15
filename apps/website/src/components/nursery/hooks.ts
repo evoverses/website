@@ -1,7 +1,10 @@
 "use client";
+import { requireNurseryAccess } from "@/lib/nursery/access";
+import { retryNurseryAudit, startNurseryAudit, auditNurseryFailure } from "@/lib/nursery/audit-client";
 import { fetchOwnedEvos } from "@/lib/nursery/owned";
-import { evoNftContractAddress } from "@/data/addresses";
-import { chain } from "@/lib/thirdweb/config";
+import { nurseryNftAddress as evoNftContractAddress, nurseryChain, nurseryRegistryVersion } from "@/lib/nursery/network";
+import { defineChain } from "thirdweb";
+const chain = defineChain(nurseryChain.id);
 import {
   nurseryClient,
   nurseryScope,
@@ -25,6 +28,18 @@ import {
 import type { Address, Hex } from "viem";
 
 export function useNurseryWallet() {
+  const access = useQuery({
+    queryKey: ["nursery-master-access"], staleTime: 0, refetchInterval: 30_000, retry: false,
+    queryFn: async () => { await requireNurseryAccess(); return true; },
+  });
+  const canAct = access.data === true && !access.isError;
+  useEffect(() => {
+    if (!canAct) return;
+    const retry = () => { void retryNurseryAudit(); };
+    retry(); const timer = setInterval(retry, 30_000);
+    window.addEventListener("online", retry);
+    return () => { clearInterval(timer); window.removeEventListener("online", retry); };
+  }, [canAct]);
   const account = useActiveAccount();
   const wallet = useActiveWallet();
   const switchChain = useSwitchActiveWalletChain();
@@ -34,19 +49,20 @@ export function useNurseryWallet() {
   const locked = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const guard = useCallback(async () => {
+    await requireNurseryAccess();
     if (
       !account ||
       current.current.account?.address !== account.address ||
       current.current.wallet !== wallet
     )
       throw new Error("Your wallet changed. Select your Evos again.");
-    if (wallet?.getChain()?.id !== 43114) await switchChain(chain);
+    if (wallet?.getChain()?.id !== nurseryChain.id) await switchChain(chain);
     if (
       current.current.account?.address !== account.address ||
       wallet?.getAccount()?.address !== account.address ||
-      wallet?.getChain()?.id !== 43114
+      wallet?.getChain()?.id !== nurseryChain.id
     )
-      throw new Error("Connect the selected wallet to Avalanche C-Chain.");
+      throw new Error("Connect the selected wallet to Avalanche Fuji.");
     const code = await nurseryClient.getCode({
       address: account.address as Address,
     });
@@ -57,7 +73,7 @@ export function useNurseryWallet() {
     await verifyNursery();
     if (
       current.current.account?.address !== account.address ||
-      wallet?.getChain()?.id !== 43114
+      wallet?.getChain()?.id !== nurseryChain.id
     )
       throw new Error("Your wallet changed. Please try again.");
   }, [account, wallet, switchChain]);
@@ -67,8 +83,13 @@ export function useNurseryWallet() {
     setBusy(true);
     setError(null);
     try {
+      await requireNurseryAccess();
       await action();
     } catch (e) {
+      // Preflight validation can fail before a transaction intent exists.
+      if (account) {
+        try { const attemptId = await startNurseryAudit({ action: "preflight", wallet: account.address, args: [], value: "0" }); await auditNurseryFailure(attemptId, e); } catch { /* Protected endpoint records access/storage failure without exposing credentials. */ }
+      }
       const { nurseryError } = await import("@/lib/nursery/contracts");
       setError(nurseryError(e));
     } finally {
@@ -76,14 +97,14 @@ export function useNurseryWallet() {
       setBusy(false);
     }
   };
-  return { account, wallet, busy, error, guard, run };
+  return { account, wallet, busy, error, guard, run, canAct };
 }
 export function useNow() {
   const [now, setNow] = useState<bigint>(0n);
   useEffect(() => {
     const tick = () => setNow(BigInt(Math.floor(Date.now() / 1000)));
     tick();
-    const timer = setInterval(tick, 15_000);
+    const timer = setInterval(tick, 1_000);
     return () => clearInterval(timer);
   }, []);
   return now;
@@ -102,7 +123,7 @@ export function useOwnedEvos(address?: string) {
   query.data?.pages.forEach((page) =>
     page.items.forEach((asset) => {
       if (
-        asset.chainId === "43114" &&
+        asset.chainId === String(nurseryChain.id) &&
         sameAddress(asset.address, evoNftContractAddress) &&
         address &&
         sameAddress(asset.owner, address) &&
@@ -250,11 +271,13 @@ export function useEgg(tokenId: string, owner?: string) {
     refetchInterval: 10_000,
     queryFn: async () => {
       const { ownerOf, readHermann } = await import("@/lib/nursery/contracts");
-      const [currentOwner, egg, block] = await Promise.all([
+      const [currentOwner, egg, block, incubation] = await Promise.all([
         ownerOf(tokenId),
         readHermann<Egg>("eggs", [BigInt(tokenId)]),
         nurseryClient.getBlock(),
+        readHermann<bigint>("INCUBATION_TIME"),
       ]);
+      const kind = nurseryRegistryVersion === 2 ? await readHermann<number>("eggKind", [BigInt(tokenId)]) : egg[5] > 0 ? 2 : 0;
       const fulfilled =
         egg[5] === 2
           ? (
@@ -266,9 +289,11 @@ export function useEgg(tokenId: string, owner?: string) {
           : false;
       return {
         egg,
+        kind,
         fulfilled,
         owned: Boolean(owner && sameAddress(currentOwner, owner)),
         timestamp: block.timestamp,
+        incubation,
       };
     },
   });

@@ -3,13 +3,14 @@ import type { MarketplaceStatus } from "@workspace/database/types/marketplace";
 import type { Address } from "@workspace/evoverses/types/viem";
 
 export type SquidAssetBase = {
-  createdAt: string;
+  createdAt: string | null;
   updatedAt: string;
   generation: number;
 }
 
 type SquidAssetEggBase = SquidAssetBase & {
   type: "EGG";
+  eggKind?: "genesis" | "bred";
   treated: boolean;
 }
 

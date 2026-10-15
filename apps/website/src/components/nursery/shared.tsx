@@ -1,4 +1,7 @@
 "use client";
+import { usesChainlinkRandomness } from "@/lib/nursery/network";
+import { nurseryChain, nurseryNetworkMessage } from "@/lib/nursery/network";
+import { defineChain } from "thirdweb";
 import { chainConnectionOptions } from "@/lib/thirdweb/chain-connection";
 import { walletConnectionAvailable } from "@/lib/thirdweb/preview";
 
@@ -8,12 +11,11 @@ import { useConnectModal } from "thirdweb/react";
 import { Button } from "@workspace/ui/components/button";
 import { AlertCircle, WalletCards, LoaderCircle } from "lucide-react";
 import { formatUnits } from "viem";
-export const evoAmount = (value: bigint) => formatUnits(value, 18);
-export const avaxAmount = (value: bigint) => {
-  const text = formatUnits(value, 18);
-  const [whole, fraction = ""] = text.split(".");
-  return `${whole}.${fraction.padEnd(8, "0").slice(0, 8)}${fraction.length > 8 ? "…" : ""}`;
+export const evoAmount = (value: bigint) => {
+  const [whole, fraction] = formatUnits(value, 18).split(".");
+  return whole!.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (fraction ? `.${fraction}` : "");
 };
+export const avaxAmount = (value: bigint) => formatUnits(value, 18);
 export function ConnectNursery({
   connectedAddress,
 }: {
@@ -25,24 +27,26 @@ export function ConnectNursery({
     if (!walletConnectionAvailable) return;
     setError(null);
     try {
-      await connect(chainConnectionOptions());
+      const chain = defineChain(nurseryChain.id);
+      await connect({ ...chainConnectionOptions(), chain, chains: [chain] });
     } catch (e) {
       setError(nurseryError(e));
     }
   };
   return (
     <div className="rounded-xl border bg-card p-6 space-y-3">
+      <p className="font-semibold text-primary">{nurseryNetworkMessage}</p>
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
         <div>
           <p className="font-bold">
             {connectedAddress
-              ? "Your Nursery wallet"
-              : "Bring your Evos to the Nursery"}
+              ? "Your wallet"
+              : "Connect your wallet"}
           </p>
           <p className="text-sm text-muted-foreground">
             {connectedAddress
-              ? `${connectedAddress.slice(0, 6)}…${connectedAddress.slice(-4)} · Avalanche C-Chain`
-              : "Connect the wallet that owns your Evos on Avalanche."}
+              ? `${connectedAddress.slice(0, 6)}…${connectedAddress.slice(-4)}`
+              : "Choose the wallet that holds your Evos."}
           </p>
         </div>
         <Button disabled={!walletConnectionAvailable || isConnecting} onClick={connectWallet}>
@@ -98,21 +102,23 @@ export function VrfPrice({
   quote: bigint;
   maximum: bigint;
 }) {
+  const smallFee = maximum > 0n && maximum < 10n ** 12n;
   return (
-    <div className="space-y-1 text-sm">
-      <p>
-        Randomness surcharge: <strong>{avaxAmount(quote)} AVAX</strong>
+    <div className="space-y-2 text-sm">
+      <p className="flex justify-between items-start gap-4">
+        <span>AVAX fee</span>
+        <strong className="text-right tabular-nums">{smallFee ? "< 0.000001" : avaxAmount(maximum)} AVAX <span className="font-normal text-xs text-muted-foreground">max</span></strong>
       </p>
-      <p className="text-muted-foreground">
-        Maximum authorised: {avaxAmount(maximum)} AVAX, including a 10% quote
-        buffer. Unused AVAX stays yours and can be reclaimed below. Network gas
-        is extra.
-      </p>
-      {quote === 0n && (
-        <p className="text-primary">
-          The Nursery is covering randomness fees for this request.
-        </p>
-      )}
+      <p className="text-xs text-muted-foreground">Network fees are shown in your wallet.</p>
+      <details className="text-xs text-muted-foreground">
+        <summary className="cursor-pointer w-fit">Fee details</summary>
+        <dl className="mt-2 space-y-1 break-words">
+          <div><dt className="inline">Current fee: </dt><dd className="inline">{avaxAmount(quote)} AVAX</dd></div>
+          <div><dt className="inline">Maximum payment: </dt><dd className="inline">{avaxAmount(maximum)} AVAX</dd></div>
+        </dl>
+        <p className="mt-2">The maximum includes a 10% buffer. Any unused AVAX can be reclaimed below.</p>
+        {quote === 0n && !usesChainlinkRandomness && <p className="mt-2">No preparation fee. Network fees still apply.</p>}
+      </details>
     </div>
   );
 }

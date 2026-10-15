@@ -3,6 +3,7 @@ export type NurseryConfig = {
   hatcher: string;
   collection: string;
   fromBlock: number;
+  registryVersion?: 1 | 2;
 };
 const address = (value: string) =>
   /^0x[0-9a-f]{40}$/i.test(value) && !/^0x0{40}$/i.test(value);
@@ -43,7 +44,10 @@ export function nurseryConfig(
     throw new Error(
       "Nursery collection must also be watched for NFT transfers.",
     );
+  const version = env.NURSERY_REGISTRY_VERSION ?? "1";
+  if (!["1", "2"].includes(version)) throw new Error("Invalid Nursery registry version.");
   return {
+    ...(version === "2" ? { registryVersion: 2 as const } : {}),
     chainId: "43114",
     hatcher: hatcher.toLowerCase(),
     collection: collection.toLowerCase(),

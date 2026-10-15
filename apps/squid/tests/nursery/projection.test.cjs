@@ -189,3 +189,11 @@ it("legacy off-chain randomness/token allocation is opt-in and cannot coexist wi
     /disabled/,
   );
 });
+
+it("projects registered Genesis eggs without parents, revealed species or a fake epoch age", async () => {
+ const row = await project(f.reader(1,true,{kind:async()=>1,egg:async()=>({...f.egg(1,true),parent1:0n,parent2:0n,createdAt:0n}),adult:async()=>{throw Error('OG egg is not an adult')},species:async()=>{throw Error('OG species is still unknown')}}),undefined,null);
+ assert.equal(row.metadata.type,'EGG');assert.equal(row.metadata.egg_kind,'genesis');assert.equal(row.metadata.generation,0);assert.equal(row.metadata.species_id,0);assert.equal(row.metadata.created_at,null);assert.equal(row.metadata.parent1_token_id,null);assert.equal(row.metadata.parent2_token_id,null);assert.equal(row.metadata.treated,true);
+ const hatched=await project(f.reader(3,true,{kind:async()=>1,egg:async()=>({...f.egg(3,true),parent1:0n,parent2:0n,createdAt:0n}),adult:async()=>f.adult({generation:0n,totalBreeds:0n,lastBreedTime:0n})}),row,null,f.block(20),f.block(20).timestamp);
+ assert.equal(hatched.metadata.type,'EVO');assert.equal(hatched.metadata.generation,0);assert.equal(hatched.metadata.created_at,null);assert.equal(hatched.metadata.parent1_token_id,null);assert.equal(hatched.metadata.treated,true);assert.equal(hatched.metadata.hatched_at,new Date(f.block(20).timestamp).toISOString());
+});
+it("fails closed on an unregistered or invalid v2 egg kind",async()=>{for(const kind of [0,3])await assert.rejects(project(f.reader(1,false,{kind:async()=>kind})),/Invalid canonical egg kind/);});

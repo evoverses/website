@@ -1,4 +1,5 @@
-import { fetchSquidAssets } from "@/lib/evo/fetch";
+import { fujiAssets } from "@/lib/nursery/fuji-assets";
+import { permission, AccessError } from "@/lib/downloads/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { isAddress, type Address } from "viem";
 
@@ -18,12 +19,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Invalid wallet address or page." }, { status: 400 });
   }
   try {
-    const assets = await fetchSquidAssets(
-      { owners: [owner.toLowerCase() as Address], limit: 48, page },
-      { revalidate: 0 },
-    );
+    await permission(true, true);
+    const assets = await fujiAssets(owner.toLowerCase() as Address, page);
     return NextResponse.json(assets, { headers: { "Cache-Control": "no-store" } });
-  } catch {
+  } catch (error) {
+    if (error instanceof AccessError) return NextResponse.json({ error: error.code }, { status: error.status, headers: { "Cache-Control": "private, no-store" } });
     return NextResponse.json(
       { error: "The Evo data service is unavailable. Please retry shortly." },
       { status: 502, headers: { "Cache-Control": "no-store" } },

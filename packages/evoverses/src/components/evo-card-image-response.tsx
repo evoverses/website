@@ -97,7 +97,7 @@ export const EvoCardImageResponse = ({ asset }: { asset: SquidAsset }) => {
               <div
                 tw="bg-[#51FFFE] h-full"
                 style={{
-                  width: Math.min(daysSince(asset.metadata.createdAt), 1)
+                  width: Math.min(Number.isFinite(age) ? age : 0, 1)
                     .toLocaleString("en", { maximumFractionDigits: 2, style: "percent" }),
                 }}
               />

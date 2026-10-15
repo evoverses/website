@@ -160,3 +160,8 @@ it("a failed later block stages no partial metadata writes from the batch", asyn
   );
   assert.deepEqual(ctx.entities.values(NurseryEvo), []);
 });
+
+it("decodes Genesis registration as a token-only touch without invented breeding parents",()=>{
+ const raw={...log(events.GenesisEggRegistered.topic,f.hatcher,19n,f.encoded([1,0])),topics:[events.GenesisEggRegistered.topic,'0x'+f.word(19),'0x'+'a'.repeat(64)]};
+ const parsed=parseNurseryEvents([raw],f.config);assert.equal(parsed.length,1);assert.equal(parsed[0].name,'GenesisEggRegistered');assert.equal(parsed[0].tokenId,19n);assert.equal(parsed[0].seed,undefined);
+});

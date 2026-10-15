@@ -196,10 +196,11 @@ export const secondsSince = (date: DateIsh) => Math.floor(timeSince(date) / 1000
 export const minutesSince = (date: DateIsh) => secondsSince(date) / 60;
 export const hoursSince = (date: DateIsh) => minutesSince(date) / 60;
 
-export const daysSince = (date: DateIsh) => hoursSince(date) / 24;
+export const daysSince = (date: DateIsh | null) => date === null || !Number.isFinite(toDate(date).getTime()) || toDate(date).getTime() === 0 ? NaN : hoursSince(date) / 24;
 
 export const ageFormatter = (days: number) => {
-  const age = daysSince(days);
+  if (!Number.isFinite(days)) return "Unknown";
+  const age = Math.max(0, days);
   if (age < 1) {
     return "< 1 Day";
   }
@@ -210,7 +211,7 @@ export const ageFormatter = (days: number) => {
     return `${Math.floor(age / 7)} ${pluralize(Math.floor(age / 7), "Week")}`;
   }
   if (age < 365) {
-    return `${Math.floor(age / 30) || 1} ${pluralize(Math.floor(age / 30) || 1, "Day")}`;
+    return `${Math.floor(age / 30) || 1} ${pluralize(Math.floor(age / 30) || 1, "Month")}`;
   }
   return `${Math.floor(age / 365)} ${pluralize(Math.floor(age / 365), "Year")}`;
 };

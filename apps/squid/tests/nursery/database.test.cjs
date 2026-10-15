@@ -301,3 +301,12 @@ it("migration down restores legacy readers, and a re-apply installs the same rea
   await migration.up(migrationDb);
   assert.equal(await single(), undefined);
 });
+
+it("single and list metadata preserve original Genesis treatment and null dates through reveal",async()=>{
+ await db.exec("insert into metadata.species(id,species,primary_type,secondary_type) values(0,'unknown','none','none') on conflict do nothing");
+ const reader=f.reader(1,true,{kind:async()=>1,egg:async()=>({...f.egg(1,true),parent1:0n,parent2:0n,createdAt:0n})});
+ const registered=await projectSnapshot(nftId,f.hatcher,101n,f.block(30),reader,undefined,undefined);await save(registered);
+ for(const metadata of [(await single()).metadata,(await list()).items.find(x=>x.tokenId==='101').metadata]){assert.equal(metadata.type,'EGG');assert.equal(metadata.generation,0);assert.equal(metadata.treated,true);assert.equal(metadata.created_at,null);assert.equal(metadata.parent1_id,null);assert.equal(metadata.species,'unknown');}
+ const hatched=await projectSnapshot(nftId,f.hatcher,101n,f.block(31),f.reader(3,true,{kind:async()=>1,egg:async()=>({...f.egg(3,true),parent1:0n,parent2:0n,createdAt:0n}),adult:async()=>f.adult({generation:0n,totalBreeds:0n,lastBreedTime:0n})}),registered,undefined,f.block(31).timestamp);await save(hatched);
+ assert.equal((await single()).metadata.type,'EVO');assert.equal((await single()).metadata.generation,0);assert.equal((await single()).metadata.treated,true);assert.equal((await single()).metadata.parent1_id,null);
+});

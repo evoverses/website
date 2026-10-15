@@ -85,7 +85,7 @@ export function ParentSelector({
           </span>
           <span className="text-sm text-muted-foreground px-4 text-center">
             {number === 1
-              ? "Your wallet’s adult Evos"
+              ? "Your Evos"
               : "Opposite gender · A shared element"}
           </span>
         </button>
@@ -109,7 +109,7 @@ export function ParentSelector({
             <DialogDescription>
               {number === 1
                 ? "Choose an adult Evo from your connected wallet."
-                : "Only different Evos with the opposite gender and a shared element appear here."}
+                : "Choose a partner with the opposite gender and a shared element."}
             </DialogDescription>
           </DialogHeader>
           <Input

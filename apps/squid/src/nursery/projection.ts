@@ -4,6 +4,7 @@ export type RegistryEvent = BlockRef & {
   index: number;
   tokenId: bigint;
   name:
+    | "GenesisEggRegistered"
     | "AdultImported"
     | "EggRecorded"
     | "EggTreated"
@@ -61,6 +62,7 @@ export type Snapshot = {
   metadata: Metadata;
 };
 export type Reader = {
+  kind?(id: bigint): Promise<number>;
   known(id: bigint): Promise<boolean>;
   egg(id: bigint): Promise<Egg>;
   adult(id: bigint): Promise<Adult>;
@@ -153,17 +155,25 @@ export async function projectSnapshot(
     typeof egg.treated !== "boolean"
   )
     throw new Error("Invalid canonical egg state");
+  const kind = reader.kind ? await reader.kind(tokenId) : egg.status > 0 ? 2 : 0;
+  if (![0, 1, 2].includes(kind) || egg.status > 0 && kind === 0) throw new Error("Invalid canonical egg kind");
+  const genesis = kind === 1;
   const metadata: Metadata = {
     updated_at: new Date(block.timestamp).toISOString(),
   };
   if (egg.status > 0) {
-    metadata.parent1_token_id = egg.parent1.toString();
-    metadata.parent2_token_id = egg.parent2.toString();
-    metadata.created_at = date(egg.createdAt);
+    metadata.egg_kind = genesis ? "genesis" : "bred";
+    metadata.parent1_token_id = genesis ? null : egg.parent1.toString();
+    metadata.parent2_token_id = genesis ? null : egg.parent2.toString();
+    metadata.created_at = genesis && egg.createdAt === 0n ? null : date(egg.createdAt);
     metadata.treated = egg.treated;
     metadata.egg_status = egg.status;
   }
-  if (egg.status === 1 || egg.status === 2) {
+  if (genesis && (egg.status === 1 || egg.status === 2)) {
+    Object.assign(metadata, { type: "EGG", species_id: 0, generation: 0, primary_type: "none", secondary_type: "none",
+      gender: "unknown", nature: "unknown", rarity: "unknown", chroma: "none", total_breeds: 0, last_breed_time: null,
+      hatched_at: null, health: 0, attack: 0, defense: 0, special: 0, resistance: 0, speed: 0, size: 0 });
+  } else if (egg.status === 1 || egg.status === 2) {
     // Hermann deliberately has no adultOf result while an egg is incubating.
     // Seed species/generation from EggRecorded, then retain them in tracked state.
     const speciesId =

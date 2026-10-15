@@ -77,12 +77,13 @@ export function hatchState(
   treated: boolean,
   fulfilled: boolean,
   now: bigint,
+  incubation: bigint = INCUBATION,
 ) {
   return {
     canTreat: status === 1 && !treated,
-    canRequest: status === 1 && now >= createdAt + INCUBATION,
+    canRequest: status === 1 && now >= createdAt + incubation,
     canComplete: status === 2 && fulfilled,
-    remaining: createdAt + INCUBATION > now ? createdAt + INCUBATION - now : 0n,
+    remaining: createdAt + incubation > now ? createdAt + incubation - now : 0n,
   };
 }
 export function remainingTime(seconds: bigint) {
@@ -90,7 +91,7 @@ export function remainingTime(seconds: bigint) {
   const days = seconds / DAY;
   const hours = (seconds % DAY) / 3600n;
   const minutes = (seconds % 3600n) / 60n;
-  return [days ? `${days}d` : "", hours ? `${hours}h` : "", `${minutes}m`]
+  return [days ? `${days}d` : "", hours ? `${hours}h` : "", minutes ? `${minutes}m` : "", seconds < 60n ? `${seconds}s` : ""]
     .filter(Boolean)
     .join(" ");
 }

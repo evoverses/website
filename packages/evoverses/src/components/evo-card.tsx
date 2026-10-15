@@ -24,7 +24,7 @@ import { toTitleCase } from "@workspace/evoverses/utils/strings";
 import { cn } from "@workspace/ui/lib/utils";
 import type { ComponentProps } from "react";
 
-export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & { asset: SquidAsset }) => {
+export const EvoCard = ({ className, asset, onArtLoad, onArtError, ...props }: ComponentProps<"div"> & { asset: SquidAsset; onArtLoad?: React.ReactEventHandler<HTMLImageElement>; onArtError?: React.ReactEventHandler<HTMLImageElement> }) => {
 
   const appearance = isEvo(asset) ? evoAppearance(asset.metadata.chroma, asset.metadata.rarity) : evoAppearance();
   const age = daysSince(asset.metadata.createdAt);
@@ -51,7 +51,7 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
         className="w-full h-full rounded-[1.875rem] absolute top-0 left-0 select-none pointer-events-none"
         alt="background"
       />
-      <EvoImage asset={asset} data-evo-card-art className="absolute w-[82cqw] h-[70cqw] object-contain top-[27cqw] left-1/2 -translate-x-1/2" />
+      <EvoImage asset={asset} onLoad={onArtLoad} onError={onArtError} data-evo-card-art className="absolute w-[82cqw] h-[70cqw] object-contain top-[27cqw] left-1/2 -translate-x-1/2" />
       <img data-evo-card-border style={{ filter: appearance.borderFilter }} className="absolute w-full select-none pointer-events-none" src={getEvoCardBorderUrl(asset)} alt="border" />
       <img
         src={evoversesIconUrl}
@@ -111,7 +111,7 @@ export const EvoCard = ({ className, asset, ...props }: ComponentProps<"div"> & 
                   <div
                     className="bg-[#51FFFE] h-full"
                     style={{
-                      width: Math.min(daysSince(asset.metadata.createdAt), 1)
+                      width: Math.min(Number.isFinite(age) ? age : 0, 1)
                         .toLocaleString("en", { maximumFractionDigits: 2, style: "percent" }),
                     }}
                   />

@@ -132,9 +132,8 @@ export const imageApiSuffix = process.env.NEXT_PUBLIC_API_IMAGE_SUFFIX;
 const asImageUrl = (url: string) => `${baseImageApiUrl}/${url.replace(/\/$/, "").replace(/^\//, "")}/${imageApiSuffix}`;
 
 export const getEvoCardEvoImageUrl = (evo: SquidAsset) => {
-  const base = `/evo/${evo.metadata.species}`;
+  const base = `/evo/${evo.metadata.species.toLowerCase()}`;
   const isEgg = isEggAsset(evo);
-  console.log(isEgg);
   if (isEgg) {
     return asImageUrl(`${base}/${evo.metadata.generation === 0 ? Number(evo.tokenId) % 4 : "egg"}`);
   }

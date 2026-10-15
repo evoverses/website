@@ -6,8 +6,7 @@ export default function HermannPage() {
   return (
     <main className="page max-w-7xl mx-auto px-4 py-8 sm:px-8">
       <KeeperHeader keeper="hermann">
-        Your eggs, in good hands. Add a treatment, then hatch after three days
-        of incubation.
+        Your next Evo is waiting to hatch. Treatment is optional.
       </KeeperHeader>
       <Hatchery />
     </main>

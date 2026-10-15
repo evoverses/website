@@ -37,6 +37,7 @@ export async function registryReader(
     Promise<FunctionReturn<typeof functions.getSpeciesPool>>
   >();
   return {
+    ...(config.registryVersion === 2 ? { kind: (tokenId: bigint) => read(functions.eggKind, { _0: tokenId }) } : {}),
     known: (tokenId) => read(functions.known, { _0: tokenId }),
     egg: (tokenId) => read(functions.eggs, { _0: tokenId }),
     adult: (tokenId) => read(functions.adultOf, { tokenId }),
