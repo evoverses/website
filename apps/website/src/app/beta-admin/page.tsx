@@ -6,7 +6,7 @@ import { playerSessionCookie } from "@/lib/player/auth-core";
 import { betaAdminSnapshotSchema } from "@/lib/player/beta-admin-handler";
 import { betaAdminRpc } from "@/lib/player/beta-admin-server";
 import { playerLoginEnabled } from "@/lib/player/server";
-export const metadata: Metadata = { title: "Beta administration", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Account administration", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 export default async function BetaAdminPage() {
   const token = (await cookies()).get(playerSessionCookie)?.value;

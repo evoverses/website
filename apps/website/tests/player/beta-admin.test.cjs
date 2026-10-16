@@ -96,3 +96,12 @@ test('granting and revoking admin preserve server master-only denials',async()=>
   assert.equal(response.status,403);assert.deepEqual(await response.json(),{error:{code:'MASTER_ADMIN_REQUIRED'}});
  }
 });
+
+test('public account administration rejects retired approval commands but accepts an active unapproved-account grant',async()=>{
+ let calls=0;
+ for(const action of ['approve','revoke'])assert.equal((await betaAdminHandler(request({operation:'action',input:{requestId:receipt,playerId:id,action,reason:'Old client',expectedVersion:0}}),{enabled:true,rpc:async()=>{calls++;throw Error('Unexpected');}})).status,400);
+ assert.equal(calls,0);
+ const input={requestId:receipt,playerId:id,action:'grant_evoros',reason:'Event reward',amount:500};
+ const response=await betaAdminHandler(request({operation:'action',input}),{enabled:true,rpc:async()=>({status:200,value:{...result,action:'grant_evoros',access:'pending',version:0,evoros:1000,evorosGranted:500}})});
+ assert.equal(response.status,200);assert.equal((await response.json()).evorosGranted,500);
+});

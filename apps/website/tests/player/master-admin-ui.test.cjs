@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript'),React=require('react');
 const {renderToStaticMarkup}=require('react-dom/server');
-function load(file,imports={}){const mod={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText,{module:mod,exports:mod.exports,require:n=>imports[n]??require(n),Date});return mod.exports;}
+function load(file,imports={}){const mod={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText,{module:mod,exports:mod.exports,require:n=>n==='@/lib/player/beta-admin-client'?load('src/lib/player/beta-admin-client.ts'):imports[n]??require(n),Date});return mod.exports;}
 const id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',playerId='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 function snapshot(masterAdministrator){return {administratorId:id,masterAdministrator,players:[{id:playerId,displayName:'Tester',experience:0,evoros:0,access:'pending',accountStatus:'active',administrator:false,masterAdministrator:false,version:0,initialGrant:false}],products:[],history:[],page:1,total:1,more:false};}
 const Link=props=>React.createElement('a',props);
@@ -20,7 +20,7 @@ test('single and bulk deletion controls appear only for master admins',()=>{
  const Button=({variant,size,...props})=>React.createElement('button',props),Input=props=>React.createElement('input',props);
  const dialogs=Object.fromEntries(['Dialog','DialogContent','DialogHeader','DialogTitle','DialogDescription','DialogFooter'].map(n=>[n,()=>null]));
  const {BetaAdmin}=load('src/components/player/beta-admin.tsx',{'@workspace/ui/components/button':{Button},'@workspace/ui/components/input':{Input},'@workspace/ui/components/label':{Label:props=>React.createElement('label',props)},'@workspace/ui/components/dialog':dialogs});
- const regular=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(false)}));assert.equal((regular.match(/>Delete<\/button>/g)||[]).length,0);assert.ok(regular.includes('Approve beta'));assert.ok(!regular.includes('Make admin'));
+ const regular=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(false)}));assert.equal((regular.match(/>Delete<\/button>/g)||[]).length,0);assert.ok(!regular.includes('Approve beta'));assert.ok(!regular.includes('Make admin'));
  const master=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:snapshot(true)}));assert.equal((master.match(/>Delete<\/button>/g)||[]).length,2);
 });
 
@@ -52,6 +52,6 @@ test('grant and single/bulk revoke admin controls require master status and fail
   const html=renderToStaticMarkup(React.createElement(BetaAdmin,{initialSnapshot:initial}));
   assert.equal((html.match(/>Make admin<\/button>/g)||[]).length,master?1:0);
   assert.equal((html.match(/>Revoke admin<\/button>/g)||[]).length,master?2:0);
-  assert.ok(html.includes('Approve beta'));assert.ok(html.includes('Add Evoros'));assert.ok(html.includes('>Ban</button>'));
+  assert.ok(!html.includes('Approve beta'));assert.ok(!html.includes('Revoke beta'));assert.ok(!html.includes('Beta status'));assert.ok(html.includes('Account status'));assert.ok(html.includes('Game access is open to all active accounts.'));assert.ok(html.includes('Add Evoros'));assert.ok(html.includes('>Ban</button>'));
  }
 });

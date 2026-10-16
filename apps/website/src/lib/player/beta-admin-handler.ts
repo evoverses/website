@@ -4,8 +4,6 @@ const uuid = z.string().uuid();
 const reason = z.string().trim().min(1).max(200);
 const common = {requestId:uuid,playerId:uuid,reason};
 const action = z.discriminatedUnion("action",[
- z.object({...common,action:z.literal("approve"),expectedVersion:z.number().int().min(0).max(2147483647)}).strict(),
- z.object({...common,action:z.literal("revoke"),expectedVersion:z.number().int().min(0).max(2147483647)}).strict(),
  z.object({...common,action:z.literal("ban"),expectedAccountStatus:z.enum(["active","suspended"])}).strict(),
  z.object({...common,action:z.literal("unban"),expectedAccountStatus:z.enum(["active","suspended"])}).strict(),
  z.object({...common,action:z.literal("delete"),expectedAccountStatus:z.enum(["active","suspended"])}).strict(),
