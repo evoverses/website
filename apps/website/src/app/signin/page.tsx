@@ -44,7 +44,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
           <form action="/api/player/auth/epic/start" method="post" className="mt-6"><Button type="submit" disabled={!ready} className="h-12 w-full rounded-xl font-bold">Sign in with Epic</Button></form>
         )}
         {!ready && <p className="mt-3 text-sm text-muted-foreground">Sign-in is temporarily unavailable. Please try again soon.</p>}
-        <p className="mt-5 text-xs leading-relaxed text-muted-foreground">{confirmation ? "Your account starts with an empty inventory. Creating it does not make a purchase." : "Your password stays with Epic."}</p>
+        <p className="mt-5 text-xs leading-relaxed text-muted-foreground">{confirmation ? "Your new account includes 500 Evoros and a pack of two Evos. Creating it does not make a purchase." : "Your password stays with Epic."}</p>
         <Button variant="ghost" asChild className="mt-4 w-full"><Link href="/store">Browse the Store</Link></Button>
       </section>
     </main>

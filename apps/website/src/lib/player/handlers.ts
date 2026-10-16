@@ -22,6 +22,8 @@ function clear(response: NextResponse, name: string, path = "/") { response.cook
 const statuses = new Set(["SIGNIN_UNAVAILABLE", "SIGNIN_EXPIRED", "SIGNIN_BUSY", "EPIC_CANCELLED", "EPIC_VERIFICATION_FAILED", "SERVICE_UNAVAILABLE", "INVALID_SESSION"]);
 function failure(error: unknown) {
   const code = error instanceof PlayerWebError && statuses.has(error.code) ? error.code : "SERVICE_UNAVAILABLE";
+  // Log only the fixed error code; callback URLs, proofs and cookies stay private.
+  console.warn("[account auth callback]", JSON.stringify({ code }));
   const response = redirect("/signin?status=" + code);
   clear(response, epicStateCookie, "/api/player/auth/epic");
   clear(response, epicPendingCookie);

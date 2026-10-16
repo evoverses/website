@@ -39,7 +39,7 @@ const shared = globalThis as unknown as Record<symbol, ReturnType<typeof createP
 export function playerWebAuth() {
   return shared[key] ??= createPlayerWebAuth({ configuration: getEpicConfig,
     ...(hostedPlayerLogin ? {transactions:createOAuthRpc({connection:()=>{const c=getEpicConfig();return c?.hosted?{apiUrl:c.apiUrl,serviceToken:c.hosted.serviceToken}:null;}})} : {}), diagnostic: value => {
-    if (localPlayerLogin) console.warn("[local account auth]", JSON.stringify(value));
+    if (localPlayerLogin || hostedPlayerLogin) console.warn("[account auth]", JSON.stringify(value));
   } });
 }
 export const getPlayerAccount = cache(async () => {
