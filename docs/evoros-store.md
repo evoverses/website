@@ -1,3 +1,13 @@
+# Hosted Evoros store - live card release, 16 October 2026
+
+The owner requested real card payments. Live Stripe prices for 250 / 500 / 1,000 / 2,500 / 5,000 / 10,000 Evoros are US$3.00 / US$5.50 / US$10.00 / US$23.50 / US$45.00 / US$85.00. See [the live catalogue](evoros-stripe-live-products.json). EVO retains its 90% discount and finalized Avalanche pool/oracle quote.
+
+Both rails credit the signed-in game account through the hosted account service and durable once-only ledger. Live card checkout requires matching encrypted live credentials, a live webhook and approved live prices. Test events cannot fulfill live purchases. Browser return URLs never grant currency. The UI identifies actual card charges in live mode.
+
+37 website tests, the production Next/OpenNext build and local Workers signature/origin plus on-chain quote checks passed. No real charge or EVO transfer is made by agent verification. The account service rollout record contains the deployed versions and public smoke evidence.
+
+## Historical local implementation notes (superseded)
+
 Current status (6 October 2026): **local Stripe test Checkout is connected**. See [test instructions and current validation](stripe-local-testing.md). Older account-check entries below record the earlier disabled preparation state.
 
 ## Current BETA update - 7 October 2026

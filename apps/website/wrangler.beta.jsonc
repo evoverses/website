@@ -55,10 +55,10 @@
     "NEXT_PUBLIC_FUJI_HERMANN_HISTORY": "0x7D0a47E56E4804A606669D6b395AD430c9ADD25E,0x7B252B2B63747E1F56C6b485d6a41B8C09302Cef",
     "EVOVERSES_UPDATER_PUBLIC_KEY": "<RSAKeyValue><Modulus>y4s5McxJFPt8Vw/0gh8ZGB8Y5e40VWcouAZuPfQ0/DkAp0usmsKd7qGd5o+WrGTQTlJBfk1yEB6vwhIgSD2FoIuW57Z57xqVpLxialpHBVLO02p4klugxw/MwPsvvLYejhK6QOQi3YyR15DSihN4o0KQ/mvALAYZzC5TfxYTExIOHvpecNmTXbbx29tSTETWY+xJlce7CEi3cf+A2GlT2N+7ThiBYZ5V7H7ltX4PUCYFhFJ0xVpq7B8gIh6hCmA0VxNBmozcKUhLgDP0ROVdxx3rOL5xfOG1gNh265PHNpsMlQ7oHUK2q5gzxgs1USsFVi/Lv00gHvYkQ/V+x1h5+aeGP8rhPj9Og0VXuTXDqGp8zoxoVsW6/TtjOL9M4wMiJqQm/Fo7XA8pIK9Q1wLyhQVSLqJpUARnzjiBuR0JxtWyxjxFe9ikRJRbF+UyIHVeMBeCLdMRkH4v5uYc6P7xYhVljc9fWt47FUw2lf/+eerKsXW4ivxWfCxw+F3crArqxJ7F5Z2CL4fq5laAoZJIpc3ttSuyiBL8g2/hJEsylX/ruybrMD4Eynhui8soes+p/SZIhBnc+sJxYOddKgzPZy+Rsa+O+kLop4TiBzZM4WfFJOMJ/owxBKrtmUTDS1WkF9BIwDGFOax63wXyNZOm4hD7o7uRzqi6nUOVjb+jBrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>",
     "EVOROS_STRIPE_ENABLED": "true",
-    "EVOROS_STRIPE_MODE": "test",
+    "EVOROS_STRIPE_MODE": "live",
     "EVOROS_STRIPE_ACCOUNT": "acct_1UN0wpI8Ec1gWS2X",
     "EVOROS_STORE_ORIGIN": "https://beta.evoverses.com",
-    "EVOROS_STRIPE_PRICES": "{\"bundle_pouch\":{\"priceId\":\"price_1UR8AVI8Ec1gWS2X2MO6mUQi\",\"currency\":\"usd\",\"unitAmount\":300},\"bundle_satchel\":{\"priceId\":\"price_1UR8AWI8Ec1gWS2XgIL88rJN\",\"currency\":\"usd\",\"unitAmount\":550},\"bundle_canister\":{\"priceId\":\"price_1UN5GYI8Ec1gWS2XtHerD9c4\",\"currency\":\"usd\",\"unitAmount\":1000},\"bundle_case\":{\"priceId\":\"price_1UR8AYI8Ec1gWS2XVDDvToqH\",\"currency\":\"usd\",\"unitAmount\":2350},\"bundle_chest\":{\"priceId\":\"price_1UR8AZI8Ec1gWS2XxwoCUIIp\",\"currency\":\"usd\",\"unitAmount\":4500},\"bundle_vault\":{\"priceId\":\"price_1UR8AaI8Ec1gWS2X7dKrfnuw\",\"currency\":\"usd\",\"unitAmount\":8500}}"
+    "EVOROS_STRIPE_PRICES": "{\"bundle_pouch\":{\"priceId\":\"price_1UR8eBI8Ec1gWS2XIAZUGpma\",\"currency\":\"usd\",\"unitAmount\":300},\"bundle_satchel\":{\"priceId\":\"price_1UR8eYI8Ec1gWS2XDwWHM7CQ\",\"currency\":\"usd\",\"unitAmount\":550},\"bundle_canister\":{\"priceId\":\"price_1UR8ecI8Ec1gWS2XVQkrov2l\",\"currency\":\"usd\",\"unitAmount\":1000},\"bundle_case\":{\"priceId\":\"price_1UR8efI8Ec1gWS2XzSvwh784\",\"currency\":\"usd\",\"unitAmount\":2350},\"bundle_chest\":{\"priceId\":\"price_1UR8ehI8Ec1gWS2XpgG7Acxj\",\"currency\":\"usd\",\"unitAmount\":4500},\"bundle_vault\":{\"priceId\":\"price_1UR8ekI8Ec1gWS2XyJO4vtbN\",\"currency\":\"usd\",\"unitAmount\":8500}}"
   },
   "limits": {
     "cpu_ms": 3000

@@ -67,10 +67,9 @@ export function stripeStoreConfig(
     )
       throw new Error("Each bundle requires an approved fixed Stripe price.");
     if (
-      !live &&
-      (item.currency !== "usd" || item.unitAmount !== cashCents(bundle.amount))
+      item.currency !== "usd" || item.unitAmount !== cashCents(bundle.amount)
     )
-      throw new Error("Test prices must match the approved bundle prices.");
+      throw new Error("Prices must match the approved USD bundle totals.");
     prices[bundle.id] = {
       priceId: item.priceId,
       currency: item.currency,

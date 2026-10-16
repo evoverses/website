@@ -1,0 +1,96 @@
+{
+  "verifiedDate": "2026-10-16",
+  "accountId": "acct_1UN0wpI8Ec1gWS2X",
+  "stripeAccount": "Evoverses Inc",
+  "mode": "live",
+  "livemode": true,
+  "evoDiscountPercent": 90,
+  "products": [
+    {
+      "bundleId": "bundle_pouch",
+      "productId": "prod_evoros_bundle_pouch_v1",
+      "evoros": 250,
+      "priceId": "price_1UR8eBI8Ec1gWS2XIAZUGpma",
+      "currency": "usd",
+      "unitAmount": 300,
+      "active": true
+    },
+    {
+      "bundleId": "bundle_satchel",
+      "productId": "prod_evoros_bundle_satchel_v1",
+      "evoros": 500,
+      "priceId": "price_1UR8eYI8Ec1gWS2XDwWHM7CQ",
+      "currency": "usd",
+      "unitAmount": 550,
+      "active": true
+    },
+    {
+      "bundleId": "bundle_canister",
+      "productId": "prod_evoros_bundle_canister_v1",
+      "evoros": 1000,
+      "priceId": "price_1UR8ecI8Ec1gWS2XVQkrov2l",
+      "currency": "usd",
+      "unitAmount": 1000,
+      "active": true
+    },
+    {
+      "bundleId": "bundle_case",
+      "productId": "prod_evoros_bundle_case_v1",
+      "evoros": 2500,
+      "priceId": "price_1UR8efI8Ec1gWS2XzSvwh784",
+      "currency": "usd",
+      "unitAmount": 2350,
+      "active": true
+    },
+    {
+      "bundleId": "bundle_chest",
+      "productId": "prod_evoros_bundle_chest_v1",
+      "evoros": 5000,
+      "priceId": "price_1UR8ehI8Ec1gWS2XpgG7Acxj",
+      "currency": "usd",
+      "unitAmount": 4500,
+      "active": true
+    },
+    {
+      "bundleId": "bundle_vault",
+      "productId": "prod_evoros_bundle_vault_v1",
+      "evoros": 10000,
+      "priceId": "price_1UR8ekI8Ec1gWS2XyJO4vtbN",
+      "currency": "usd",
+      "unitAmount": 8500,
+      "active": true
+    }
+  ],
+  "prices": {
+    "bundle_pouch": {
+      "priceId": "price_1UR8eBI8Ec1gWS2XIAZUGpma",
+      "currency": "usd",
+      "unitAmount": 300
+    },
+    "bundle_satchel": {
+      "priceId": "price_1UR8eYI8Ec1gWS2XDwWHM7CQ",
+      "currency": "usd",
+      "unitAmount": 550
+    },
+    "bundle_canister": {
+      "priceId": "price_1UR8ecI8Ec1gWS2XVQkrov2l",
+      "currency": "usd",
+      "unitAmount": 1000
+    },
+    "bundle_case": {
+      "priceId": "price_1UR8efI8Ec1gWS2XzSvwh784",
+      "currency": "usd",
+      "unitAmount": 2350
+    },
+    "bundle_chest": {
+      "priceId": "price_1UR8ehI8Ec1gWS2XpgG7Acxj",
+      "currency": "usd",
+      "unitAmount": 4500
+    },
+    "bundle_vault": {
+      "priceId": "price_1UR8ekI8Ec1gWS2XyJO4vtbN",
+      "currency": "usd",
+      "unitAmount": 8500
+    }
+  }
+}

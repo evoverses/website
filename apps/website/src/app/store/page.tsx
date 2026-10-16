@@ -11,15 +11,19 @@ export const metadata: Metadata = {
 };
 export default async function StorePage() {
   const account = await getPlayerAccount();
-  let sandboxCheckoutReady = false;
+  let cardCheckoutReady = false;
+  let cardLive = false;
   try {
-    sandboxCheckoutReady = Boolean(stripeStoreRuntime());
+    const checkout = stripeStoreRuntime();
+    cardCheckoutReady = Boolean(checkout);
+    cardLive = Boolean(checkout?.config.live);
   } catch {
-    // Leave buying disabled if local sandbox configuration is unavailable.
+    // Keep checkout closed until matching credentials and prices are configured.
   }
   return (
     <EvorosStore
-      sandboxCheckoutReady={sandboxCheckoutReady}
+      cardCheckoutReady={cardCheckoutReady}
+      cardLive={cardLive}
       playerAccount={
         account
           ? {

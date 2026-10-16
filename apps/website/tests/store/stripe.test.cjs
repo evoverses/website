@@ -12,7 +12,7 @@ const { evorosBundles } = require(
   path.join(process.env.EVOROS_TEST_LIB, "data/evoros-bundles.js"),
 );
 const { cashCents } = require(path.join(process.env.EVOROS_TEST_LIB, "lib/store/pricing.js"));
-function fixture() {
+function fixture(live = false) {
   const prices = Object.fromEntries(
     evorosBundles.map((b, i) => [
       b.id,
@@ -21,10 +21,10 @@ function fixture() {
   );
   const env = {
     EVOROS_STRIPE_ENABLED: "true",
-    EVOROS_STRIPE_MODE: "test",
-    STRIPE_SECRET_KEY: "sk_test_fixture",
+    EVOROS_STRIPE_MODE: live ? "live" : "test",
+    STRIPE_SECRET_KEY: live ? "rk_live_fixture" : "sk_test_fixture",
     STRIPE_WEBHOOK_SECRET: "whsec_fixture",
-    EVOROS_STORE_ORIGIN: "http://localhost:3100",
+    EVOROS_STORE_ORIGIN: live ? "https://beta.evoverses.com" : "http://localhost:3100",
     EVOROS_STRIPE_PRICES: JSON.stringify(prices),
   };
   const config = stripeStoreConfig(env),
@@ -40,11 +40,11 @@ function fixture() {
     status: "awaiting_payment",
   };
   const session = {
-    id: "cs_test_fixture",
-    url: "https://checkout.stripe.com/c/pay/cs_test_fixture",
+    id: live ? "cs_live_fixture" : "cs_test_fixture",
+    url: "https://checkout.stripe.com/c/pay/" + (live ? "cs_live_fixture" : "cs_test_fixture"),
     status: "open",
     payment_status: "unpaid",
-    livemode: false,
+    livemode: live,
     mode: "payment",
     client_reference_id: order.id,
     currency: price.currency,
@@ -65,7 +65,7 @@ function fixture() {
       id,
       active: true,
       type: "one_time",
-      livemode: false,
+      livemode: live,
       currency: price.currency,
       unit_amount: price.unitAmount,
     }),
@@ -477,4 +477,19 @@ test('a paid order reserved before repricing still fulfills at its immutable ori
  assert.equal(f.config.prices.bundle_pouch.unitAmount,300);
  assert.equal(await fulfillCardPayment(f.session.id,f.config,f.gateway,f.players),'credited');
  assert.equal(f.credits.get(f.order.id).evoros,250);
+});
+
+test("live checkout and paid fulfillment use live evidence and reject test sessions", async () => {
+  const f = fixture(true);
+  await createCardCheckout(input, f.config, f.gateway, f.players);
+  assert.equal(f.config.live, true);
+  assert.equal(f.credits.size, 0);
+  paid(f);
+  f.session.livemode = false;
+  await assert.rejects(fulfillCardPayment(f.session.id, f.config, f.gateway, f.players));
+  assert.equal(f.credits.size, 0);
+  f.session.livemode = true;
+  assert.equal(await fulfillCardPayment(f.session.id, f.config, f.gateway, f.players), "credited");
+  assert.equal(await fulfillCardPayment(f.session.id, f.config, f.gateway, f.players), "already_credited");
+  assert.equal(f.credits.size, 1);
 });

@@ -133,10 +133,12 @@ function StoreWallet({ account }: { account?: { address: string } }) {
 
 export default function EvorosStore({
   playerAccount,
-  sandboxCheckoutReady = false,
+  cardCheckoutReady = false,
+  cardLive = false,
 }: {
   playerAccount?: { id: string; displayName: string; evoros: number };
-  sandboxCheckoutReady?: boolean;
+  cardCheckoutReady?: boolean;
+  cardLive?: boolean;
 } = {}) {
   const [selectedId, setSelectedId] = useState<string>(evorosBundles[0].id);
   const router = useRouter();
@@ -217,7 +219,7 @@ export default function EvorosStore({
     };
   }, [router]);
   async function buyByCard() {
-    if (!evorosPurchasesEnabled || inFlight.current || !playerAccount || !sandboxCheckoutReady) return;
+    if (!evorosPurchasesEnabled || inFlight.current || !playerAccount || !cardCheckoutReady) return;
     inFlight.current = true;
     setPurchasing(true);
     setPurchaseError(null);
@@ -342,7 +344,7 @@ export default function EvorosStore({
           </div>
           <div className="max-w-2xl space-y-3">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-              EvoVerses store · Beta preview
+              EvoVerses store
             </p>
             <h1 className="text-4xl sm:text-5xl font-black leading-tight">
               Stock up on Evoros
@@ -611,8 +613,10 @@ export default function EvorosStore({
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {!evorosPurchasesEnabled
                       ? "Card payments are on standby. Checkout is disabled during beta."
-                      : sandboxCheckoutReady
-                        ? "Sandbox checkout opens Stripe’s secure payment page. Payments are simulated; no real money is charged."
+                      : cardCheckoutReady
+                        ? cardLive
+                          ? "Pay securely with Stripe. Your card will be charged the displayed USD bundle price."
+                          : "Sandbox checkout opens Stripe’s secure payment page. Payments are simulated; no real money is charged."
                         : "Card checkout is temporarily unavailable. Please try again soon."}
                   </p>
                 </div>
@@ -643,7 +647,7 @@ export default function EvorosStore({
                   className="w-full font-bold"
                   disabled={
                     !evorosPurchasesEnabled ||
-                    (payment === "card" ? !sandboxCheckoutReady : !pendingEvo && (!account || !rate.quote)) ||
+                    (payment === "card" ? !cardCheckoutReady : !pendingEvo && (!account || !rate.quote)) ||
                     !playerAccount ||
                     purchasing
                   }
@@ -662,8 +666,8 @@ export default function EvorosStore({
                     ? purchasing ? "Checking EVO payment…" : pendingEvo ? "Check EVO payment" : "Buy with EVO"
                     : purchasing
                       ? "Opening Stripe…"
-                      : sandboxCheckoutReady
-                        ? "Pay by card · Test checkout"
+                      : cardCheckoutReady
+                        ? cardLive ? "Pay by card" : "Pay by card · Test checkout"
                         : "Pay by card · Coming soon"}
                 </Button>
                 {payment === "evo" && pendingEvo && <label className="block space-y-2 text-xs text-muted-foreground">
@@ -681,9 +685,9 @@ export default function EvorosStore({
                     ? "Sign in with Epic before buying Evoros."
                     : payment === "evo"
                       ? "EVO payments use Avalanche C-Chain. Connect and link your wallet on your profile. Evoros are added after payment is confirmed."
-                      : sandboxCheckoutReady
+                      : cardCheckoutReady
                         ? "Purchased Evoros go to your signed-in game account."
-                        : "Sandbox checkout is not configured yet."}
+                        : "Card checkout is not configured yet."}
                 </p>
               </div>
             </CardContent>
