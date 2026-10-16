@@ -78,6 +78,11 @@ export async function handleStripeWebhook(
     ].includes(event.type)
   )
     return Response.json({ received: true, status: "ignored" }); // Failed or cancelled payments never credit currency.
+  // The existing Stripe test account is shared with local development.
+  // Hosted fulfillment only consumes payments created for this website origin.
+  const checkout = event.data.object as Stripe.Checkout.Session;
+  if (service.config.origin === "https://beta.evoverses.com" && checkout.metadata?.storeOrigin !== service.config.origin)
+    return Response.json({ received: true, status: "ignored" });
   try {
     const status = await fulfillCardPayment(
       (event.data.object as Stripe.Checkout.Session).id,

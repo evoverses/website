@@ -147,3 +147,23 @@ Desktop/mobile isolated Edge checks also verify Card first/default, all six USD 
 ## Recommended next sprint
 
 The genuine 500-Evoros purchase and two duplicate confirmations passed; balance is 10,500. Next test cancellation and decline, followed by delayed confirmation/recovery. The local adapter is ready; keep live purchases disabled until the hosted setup and release review are complete.
+
+## Hosted checkout preparation - 16 October 2026
+
+The current implementation opens both EVO and card purchase options. Stripe stays
+on the existing Evoverses Inc test account and fixed test prices; live Stripe
+checkout remains disabled. Hosted card fulfillment uses the account API's private
+store bridge and independently verified Stripe receipts. The hosted webhook ignores
+local-development checkout sessions on the same Stripe test account.
+
+EVO purchases use the owner-confirmed existing treasury on Avalanche C-Chain.
+The server reserves exact discounted terms for the authenticated player and linked
+wallet. Signed transfer calldata binds the order reference. Finalized receipts are
+verified before the existing durable Evoros ledger is credited, once. Paid orders
+remain fulfillable after delayed confirmation. Browser recovery and durable server
+submissions prevent retries from sending another payment.
+
+The production build and Workers runtime checks pass. The concrete release is
+awaiting approval to configure the Stripe test webhook and copy its test credentials
+into the hosted providers' encrypted secrets. No actual payment or agent-signed
+wallet transfer was performed. The live store remains unchanged until activation.

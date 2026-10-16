@@ -142,6 +142,7 @@ export async function createCardCheckout(
       client_reference_id: order.id,
       metadata: {
         flow: "evoros-store-v1",
+        storeOrigin: config.origin,
         orderId: order.id,
         playerId: order.playerId,
         bundleId: order.bundleId,

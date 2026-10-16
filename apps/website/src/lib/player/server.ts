@@ -59,6 +59,10 @@ export async function getPlayerInventory() {
 }
 
 export function getLocalStoreConnection() {
+  if (hostedPlayerLogin) {
+    const config = getEpicConfig();
+    return config?.hosted ? { apiUrl: config.apiUrl, token: config.hosted.serviceToken } : null;
+  }
   if (!localPlayerLogin || process.env.EVOVERSES_LOCAL_STORE_PAYMENTS !== "1" || process.env.EVOROS_STRIPE_MODE !== "test") return null;
   const config = getLocalEpicConfig();
   const root = process.env.EVOVERSES_LOCAL_EPIC_RUN_ROOT;

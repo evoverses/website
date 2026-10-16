@@ -53,7 +53,12 @@
     "NEXT_PUBLIC_FUJI_WRAPPER_ADDRESS": "0x327B83F409E1D5f13985c6d0584420FA648f1F56",
     "NEXT_PUBLIC_NURSERY_REGISTRY_VERSION": "2",
     "NEXT_PUBLIC_FUJI_HERMANN_HISTORY": "0x7D0a47E56E4804A606669D6b395AD430c9ADD25E,0x7B252B2B63747E1F56C6b485d6a41B8C09302Cef",
-    "EVOVERSES_UPDATER_PUBLIC_KEY": "<RSAKeyValue><Modulus>y4s5McxJFPt8Vw/0gh8ZGB8Y5e40VWcouAZuPfQ0/DkAp0usmsKd7qGd5o+WrGTQTlJBfk1yEB6vwhIgSD2FoIuW57Z57xqVpLxialpHBVLO02p4klugxw/MwPsvvLYejhK6QOQi3YyR15DSihN4o0KQ/mvALAYZzC5TfxYTExIOHvpecNmTXbbx29tSTETWY+xJlce7CEi3cf+A2GlT2N+7ThiBYZ5V7H7ltX4PUCYFhFJ0xVpq7B8gIh6hCmA0VxNBmozcKUhLgDP0ROVdxx3rOL5xfOG1gNh265PHNpsMlQ7oHUK2q5gzxgs1USsFVi/Lv00gHvYkQ/V+x1h5+aeGP8rhPj9Og0VXuTXDqGp8zoxoVsW6/TtjOL9M4wMiJqQm/Fo7XA8pIK9Q1wLyhQVSLqJpUARnzjiBuR0JxtWyxjxFe9ikRJRbF+UyIHVeMBeCLdMRkH4v5uYc6P7xYhVljc9fWt47FUw2lf/+eerKsXW4ivxWfCxw+F3crArqxJ7F5Z2CL4fq5laAoZJIpc3ttSuyiBL8g2/hJEsylX/ruybrMD4Eynhui8soes+p/SZIhBnc+sJxYOddKgzPZy+Rsa+O+kLop4TiBzZM4WfFJOMJ/owxBKrtmUTDS1WkF9BIwDGFOax63wXyNZOm4hD7o7uRzqi6nUOVjb+jBrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+    "EVOVERSES_UPDATER_PUBLIC_KEY": "<RSAKeyValue><Modulus>y4s5McxJFPt8Vw/0gh8ZGB8Y5e40VWcouAZuPfQ0/DkAp0usmsKd7qGd5o+WrGTQTlJBfk1yEB6vwhIgSD2FoIuW57Z57xqVpLxialpHBVLO02p4klugxw/MwPsvvLYejhK6QOQi3YyR15DSihN4o0KQ/mvALAYZzC5TfxYTExIOHvpecNmTXbbx29tSTETWY+xJlce7CEi3cf+A2GlT2N+7ThiBYZ5V7H7ltX4PUCYFhFJ0xVpq7B8gIh6hCmA0VxNBmozcKUhLgDP0ROVdxx3rOL5xfOG1gNh265PHNpsMlQ7oHUK2q5gzxgs1USsFVi/Lv00gHvYkQ/V+x1h5+aeGP8rhPj9Og0VXuTXDqGp8zoxoVsW6/TtjOL9M4wMiJqQm/Fo7XA8pIK9Q1wLyhQVSLqJpUARnzjiBuR0JxtWyxjxFe9ikRJRbF+UyIHVeMBeCLdMRkH4v5uYc6P7xYhVljc9fWt47FUw2lf/+eerKsXW4ivxWfCxw+F3crArqxJ7F5Z2CL4fq5laAoZJIpc3ttSuyiBL8g2/hJEsylX/ruybrMD4Eynhui8soes+p/SZIhBnc+sJxYOddKgzPZy+Rsa+O+kLop4TiBzZM4WfFJOMJ/owxBKrtmUTDS1WkF9BIwDGFOax63wXyNZOm4hD7o7uRzqi6nUOVjb+jBrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>",
+    "EVOROS_STRIPE_ENABLED": "true",
+    "EVOROS_STRIPE_MODE": "test",
+    "EVOROS_STRIPE_ACCOUNT": "acct_1UN0wpI8Ec1gWS2X",
+    "EVOROS_STORE_ORIGIN": "https://beta.evoverses.com",
+    "EVOROS_STRIPE_PRICES": "{\"bundle_pouch\":{\"priceId\":\"price_1UN5GQI8Ec1gWS2XyNp9vSjD\",\"currency\":\"usd\",\"unitAmount\":250},\"bundle_satchel\":{\"priceId\":\"price_1UN5GUI8Ec1gWS2XFPMSpDns\",\"currency\":\"usd\",\"unitAmount\":500},\"bundle_canister\":{\"priceId\":\"price_1UN5GYI8Ec1gWS2XtHerD9c4\",\"currency\":\"usd\",\"unitAmount\":1000},\"bundle_case\":{\"priceId\":\"price_1UN5GcI8Ec1gWS2XjhtNdNyE\",\"currency\":\"usd\",\"unitAmount\":2500},\"bundle_chest\":{\"priceId\":\"price_1UN5GiI8Ec1gWS2XWsDGr1F9\",\"currency\":\"usd\",\"unitAmount\":5000},\"bundle_vault\":{\"priceId\":\"price_1UN5GqI8Ec1gWS2X4Wuagtk5\",\"currency\":\"usd\",\"unitAmount\":10000}}"
   },
   "limits": {
     "cpu_ms": 3000

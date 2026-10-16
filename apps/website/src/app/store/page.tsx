@@ -6,7 +6,7 @@ import EvorosStore from "@/components/store/evoros-store";
 export const metadata: Metadata = {
   title: "Evoros Store",
   description:
-    "Choose Evoros bundles for the EvoVerses in-game shop. Pay with EVO or by card when purchases open.",
+    "Choose Evoros bundles for the EvoVerses in-game shop. Pay with EVO or by card.",
   alternates: { canonical: "/store" },
 };
 export default async function StorePage() {
@@ -23,6 +23,7 @@ export default async function StorePage() {
       playerAccount={
         account
           ? {
+              id: account.player.id,
               displayName: account.player.displayName,
               evoros: account.balance.evoros,
             }

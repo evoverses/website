@@ -29,6 +29,12 @@ import {
   formatEvoEstimate,
 } from "@/lib/store/pricing";
 import { useConnectModal } from "thirdweb/react";
+import { createThirdwebClient, prepareTransaction, sendTransaction } from "thirdweb";
+import { avalanche } from "thirdweb/chains";
+import { formatUnits } from "viem";
+import { clientId } from "@/lib/thirdweb/env.client";
+import { evoOrderSchema, validateEvoOrder, type EvoOrder } from "@/lib/store/evo-checkout";
+const paymentClient = createThirdwebClient({ clientId });
 
 const amount = (value: number) => value.toLocaleString("en-US");
 
@@ -129,7 +135,7 @@ export default function EvorosStore({
   playerAccount,
   sandboxCheckoutReady = false,
 }: {
-  playerAccount?: { displayName: string; evoros: number };
+  playerAccount?: { id: string; displayName: string; evoros: number };
   sandboxCheckoutReady?: boolean;
 } = {}) {
   const [selectedId, setSelectedId] = useState<string>(evorosBundles[0].id);
@@ -139,6 +145,20 @@ export default function EvorosStore({
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const requestIds = useRef<Record<string, string>>({});
   const inFlight = useRef(false);
+  const [pendingEvo, setPendingEvo] = useState<{ order: EvoOrder; transactionHash?: string } | null>(null);
+  const [recoveryHash, setRecoveryHash] = useState("");
+  const recoveryKey = playerAccount ? "evoros-payment:v1:" + playerAccount.id : null;
+  useEffect(() => {
+    setPendingEvo(null); setRecoveryHash("");
+    if (!recoveryKey) return;
+    try {
+      const value = JSON.parse(localStorage.getItem(recoveryKey) ?? "null");
+      if (!value) return;
+      const order = evoOrderSchema.parse(value.order);
+      const transactionHash = /^0x[a-fA-F0-9]{64}$/.test(value.transactionHash ?? "") ? value.transactionHash : undefined;
+      setPendingEvo({ order, transactionHash }); setRecoveryHash(transactionHash ?? ""); setSelectedId(order.bundleId);
+    } catch { /* A malformed browser recovery record cannot authorize a payment. */ }
+  }, [recoveryKey]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("checkout") === "cancelled") {
@@ -236,9 +256,55 @@ export default function EvorosStore({
     }
   }
 
-  const { account: connectedAccount } = useChainWallet();
+  const { account: connectedAccount, wallet: connectedWallet } = useChainWallet();
   const { proMode } = useProMode();
   const account = proMode ? connectedAccount : undefined;
+  async function evoRpc(operation: "reserve" | "verify", body: object) {
+    const response = await fetch("/api/store/evo/" + operation, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", cache: "no-store", body: JSON.stringify(body), signal: AbortSignal.timeout(35000) });
+    const value = await response.json();
+    if (!response.ok) throw Error(value.error ?? "EVO payment is not confirmed yet. Keep its transaction hash and check again.");
+    return value;
+  }
+  async function buyWithEvo() {
+    if (!evorosPurchasesEnabled || inFlight.current || !playerAccount || !recoveryKey) return;
+    inFlight.current = true; setPurchasing(true); setPurchaseError(null);
+    let submitted = pendingEvo;
+    try {
+      if (!submitted) {
+        if (!account || !connectedWallet) throw Error("Connect and link your EVO wallet through your profile first.");
+        const bundle = evorosBundles.find(b => b.id === selectedId)!;
+        const requestKey = "evo:" + selectedId + ":" + account.address.toLowerCase();
+        requestIds.current[requestKey] ??= crypto.randomUUID();
+        const raw = await evoRpc("reserve", { requestId: requestIds.current[requestKey], bundleId: selectedId, address: account.address });
+        const order = validateEvoOrder(raw, account.address, selectedId, bundle.amount);
+        await connectedWallet.switchChain(avalanche);
+        if (connectedWallet.getAccount()?.address.toLowerCase() !== account.address.toLowerCase()) throw Error("Your wallet changed. Select your EVO wallet and try again.");
+        // Save intent before opening the wallet. An uncertain submission must never trigger a second transfer.
+        submitted = { order }; localStorage.setItem(recoveryKey, JSON.stringify(submitted)); setPendingEvo(submitted);
+        setConfirmation("Confirm " + formatUnits(BigInt(order.units), 18) + " EVO in your wallet. AVAX network gas is additional.");
+        const sent = await sendTransaction({ account, transaction: prepareTransaction({ client: paymentClient, chain: avalanche, to: order.token, data: order.data as `0x${string}`, value: 0n }) });
+        submitted = { order, transactionHash: sent.transactionHash }; setPendingEvo(submitted); setRecoveryHash(sent.transactionHash);
+        try { localStorage.setItem(recoveryKey, JSON.stringify(submitted)); } catch { /* The hash remains visible for manual recovery. */ }
+      }
+      const transactionHash = (recoveryHash || submitted.transactionHash || "").trim();
+      if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) throw Error("If your wallet submitted this payment, paste its transaction hash below to check it. Do not send a second payment.");
+      submitted = { ...submitted, transactionHash }; setPendingEvo(submitted);
+      try { localStorage.setItem(recoveryKey, JSON.stringify(submitted)); } catch { /* Verification still records the hash durably on the account service. */ }
+      const result = await evoRpc("verify", { orderId: submitted.order.orderId, transactionHash });
+      if (result.status !== "credited" || result.orderId !== submitted.order.orderId) throw Error("Your payment is confirming. Check again shortly.");
+      try { localStorage.removeItem(recoveryKey); } catch { /* A stale recovery entry only rechecks an already credited order. */ }
+      setPendingEvo(null); setRecoveryHash(""); delete requestIds.current["evo:" + submitted.order.bundleId + ":" + submitted.order.payer];
+      setConfirmation(amount(result.evoros) + " Evoros added to your game account."); router.refresh();
+    } catch (error) {
+      const rejected = error as { code?: number; cause?: { code?: number }; name?: string };
+      if (rejected.code === 4001 || rejected.cause?.code === 4001 || rejected.name === "UserRejectedRequestError") {
+        try { localStorage.removeItem(recoveryKey); } catch { /* No payment was accepted by the wallet. */ }
+        setPendingEvo(null); setRecoveryHash("");
+      }
+      if (!submitted && account) delete requestIds.current["evo:" + selectedId + ":" + account.address.toLowerCase()];
+      setPurchaseError(error instanceof Error ? error.message : "EVO payment is not confirmed yet. Keep your transaction hash.");
+    } finally { inFlight.current = false; setPurchasing(false); }
+  }
   const hasWallet = Boolean(account);
   const [requestedPayment, setPayment] = useState<"evo" | "card">("card");
   const payment = account ? requestedPayment : "card";
@@ -282,9 +348,8 @@ export default function EvorosStore({
               Stock up on Evoros
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              Browse Evoros bundles for the in-game shop. Purchases are paused
-              during beta; approved testers receive 5,000 Evoros to try potions,
-              revives and other supplies.
+              Buy Evoros for potions, revives and other supplies in the game.
+              Pay by card, or use EVO with a connected and linked wallet.
             </p>
           </div>
         </div>
@@ -380,9 +445,8 @@ export default function EvorosStore({
               Made for the in-game shop
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Evoros are your in-game spending balance. When purchases open,
-              your bundle will go to your linked game account, ready to use in
-              the game.
+              Evoros are your in-game spending balance. Your purchased bundle
+              goes to your signed-in game account, ready to use in the game.
             </p>
           </div>
         </section>
@@ -547,7 +611,7 @@ export default function EvorosStore({
                       ? "Card payments are on standby. Checkout is disabled during beta."
                       : sandboxCheckoutReady
                         ? "Sandbox checkout opens Stripe’s secure payment page. Payments are simulated; no real money is charged."
-                        : "Card checkout is being prepared for local testing."}
+                        : "Card checkout is temporarily unavailable. Please try again soon."}
                   </p>
                 </div>
               )}
@@ -577,12 +641,11 @@ export default function EvorosStore({
                   className="w-full font-bold"
                   disabled={
                     !evorosPurchasesEnabled ||
-                    payment === "evo" ||
-                    !sandboxCheckoutReady ||
+                    (payment === "card" ? !sandboxCheckoutReady : !pendingEvo && (!account || !rate.quote)) ||
                     !playerAccount ||
                     purchasing
                   }
-                  onClick={() => void buyByCard()}
+                  onClick={() => void (payment === "evo" ? buyWithEvo() : buyByCard())}
                   aria-describedby="purchase-disabled-reason"
                   data-testid="purchase-button"
                 >
@@ -594,13 +657,18 @@ export default function EvorosStore({
                   {!evorosPurchasesEnabled
                     ? "Purchases paused for beta"
                     : payment === "evo"
-                    ? "Buy with EVO · Coming soon"
+                    ? purchasing ? "Checking EVO payment…" : pendingEvo ? "Check EVO payment" : "Buy with EVO"
                     : purchasing
                       ? "Opening Stripe…"
                       : sandboxCheckoutReady
                         ? "Pay by card · Test checkout"
                         : "Pay by card · Coming soon"}
                 </Button>
+                {payment === "evo" && pendingEvo && <label className="block space-y-2 text-xs text-muted-foreground">
+                  <span>EVO payment transaction hash</span>
+                  <input className="block w-full min-w-0 rounded border bg-background p-2 font-mono" value={recoveryHash} onChange={event => setRecoveryHash(event.target.value)} placeholder="0x…" />
+                  <span>Check this payment to confirm your Evoros. Verification will not send another payment.</span>
+                </label>}
                 <p
                   id="purchase-disabled-reason"
                   className="text-xs text-muted-foreground leading-relaxed"
@@ -610,7 +678,7 @@ export default function EvorosStore({
                     : !playerAccount
                     ? "Sign in with Epic before buying Evoros."
                     : payment === "evo"
-                      ? "EVO purchases are coming soon."
+                      ? "EVO payments use Avalanche C-Chain. Connect and link your wallet on your profile. Evoros are added after payment is confirmed."
                       : sandboxCheckoutReady
                         ? "Test prices: US$0.01 per Evoro. Purchased Evoros go to your signed-in game account."
                         : "Sandbox checkout is not configured yet."}

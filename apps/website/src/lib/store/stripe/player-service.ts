@@ -1,5 +1,5 @@
 import "server-only";
-import { getLocalStoreConnection, playerWebAuth } from "../../player/server";
+import { getLocalStoreConnection, playerWebAuth, hostedPlayerLogin } from "../../player/server";
 import { playerSessionCookie } from "../../player/auth-core";
 import {
   StorePaymentError,
@@ -7,7 +7,7 @@ import {
   type StoreOrder,
 } from "./core";
 
-/** Local sandbox only. The owning account service alone opens the player database. */
+/** The owning account service alone opens the player database. Stripe remains in test mode. */
 export function getStorePlayerService(): StorePlayerService | null {
   const connection = getLocalStoreConnection();
   if (!connection) return null;
@@ -20,7 +20,7 @@ export function getStorePlayerService(): StorePlayerService | null {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + connection!.token,
+        ...(hostedPlayerLogin ? { "X-EvoVerses-Service": connection!.token } : { Authorization: "Bearer " + connection!.token }),
       },
       body: JSON.stringify({ operation, ...body }),
       cache: "no-store",
