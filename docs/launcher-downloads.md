@@ -34,3 +34,18 @@ and the credential-free check:cloudflare build. These checks do not deploy,
 upload or publish live content. After deployment, verify the actual full setup
 hash, a resumed download, and a second release with a changed file from a clean
 Windows install before claiming live automatic updates have passed.
+
+## Production build validation
+
+Build the web Worker with Linux Next/OpenNext tooling. This is a build environment
+on the existing workstation; production remains the existing Cloudflare Worker
+and R2 bucket. A Windows-generated OpenNext bundle passed compilation but failed
+the live Next middleware path; the prior version was restored before the release
+was published. The Linux-built bundle passed local and live runtime checks.
+
+The isolated check:cloudflare command now runs check-cloudflare-runtime.cjs after
+bundling. It must serve the home, sign-in and store pages and return the expected
+empty update-feed status. A dry run alone does not establish runtime compatibility.
+Use the current wrangler.beta.jsonc public settings for production builds; the
+compatibility script deliberately uses synthetic public values. Existing encrypted
+Worker secrets remain runtime bindings.

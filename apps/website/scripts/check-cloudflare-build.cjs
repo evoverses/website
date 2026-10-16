@@ -63,4 +63,5 @@ if (process.platform === "win32") {
 
 run(["exec","opennextjs-cloudflare","build","--skipNextBuild"], app);
 run(["exec","wrangler","deploy","--dry-run","--outdir",path.join(root,"bundle")], app);
+run(["exec","node","scripts/check-cloudflare-runtime.cjs"], app);
 console.log("Local bundle check complete. Nothing deployed. Evidence: " + root);
