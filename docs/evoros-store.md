@@ -148,7 +148,7 @@ Desktop/mobile isolated Edge checks also verify Card first/default, all six USD 
 
 The genuine 500-Evoros purchase and two duplicate confirmations passed; balance is 10,500. Next test cancellation and decline, followed by delayed confirmation/recovery. The local adapter is ready; keep live purchases disabled until the hosted setup and release review are complete.
 
-## Hosted checkout preparation - 16 October 2026
+## Hosted checkout activation - 16 October 2026
 
 The current implementation opens both EVO and card purchase options. Stripe stays
 on the existing Evoverses Inc test account and fixed test prices; live Stripe
@@ -163,7 +163,13 @@ verified before the existing durable Evoros ledger is credited, once. Paid order
 remain fulfillable after delayed confirmation. Browser recovery and durable server
 submissions prevent retries from sending another payment.
 
-The production build and Workers runtime checks pass. The concrete release is
-awaiting approval to configure the Stripe test webhook and copy its test credentials
-into the hosted providers' encrypted secrets. No actual payment or agent-signed
-wallet transfer was performed. The live store remains unchanged until activation.
+The owner approved the test webhook and encrypted credential setup. The release
+is deployed at `https://beta.evoverses.com/store`; the purchase pause is removed
+for both rails. Stripe remains in sandbox mode. Cloudflare version
+`ecef45d2-7165-4b72-bcff-52593531b9ee` serves all traffic and the account service is
+healthy on task revision 39. Production build, Workers runtime and 14 live
+route/signature/health checks pass, including preservation of the launcher feed.
+No genuine payment or agent-signed wallet transfer was performed. Signed-in
+test-card and owner-signed EVO purchase acceptance remain. Earlier local-only and
+paused-store notes above describe preceding development stages and are superseded
+by this hosted activation record.
