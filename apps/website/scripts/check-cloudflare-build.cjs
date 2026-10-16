@@ -46,6 +46,21 @@ console.log("Credential-free compatibility source: " + source);
 run(["install","--frozen-lockfile"], source);
 // Build explicitly so OpenNext does not invoke a separate global pnpm binary.
 run(["exec","next","build"], app);
+// On Windows, pnpm's external tool cache can widen Next's tracing root to the
+// user profile. Keep the actual generated trace, and also expose its monorepo
+// subtree at the layout OpenNext expects. Nothing is fabricated or removed.
+if (process.platform === "win32") {
+  const next = path.join(app, ".next"), standalone = path.join(next, "standalone");
+  const metadata = JSON.parse(fs.readFileSync(path.join(next, "required-server-files.json"), "utf8"));
+  const relativeApp = metadata.relativeAppDir;
+  const desired = path.join(standalone, "apps/website/.next/server/pages-manifest.json");
+  if (!fs.existsSync(desired) && typeof relativeApp === "string") {
+    const nested = path.resolve(standalone, relativeApp, "../..");
+    if (!nested.startsWith(standalone + path.sep) || !fs.existsSync(path.join(nested, "apps/website/.next/server/pages-manifest.json"))) throw Error("Unexpected Windows standalone trace layout.");
+    for (const name of fs.readdirSync(nested)) fs.cpSync(path.join(nested, name), path.join(standalone, name), {recursive:true, force:true});
+  }
+}
+
 run(["exec","opennextjs-cloudflare","build","--skipNextBuild"], app);
 run(["exec","wrangler","deploy","--dry-run","--outdir",path.join(root,"bundle")], app);
 console.log("Local bundle check complete. Nothing deployed. Evidence: " + root);
