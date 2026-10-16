@@ -70,7 +70,7 @@ export function stripeStoreConfig(
       !live &&
       (item.currency !== "usd" || item.unitAmount !== cashCents(bundle.amount))
     )
-      throw new Error("Test prices must match US$0.01 per Evoro.");
+      throw new Error("Test prices must match the approved bundle prices.");
     prices[bundle.id] = {
       priceId: item.priceId,
       currency: item.currency,

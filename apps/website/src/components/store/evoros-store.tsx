@@ -361,7 +361,7 @@ export default function EvorosStore({
               Choose your bundle
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Test pricing: US$0.01 per Evoro.
+              Bundle prices are shown in US dollars.
               {account && " Pay with EVO for 90% off the card price."}
             </p>
           </div>
@@ -561,14 +561,16 @@ export default function EvorosStore({
                         <a
                           className="underline"
                           href={
-                            rate.quote.source === "DexScreener"
+                            rate.quote.source === "Avalanche"
+                              ? "https://subnets.avax.network/c-chain/address/" + rate.quote.poolAddress
+                              : rate.quote.source === "DexScreener"
                               ? "https://dexscreener.com/avalanche/" + rate.quote.poolAddress
                               : "https://www.geckoterminal.com/avax/pools/" + rate.quote.poolAddress
                           }
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {rate.quote.source}
+                          {rate.quote.source === "Avalanche" ? "Avalanche (LFJ pool + Chainlink)" : rate.quote.source}
                         </a>
                         . This estimate lasts five minutes. AVAX network gas is
                         extra.
@@ -680,7 +682,7 @@ export default function EvorosStore({
                     : payment === "evo"
                       ? "EVO payments use Avalanche C-Chain. Connect and link your wallet on your profile. Evoros are added after payment is confirmed."
                       : sandboxCheckoutReady
-                        ? "Test prices: US$0.01 per Evoro. Purchased Evoros go to your signed-in game account."
+                        ? "Purchased Evoros go to your signed-in game account."
                         : "Sandbox checkout is not configured yet."}
                 </p>
               </div>

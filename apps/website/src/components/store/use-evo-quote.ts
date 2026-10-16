@@ -29,7 +29,7 @@ export function useEvoQuote(enabled: boolean) {
       if (!response.ok) throw new Error("Quote unavailable.");
       const data: EvoMarketQuote = await response.json();
       positiveDecimal(data.priceUsd);
-      if (!["GeckoTerminal", "DexScreener"].includes(data.source) || !quoteIsFresh(data.fetchedAt))
+      if (!["GeckoTerminal", "DexScreener", "Avalanche"].includes(data.source) || !quoteIsFresh(data.fetchedAt))
         throw new Error("Invalid quote.");
       if (!controller.signal.aborted) {
         setQuote(data);
@@ -44,7 +44,9 @@ export function useEvoQuote(enabled: boolean) {
   useEffect(() => {
     void refresh();
     const timer = setInterval(() => setNow(Date.now()), 1000);
+    const refreshTimer = setInterval(() => void refresh(), 60_000);
     return () => {
+      clearInterval(refreshTimer);
       active.current?.abort();
       clearInterval(timer);
     };

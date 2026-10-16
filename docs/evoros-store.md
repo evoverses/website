@@ -173,3 +173,42 @@ No genuine payment or agent-signed wallet transfer was performed. Signed-in
 test-card and owner-signed EVO purchase acceptance remain. Earlier local-only and
 paused-store notes above describe preceding development stages and are superseded
 by this hosted activation record.
+
+## On-chain quotes and revised bundles - 16 October 2026
+
+The owner confirmed the hosted test-card purchase worked, then reported unavailable
+EVO rates and a reservation failure before a wallet transaction. Cloudflare egress
+was receiving GeckoTerminal HTTP 429; DexScreener had no indexed pair for this pool.
+Hosted rates now come from the account service's finalized Avalanche reads of the
+pinned LFJ EVO/WAVAX pool and Chainlink AVAX/USD feed. Browser estimates and purchase
+reservations share the same 30-second cache; the website refreshes each minute.
+The pool ratio is a spot price. Feed/chain/contract/freshness validation fails closed.
+
+Current USD prices supersede the earlier one-cent-per-Evoro development prices:
+
+| Evoros | USD |
+| --- | --- |
+| 250 | $3.00 |
+| 500 | $5.50 |
+| 1,000 | $10.00 |
+| 2,500 | $23.50 |
+| 5,000 | $45.00 |
+| 10,000 | $85.00 |
+
+EVO retains the 90% discount against each bundle's USD total. Stripe remains in the
+existing sandbox account. Previously reserved paid orders retain their own terms;
+new prices do not prevent their fulfillment. Hosted EVO acceptance still requires
+an owner-signed wallet transaction.
+
+The public read-only quote runs in the native Worker before the Next.js adapter.
+It uses the existing encrypted service token, forwards no browser cookies or
+Origin, follows no redirects, and validates the chain, pool, oracle and timestamps.
+The Workers request mode is `manual`: workerd rejects `redirect: "error"` before
+network I/O. A dedicated native-runtime regression covers this compatibility issue.
+
+Run `node scripts/check-evo-quote-runtime.cjs` from `apps/website` to repeat the
+native quote regression with synthetic data and no external payment calls.
+
+The owner confirmed that the revised EVO price appears and wallet confirmation
+opens. Worker `b76e0015-e057-478c-8189-59c9b0310a81` serves the verified full build.
+No actual EVO transfer or credit is claimed from that confirmation.

@@ -15,6 +15,7 @@ for (const file of [
   "lib/beta/release-policy.ts",
   "lib/store/pricing.ts",
   "lib/store/evo-price.ts",
+  "lib/store/hosted-evo-quote.ts",
   "lib/store/evo-checkout.ts",
   "lib/store/stripe/checkout-handler.ts",
   "lib/store/stripe/config.ts",
@@ -45,6 +46,7 @@ const result = spawnSync(
     path.join(root, "tests/store/stripe.test.cjs"),
     path.join(root, "tests/store/evo-checkout.test.cjs"),
     path.join(root, "tests/store/pricing.test.cjs"),
+    path.join(root, "tests/store/hosted-evo-quote.test.cjs"),
     path.join(root, "tests/store/evo-quote-client.test.cjs"),
     ...(process.argv.includes("--with-local-accounts")
       ? [path.join(root, "tests/store/local-payments.test.cjs")]

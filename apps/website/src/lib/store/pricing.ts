@@ -1,12 +1,14 @@
 // User-approved test pricing only; production economics need separate approval.
-export const EVOROS_TEST_USD_CENTS = 1;
+export const EVOROS_BUNDLE_USD_CENTS: Readonly<Record<number, number>> = Object.freeze({
+  250: 300, 500: 550, 1000: 1000, 2500: 2350, 5000: 4500, 10000: 8500,
+});
 export const EVO_TEST_DISCOUNT_PERCENT = 90;
 export const EVO_QUOTE_MAX_AGE_MS = 5 * 60_000;
 const TOKEN_UNIT = 10n ** 18n;
 export function cashCents(evoros: number): number {
-  if (!Number.isSafeInteger(evoros) || evoros <= 0)
+  if (!Number.isSafeInteger(evoros) || !Object.hasOwn(EVOROS_BUNDLE_USD_CENTS, evoros))
     throw new Error("Invalid Evoros quantity.");
-  return evoros * EVOROS_TEST_USD_CENTS;
+  return EVOROS_BUNDLE_USD_CENTS[evoros]!;
 }
 export function usd(cents: number): string {
   return "US$" + (cents / 100).toFixed(2);

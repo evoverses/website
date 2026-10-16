@@ -38,3 +38,7 @@ test('a cancelled older refresh cannot replace a newer result',async()=>{
  h.fetch(async()=>Response.json({...quote(),priceUsd:'0.00008'}));await h.render().refresh();
  release(Response.json(quote()));await older;assert.equal(h.render().quote.priceUsd,'0.00008');assert.equal(h.render().loading,false);
 });
+
+test('accepts finalized Avalanche pool and oracle quotes',async()=>{
+ const h=harness(),q={...quote(),source:'Avalanche',chainId:43114,blockNumber:'97697155'};h.fetch(async()=>Response.json(q));await h.render().refresh();assert.equal(h.render().quote.source,'Avalanche');assert.equal(h.render().error,false);
+});

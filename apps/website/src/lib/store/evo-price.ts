@@ -8,7 +8,11 @@ export const EVO_MARKET_URL =
 export type EvoMarketQuote = {
   priceUsd: string;
   fetchedAt: string;
-  source: "GeckoTerminal" | "DexScreener";
+  source: "GeckoTerminal" | "DexScreener" | "Avalanche";
+  chainId?: number;
+  blockNumber?: string;
+  oracleAddress?: string;
+  oracleUpdatedAt?: string;
   poolAddress: string;
 };
 const schema = z.object({

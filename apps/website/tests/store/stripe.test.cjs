@@ -11,11 +11,12 @@ const { createCardCheckout, fulfillCardPayment } = require(
 const { evorosBundles } = require(
   path.join(process.env.EVOROS_TEST_LIB, "data/evoros-bundles.js"),
 );
+const { cashCents } = require(path.join(process.env.EVOROS_TEST_LIB, "lib/store/pricing.js"));
 function fixture() {
   const prices = Object.fromEntries(
     evorosBundles.map((b, i) => [
       b.id,
-      { priceId: "price_fixture" + i, currency: "usd", unitAmount: b.amount },
+      { priceId: "price_fixture" + i, currency: "usd", unitAmount: cashCents(b.amount) },
     ]),
   );
   const env = {
@@ -469,4 +470,11 @@ test("current release opens Evoros purchases and retains approved breeding", () 
   const policy = require(path.join(process.env.EVOROS_TEST_LIB, "lib/beta/release-policy.js"));
   assert.equal(policy.evorosPurchasesEnabled,true);
   assert.doesNotThrow(policy.requireBreedingApproval);
+});
+
+test('a paid order reserved before repricing still fulfills at its immutable original total',async()=>{
+ const f=fixture();f.order.unitAmount=250;f.order.priceId='price_previous_pouch';f.session.amount_subtotal=250;f.session.amount_total=250;paid(f);
+ assert.equal(f.config.prices.bundle_pouch.unitAmount,300);
+ assert.equal(await fulfillCardPayment(f.session.id,f.config,f.gateway,f.players),'credited');
+ assert.equal(f.credits.get(f.order.id).evoros,250);
 });

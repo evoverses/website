@@ -37,7 +37,7 @@ export async function evoPurchase(request: Request, operation: keyof typeof sche
     const result = JSON.parse(text);
     if (!response.ok) {
       const code = result?.error?.code;
-      const messages: Record<string, string> = { WALLET_LINK_REQUIRED: "Link this wallet to your game account before buying Evoros.", PAYMENT_PENDING: "Your payment is confirming. Check again shortly.", PAYMENT_INVALID: "This transaction does not match the reserved EVO purchase.", RETRY_CONFLICT: "This purchase attempt has different payment details. Please check your existing payment.", CONFLICT: "This payment has already been used.", ORDER_NOT_FOUND: "Purchase not found.", INVALID_SESSION: "Sign in again to check your purchase." };
+      const messages: Record<string, string> = { QUOTE_UNAVAILABLE: "The EVO market rate is temporarily unavailable. Refresh the EVO quote and try again; no payment has been sent.", WALLET_LINK_REQUIRED: "Link this wallet to your game account before buying Evoros.", PAYMENT_PENDING: "Your payment is confirming. Check again shortly.", PAYMENT_INVALID: "This transaction does not match the reserved EVO purchase.", RETRY_CONFLICT: "This purchase attempt has different payment details. Please check your existing payment.", CONFLICT: "This payment has already been used.", ORDER_NOT_FOUND: "Purchase not found.", INVALID_SESSION: "Sign in again to check your purchase." };
       return reply({ error: messages[code] ?? "EVO payment verification is temporarily unavailable. Keep your transaction hash and check again.", code }, [400,401,403,404,409,429].includes(response.status) ? response.status : 503);
     }
     if (!result.value || !schemas.find.safeParse({ orderId: result.value.orderId }).success) throw Error("Invalid response");

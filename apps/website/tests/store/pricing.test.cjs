@@ -20,16 +20,17 @@ const data = () => ({
     relationships: { top_pools: { data: [{ id: "avax_" + EVO_MARKET_POOL }] } },
   },
 });
-test("accepted bundles cost one USD cent per Evoro, with a 90 percent EVO discount", () => {
-  [250, 500, 1000, 2500, 5000, 10000].forEach((n) => {
-    assert.equal(cashCents(n), n);
-    assert.equal(discountedEvoUnits(n, "0.0001"), BigInt(n) * 10n ** 19n);
-  });
-  assert.equal(usd(cashCents(250)), "US$2.50");
-  assert.equal(formatEvoEstimate(discountedEvoUnits(250, "0.0001")), "2,500");
+test("accepted bundles use the owner-approved USD totals with a 90 percent EVO discount", () => {
+  for (const [n, cents] of [[250,300],[500,550],[1000,1000],[2500,2350],[5000,4500],[10000,8500]]) {
+    assert.equal(cashCents(n), cents);
+    assert.equal(discountedEvoUnits(n, "0.0001"), BigInt(cents) * 10n ** 19n);
+  }
+  assert.equal(usd(cashCents(250)), "US$3.00");
+  assert.equal(formatEvoEstimate(discountedEvoUnits(250, "0.0001")), "3,000");
+  assert.throws(() => cashCents(251));
 });
 test("EVO calculation rounds up at token precision and handles tiny/large quotes exactly", () => {
-  assert.equal(discountedEvoUnits(250, "3"), 83333333333333334n);
+  assert.equal(discountedEvoUnits(250, "3"), 100000000000000000n);
   assert.equal(formatEvoEstimate(1n), "0.1");
   for (const v of ["0", "-1", "NaN", "Infinity", "1e-4", "", "garbage"])
     assert.throws(() => discountedEvoUnits(250, v));
