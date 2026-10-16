@@ -85,7 +85,7 @@ export function createLauncherWorker(next: NextWorker): NextWorker {
     const action = url.searchParams.get("action");
     if (action === "begin") {
      const value = await input(request, 4 * 1024 * 1024), verified = await verifyEnvelope(value.envelope, env.EVOVERSES_UPDATER_PUBLIC_KEY), installer = value.installer as Setup;
-     requireValue(installer && /^(?:EvoVersesSetup|EvoversesBetaLauncher-Setup)-[A-Za-z0-9_-]+\.exe$/.test(installer.filename) && Number.isSafeInteger(installer.size) && installer.size > 0 && installer.size <= 5 * 1024 ** 3 && hex.test(installer.sha256));
+     requireValue(installer && /^(?:Evoverses_Beta_Launcher|Evoverses Beta Launcher|(?:EvoVersesSetup|EvoversesBetaLauncher-Setup)-[A-Za-z0-9_-]+)\.exe$/.test(installer.filename) && Number.isSafeInteger(installer.size) && installer.size > 0 && installer.size <= 5 * 1024 ** 3 && hex.test(installer.sha256));
      const key = prefix + "drafts/" + verified.manifest.release + ".json", prior = await b.get(key);
      if (prior) { const old = await prior.json<Draft>(); requireValue(old.envelope.payload === verified.envelope.payload && JSON.stringify(old.installer) === JSON.stringify(installer), 409, "RELEASE_CHANGED"); }
      else { const created = await b.put(key, JSON.stringify({ ...verified, installer, administratorId }), { onlyIf: { etagDoesNotMatch: "*" } }); requireValue(created, 409, "RELEASE_CHANGED"); }
