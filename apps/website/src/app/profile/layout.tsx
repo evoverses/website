@@ -47,7 +47,7 @@ const Layout = async ({ children }: PropsWithChildren) => {
         <aside className="lg:w-1/5">
           <AccountNavigation items={navigation.filter(item => !item.proOnly || loggedIn || (!!playerAccount && item.href === "/profile/liquidity"))} />
         </aside>
-        <div className="flex-1 overflow-y-scroll">{children}</div>
+        <div className="min-w-0 flex-1">{children}</div>
       </div>
     </div>
   );

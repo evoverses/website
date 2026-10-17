@@ -113,6 +113,34 @@ test("catalogue item names/icons are display-only; normal items and Evos retain 
     false,
   );
 });
+test("Profile combines product revisions into one card with the total quantity", async () => {
+  const inventory = {
+    items: [
+      { productId: "light_boost_strong", revision: 1, quantity: 1 },
+      { productId: "light_boost_strong", revision: 2, quantity: 1 },
+      { productId: "light_boost_strong", revision: 3, quantity: 0 },
+      { productId: "spark_draught", revision: 1, quantity: 1 },
+      { productId: "light_boost_medium", revision: 1, quantity: 1 },
+    ],
+    evos: owned.evos,
+  };
+  const original = structuredClone(inventory);
+  const rows = ordinaryInventory(inventory);
+  const elixirs = rows.filter(row => row.name === "Dawnbrew Elixir");
+  assert.equal(elixirs.length, 1);
+  assert.equal(elixirs[0].quantity, 2);
+  assert.equal(elixirs[0].id, "item:light_boost_strong");
+  assert.equal(rows.filter(row => row.kind === "item").length, 3);
+  assert.equal(rows.filter(row => row.kind === "evo").length, 1);
+  assert.equal(visibleInventory(rows, { search: "dawnbrew", type: "item", wallet: "all", sort: "quantity-desc", proMode: false })[0].quantity, 2);
+  const reversed = ordinaryInventory({ ...inventory, items: [...inventory.items].reverse() });
+  assert.deepEqual(reversed.find(row => row.id === elixirs[0].id), elixirs[0]);
+  assert.deepEqual(inventory, original);
+  const response = await inventoryHandler(request({ includeNfts: false, page: 0, linksVersion: null }), deps({ readInventory: async () => inventory }));
+  assert.equal(response.status, 200);
+  assert.deepEqual((await response.json()).rows.filter(row => row.kind === "item"), rows.filter(row => row.kind === "item"));
+});
+
 test("filter/sort works across categories; hidden Pro data never enters ordinary results", () => {
   const rows = [
     ...ordinaryInventory(owned),

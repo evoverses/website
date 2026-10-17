@@ -28,7 +28,7 @@ export const navigation: NavItem[] = [
     proOnly: true,
   },
   { name: "Nursery", href: "/nursery", description: "Breed Evos with Bertha and hatch eggs with Hermann", proOnly: true },
-  { name: "Leaderboard", href: "/leaderboard", description: "Trainer rankings and ranked battle statistics" },
+  { name: "Leaderboard", href: "/leaderboard", description: "PvP, PvBot and overall Trainer rankings" },
   { name: "Store", href: "/store", description: "Top up your in-game Evoros" },
 ];
 

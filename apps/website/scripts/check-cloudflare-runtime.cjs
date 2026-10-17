@@ -10,11 +10,20 @@ async function main() {
     experimental: { disableExperimentalWarning: true, forceLocal: true, watch: false, liveReload: false },
   });
   try {
-    for (const pathname of ["/", "/signin", "/store"]) {
+    for (const pathname of ["/", "/signin", "/store", "/leaderboard/pvbot", "/leaderboard/overall"]) {
       const response = await worker.fetch(pathname);
       const body = await response.text();
       if (response.status !== 200 || !body.includes("EvoVerses")) throw Error(`Workers runtime failed for ${pathname}: HTTP ${response.status}`);
       console.log(`Workers runtime ${pathname}: HTTP 200`);
+    }
+    for (const board of ["pvbot", "overall"]) {
+      for (const suffix of ["", "/me"]) {
+        const response = await worker.fetch(`/api/leaderboard/${board}${suffix}`);
+        const body = await response.json();
+        // The isolated Worker origin is deliberately not the production site.
+        if (response.status !== 403 || response.headers.get("cache-control") !== "no-store" || body.error?.code !== "ORIGIN_NOT_ALLOWED") throw Error(`Leaderboard origin/privacy gate failed for ${board}${suffix}`);
+        console.log(`Workers runtime ${board}${suffix}: HTTP 403, no-store`);
+      }
     }
     const feed = await worker.fetch("/api/launcher/latest.json");
     const state = await feed.json();

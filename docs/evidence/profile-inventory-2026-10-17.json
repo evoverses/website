@@ -1,0 +1,104 @@
+{
+  "deployed": true,
+  "worker": "evoverses-beta",
+  "version": "abc543be-2961-4caf-9073-fa2c9f54b8e5",
+  "previousVersion": "d291f1bf-62b0-48f8-b0b7-7ee6db877d03",
+  "site": "https://beta.evoverses.com",
+  "source": [
+    {
+      "path": "apps/website/src/app/profile/layout.tsx",
+      "sha256": "2f9adbcd3bcb7e8eccf191bd62a8cfde1726f1944516190133451e968ed63bc7"
+    },
+    {
+      "path": "apps/website/src/lib/player/inventory/model.ts",
+      "sha256": "69dd4581012f7c33d5b13513abcfd2eaf4070f122335c9810453640bf8ac5c26"
+    },
+    {
+      "path": "apps/website/tests/inventory/inventory.test.cjs",
+      "sha256": "02226468270672e5f491743dba4d962a88112941cd47ff72933da7ede9f758b4"
+    }
+  ],
+  "checks": {
+    "inventoryTests": 25,
+    "leaderboardTests": 31,
+    "typescript": true,
+    "desktopAndMobileFixture": true,
+    "productionBuild": [
+      {
+        "name": "Install locked dependencies",
+        "exitCode": 0,
+        "seconds": 44.744
+      },
+      {
+        "name": "Leaderboard regression",
+        "exitCode": 0,
+        "seconds": 2.548
+      },
+      {
+        "name": "Production Next build",
+        "exitCode": 0,
+        "seconds": 147.044
+      },
+      {
+        "name": "OpenNext Worker bundle",
+        "exitCode": 0,
+        "seconds": 13.195
+      },
+      {
+        "name": "Production Worker dry run",
+        "exitCode": 0,
+        "seconds": 6.574
+      }
+    ],
+    "live": {
+      "checkedAt": "2026-10-17T09:59:36.350Z",
+      "routes": [
+        {
+          "route": "/",
+          "status": 200,
+          "url": "https://beta.evoverses.com/"
+        },
+        {
+          "route": "/signin",
+          "status": 200,
+          "url": "https://beta.evoverses.com/signin"
+        },
+        {
+          "route": "/store",
+          "status": 200,
+          "url": "https://beta.evoverses.com/store"
+        },
+        {
+          "route": "/leaderboard/pvbot",
+          "status": 200,
+          "url": "https://beta.evoverses.com/leaderboard/pvbot"
+        },
+        {
+          "route": "/leaderboard/overall",
+          "status": 200,
+          "url": "https://beta.evoverses.com/leaderboard/overall"
+        },
+        {
+          "route": "/profile",
+          "status": 200,
+          "url": "https://beta.evoverses.com/signin"
+        }
+      ],
+      "assets": [
+        {
+          "uri": "/_next/static/chunks/app/profile/page-e58f827ba511d168.js",
+          "status": 200,
+          "sha256": "c2fb8c39557c56bceb5a37c76927b088056c45d319c2341cb445935d881875ff"
+        },
+        {
+          "uri": "/_next/static/chunks/app/profile/layout-621c7f7a2ff1cabf.js",
+          "status": 200,
+          "sha256": "afc72b54f7809d0ea2725a9bb671c31078f1c39022e04b92a0ef57d696a1cc7b"
+        }
+      ],
+      "anonymousInventory": 401
+    }
+  },
+  "git": "Profile source and tests staged for combined push; no separate push performed",
+  "scope": "Profile scrollbar and product quantity presentation. Existing leaderboard release retained; no database mutations."
+}

@@ -10,20 +10,28 @@ const display = displayCatalogue as Record<
 export const title = (value: string) =>
   value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 export function ordinaryInventory(inventory: Inventory): InventoryRow[] {
-  return [
-    ...inventory.items
-      .filter((item) => item.quantity > 0)
-      .map((item) => ({
-        id: `item:${item.productId}:${item.revision}`,
-        kind: "item" as const,
+  // Revisions identify storage stacks; Profile shows one total per product.
+  const items = new Map<string, InventoryRow>();
+  for (const item of inventory.items) {
+    if (item.quantity <= 0) continue;
+    const existing = items.get(item.productId);
+    if (existing) {
+      existing.quantity += item.quantity;
+    } else {
+      items.set(item.productId, {
+        id: `item:${item.productId}`,
+        kind: "item",
         name: display[item.productId]?.name || title(item.productId),
         image: display[item.productId]?.image || null,
         quantity: item.quantity,
         xp: null,
         species: null,
         category: display[item.productId]?.category || "supplies",
-        revision: item.revision,
-      })),
+      });
+    }
+  }
+  return [
+    ...items.values(),
     ...inventory.evos.map((evo) => ({
       id: `evo:${evo.id}`,
       kind: "evo" as const,

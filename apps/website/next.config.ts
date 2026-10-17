@@ -59,8 +59,8 @@ const nextConfig = (phase: string) => {
       config.externals.push("pino-pretty", "lokijs", "encoding");
       return config;
     };
-    // The isolated Workers compatibility check never uploads source maps.
-    if (process.env.EVOVERSES_CLOUDFLARE_BUILD_CHECK === "1") return config;
+    // Isolated checks never create Sentry releases or upload source maps.
+    if (process.env.EVOVERSES_CLOUDFLARE_BUILD_CHECK === "1" || process.env.EVOVERSES_LOCAL_BUILD_CHECK === "1") return config;
     return withSentryConfig(
       config,
       {
