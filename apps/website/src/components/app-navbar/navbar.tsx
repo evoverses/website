@@ -18,7 +18,7 @@ export type NavItem = {
 }
 
 export const navigation: NavItem[] = [
-  { name: "Play Now", href: "/download", description: "Download the EvoVerses beta" },
+  { name: "Play Now", href: "https://discord.gg/xucfynYbv", description: "Join our Discord to play EvoVerses" },
   // { name: "Explore", href: "/assets", description: "Explore all EvoVerses assets" },
   { name: "Profile", href: "/profile", description: "Manage your EvoVerses account and assets", authRequired: true },
   {
