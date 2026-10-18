@@ -56,8 +56,8 @@ test('production webhook verifies signatures and ignores events for the other we
  checkout.metadata.storeOrigin=prod;assert.equal((await(await handleStripeWebhook(request(),service)).json()).status,'credited');assert.equal(fulfilled,1);assert.equal(verified,2);
  service.config.webhookOrigins=[beta,prod];checkout.metadata.storeOrigin=beta;assert.equal((await(await handleStripeWebhook(request(),service)).json()).status,'credited');assert.equal(fulfilled,2);
 });
-test('production publication stays unrouted and existing privacy and service pages are retained',()=>{
- const config=JSON.parse(fs.readFileSync('wrangler.production.jsonc','utf8'));assert.deepEqual(config.routes,[]);assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);assert.equal(config.vars.EVOVERSES_WEB_ORIGIN,prod);
+test('production and staged routing stay explicit and existing privacy and service pages are retained',()=>{
+ const config=JSON.parse(fs.readFileSync('wrangler.production.jsonc','utf8'));assert.deepEqual(config.routes,[{pattern:'evoverses.com/*',zone_id:'3adca176848846d97901677ea588989b'}]); const staged=JSON.parse(fs.readFileSync('wrangler.production-staged.jsonc','utf8'));assert.deepEqual(staged.routes,[]);assert.deepEqual({...config,routes:[]},staged);assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);assert.equal(config.vars.EVOVERSES_WEB_ORIGIN,prod);
  const privacy=fs.readFileSync('src/app/privacy/page.tsx','utf8');assert.match(privacy,/836ee923-8be7-4ffb-8bba-e53a9aebe6fe/);assert.match(privacy,/https:\/\/app.termly.io\/embed-policy.min.js/);
  for(const page of ['privacy','links'])assert.equal(fs.existsSync('src/app/'+page+'/page.tsx'),true);
 });

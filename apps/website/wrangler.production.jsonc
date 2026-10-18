@@ -10,7 +10,12 @@
   ],
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [],
+  "routes": [
+    {
+      "pattern": "evoverses.com/*",
+      "zone_id": "3adca176848846d97901677ea588989b"
+    }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
