@@ -58,7 +58,8 @@
     "EVOROS_STRIPE_MODE": "live",
     "EVOROS_STRIPE_ACCOUNT": "acct_1UN0wpI8Ec1gWS2X",
     "EVOROS_STORE_ORIGIN": "https://beta.evoverses.com",
-    "EVOROS_STRIPE_PRICES": "{\"bundle_pouch\":{\"priceId\":\"price_1UR8eBI8Ec1gWS2XIAZUGpma\",\"currency\":\"usd\",\"unitAmount\":300},\"bundle_satchel\":{\"priceId\":\"price_1UR8eYI8Ec1gWS2XDwWHM7CQ\",\"currency\":\"usd\",\"unitAmount\":550},\"bundle_canister\":{\"priceId\":\"price_1UR8ecI8Ec1gWS2XVQkrov2l\",\"currency\":\"usd\",\"unitAmount\":1000},\"bundle_case\":{\"priceId\":\"price_1UR8efI8Ec1gWS2XzSvwh784\",\"currency\":\"usd\",\"unitAmount\":2350},\"bundle_chest\":{\"priceId\":\"price_1UR8ehI8Ec1gWS2XpgG7Acxj\",\"currency\":\"usd\",\"unitAmount\":4500},\"bundle_vault\":{\"priceId\":\"price_1UR8ekI8Ec1gWS2XyJO4vtbN\",\"currency\":\"usd\",\"unitAmount\":8500}}"
+    "EVOROS_STRIPE_PRICES": "{\"bundle_pouch\":{\"priceId\":\"price_1UR8eBI8Ec1gWS2XIAZUGpma\",\"currency\":\"usd\",\"unitAmount\":300},\"bundle_satchel\":{\"priceId\":\"price_1UR8eYI8Ec1gWS2XDwWHM7CQ\",\"currency\":\"usd\",\"unitAmount\":550},\"bundle_canister\":{\"priceId\":\"price_1UR8ecI8Ec1gWS2XVQkrov2l\",\"currency\":\"usd\",\"unitAmount\":1000},\"bundle_case\":{\"priceId\":\"price_1UR8efI8Ec1gWS2XzSvwh784\",\"currency\":\"usd\",\"unitAmount\":2350},\"bundle_chest\":{\"priceId\":\"price_1UR8ehI8Ec1gWS2XpgG7Acxj\",\"currency\":\"usd\",\"unitAmount\":4500},\"bundle_vault\":{\"priceId\":\"price_1UR8ekI8Ec1gWS2XyJO4vtbN\",\"currency\":\"usd\",\"unitAmount\":8500}}",
+    "EVOROS_STRIPE_WEBHOOK_ORIGINS": "[\"https://beta.evoverses.com\",\"https://evoverses.com\"]"
   },
   "limits": {
     "cpu_ms": 3000

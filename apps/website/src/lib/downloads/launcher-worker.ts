@@ -1,7 +1,7 @@
 import { byteRange, partSize, expectedPart, privateHeaders } from "./core";
 import type { Bucket } from "./server";
 
-type Environment = { GAME_BUILDS?: Bucket; EVOVERSES_UPDATER_PUBLIC_KEY?: string };
+type Environment = { GAME_BUILDS?: Bucket; EVOVERSES_UPDATER_PUBLIC_KEY?: string; EVOVERSES_WEB_ORIGIN?: string };
 type Context = { waitUntil(promise: Promise<unknown>): void };
 type NextWorker = { fetch(request: Request, env: Environment, ctx: Context): Promise<Response> };
 type Entry = { path: string; size: number; sha256: string; url: string };
@@ -76,7 +76,7 @@ export function createLauncherWorker(next: NextWorker): NextWorker {
     if (check.status !== 200) { await check.body?.cancel(); throw new Failure([401,403,429].includes(check.status) ? check.status : 503, check.status === 401 ? "SIGN_IN_REQUIRED" : check.status === 403 ? "BETA_APPROVAL_REQUIRED" : "SERVICE_UNAVAILABLE"); }
     const value = await check.json() as { id: string }; requireValue(value.id, 503, "SERVICE_UNAVAILABLE"); return value.id;
    }
-   function origin() { requireValue(request.headers.get("origin") === url.origin && url.origin === "https://beta.evoverses.com", 403, "ORIGIN_NOT_ALLOWED"); }
+   function origin() { requireValue(request.headers.get("origin") === url.origin && ["https://beta.evoverses.com", "https://evoverses.com"].includes(env.EVOVERSES_WEB_ORIGIN ?? "https://beta.evoverses.com") && url.origin === (env.EVOVERSES_WEB_ORIGIN ?? "https://beta.evoverses.com"), 403, "ORIGIN_NOT_ALLOWED"); }
    if (url.pathname === base + "admin") {
     const administratorId = await authorize(browserToken(request), true);
     const current = await b.get(pointerKey), pointer = current ? await current.json<{ release: string; installer: Setup }>() : null;

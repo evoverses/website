@@ -11,7 +11,7 @@ const hash = (value: string) => createHash("sha256").update(value).digest("hex")
 export type Player = { id: string; displayName: string; experience: number };
 export type PlayerSnapshot = { player: Player; balance: { evoros: number } };
 export type Inventory = { items: { productId: string; revision: number; quantity: number }[]; evos: { id: string; speciesKey: string; experience: number; displayId?: string; combat?: CombatState; stats: Record<string, number> | GeneratedEvoStats }[] };
-export type LocalEpicConfig = { clientId: string; clientSecret: string; deploymentId: string; applicationId: string; apiUrl: string; hosted?: { origin: "https://beta.evoverses.com"; serviceToken: string } };
+export type LocalEpicConfig = { clientId: string; clientSecret: string; deploymentId: string; applicationId: string; apiUrl: string; hosted?: { origin: "https://beta.evoverses.com" | "https://evoverses.com"; serviceToken: string } };
 type OAuthBinding = { keyHash: string; bindingHash: string; contextHash: string };
 export type OAuthTransactionStore = {
   putState: (input: OAuthBinding) => Promise<unknown>;
@@ -46,7 +46,7 @@ export function createPlayerWebAuth({ configuration, fetchImpl = fetch, now = Da
     if (!value) return fail("SIGNIN_UNAVAILABLE");
     if (value.hosted) {
       const url = new URL(value.apiUrl);
-      if (!transactions || value.hosted.origin !== "https://beta.evoverses.com" || !hex.test(value.hosted.serviceToken) || url.protocol !== "https:" || url.origin !== value.apiUrl || url.username || url.password || url.port || !/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/.test(url.hostname) || url.hostname.endsWith(".localhost") || url.hostname === "localhost" || /^[\d.]+$/.test(url.hostname)) return fail("SIGNIN_UNAVAILABLE");
+      if (!transactions || !["https://beta.evoverses.com", "https://evoverses.com"].includes(value.hosted.origin) || !hex.test(value.hosted.serviceToken) || url.protocol !== "https:" || url.origin !== value.apiUrl || url.username || url.password || url.port || !/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/.test(url.hostname) || url.hostname.endsWith(".localhost") || url.hostname === "localhost" || /^[\d.]+$/.test(url.hostname)) return fail("SIGNIN_UNAVAILABLE");
     } else if (!/^http:\/\/127\.0\.0\.1:[1-9][0-9]{0,4}$/.test(value.apiUrl) || new URL(value.apiUrl).port === "0") return fail("SIGNIN_UNAVAILABLE");
     return value;
   };

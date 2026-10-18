@@ -8,7 +8,7 @@ export function walletChallengeMatches(
   pageOrigin: string,
   now = Date.now(),
 ) {
-  if (!["http://localhost:3100", "https://beta.evoverses.com"].includes(pageOrigin)) return false;
+  if (!["http://localhost:3100", "https://beta.evoverses.com", "https://evoverses.com"].includes(pageOrigin)) return false;
   try {
     const origin = new URL(pageOrigin), parsed = parseSiweMessage(challenge.message);
     return parsed.scheme === origin.protocol.slice(0, -1) &&

@@ -22,7 +22,7 @@ export const betaAdminSnapshotSchema=z.object({administratorId:uuid,masterAdmini
 export type BetaAdminSnapshot=z.infer<typeof betaAdminSnapshotSchema>;
 const allowedErrors=new Set(["INVALID_SESSION","ACCOUNT_UNAVAILABLE","ADMIN_REQUIRED","MASTER_ADMIN_REQUIRED","PLAYER_UNAVAILABLE","TESTER_NOT_APPROVED","ADMIN_ACCOUNT_PROTECTED","SELF_BAN_PROTECTED","SELF_DELETE_PROTECTED","ACCOUNT_IN_BATTLE","STALE_ACCESS","RETRY_CONFLICT","CAPACITY_EXCEEDED","PRODUCT_UNAVAILABLE","BALANCE_HISTORY_MISMATCH","RATE_LIMITED","LAST_ADMINISTRATOR","MASTER_ADMINISTRATOR_PROTECTED"]);
 const reply=(status:number,body:object)=>Response.json(body,{status,headers:{"Cache-Control":"no-store","Referrer-Policy":"no-referrer"}});
-export async function betaAdminHandler(request:Request,dependencies:{enabled:boolean; webOrigin?:"http://localhost:3100"|"https://beta.evoverses.com"; rpc:(operation:"list"|"action",token:string,input:unknown)=>Promise<{status:number;value:unknown}>}){
+export async function betaAdminHandler(request:Request,dependencies:{enabled:boolean; webOrigin?:"http://localhost:3100"|"https://beta.evoverses.com" | "https://evoverses.com"; rpc:(operation:"list"|"action",token:string,input:unknown)=>Promise<{status:number;value:unknown}>}){
  if(!dependencies.enabled)return reply(503,{error:{code:"BETA_ADMIN_UNAVAILABLE"}});
  const url=new URL(request.url);
  const origin=dependencies.webOrigin??"http://localhost:3100";

@@ -81,7 +81,7 @@ export async function handleStripeWebhook(
   // The existing Stripe test account is shared with local development.
   // Hosted fulfillment only consumes payments created for this website origin.
   const checkout = event.data.object as Stripe.Checkout.Session;
-  if (service.config.origin === "https://beta.evoverses.com" && checkout.metadata?.storeOrigin !== service.config.origin)
+  if (["https://beta.evoverses.com", "https://evoverses.com"].includes(service.config.origin) && !(service.config.webhookOrigins ?? [service.config.origin]).includes(checkout.metadata?.storeOrigin ?? ""))
     return Response.json({ received: true, status: "ignored" });
   try {
     const status = await fulfillCardPayment(

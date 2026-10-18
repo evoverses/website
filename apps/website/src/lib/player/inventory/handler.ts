@@ -9,7 +9,7 @@ export async function inventoryHandler(
   request: Request,
   dependencies: {
     enabled: boolean;
-    webOrigin?: "http://localhost:3100" | "https://beta.evoverses.com";
+    webOrigin?: "http://localhost:3100" | "https://beta.evoverses.com" | "https://evoverses.com";
     readInventory: (token: string) => Promise<Inventory>;
     readCombat?: (token:string,members:{chainId:43114;collection:string;tokenId:string}[])=>Promise<CombatState[]>;
     projection: (token: string) => Promise<unknown>;

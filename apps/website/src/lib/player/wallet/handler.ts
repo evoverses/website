@@ -81,7 +81,7 @@ export async function walletHandler(
   request: Request,
   dependencies: {
     enabled: boolean;
-    webOrigin?: "http://localhost:3100" | "https://beta.evoverses.com";
+    webOrigin?: "http://localhost:3100" | "https://beta.evoverses.com" | "https://evoverses.com";
     rpc: (
       operation: string,
       sessionToken: string,

@@ -9,6 +9,7 @@ export type StripeStoreConfig = {
   secretKey: string;
   webhookSecret: string;
   origin: string;
+  webhookOrigins?: string[];
   live: boolean;
   prices: Record<string, CardPrice>;
 };
@@ -43,6 +44,12 @@ export function stripeStoreConfig(
     )
   )
     throw new Error("Invalid store return origin.");
+  // Keep the existing beta webhook during the domain transition. Only these
+  // explicitly configured website origins may contribute signed payment events.
+  const webhookOrigins: unknown = env.EVOROS_STRIPE_WEBHOOK_ORIGINS === undefined ? [url.origin] : JSON.parse(env.EVOROS_STRIPE_WEBHOOK_ORIGINS);
+  if (!Array.isArray(webhookOrigins) || webhookOrigins.length < 1 || webhookOrigins.length > 2 || new Set(webhookOrigins).size !== webhookOrigins.length || !webhookOrigins.includes(url.origin) ||
+      (env.EVOROS_STRIPE_WEBHOOK_ORIGINS !== undefined && webhookOrigins.some(value => value !== "https://beta.evoverses.com" && value !== "https://evoverses.com")))
+    throw new Error("Explicit approved webhook origins required.");
   const raw: unknown = JSON.parse(env.EVOROS_STRIPE_PRICES ?? "{}");
   if (!raw || typeof raw !== "object" || Array.isArray(raw))
     throw new Error("Missing approved Stripe prices.");
@@ -85,6 +92,7 @@ export function stripeStoreConfig(
     secretKey: env.STRIPE_SECRET_KEY!,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
     origin: url.origin,
+    webhookOrigins: webhookOrigins as string[],
     live,
     prices,
   };

@@ -5,13 +5,16 @@ import path from "node:path";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { createPlayerWebAuth, PlayerWebError, playerSessionCookie, type LocalEpicConfig } from "./auth-core";
-import { hostedAccountConfig, betaWebOrigin } from "./hosted-config";
+import { hostedAccountConfig, hostedWebOrigin } from "./hosted-config";
 import { createOAuthRpc } from "./oauth-rpc";
 
 export const localPlayerLogin = process.env.NODE_ENV === "development" && process.env.EVOVERSES_LOCAL_EPIC_ACCOUNT_LOGIN === "1" && process.env.NEXT_PUBLIC_EVOVERSES_LOCAL_PLAYER_LOGIN === "1";
 export const hostedPlayerLogin = process.env.NODE_ENV === "production" && process.env.EVOVERSES_HOSTED_BETA === "1";
 export const playerLoginEnabled = localPlayerLogin || hostedPlayerLogin;
-export function getPlayerWebOrigin() { return hostedPlayerLogin ? betaWebOrigin : "http://localhost:3100"; }
+export function getPlayerWebOrigin() { if (!hostedPlayerLogin) return "http://localhost:3100" as const;
+  const origin = hostedWebOrigin(process.env);
+  if (!origin) throw new PlayerWebError("SIGNIN_UNAVAILABLE");
+  return origin; }
 export function getEpicConfig() { return hostedPlayerLogin ? hostedAccountConfig(process.env) : getLocalEpicConfig(); }
 function read(file: string) {
   if (statSync(file).size > 1024 * 1024) throw new PlayerWebError("SIGNIN_UNAVAILABLE");

@@ -1,5 +1,5 @@
 import "server-only";
-import { getLocalWalletConnection, getPlayerWebOrigin, playerLoginEnabled } from "../server";
+import { getLocalWalletConnection, getPlayerWebOrigin, playerLoginEnabled, hostedPlayerLogin } from "../server";
 import { walletHandler, WalletWebError } from "./handler";
 
 export async function walletRpc(
@@ -15,7 +15,7 @@ export async function walletRpc(
       "Content-Type": "application/json",
       Authorization: "Bearer " + connection.token,
     },
-    body: JSON.stringify({ operation, sessionToken, ...input }),
+    body: JSON.stringify({ operation, sessionToken, ...input, ...(hostedPlayerLogin && getPlayerWebOrigin() === "https://evoverses.com" ? { webOrigin: getPlayerWebOrigin() } : {}) }),
     cache: "no-store",
     redirect: "manual",
     credentials: "omit",
