@@ -41,5 +41,15 @@ export const verifyAuthCookie = async (cookie: string | RequestCookie | undefine
   } else {
     return { valid: false, parsedJWT: {} as JWTPayload };
   }
-  return getAuth().verifyJWT({ jwt });
+  // A stale wallet cookie must never prevent public pages from rendering.
+  // Missing legacy signer configuration is an unauthenticated wallet, not a login.
+  if (!jwt || jwt.length > 8192 || !adminPrivateKey) {
+    return { valid: false, parsedJWT: {} as JWTPayload };
+  }
+  try {
+    return await getAuth().verifyJWT({ jwt });
+  } catch {
+    // Invalid/expired cookies and verifier failures cannot establish identity.
+    return { valid: false, parsedJWT: {} as JWTPayload };
+  }
 };
