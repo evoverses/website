@@ -1,0 +1,42 @@
+{
+  "workerVersion": "25db80ba-c45c-48bf-a6c2-145f198d720e",
+  "rollbackVersion": "ee9d13ca-360a-4d69-b5de-199ea78e771e",
+  "checks": [
+    {
+      "route": "/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/signin",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/store",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/marketplace/evos",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/assets/evo/4066",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/api/player/me",
+      "status": 401,
+      "expected": 401
+    }
+  ],
+  "listingChunk": {
+    "path": "/_next/static/chunks/99748-ae4d7e243f347d61.js",
+    "sha256": "3f21447f6947ab313f3524044108c3f3de0bb661b08c3c4b5f7bd5a9c35a6068"
+  },
+  "liveChunkMatches": true,
+  "betaListingBundleUnchanged": true
+}

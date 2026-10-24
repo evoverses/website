@@ -2,7 +2,9 @@
 import { requireNurseryAccess } from "@/lib/nursery/access";
 import { retryNurseryAudit, startNurseryAudit, auditNurseryFailure } from "@/lib/nursery/audit-client";
 import { fetchOwnedEvos } from "@/lib/nursery/owned";
-import { nurseryNftAddress as evoNftContractAddress, nurseryChain, nurseryRegistryVersion } from "@/lib/nursery/network";
+import { nurseryNftAddress as evoNftContractAddress, nurseryChain, nurseryRegistryVersion, nurseryTransactionsEnabled } from "@/lib/nursery/network";
+import { useChainWallet } from "@/hooks/use-chain-wallet";
+import { acquireNurseryWallet, nurseryWalletBusy, subscribeNurseryWallet } from "@/lib/nursery/wallet-actions";
 import { defineChain } from "thirdweb";
 const chain = defineChain(nurseryChain.id);
 import {
@@ -19,12 +21,7 @@ import {
 import type { Parent } from "@/lib/nursery/rules";
 import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  useActiveAccount,
-  useActiveWallet,
-  useSwitchActiveWalletChain,
-} from "thirdweb/react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Address, Hex } from "viem";
 
 export function useNurseryWallet() {
@@ -32,7 +29,7 @@ export function useNurseryWallet() {
     queryKey: ["nursery-master-access"], staleTime: 0, refetchInterval: 30_000, retry: false,
     queryFn: async () => { await requireNurseryAccess(); return true; },
   });
-  const canAct = access.data === true && !access.isError;
+  const canAct = access.data === true && !access.isError && nurseryTransactionsEnabled !== false;
   useEffect(() => {
     if (!canAct) return;
     const retry = () => { void retryNurseryAudit(); };
@@ -40,29 +37,28 @@ export function useNurseryWallet() {
     window.addEventListener("online", retry);
     return () => { clearInterval(timer); window.removeEventListener("online", retry); };
   }, [canAct]);
-  const account = useActiveAccount();
-  const wallet = useActiveWallet();
-  const switchChain = useSwitchActiveWalletChain();
+  const { account, wallet } = useChainWallet();
   const current = useRef({ account, wallet });
   current.current = { account, wallet };
-  const [busy, setBusy] = useState(false);
-  const locked = useRef(false);
+  const scope = account ? `${nurseryChain.id}:${account.address.toLowerCase()}` : undefined;
+  const busy = useSyncExternalStore(subscribeNurseryWallet, () => nurseryWalletBusy(scope), () => false);
   const [error, setError] = useState<string | null>(null);
   const guard = useCallback(async () => {
     await requireNurseryAccess();
     if (
-      !account ||
+      !account || !wallet || wallet.id === "smart" || wallet.id === "inApp" ||
       current.current.account?.address !== account.address ||
       current.current.wallet !== wallet
     )
       throw new Error("Your wallet changed. Select your Evos again.");
-    if (wallet?.getChain()?.id !== nurseryChain.id) await switchChain(chain);
+    if (wallet.getChain()?.id !== nurseryChain.id) await wallet.switchChain(chain);
     if (
       current.current.account?.address !== account.address ||
-      wallet?.getAccount()?.address !== account.address ||
+      current.current.wallet !== wallet ||
+      wallet.getAccount()?.address !== account.address ||
       wallet?.getChain()?.id !== nurseryChain.id
     )
-      throw new Error("Connect the selected wallet to Avalanche Fuji.");
+      throw new Error(`Connect the selected wallet to ${nurseryChain.name}.`);
     const code = await nurseryClient.getCode({
       address: account.address as Address,
     });
@@ -73,14 +69,16 @@ export function useNurseryWallet() {
     await verifyNursery();
     if (
       current.current.account?.address !== account.address ||
-      wallet?.getChain()?.id !== nurseryChain.id
+      current.current.wallet !== wallet ||
+      wallet.getAccount()?.address !== account.address ||
+      wallet.getChain()?.id !== nurseryChain.id
     )
       throw new Error("Your wallet changed. Please try again.");
-  }, [account, wallet, switchChain]);
+  }, [account, wallet]);
   const run = async (action: () => Promise<void>) => {
-    if (locked.current) return;
-    locked.current = true;
-    setBusy(true);
+    if (!scope) return;
+    const release = acquireNurseryWallet(scope);
+    if (!release) return;
     setError(null);
     try {
       await requireNurseryAccess();
@@ -93,8 +91,7 @@ export function useNurseryWallet() {
       const { nurseryError } = await import("@/lib/nursery/contracts");
       setError(nurseryError(e));
     } finally {
-      locked.current = false;
-      setBusy(false);
+      release();
     }
   };
   return { account, wallet, busy, error, guard, run, canAct };
@@ -160,7 +157,7 @@ export function useParents(assets: SquidAsset[], owner?: string) {
   const ids = assets.map((a) => a.tokenId);
   return useQuery({
     queryKey: ["nursery-parents", nurseryScope, owner, ids],
-    enabled: Boolean(owner),
+    enabled: Boolean(owner) && assets.length > 0,
     refetchInterval: 15_000,
     queryFn: async (): Promise<ParentOption[]> => {
       if (!nurseryConfigured)

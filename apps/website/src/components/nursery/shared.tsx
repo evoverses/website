@@ -1,6 +1,6 @@
 "use client";
 import { usesChainlinkRandomness } from "@/lib/nursery/network";
-import { nurseryChain, nurseryNetworkMessage } from "@/lib/nursery/network";
+import { nurseryChain, nurseryNetworkMessage, nurseryTransactionsEnabled } from "@/lib/nursery/network";
 import { defineChain } from "thirdweb";
 import { chainConnectionOptions } from "@/lib/thirdweb/chain-connection";
 import { walletConnectionAvailable } from "@/lib/thirdweb/preview";
@@ -36,6 +36,9 @@ export function ConnectNursery({
   return (
     <div className="rounded-xl border bg-card p-6 space-y-3">
       <p className="font-semibold text-primary">{nurseryNetworkMessage}</p>
+      {nurseryChain.id === 43114 && !nurseryTransactionsEnabled && (
+        <p role="status" className="text-sm text-muted-foreground">Mainnet testing is being prepared. Nursery actions are currently unavailable.</p>
+      )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
         <div>
           <p className="font-bold">

@@ -31,15 +31,16 @@ test('browser permission helper refuses missing flags, stale/failed responses an
 });
 const wallet = '0x' + '1'.repeat(40), target = '0x' + '2'.repeat(40), hatcher = '0x' + '3'.repeat(40), token = '0x' + '4'.repeat(40), hash = '0x' + 'a'.repeat(64);
 const core = load('lib/nursery/audit-core.ts');
-function fixture(usesChainlinkRandomness = false) {
+function fixture(usesChainlinkRandomness = false, chainId = 43113, signing = true) {
   const data = new Map(); let writes = 0, chain = { tx: null, receipt: null };
   const bucket = { get: async key => data.has(key) ? { json: async () => JSON.parse(data.get(key)) } : null, put: async (key, value) => { writes++; data.set(key, value); return { etag: String(writes) }; } };
   const viem = require('viem');
   const server = load('lib/nursery/audit-server.ts', {
+    './previous-fuji': load('lib/nursery/previous-fuji.ts'),
     './vrf-audit': { rememberVrfRequest: async () => undefined },
     'server-only': {}, viem: { ...viem, createPublicClient: () => ({ getTransaction: async () => chain.tx, getTransactionReceipt: async () => chain.receipt }) },
     './test-wrapper': load('lib/nursery/test-wrapper.ts'),
-    './network': { nurseryChain: require('viem/chains').avalancheFuji, nurseryTokenAddress: token, nurseryBerthaAddress: target, nurseryHermannAddress: hatcher, nurseryNetworkConfigured: true, nurseryWrapperAddress: target, usesChainlinkRandomness },
+    './network': { nurseryChain: { id: chainId }, nurseryTransactionsEnabled: signing, nurseryTokenAddress: token, nurseryBerthaAddress: target, nurseryHermannAddress: hatcher, nurseryNetworkConfigured: true, nurseryWrapperAddress: target, usesChainlinkRandomness },
     './abi/Breeder_Bertha.json': require('../../src/lib/nursery/abi/Breeder_Bertha.json'), './abi/Hatcher_Hermann.json': require('../../src/lib/nursery/abi/Hatcher_Hermann.json'),
     '@/lib/downloads/server': { AccessError }, './audit-core': core,
   });
@@ -85,7 +86,7 @@ test('audit mutation and history both require master before storage; cross-origi
 });
 function browser(options = {}) {
   const events = [], storage = new Map(), attemptId = randomUUID();
-  const client = load('lib/nursery/audit-client.ts', { './audit-core': core }, {
+  const client = load('lib/nursery/audit-client.ts', { './audit-core': core, './network': { nurseryChain: { id: 43113 }, nurseryBerthaAddress: target, nurseryHermannAddress: hatcher } }, {
     localStorage: { getItem: k => storage.get(k), setItem: (k, v) => storage.set(k, v) },
     fetch: async (_, request) => { const value = JSON.parse(request.body); events.push(value); if (options.fail?.(value)) return Response.json({}, { status: 503 }); return Response.json(value.kind === 'start' ? { attemptId } : { recorded: true }); },
   });
@@ -253,12 +254,12 @@ test('actual Nursery send path simulates and signs the same padded gas limit; fa
       waitForTransactionReceipt: async () => ({ status: 'success' }),
     };
     const contracts = load('lib/nursery/contracts.ts', {
-      './access': { requireNurseryAccess: async () => {} }, './audit-client': { runAuditedTransaction: audit.runAuditedTransaction }, './audit-core': core, './gas-budget': gas,
+      './network-config': { mainnetNurseryDependencies: {} }, './access': { requireNurseryAccess: async () => {} }, './audit-client': { runAuditedTransaction: audit.runAuditedTransaction }, './audit-core': core, './gas-budget': gas,
       '../beta/release-policy': { requireBreedingApproval() {} },
       './network': { nurseryChain: require('viem/chains').avalancheFuji, nurseryTokenAddress: token, nurseryNftAddress: wallet, nurseryBerthaAddress: target, nurseryHermannAddress: hatcher, nurseryNetworkConfigured: true, nurseryWrapperAddress: wallet, usesChainlinkRandomness: true },
       '@/lib/thirdweb/config': { client: {} }, './abi/Breeder_Bertha.json': require('../../src/lib/nursery/abi/Breeder_Bertha.json'), './abi/Hatcher_Hermann.json': require('../../src/lib/nursery/abi/Hatcher_Hermann.json'),
       viem: { ...viem, createPublicClient: () => publicClient },
-      thirdweb: { defineChain: id => ({ id }), prepareTransaction: options => options, sendTransaction: async ({ transaction }) => { signed = true; assert.equal(transaction.gas, 753378n); assert.equal(transaction.gasPrice, 160n); assert.equal(transaction.value, 60772096n); assert.equal(transaction.data, calls[0].request.data); assert.equal(audit.events.at(-1).phase, 'wallet_requested'); return { transactionHash: hash }; } },
+       './wallet-send': { sendNurseryWalletTransaction: async (account, transaction) => { signed = true; assert.equal(transaction.gas, 753378n); assert.equal(transaction.gasPrice, 160n); assert.equal(transaction.value, 60772096n); assert.equal(transaction.data, calls[0].request.data); assert.equal(audit.events.at(-1).phase, 'wallet_requested'); return { transactionHash: hash }; } },
       './rules': load('lib/nursery/rules.ts'), './discovery': {},
     });
     const result = contracts.sendNurseryTransaction({ address: wallet }, target, contracts.berthaAbi, 'breed', [1n, 2n, 1000n * 10n ** 18n], { value: 60772096n, gasPrice: 160n });
@@ -271,12 +272,12 @@ test('persistent EVO approval is granted once per spender, reused after spending
   const viem = require('viem'), audit = browser(); let allowance = 0n, balance = 1000n * 10n ** 18n;
   const signed = [], phases = []; let required = 0;
   const contracts = load('lib/nursery/contracts.ts', {
-    './access': { requireNurseryAccess: async () => {} }, './audit-client': { runAuditedTransaction: audit.runAuditedTransaction }, './audit-core': core, './gas-budget': load('lib/nursery/gas-budget.ts'),
+    './network-config': { mainnetNurseryDependencies: {} }, './access': { requireNurseryAccess: async () => {} }, './audit-client': { runAuditedTransaction: audit.runAuditedTransaction }, './audit-core': core, './gas-budget': load('lib/nursery/gas-budget.ts'),
     '../beta/release-policy': { requireBreedingApproval() {} },
     './network': { nurseryChain: require('viem/chains').avalancheFuji, nurseryTokenAddress: token, nurseryNftAddress: wallet, nurseryBerthaAddress: target, nurseryHermannAddress: hatcher, nurseryNetworkConfigured: true, nurseryWrapperAddress: wallet, usesChainlinkRandomness: true },
     '@/lib/thirdweb/config': { client: {} }, './abi/Breeder_Bertha.json': require('../../src/lib/nursery/abi/Breeder_Bertha.json'), './abi/Hatcher_Hermann.json': require('../../src/lib/nursery/abi/Hatcher_Hermann.json'),
     viem: { ...viem, createPublicClient: () => ({ readContract: async request => { assert.equal(request.address, token); return request.functionName === 'balanceOf' ? balance : allowance; }, estimateGas: async () => 50000n, call: async () => ({}), waitForTransactionReceipt: async () => ({ status: 'success' }) }) },
-    thirdweb: { defineChain: id => ({ id }), prepareTransaction: options => options, sendTransaction: async ({ transaction }) => { const call = viem.decodeFunctionData({ abi: viem.erc20Abi, data: transaction.data }); signed.push(call); allowance = call.args[1]; return { transactionHash: hash }; } },
+     './wallet-send': { sendNurseryWalletTransaction: async (account, transaction) => { const call = viem.decodeFunctionData({ abi: viem.erc20Abi, data: transaction.data }); signed.push(call); allowance = call.args[1]; return { transactionHash: hash }; } },
     './rules': load('lib/nursery/rules.ts'), './discovery': {},
   });
   const cost = 250n * 10n ** 18n, options = { persistent: true, onRequired: () => required++, onProgress: phase => phases.push(phase) };
@@ -331,4 +332,52 @@ test('breeding history follows the full egg lifecycle and rejects unknown or mis
   assert.equal(breedHatchProgress(egg, false, 1121n, 120n).complete, true);
   assert.equal(breedHatchProgress(egg, false, 1121n, 120n).title, 'Hatched');
   for (const status of [0, 4]) { egg[5] = status; assert.throws(() => breedHatchProgress(egg, false, 1121n, 120n), /unavailable/); }
+});
+
+test('all nursery cards share one in-flight audit queue delivery', async () => {
+  const storage=new Map(), event={kind:'event',attemptId:randomUUID(),phase:'failed',errorCode:'ACTION_FAILED'};
+  storage.set('evo-nursery:audit-pending:v1',JSON.stringify([event]));
+  let requests=0,release;const pending=new Promise(resolve=>{release=resolve;});
+  const client=load('lib/nursery/audit-client.ts',{'./audit-core':core,'./network':{nurseryChain:{id:43113},nurseryBerthaAddress:target,nurseryHermannAddress:hatcher}},{
+    localStorage:{getItem:key=>storage.get(key),setItem:(key,value)=>storage.set(key,value)},
+    fetch:async()=>{requests++;await pending;return Response.json({recorded:true});},
+  });
+  const first=client.retryNurseryAudit(),second=client.retryNurseryAudit();assert.equal(first,second);assert.equal(requests,1);
+  release();await Promise.all([first,second]);assert.equal(requests,1);assert.equal(JSON.parse(storage.get('evo-nursery:audit-pending:v1')).length,0);
+});
+
+test('mainnet audit accepts only the configured chain and refuses signing before release approval',async()=>{
+  const f=fixture(true,43114);
+  const actor=randomUUID();
+  await assert.rejects(f.writeNurseryAudit(f.bucket,actor,intent),/INVALID_CHAIN/);
+  const result=await f.writeNurseryAudit(f.bucket,actor,{...intent,chainId:43114});
+  assert.ok(result.attemptId);
+  const blocked=fixture(true,43114,false);
+  await assert.rejects(blocked.writeNurseryAudit(blocked.bucket,actor,{...intent,chainId:43114}),/NURSERY_SIGNING_DISABLED/);
+});
+
+test('previous Fuji receipt recovery verifies stored intents but never authorizes a new legacy action', async () => {
+  const previous = load('lib/nursery/previous-fuji.ts').previousFujiNurseries[0], f = fixture(), actor = randomUUID(), attemptId = randomUUID();
+  const oldIntent = { ...intent, target: previous.bertha };
+  await assert.rejects(f.writeNurseryAudit(f.bucket, actor, oldIntent), /INVALID_TARGET/);
+  f.data.set(`nursery-audit/attempts/${attemptId}.json`, JSON.stringify({ ...oldIntent, attemptId, administratorId: actor, createdAt: '2026-10-19T00:00:00Z' }));
+  f.chain.tx = { from: wallet, to: previous.bertha, input: require('viem').encodeFunctionData({ abi: require('../../src/lib/nursery/abi/Breeder_Bertha.json'), functionName: 'completeBreed', args: [1n] }), value: 0n, gas: 1000000n };
+  f.chain.receipt = { transactionHash: hash, status: 'success', blockNumber: 123n };
+  await f.writeNurseryAudit(f.bucket, actor, { kind: 'event', attemptId, phase: 'confirmed', transactionHash: hash });
+  const last = JSON.parse([...f.data.values()].at(-1)); assert.equal(last.target, previous.bertha); assert.equal(last.source, 'chain_verified');
+  f.chain.tx.to = target;
+  await assert.rejects(f.writeNurseryAudit(f.bucket, actor, { kind: 'event', attemptId, phase: 'confirmed', transactionHash: hash }), /TRANSACTION_MISMATCH/);
+  assert.equal(load('lib/nursery/previous-fuji.ts').previousFujiNursery({ ...oldIntent, chainId: 43114 }), undefined);
+});
+
+test('Fuji queues are deployment scoped and retry the retained v1 queue without deleting unconfirmed deliveries', async () => {
+  let unavailable = true;
+  const b = browser({ fail: () => unavailable }), attemptId = randomUUID();
+  await b.recordNurseryEvent({ attemptId, phase: 'confirmed', transactionHash: hash });
+  const scopedKey = [...b.storage.keys()][0];
+  assert.equal(scopedKey, `evo-nursery:audit-pending:v2:43113:${target}:${hatcher}`);
+  b.storage.set('evo-nursery:audit-pending:v1', JSON.stringify([{ kind: 'event', attemptId: randomUUID(), phase: 'submitted', transactionHash: hash }]));
+  await b.retryNurseryAudit(); assert.equal(JSON.parse(b.storage.get(scopedKey)).length, 1); assert.equal(JSON.parse(b.storage.get('evo-nursery:audit-pending:v1')).length, 1);
+  unavailable = false; await b.retryNurseryAudit();
+  assert.equal(JSON.parse(b.storage.get(scopedKey)).length, 0); assert.equal(JSON.parse(b.storage.get('evo-nursery:audit-pending:v1')).length, 0);
 });

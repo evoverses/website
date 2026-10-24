@@ -11,7 +11,7 @@ const abi = parseAbi([
   'event WrapperFulfillmentFailed(uint256 indexed requestId,address indexed consumer)',
 ]);
 type Reference = { attempt: Attempt; requestId: string; contract: Address; requestTransactionHash: string; blockNumber: string; blockHash: string; scanBlock: string };
-const key = (contract: string, id: string) => `nursery-audit/vrf/${contract.toLowerCase()}/${id}.json`;
+const key = (contract: string, id: string) => `nursery-audit/${nurseryChain.id === 43113 ? "" : `${nurseryChain.id}/`}vrf/${contract.toLowerCase()}/${id}.json`;
 const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 // Called only after the original user transaction has been verified against its immutable audit intent.
@@ -43,13 +43,14 @@ export async function reconcileVrf(b: Bucket, keeper: 'bertha' | 'hermann', requ
   const storageKey = key(contract, requestId), stored = await b.get(storageKey);
   if (!stored) throw new AccessError(409, 'VRF_AUDIT_PENDING');
   const ref = await stored.json<Reference>();
-  const outcomeKey = `nursery-audit/vrf-outcomes/${contract.toLowerCase()}/${requestId}.json`;
+  if (ref.attempt.chainId !== nurseryChain.id) throw new AccessError(409, 'INVALID_CHAIN');
+  const outcomeKey = `nursery-audit/${nurseryChain.id === 43113 ? "" : `${nurseryChain.id}/`}vrf-outcomes/${contract.toLowerCase()}/${requestId}.json`;
   const prior = await b.get(outcomeKey);
   if (prior) return prior.json<{ status: string; transactionHash: string }>();
   const block = await client.getBlock({ blockNumber: BigInt(ref.blockNumber) });
   if (block.hash !== ref.blockHash) throw new AccessError(409, 'VRF_REQUEST_REORG');
   const latest = await client.getBlockNumber({ cacheTime: 0 });
-  const fromBlock = BigInt(ref.scanBlock), toBlock = latest < fromBlock + 1023n ? latest : fromBlock + 1023n;
+  const fromBlock = BigInt(ref.scanBlock), toBlock = latest < fromBlock + 99n ? latest : fromBlock + 99n;
   if (fromBlock > latest) return { status: 'pending' };
   const [ready, failed] = await Promise.all([
     client.getContractEvents({ address: contract, abi, eventName: 'RandomnessReady', args: { requestId: BigInt(requestId) }, fromBlock, toBlock, strict: true }),

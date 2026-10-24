@@ -1,11 +1,12 @@
 "use client";
 import { ConnectButton } from "@/components/buttons/connect-button";
 import { evoContract, evoNftContract, marketplaceContract } from "@/data/contracts";
-import { useChain } from "@/hooks/use-chain";
+import { useChainWallet } from "@/hooks/use-chain-wallet";
 import { useMarketplaceInfo } from "@/hooks/use-marketplace-info";
 import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
 import { checkListingDuplicates } from "@/lib/marketplace/listing-safety";
+import { submitOwnerListing } from "@/lib/marketplace/owner-listing";
 import { createListing, getAllListings, totalListings } from "@/lib/thirdweb/extensions/marketplace";
 import { toAssetUrl, toCollectionUrl } from "@/utils/url";
 import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
@@ -18,9 +19,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn } from "@workspace/ui/lib/utils";
 import { LayersIcon } from "lucide-react";
 import Link from "next/link";
-import { type ChangeEvent, type ReactNode, useCallback, useState } from "react";
-import { getApproved, isApprovedForAll, setApprovalForAll } from "thirdweb/extensions/erc721";
-import { TransactionButton, useActiveAccount, useSendAndConfirmTransaction } from "thirdweb/react";
+import { type ChangeEvent, type ReactNode, useRef, useState } from "react";
+import { getApproved, isApprovedForAll, ownerOf, setApprovalForAll } from "thirdweb/extensions/erc721";
+import { sendAndConfirmTransaction } from "thirdweb";
 import { parseUnits } from "viem";
 import { PeriodDrawerFooter, usePeriod } from "./period-drawer-footer";
 import { EvoCard } from "@workspace/evoverses/components/evo-card";
@@ -34,67 +35,82 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
   const [transactionHash, setTransactionHash] = useState<string>();
   const [progress, setProgress] = useState<string>();
 
-  const account = useActiveAccount();
-  const { switchChainIfNeeded } = useChain();
+  const { wallet, account } = useChainWallet();
+  const selectedWallet = useRef(wallet);
+  selectedWallet.current = wallet;
+  const inFlight = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
   const { feePercent } = useMarketplaceInfo(asset.chainId);
-  const { mutateAsync } = useSendAndConfirmTransaction();
-
   const currencyPrice = useEvoPrice();
 
-  const prepareTransaction = useCallback(async () => {
-    if (!account) {
-      throw new Error("No account detected");
+  const handleCreateListing = async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setSubmitting(true);
+    try {
+      if (Number(asset.chainId) !== evoNftContract.chain.id) {
+        throw new Error("This Evo is not on the supported marketplace network.");
+      }
+      const pricePerToken = parseUnits(amount, 18);
+      if (pricePerToken < parseUnits("1", 18)) throw new Error("Offer amount must be at least 1 EVO");
+      const customEnd = periodData.period === "custom" && periodData.customDate
+        ? BigInt(Math.floor(periodData.customDate.getTime() / 1000)) : undefined;
+      const receipt = await submitOwnerListing({
+        wallet,
+        getSelectedWallet: () => selectedWallet.current,
+        chain: evoNftContract.chain,
+        readOwner: () => ownerOf({ contract: evoNftContract, tokenId: BigInt(asset.tokenId) }),
+        onProgress: setProgress,
+        checkExisting: async owner => {
+          setProgress("Checking existing listings on Avalanche");
+          await checkListingDuplicates(
+            () => totalListings({ contract: marketplaceContract }),
+            (startId, endId) => getAllListings({ contract: marketplaceContract, startId, endId }),
+            { tokenId: BigInt(asset.tokenId), assetContract: evoNftContract.address, creator: owner },
+            BigInt(Math.floor(Date.now() / 1000)),
+          );
+        },
+        needsApproval: async owner => {
+          const [approved, spender] = await Promise.all([
+            isApprovedForAll({ contract: evoNftContract, operator: marketplaceContract.address, owner }),
+            getApproved({ contract: evoNftContract, tokenId: BigInt(asset.tokenId) }),
+          ]);
+          return !approved && spender.toLowerCase() !== marketplaceContract.address.toLowerCase();
+        },
+        approve: signer => sendAndConfirmTransaction({
+          account: signer,
+          transaction: setApprovalForAll({ contract: evoNftContract, operator: marketplaceContract.address, approved: true }),
+        }),
+        list: signer => {
+          const startTimestamp = BigInt(Math.floor(Date.now() / 1000) + 60);
+          return sendAndConfirmTransaction({
+            account: signer,
+            transaction: createListing({
+              contract: marketplaceContract,
+              params: {
+                assetContract: evoNftContract.address,
+                tokenId: BigInt(asset.tokenId),
+                quantity: 1n,
+                currency: evoContract.address,
+                pricePerToken,
+                startTimestamp,
+                endTimestamp: customEnd ?? startTimestamp + BigInt(periodData.period),
+                reserved: false,
+              },
+            }),
+          });
+        },
+      });
+      setTransactionHash(receipt.transactionHash);
+      setSuccess(true);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not create this listing.");
+    } finally {
+      inFlight.current = false;
+      setSubmitting(false);
+      setProgress(undefined);
     }
-    setProgress("Checking active chain");
-    await switchChainIfNeeded(asset.chainId);
-
-    const checkExisting = async () => {
-      setProgress("Checking existing listings on Avalanche");
-      await checkListingDuplicates(
-        () => totalListings({ contract: marketplaceContract }),
-        (startId, endId) => getAllListings({ contract: marketplaceContract, startId, endId }),
-        { tokenId: BigInt(asset.tokenId), assetContract: evoNftContract.address, creator: account.address },
-        BigInt(Math.floor(Date.now() / 1000)),
-      );
-    };
-    await checkExisting();
-    setProgress("Checking approval");
-    const [isApproved, approvedTokenSpender] = await Promise.all([
-      isApprovedForAll({
-        contract: evoNftContract,
-        operator: marketplaceContract.address,
-        owner: account.address,
-      }),
-      getApproved({ contract: evoNftContract, tokenId: BigInt(asset.tokenId) }),
-    ]);
-    if (!isApproved && approvedTokenSpender.toLowerCase() !== marketplaceContract.address.toLowerCase()) {
-      setProgress("Requesting approval in wallet");
-      await mutateAsync(setApprovalForAll({
-        contract: evoNftContract,
-        operator: marketplaceContract.address,
-        approved: true,
-      }));
-    }
-
-    await checkExisting();
-    setProgress("Creating listing");
-    const startTimestamp = BigInt(Math.floor(Date.now() / 1000) + 60);
-    return createListing({
-      contract: marketplaceContract,
-      params: {
-        assetContract: evoNftContract.address,
-        tokenId: BigInt(asset.tokenId),
-        quantity: 1n,
-        currency: evoContract.address,
-        pricePerToken: parseUnits(amount, 18),
-        startTimestamp,
-        endTimestamp: periodData.period === "custom" && periodData.customDate
-          ? BigInt(Math.floor(periodData.customDate.getTime() / 1000))
-          : startTimestamp + BigInt(periodData.period),
-        reserved: false,
-      },
-    });
-  }, [account, mutateAsync, asset, amount, periodData, switchChainIfNeeded, setProgress]);
+  };
 
   const handleOnAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAmount(e.target.value);
@@ -191,6 +207,7 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
                     <div className="relative font-mono">
                       <Input
                         type="number"
+                        disabled={submitting}
                         min={0}
                         placeholder="0"
                         value={amount}
@@ -303,24 +320,14 @@ const ListForSaleDrawer = ({ asset, children }: { asset: SquidAsset, children?: 
             </Table>
             <PeriodDrawerFooter data={periodData} progress={progress}>
               {account ? (
-                <TransactionButton
-                  disabled={!!error || !amount || Number(amount) < 0.0001}
-                  unstyled
-                  transaction={() => prepareTransaction()}
-                  onError={e => {
-                    console.log(e);
-                    toast.error(e.message);
-                    setProgress(undefined);
-                  }}
-                  onTransactionConfirmed={receipt => {
-                    setTransactionHash(receipt.transactionHash);
-                    setSuccess(true);
-                  }}
+                <Button
+                  disabled={submitting || !!error || !amount || Number(amount) < 1}
+                  onClick={() => void handleCreateListing()}
                 >
-                  Create Listing
-                </TransactionButton>
+                  {submitting ? "Creating listing…" : "Create Listing"}
+                </Button>
               ) : (
-                <ConnectButton>
+                <ConnectButton wallets="chain">
                   Create Listing
                 </ConnectButton>
               )}

@@ -1,6 +1,6 @@
 // lib/ecr-stack.ts
-import { CfnOutput, RemovalPolicy } from "aws-cdk-lib";
-import { Repository } from "aws-cdk-lib/aws-ecr";
+import { CfnOutput, Duration, RemovalPolicy } from "aws-cdk-lib";
+import { Repository, TagStatus } from "aws-cdk-lib/aws-ecr";
 import { PolicyStatement, Role, WebIdentityPrincipal } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 import { CStack, type CStackProps } from "../models/c-stack";
@@ -20,7 +20,11 @@ export class EcrStack extends CStack {
       imageScanOnPush: false,
       removalPolicy: RemovalPolicy.DESTROY,
       emptyOnDelete: true,
-      lifecycleRules: [ { maxImageCount: 10 } ],
+      lifecycleRules: [{
+        description: "Retain tagged releases; expire old untagged images",
+        tagStatus: TagStatus.UNTAGGED,
+        maxImageAge: Duration.days(30),
+      }],
     });
 
     const githubOrg = this.getContext("githubOrg");

@@ -310,3 +310,16 @@ it("single and list metadata preserve original Genesis treatment and null dates 
  const hatched=await projectSnapshot(nftId,f.hatcher,101n,f.block(31),f.reader(3,true,{kind:async()=>1,egg:async()=>({...f.egg(3,true),parent1:0n,parent2:0n,createdAt:0n}),adult:async()=>f.adult({generation:0n,totalBreeds:0n,lastBreedTime:0n})}),registered,undefined,f.block(31).timestamp);await save(hatched);
  assert.equal((await single()).metadata.type,'EVO');assert.equal((await single()).metadata.generation,0);assert.equal((await single()).metadata.treated,true);assert.equal((await single()).metadata.parent1_id,null);
 });
+
+it("the additive provenance migration preserves XP and represents epoch dates as unknown", async () => {
+  const dates = new (require(path.join(squid, "db/migrations/1792368000000-NurseryProvenanceDates.js")))();
+  await db.exec("update metadata.evo set created_at='1970-01-01',hatched_at='1970-01-01' where token_id=1");
+  await dates.up(migrationDb);
+  const row=(await db.query("select * from metadata.get_evo('1')")).rows[0];
+  assert.equal(row.metadata.created_at,null);assert.equal(row.metadata.hatched_at,null);
+  assert.equal(row.metadata.xp,4321);
+  await dates.down(migrationDb);
+  assert.notEqual((await db.query("select * from metadata.get_evo('1')")).rows[0].metadata.created_at,null);
+  await dates.up(migrationDb);
+  assert.equal((await db.query("select * from metadata.get_evo('1')")).rows[0].metadata.created_at,null);
+});

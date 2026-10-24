@@ -10,14 +10,16 @@ const cache = new Map<string, Origin>();
 
 // Egg species is fixed by breeding randomness. It is emitted at collection, before hatch traits exist.
 export async function readEggOrigin(tokenId: bigint, egg: Egg, head: { number: bigint; timestamp: bigint }): Promise<Origin> {
-  const key = `${nurseryHermannAddress}:${tokenId}:${egg[3]}`;
+  const key = `${nurseryChain.id}:${nurseryHermannAddress}:${tokenId}:${egg[3]}`;
   const cached = cache.get(key);
   if (cached && cached.blockNumber <= head.number) {
     const block = await client.getBlock({ blockNumber: cached.blockNumber });
     if (block.hash === cached.blockHash && block.timestamp === egg[3] && cached.parent1 === egg[0] && cached.parent2 === egg[1]) return cached;
     cache.delete(key);
   }
-  const recent = head.number > 1023n ? head.number - 1023n : 0n;
+  // The public Fuji RPC accepts at most 100 blocks per eth_getLogs request.
+  // Older eggs use the timestamp lookup below, whose final range is at most 64 blocks.
+  const recent = head.number > 99n ? head.number - 99n : 0n;
   const query = (fromBlock: bigint, toBlock: bigint) => client.getLogs({ address: nurseryHermannAddress, event, args: { tokenId }, fromBlock, toBlock, strict: true });
   let logs = await query(recent, head.number);
   if (!logs.length) {

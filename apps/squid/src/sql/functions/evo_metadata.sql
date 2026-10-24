@@ -4,6 +4,10 @@ create or replace function metadata.evo_metadata(_nft_id text)
 returns jsonb language sql stable as $$
   select coalesce(to_jsonb(e), '{}'::jsonb) || coalesce(ne.metadata, '{}'::jsonb) || jsonb_build_object(
     'xp', coalesce(e.xp, 0),
+    'created_at', case when ne.metadata ? 'created_at' then ne.metadata -> 'created_at'
+      when e.created_at > timestamp '1970-01-01 00:00:00' then to_jsonb(e.created_at) else 'null'::jsonb end,
+    'hatched_at', case when ne.metadata ? 'hatched_at' then ne.metadata -> 'hatched_at'
+      when e.hatched_at > timestamp '1970-01-01 00:00:00' then to_jsonb(e.hatched_at) else 'null'::jsonb end,
     'species', s.species,
     'primary_type', coalesce(ne.metadata -> 'primary_type', to_jsonb(s.primary_type)),
     'secondary_type', coalesce(ne.metadata -> 'secondary_type', to_jsonb(s.secondary_type)),

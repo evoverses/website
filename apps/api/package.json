@@ -14,12 +14,15 @@
     "@workspace/tsconfig": "workspace:*",
     "next": "15.3.4",
     "sharp": "^0.34.2",
-    "zod": "^3.25.57"
+    "zod": "^3.25.57",
+    "react": "19.1.9",
+    "react-dom": "19.1.9"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@workspace/eslint": "workspace:*",
-    "typescript": "^5"
+    "typescript": "^5",
+    "eslint": "^9.27.0"
   }
 }

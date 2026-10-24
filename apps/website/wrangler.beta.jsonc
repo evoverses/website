@@ -47,19 +47,22 @@
     "NEXT_PUBLIC_API_IMAGE_SUFFIX": "public",
     "NEXT_PUBLIC_AUTH_URL": "https://beta.evoverses.com",
     "NEXT_PUBLIC_FUJI_EVO_ADDRESS": "0x8DEE7Bc23aB2956F99E4830D5C7Da233617B8213",
-    "NEXT_PUBLIC_FUJI_EVO_NFT_ADDRESS": "0x1454b95c0e1A7059B8c99F54F8E4F6455Cbcce84",
-    "NEXT_PUBLIC_FUJI_BERTHA_ADDRESS": "0xe39A19Fe7FFbE17693941D34858408a0133D69Ff",
-    "NEXT_PUBLIC_FUJI_HERMANN_ADDRESS": "0x98e5f17cd25a3d4f48374E528c4ADA9DAE10b931",
+    "NEXT_PUBLIC_FUJI_EVO_NFT_ADDRESS": "0x72D7DF32dF4C3CA2B690b434DC36086b65E8a4Cf",
+    "NEXT_PUBLIC_FUJI_BERTHA_ADDRESS": "0x4C84e969766Be884F6Edc4505615491478a4defd",
+    "NEXT_PUBLIC_FUJI_HERMANN_ADDRESS": "0x6E1D28710880b5f073cecd30BBf772dE518C5A44",
     "NEXT_PUBLIC_FUJI_WRAPPER_ADDRESS": "0x327B83F409E1D5f13985c6d0584420FA648f1F56",
     "NEXT_PUBLIC_NURSERY_REGISTRY_VERSION": "2",
-    "NEXT_PUBLIC_FUJI_HERMANN_HISTORY": "0x7D0a47E56E4804A606669D6b395AD430c9ADD25E,0x7B252B2B63747E1F56C6b485d6a41B8C09302Cef",
+    "NEXT_PUBLIC_FUJI_HERMANN_HISTORY": "",
+    "NEXT_PUBLIC_NURSERY_NETWORK": "fuji",
+    "NEXT_PUBLIC_NURSERY_MAINNET_APPROVED": "0",
     "EVOVERSES_UPDATER_PUBLIC_KEY": "<RSAKeyValue><Modulus>y4s5McxJFPt8Vw/0gh8ZGB8Y5e40VWcouAZuPfQ0/DkAp0usmsKd7qGd5o+WrGTQTlJBfk1yEB6vwhIgSD2FoIuW57Z57xqVpLxialpHBVLO02p4klugxw/MwPsvvLYejhK6QOQi3YyR15DSihN4o0KQ/mvALAYZzC5TfxYTExIOHvpecNmTXbbx29tSTETWY+xJlce7CEi3cf+A2GlT2N+7ThiBYZ5V7H7ltX4PUCYFhFJ0xVpq7B8gIh6hCmA0VxNBmozcKUhLgDP0ROVdxx3rOL5xfOG1gNh265PHNpsMlQ7oHUK2q5gzxgs1USsFVi/Lv00gHvYkQ/V+x1h5+aeGP8rhPj9Og0VXuTXDqGp8zoxoVsW6/TtjOL9M4wMiJqQm/Fo7XA8pIK9Q1wLyhQVSLqJpUARnzjiBuR0JxtWyxjxFe9ikRJRbF+UyIHVeMBeCLdMRkH4v5uYc6P7xYhVljc9fWt47FUw2lf/+eerKsXW4ivxWfCxw+F3crArqxJ7F5Z2CL4fq5laAoZJIpc3ttSuyiBL8g2/hJEsylX/ruybrMD4Eynhui8soes+p/SZIhBnc+sJxYOddKgzPZy+Rsa+O+kLop4TiBzZM4WfFJOMJ/owxBKrtmUTDS1WkF9BIwDGFOax63wXyNZOm4hD7o7uRzqi6nUOVjb+jBrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>",
     "EVOROS_STRIPE_ENABLED": "true",
     "EVOROS_STRIPE_MODE": "live",
     "EVOROS_STRIPE_ACCOUNT": "acct_1UN0wpI8Ec1gWS2X",
     "EVOROS_STORE_ORIGIN": "https://beta.evoverses.com",
     "EVOROS_STRIPE_PRICES": "{\"bundle_pouch\":{\"priceId\":\"price_1UR8eBI8Ec1gWS2XIAZUGpma\",\"currency\":\"usd\",\"unitAmount\":300},\"bundle_satchel\":{\"priceId\":\"price_1UR8eYI8Ec1gWS2XDwWHM7CQ\",\"currency\":\"usd\",\"unitAmount\":550},\"bundle_canister\":{\"priceId\":\"price_1UR8ecI8Ec1gWS2XVQkrov2l\",\"currency\":\"usd\",\"unitAmount\":1000},\"bundle_case\":{\"priceId\":\"price_1UR8efI8Ec1gWS2XzSvwh784\",\"currency\":\"usd\",\"unitAmount\":2350},\"bundle_chest\":{\"priceId\":\"price_1UR8ehI8Ec1gWS2XpgG7Acxj\",\"currency\":\"usd\",\"unitAmount\":4500},\"bundle_vault\":{\"priceId\":\"price_1UR8ekI8Ec1gWS2XyJO4vtbN\",\"currency\":\"usd\",\"unitAmount\":8500}}",
-    "EVOROS_STRIPE_WEBHOOK_ORIGINS": "[\"https://beta.evoverses.com\",\"https://evoverses.com\"]"
+    "EVOROS_STRIPE_WEBHOOK_ORIGINS": "[\"https://beta.evoverses.com\",\"https://evoverses.com\"]",
+    "EVOVERSES_BETA_OWNER_PLAYER_ID": "9d6a70e4-d887-41ad-a7c3-f7e2656cf9bd"
   },
   "limits": {
     "cpu_ms": 3000

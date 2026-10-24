@@ -197,3 +197,21 @@ it("projects registered Genesis eggs without parents, revealed species or a fake
  assert.equal(hatched.metadata.type,'EVO');assert.equal(hatched.metadata.generation,0);assert.equal(hatched.metadata.created_at,null);assert.equal(hatched.metadata.parent1_token_id,null);assert.equal(hatched.metadata.treated,true);assert.equal(hatched.metadata.hatched_at,new Date(f.block(20).timestamp).toISOString());
 });
 it("fails closed on an unregistered or invalid v2 egg kind",async()=>{for(const kind of [0,3])await assert.rejects(project(f.reader(1,false,{kind:async()=>kind})),/Invalid canonical egg kind/);});
+
+it("all raw sizes reach public NFT metadata as percentages exactly once", async () => {
+  const { sizeMetadataTrait } = f.load("api-nursery-traits");
+  for (let raw = 0; raw <= 20; raw++) {
+    const adult = f.adult(); adult.attributes = { ...adult.attributes, size: BigInt(raw) };
+    for (const status of [0, 3]) {
+      const row = await project(f.reader(status, false, { adult: async () => adult }), undefined, null, f.block(), status === 3 ? f.block().timestamp : undefined);
+      const expected = (raw - 10) * 10;
+      assert.equal(row.metadata.size, expected);
+      assert.deepEqual(sizeMetadataTrait(row.metadata.size), { trait_type: "Size", value: expected, display_type: "boost_percentage" });
+    }
+  }
+  for (const value of [-110, 110, 5, NaN, Infinity]) assert.throws(() => sizeMetadataTrait(value));
+  for (const raw of [-1n, 21n]) {
+    const adult = f.adult(); adult.attributes = { ...adult.attributes, size: raw };
+    await assert.rejects(project(f.reader(0, false, { adult: async () => adult })));
+  }
+});

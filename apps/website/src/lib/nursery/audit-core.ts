@@ -6,7 +6,7 @@ const address = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
 export const intentSchema = z.object({
   kind: z.literal('start'), action: nurseryAction, wallet: address,
   target: address.optional(), args: z.array(z.string().regex(/^(?:[0-9]{1,78}|0x[a-fA-F0-9]{40}|0x[a-fA-F0-9]{64})$/)).max(3).default([]),
-  value: z.string().regex(/^[0-9]{1,78}$/).default('0'), chainId: z.literal(43113),
+  value: z.string().regex(/^[0-9]{1,78}$/).default('0'), chainId: z.union([z.literal(43113), z.literal(43114)]),
 }).strict();
 export const eventSchema = z.object({
   kind: z.literal('event'), attemptId: z.string().uuid(), phase: auditPhase.exclude(['started']),

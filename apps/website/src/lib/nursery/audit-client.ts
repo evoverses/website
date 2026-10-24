@@ -1,6 +1,8 @@
+import { nurseryChain, nurseryBerthaAddress, nurseryHermannAddress } from "./network";
 import { classifyNurseryError, type Intent, type AuditEvent } from './audit-core';
 
-const pendingKey = 'evo-nursery:audit-pending:v1';
+const pendingKey = `evo-nursery:audit-pending:v2:${nurseryChain.id}:${nurseryBerthaAddress.toLowerCase()}:${nurseryHermannAddress.toLowerCase()}`;
+const recoveryKeys = nurseryChain.id === 43113 ? [pendingKey, 'evo-nursery:audit-pending:v1'] : [pendingKey];
 async function post(value: unknown) {
   const response = await fetch('/api/nursery/audit', {
     method: 'POST', credentials: 'same-origin', redirect: 'error', cache: 'no-store',
@@ -11,10 +13,10 @@ async function post(value: unknown) {
   return body;
 }
 export async function startNurseryAudit(intent: Omit<Intent, 'kind' | 'chainId'>) {
-  return (await post({ ...intent, kind: 'start', chainId: 43113 })).attemptId as string;
+  return (await post({ ...intent, kind: 'start', chainId: nurseryChain.id })).attemptId as string;
 }
-function queued(): AuditEvent[] {
-  try { const data = JSON.parse(localStorage.getItem(pendingKey) ?? '[]'); return Array.isArray(data) ? data.slice(-100) : []; } catch { return []; }
+function queued(key = pendingKey): AuditEvent[] {
+  try { const data = JSON.parse(localStorage.getItem(key) ?? '[]'); return Array.isArray(data) ? data.slice(-100) : []; } catch { return []; }
 }
 export async function recordNurseryEvent(event: Omit<AuditEvent, 'kind'>, required = false) {
   const value: AuditEvent = { ...event, kind: 'event' };
@@ -25,16 +27,23 @@ export async function recordNurseryEvent(event: Omit<AuditEvent, 'kind'>, requir
     if (required) throw error;
   }
 }
-export async function retryNurseryAudit() {
-  const events = queued();
-  for (const event of events) {
-    try { await post(event); } catch { return; }
-    try {
-      // Preserve events added by another action while this delivery was in flight.
-      const current = queued(), index = current.findIndex(item => JSON.stringify(item) === JSON.stringify(event));
-      if (index >= 0) current.splice(index, 1);
-      localStorage.setItem(pendingKey, JSON.stringify(current));
-    } catch { return; }
+let auditRetry: Promise<void> | undefined;
+export function retryNurseryAudit() {
+  if (!auditRetry) auditRetry = deliverQueuedAudit().finally(() => { auditRetry = undefined; });
+  return auditRetry;
+}
+async function deliverQueuedAudit() {
+  for (const key of recoveryKeys) {
+    const events = queued(key);
+    for (const event of events) {
+      try { await post(event); } catch { return; }
+      try {
+        // Preserve events added by another action while this delivery was in flight.
+        const current = queued(key), index = current.findIndex(item => JSON.stringify(item) === JSON.stringify(event));
+        if (index >= 0) current.splice(index, 1);
+        localStorage.setItem(key, JSON.stringify(current));
+      } catch { return; }
+    }
   }
 }
 export async function auditNurseryFailure(attemptId: string, error: unknown, transactionHash?: string) {

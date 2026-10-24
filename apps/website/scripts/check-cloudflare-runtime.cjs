@@ -4,6 +4,10 @@ const path = require("node:path");
 const { unstable_dev } = require("wrangler");
 async function main() {
   const config = path.resolve(process.argv[2] || "wrangler.jsonc");
+  const configValue = JSON.parse(require("node:fs").readFileSync(config, "utf8"));
+  if (configValue.vars?.EVOVERSES_BETA_OWNER_PLAYER_ID) {
+    return require("./check-beta-owner-runtime.cjs").checkBetaOwnerRuntime(config);
+  }
   const worker = await unstable_dev("cloudflare-worker.ts", {
     config, envFiles: [], local: true, ip: "127.0.0.1", port: 0,
     inspectorPort: 0, persist: false, logLevel: "error",

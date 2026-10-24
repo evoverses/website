@@ -446,7 +446,7 @@ function EggTile({
           </span>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-1 flex-col gap-4">
         {eggQuery.isLoading ? (
           <Loading>Checking your egg…</Loading>
         ) : eggQuery.isError ? (
@@ -491,7 +491,7 @@ function EggTile({
                 />
               </div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="min-h-[2lh] text-xs text-muted-foreground">
               {egg![5] === 2
                 ? eggQuery.data?.fulfilled ? "Your Evo is ready. Reveal it below." : "This can take a moment."
                 : treated
@@ -512,7 +512,7 @@ function EggTile({
             )
           ))}
         {egg?.[5] === 2 && <TestRandomness keeper="hermann" fulfilled={eggQuery.data?.fulfilled} requestId={egg[6]} refreshed={refresh} />}
-        <div className="flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-2">
           <Button
             className="min-w-0 bg-green-600 text-white hover:bg-green-700 disabled:opacity-100 disabled:bg-green-600/70 disabled:text-white"
             disabled={!w.canAct || !approval.ready || !ready || treated || !state?.canTreat || action.progress !== null || w.busy || eggQuery.isError}

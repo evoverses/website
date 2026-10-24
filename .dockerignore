@@ -16,3 +16,8 @@
 /apps/squid/lib
 **/.git
 **/.next
+
+**/.env*
+**/.dev.vars*
+**/.open-next
+**/.wrangler

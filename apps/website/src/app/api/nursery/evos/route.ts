@@ -1,4 +1,4 @@
-import { fujiAssets } from "@/lib/nursery/fuji-assets";
+import { nurseryAssets } from "@/lib/nursery/chain-assets";
 import { permission, AccessError } from "@/lib/downloads/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { isAddress, type Address } from "viem";
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   }
   try {
     await permission(true, true);
-    const assets = await fujiAssets(owner.toLowerCase() as Address, page);
+    const assets = await nurseryAssets(owner.toLowerCase() as Address, page);
     return NextResponse.json(assets, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof AccessError) return NextResponse.json({ error: error.code }, { status: error.status, headers: { "Cache-Control": "private, no-store" } });

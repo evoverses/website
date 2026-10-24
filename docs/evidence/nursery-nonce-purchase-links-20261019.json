@@ -1,0 +1,108 @@
+{
+  "tests": {
+    "nursery": 36,
+    "nurserySecurity": 25,
+    "marketplace": 22,
+    "typecheck": "passed",
+    "focusedLint": "passed",
+    "linuxProductionBuilds": "passed",
+    "cloudflareRuntimeChecks": "passed"
+  },
+  "deployed": true,
+  "live": {
+    "main": {
+      "site": "main",
+      "worker": "evoverses-production",
+      "previousVersion": "974fbdfc-db19-403c-adcc-92e57ffc47d2",
+      "chunks": [
+        {
+          "path": "/_next/static/chunks/93578-c3baac32a535db27.js",
+          "sha256": "3ff6de9fd784dc165e05c0246483a6bc50ad2b85dac7698c42b45479113c2abf",
+          "features": [
+            "nursery"
+          ]
+        },
+        {
+          "path": "/_next/static/chunks/99748-fffde234f2892fb4.js",
+          "sha256": "bcce3dc068da91c7bd67296725e742746d8c298570ede03b6e6901372cea73fa",
+          "features": [
+            "purchase-success"
+          ]
+        }
+      ],
+      "entrySha256": "ac1b20a8cd784d640b60a3046afa19dcd8b04564be8a7167820148a91fee2dc0",
+      "deployedVersion": "ea431f6a-09ac-42ae-8b5d-3956815f58c7",
+      "httpChecks": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/nursery/bertha",
+          "status": 200
+        },
+        {
+          "path": "/nursery/hermann",
+          "status": 200
+        },
+        {
+          "path": "/assets/evos",
+          "status": 200
+        },
+        {
+          "path": "/api/player/me",
+          "status": 401
+        }
+      ],
+      "liveAssetsMatch": true
+    },
+    "beta": {
+      "site": "beta",
+      "worker": "evoverses-beta",
+      "previousVersion": "3b507e53-1f3f-4918-849e-d3070f1cfec0",
+      "chunks": [
+        {
+          "path": "/_next/static/chunks/48835-c3e1eefa80f9d521.js",
+          "sha256": "cc1d8020b0dbea82169eee69b4df880f24fc6d08edd0773d85b8680ea5053a42",
+          "features": [
+            "purchase-success"
+          ]
+        },
+        {
+          "path": "/_next/static/chunks/93578-9749bc55067b775a.js",
+          "sha256": "3e3203a5a02483800992712d0d5cf0a5d127dcf77f5595268c6acd0e4d8c029f",
+          "features": [
+            "nursery"
+          ]
+        }
+      ],
+      "entrySha256": "50581cb6eed1dc1febacb0bf3fefbfae6ce4f983845ed631c2739596fef1928b",
+      "deployedVersion": "2e97fbfd-54cb-4496-9e0e-8c737bb0e618",
+      "httpChecks": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/nursery/bertha",
+          "status": 200
+        },
+        {
+          "path": "/nursery/hermann",
+          "status": 200
+        },
+        {
+          "path": "/assets/evos",
+          "status": 200
+        },
+        {
+          "path": "/api/player/me",
+          "status": 401
+        }
+      ],
+      "liveAssetsMatch": true
+    }
+  },
+  "browserProfile": "Post-release signed-in main /profile rendered trainer, balances and inventory in Chrome.",
+  "walletTransactionsSubmitted": 0
+}

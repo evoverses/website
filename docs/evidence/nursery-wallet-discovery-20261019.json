@@ -1,0 +1,101 @@
+{
+  "owner": "0x575ceb9e9ca3d05be1ca18997173c4e3d10f26f1",
+  "chainId": 43113,
+  "before": {
+    "betaApi": "data-service-unavailable",
+    "rpcError": "block range too large: total block range in this request exceeds the maximum of 100 blocks",
+    "requestedBlocks": 1024
+  },
+  "afterReadOnlySourceCheck": {
+    "total": 24,
+    "adultEvos": 18,
+    "eggs": 6,
+    "egg5112Species": "yotnar",
+    "elapsedMs": 10243
+  },
+  "tests": {
+    "nurseryPassed": 31,
+    "typecheck": "passed",
+    "focusedLint": "passed",
+    "productionBuild": "passed"
+  },
+  "deployed": true,
+  "live": {
+    "main": {
+      "site": "main",
+      "worker": "evoverses-production",
+      "previousVersion": "25db80ba-c45c-48bf-a6c2-145f198d720e",
+      "nurseryChunks": [
+        {
+          "path": "/_next/static/chunks/93578-2902e839473a6bb6.js",
+          "sha256": "89ac2a29f87627c01b6fd4979d7225f55434ff51c1cdc89042ca18e678701e05"
+        }
+      ],
+      "entrySha256": "244a6a94db98a416411d19babf3f4fd7282af96e198d6846916f5297edbb48eb",
+      "deployedVersion": "974fbdfc-db19-403c-adcc-92e57ffc47d2",
+      "httpChecks": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/nursery/bertha",
+          "status": 200
+        },
+        {
+          "path": "/nursery/hermann",
+          "status": 200
+        },
+        {
+          "path": "/api/player/me",
+          "status": 401
+        }
+      ],
+      "liveAssetsMatch": true,
+      "authenticatedBrowser": {
+        "wallet": "0x575C\u202626f1",
+        "adultChoices": 18,
+        "readinessStatesVisible": true,
+        "transactionsSubmitted": false
+      }
+    },
+    "beta": {
+      "site": "beta",
+      "worker": "evoverses-beta",
+      "previousVersion": "13863c98-c446-40f0-a290-2c11b7455c21",
+      "nurseryChunks": [
+        {
+          "path": "/_next/static/chunks/93578-4f65b9bfdf20ffdb.js",
+          "sha256": "148325ec9c2627c60f0f3bbffa21b6ddec13cbd25ad8a96e6448de1272b2e2c6"
+        }
+      ],
+      "entrySha256": "f1ac7a9df82d41104e4c1c9f9526637871ac6f94f248f53be5016d9c67bab8e0",
+      "deployedVersion": "3b507e53-1f3f-4918-849e-d3070f1cfec0",
+      "httpChecks": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/nursery/bertha",
+          "status": 200
+        },
+        {
+          "path": "/nursery/hermann",
+          "status": 200
+        },
+        {
+          "path": "/api/player/me",
+          "status": 401
+        }
+      ],
+      "liveAssetsMatch": true,
+      "authenticatedBrowser": {
+        "wallet": "0x575C\u202626f1",
+        "adultChoices": 18,
+        "readinessStatesVisible": true,
+        "transactionsSubmitted": false
+      }
+    }
+  }
+}

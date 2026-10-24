@@ -2,10 +2,9 @@
 import { Confetti } from "@/components/confetti";
 import { evoContract, marketplaceContract } from "@/data/contracts";
 import { useChain } from "@/hooks/use-chain";
-import { useEvoPrice } from "@/hooks/use-token-price";
 import { toAssetFullName } from "@/lib/evo/utils";
 import { shortenAddress } from "@/utils/strings";
-import { toAccountUrl, toBlockExplorerTxUrl } from "@/utils/url";
+import { toBlockExplorerTxUrl } from "@/utils/url";
 import type { SquidAsset } from "@workspace/evoverses/lib/asset/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -20,7 +19,6 @@ import {
 import { Separator } from "@workspace/ui/components/separator";
 import { toast } from "@workspace/ui/components/sonner";
 import { AlertCircleIcon } from "lucide-react";
-import Link from "next/link";
 import { Fragment, type ReactNode, useCallback, useState } from "react";
 import { allowance, approve } from "thirdweb/extensions/erc20";
 import { buyFromListing } from "thirdweb/extensions/marketplace";
@@ -40,12 +38,11 @@ const BuyNowDrawer = ({ asset, children }: {
   children?: ReactNode
 }) => {
   const listing = asset.listings[0];
-  const [success, setSuccess] = useState<boolean>(false);
+  const [purchaseHash, setPurchaseHash] = useState<string>();
+  const success = Boolean(purchaseHash);
   const account = useActiveAccount();
   const { switchChainIfNeeded } = useChain();
-  const { mutateAsync, data: txHash } = useSendAndConfirmTransaction();
-
-  const currencyPrice = useEvoPrice();
+  const { mutateAsync } = useSendAndConfirmTransaction();
 
   const prepareTransaction = useCallback(async () => {
     if (!account) {
@@ -85,7 +82,7 @@ const BuyNowDrawer = ({ asset, children }: {
       window.location.reload();
     }
     if (!open) {
-      setSuccess(false);
+      setPurchaseHash(undefined);
     }
     if (open) {
       setTimeout(() => {
@@ -116,14 +113,14 @@ const BuyNowDrawer = ({ asset, children }: {
               <h2 className="font-semibold text-xl sm:text-4xl text-center">Congrats! You got it!</h2>
               <div className="flex gap-4">
                 <Button variant="secondary" asChild>
-                  <Link href={toBlockExplorerTxUrl(txHash?.transactionHash, { chainId: asset.chainId })}>
+                  <a href={toBlockExplorerTxUrl(purchaseHash, { chainId: asset.chainId })} target="_blank" rel="noopener noreferrer">
                     View Receipt
-                  </Link>
+                  </a>
                 </Button>
                 <Button variant="secondary" asChild>
-                  <Link href={toAccountUrl(account?.address)}>
+                  <a href="/profile">
                     View on Profile
-                  </Link>
+                  </a>
                 </Button>
               </div>
             </div>
@@ -186,8 +183,8 @@ const BuyNowDrawer = ({ asset, children }: {
                   unstyled
                   transaction={() => prepareTransaction()}
                   onError={e => toast.error(e.message)}
-                  onTransactionConfirmed={() => {
-                    setSuccess(true);
+                  onTransactionConfirmed={receipt => {
+                    setPurchaseHash(receipt.transactionHash);
                   }}
                 >
                   Retry

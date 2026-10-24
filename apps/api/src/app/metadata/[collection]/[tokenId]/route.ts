@@ -1,4 +1,4 @@
-import { breedingMetadataTraits, metadataImageVersion } from "@/lib/metadata/nursery-traits";
+import { breedingMetadataTraits, metadataImageVersion, metadataDateSeconds, sizeMetadataTrait } from "@/lib/metadata/nursery-traits";
 import {
   metadataCollectionTokenIdRouteParamsSchema as paramsSchema,
 } from "@/app/metadata/[collection]/[tokenId]/schema";
@@ -11,7 +11,6 @@ import {
   isEvo,
   toAssetFullName,
 } from "@workspace/evoverses/lib/asset/utils";
-import { toTimestampSeconds } from "@workspace/evoverses/utils/numbers";
 import { toTitleCase } from "@workspace/evoverses/utils/strings";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -46,12 +45,12 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
             ...breedingMetadataTraits(asset.metadata),
             {
               trait_type: "Last Breed Time",
-              value: toTimestampSeconds(asset.metadata.lastBreedTime),
+              value: metadataDateSeconds(asset.metadata.lastBreedTime),
               display_type: "date",
             },
             {
               trait_type: "Hatched At",
-              value: toTimestampSeconds(asset.metadata.hatchedAt),
+              value: metadataDateSeconds(asset.metadata.hatchedAt),
               display_type: "date",
             },
             { trait_type: "Total Breeds", value: asset.metadata.totalBreeds, display_type: "number" },
@@ -62,8 +61,8 @@ export const GET = async (_req: NextRequest, context: { params: Promise<z.infer<
             { trait_type: "Special", value: asset.metadata.special, max_value: 50 },
             { trait_type: "Resistance", value: asset.metadata.resistance, max_value: 50 },
             { trait_type: "Speed", value: asset.metadata.speed, max_value: 50 },
-            { trait_type: "Size", value: asset.metadata.size, display_type: "boost_percentage" },
-            { trait_type: "Created At", value: asset.metadata.createdAt ? toTimestampSeconds(asset.metadata.createdAt) : null, display_type: "date" },
+            sizeMetadataTrait(asset.metadata.size),
+            { trait_type: "Created At", value: metadataDateSeconds(asset.metadata.createdAt), display_type: "date" },
             { trait_type: "Stage", value: isEvoAsset ? "Evo" : "Egg" },
           ] : isEgg(asset)
             ? [ { trait_type: "Treated", value: asset.metadata.treated ? "Yes" : "No" } ]

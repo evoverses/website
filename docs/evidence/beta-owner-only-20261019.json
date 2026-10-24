@@ -1,0 +1,45 @@
+{
+  "worker": "evoverses-beta",
+  "previousVersion": "2e97fbfd-54cb-4496-9e0e-8c737bb0e618",
+  "ownerPlayerId": "9d6a70e4-d887-41ad-a7c3-f7e2656cf9bd",
+  "entrySha256": "1b57af37b8a24e371d82922986dded4647e138c970381ba317331f2c8e11c624",
+  "assets": "unchanged from verified nonce/purchase-link release",
+  "deployedVersion": "59cb5ec8-ae37-4581-8cf3-2928c7f1f0db",
+  "anonymousChecks": [
+    {
+      "path": "/",
+      "status": 302,
+      "location": "https://evoverses.com/",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/nursery/bertha?egg=5112",
+      "status": 302,
+      "location": "https://evoverses.com/nursery/bertha?egg=5112",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/api/nursery/access",
+      "status": 302,
+      "location": "https://evoverses.com/api/nursery/access",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/profile",
+      "status": 302,
+      "location": "https://evoverses.com/profile",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/signin",
+      "status": 200,
+      "location": null,
+      "cacheControl": "private, no-store"
+    }
+  ],
+  "testsPassed": 10,
+  "lint": "passed",
+  "typecheck": "passed",
+  "isolatedRuntime": "passed",
+  "signedInOwnerCheck": "pending"
+}

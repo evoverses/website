@@ -47,7 +47,7 @@ export type SquidAssetEvoMetadata = SquidAssetBase & SquidAssetNonGenesisBase & 
   size: number;
   totalBreeds: number;
   lastBreedTime: string;
-  hatchedAt: string;
+  hatchedAt: string | null;
 }
 
 export type SquidAssetMetadata = SquidAssetEggMetadata | SquidAssetEvoMetadata

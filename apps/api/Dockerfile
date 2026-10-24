@@ -41,4 +41,4 @@ ENV NODE_ENV=production \
     PNPM_HOME="/pnpm" \
     PATH="$PNPM_HOME:$PATH"
 
-CMD ["pnpm", "start"]
+CMD ["node", "node_modules/next/dist/bin/next", "start"]

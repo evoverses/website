@@ -229,7 +229,8 @@ export async function projectSnapshot(
       primary_type: element(a.primaryType),
       secondary_type: element(a.secondaryType),
       nature: natures[integer(a.nature, "nature", natures.length - 1)]!,
-      size: integer(a.size, "size", 20),
+      // Public metadata uses percentage boosts; the registry retains raw 0-20.
+      size: (integer(a.size, "size", 20) - 10) * 10,
     });
     for (const name of [
       "health",

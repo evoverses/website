@@ -52,3 +52,9 @@ it("image versions change on treatment, hatching or XP updates and restore on ro
   assert.equal(metadataImageVersion({ ...egg }), version);
   assert.match(version, /^[0-9a-f]{20}$/);
 });
+
+it("unknown or epoch dates are omitted while real hatch dates stay exact",()=>{
+ const {metadataDateSeconds}=load("api-nursery-traits");
+ for(const value of [undefined,null,"","1970-01-01T00:00:00Z","invalid"])assert.equal(metadataDateSeconds(value),null);
+ assert.equal(metadataDateSeconds("2026-10-19T00:00:00Z"),1792368000);
+});
