@@ -34,6 +34,10 @@ pin. Packaging uses its explicit `--dangerouslyUseUnsupportedNextVersion`
 option for this focused repair. A framework support upgrade remains separate
 work; no dependency version was changed here.
 
+The subsequent authorised upgrade is recorded in
+`next16-upgrade-2026-10-30.md`. It also corrects the old adapter's support cutoff:
+Next.js extended version 15 maintenance security support through 31 January 2027.
+
 ## Authority and scope
 
 The user authorised renewing a limited Cloudflare login and deploying this fix.

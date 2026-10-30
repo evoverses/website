@@ -1,0 +1,196 @@
+{
+  "checkedUtc": "2026-10-30T11:52:52.293Z",
+  "workerVersion": "ac41e66b-6ca2-4be8-a612-fa3e9f7279ee",
+  "versions": {
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "openNext": "1.20.14"
+  },
+  "checks": [
+    {
+      "route": "/signin",
+      "variant": "clean",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/",
+      "variant": "clean",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/store",
+      "variant": "clean",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/store",
+      "variant": "legacy",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/",
+      "variant": "legacy",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/signin",
+      "variant": "legacy",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/store",
+      "variant": "malformed",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/",
+      "variant": "malformed",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/signin",
+      "variant": "malformed",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/signin",
+      "variant": "combined",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/store",
+      "variant": "combined",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/",
+      "variant": "combined",
+      "status": 200,
+      "expected": 200,
+      "complete": true
+    },
+    {
+      "route": "/nursery/bertha",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/api/player/me",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "route": "/leaderboard/overall",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/marketplace/evos",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/profile",
+      "status": 307,
+      "expected": 307
+    },
+    {
+      "route": "/api/player/auth/epic/start",
+      "variant": "hostile-origin",
+      "status": 403,
+      "expected": 403
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/chunks/app/profile/page-396db4bfd5f3819d.js",
+      "sha256": "51b1b746d18b5a88178aa31c544c6b3a7bbbae3584cc46bdb1500688d2393d82",
+      "status": 200,
+      "actualSha256": "51b1b746d18b5a88178aa31c544c6b3a7bbbae3584cc46bdb1500688d2393d82",
+      "matches": true
+    }
+  ],
+  "concurrent": [
+    {
+      "route": "/",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/signin",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/store",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/leaderboard/overall",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/signin",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/store",
+      "status": 200,
+      "complete": true
+    },
+    {
+      "route": "/leaderboard/overall",
+      "status": 200,
+      "complete": true
+    }
+  ],
+  "passed": true,
+  "authenticatedBrowser": {
+    "profileReloaded": true,
+    "accountEvos": 4,
+    "nftHoldingsAfterPagination": 49,
+    "itemTypes": 6,
+    "potionQuantity": 2,
+    "accountLearnedMovesVerified": true,
+    "nftLearnedMovesVerified": true,
+    "storeNavigationAndReturnVerified": true,
+    "browserConsoleErrors": 0,
+    "brokenImages": 0,
+    "imageElements": 62,
+    "newEpicOAuthLoginRetested": false,
+    "liveAccountStateChanged": false,
+    "walletTransactionsSubmitted": false,
+    "paymentsSubmitted": false,
+    "screenshot": "output/playwright/next16-profile.jpg"
+  }
+}
