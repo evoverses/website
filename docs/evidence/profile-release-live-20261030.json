@@ -1,0 +1,104 @@
+{
+  "checkedUtc": "2026-10-30T11:32:21.364Z",
+  "workerVersion": "a68628cf-c434-409a-96ca-75fd24a8907f",
+  "checks": [
+    {
+      "route": "/",
+      "variant": "clean",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/signin",
+      "variant": "clean",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/store",
+      "variant": "clean",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/",
+      "variant": "legacy",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/signin",
+      "variant": "legacy",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/store",
+      "variant": "legacy",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/",
+      "variant": "combined",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/signin",
+      "variant": "combined",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/store",
+      "variant": "combined",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/api/player/me",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "route": "/profile",
+      "status": 307,
+      "expected": 307
+    },
+    {
+      "route": "/nursery/bertha",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "route": "/marketplace/evos",
+      "status": 200,
+      "expected": 200
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/chunks/app/profile/page-82d2c3c273f510ea.js",
+      "sha256": "debe9bd18ff506b3f3007131e420d204505c1635135eb2d6f540b40af78a0687",
+      "status": 200,
+      "actualSha256": "debe9bd18ff506b3f3007131e420d204505c1635135eb2d6f540b40af78a0687",
+      "matches": true
+    }
+  ],
+  "passed": true,
+  "authenticatedBrowser": {
+    "trainer": "DanMancs",
+    "profileCrashResolved": true,
+    "accountEvos": 4,
+    "nftHoldingsAfterPagination": 49,
+    "itemTypes": 6,
+    "potionQuantity": 2,
+    "accountLearnedMovesVerified": true,
+    "nftLearnedMovesVerified": true,
+    "newOAuthLoginRetested": false,
+    "liveAccountStateChanged": false,
+    "walletTransactionsSubmitted": false,
+    "screenshot": "profile-live.jpg"
+  }
+}
