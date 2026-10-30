@@ -798,6 +798,23 @@ test("actual inventory card renders saved HP, stats and move unlocks without Pro
   assert.ok(nft.includes("space-y-2 text-xs"));
   assert.ok(nft.includes("max-w-[calc(100vw-32px)]"));
   assert.equal(nft.includes("<details"), false);
+  const choices = require("../../src/data/move-learning.json").catalogues["move-choices-v2"];
+  const learned = choices.species.nissel.starters;
+  const { combatDetails, parseCombat } = require(path.join(base, "lib/player/inventory/combat.js"));
+  const choiceState = parseCombat({resourceKey:"account:render",level:1,experience:0,currentHealth:0,maxHealth:50,version:3,recoverAt:null,
+    equipped:learned,moves:learned.map(id=>({id,remaining:0,maximum:42,equipped:true})),
+    learning:{resourceKey:"account:render",catalogueVersion:"move-choices-v2",learned}});
+  const choiceHtml = renderToStaticMarkup(React.createElement(mod.exports.InventoryCard, {row:{...row,details:combatDetails(row.details,choiceState,"nissel")}}));
+  assert.ok(choiceHtml.includes("Learned moves and choices"));
+  assert.ok(choiceHtml.includes(choices.moveNames[9008]));
+  assert.ok(choiceHtml.includes("New move choice from level 5"));
+  assert.equal(choiceHtml.includes("New move unlocks"),false);
+  assert.equal(choiceHtml.includes(choices.moveNames[4010]),false);
+  assert.ok(/HP 0[^<]*\/50/.test(choiceHtml));
+  const unavailable = renderToStaticMarkup(React.createElement(mod.exports.InventoryCard,{row:{...row,details:undefined,detailsUnavailable:true}}));
+  assert.ok(unavailable.includes("Stats and moves are temporarily unavailable."));
+  assert.ok(unavailable.includes(row.displayId));
+  assert.equal(unavailable.includes("Tackle"),false);
   const item = renderToStaticMarkup(
     React.createElement(mod.exports.InventoryCard, {
       row: {
@@ -996,4 +1013,25 @@ test("NFT inventory uses verified ranked XP instead of stale metadata without re
   for(const patch of [{level:0},{level:101},{experience:-1},{experience:0.5},{level:undefined},{experience:undefined}])assert.throws(()=>parseCombat({...raw,...patch}));
   const mismatch=await inventoryHandler(request(),deps({sources:sources([asset(1,a,{metadata})]),readCombat:async()=>[{...state,level:9}]}));
   assert.ok((await mismatch.json()).nfts.warnings.includes("COMBAT_STATE_UNAVAILABLE"));
+});
+
+test("NFT choices use the same learned catalogue as ordinary Evos and isolate one invalid card", async () => {
+  const { parseCombat } = require(path.join(base, "lib/player/inventory/combat.js"));
+  const policy = require("../../src/data/move-learning.json").catalogues["move-choices-v2"];
+  const metadata = {type:"EVO",species:"nissel",generation:0,chroma:"none",xp:0,nature:"loyal",gender:"female",attack:25,special:25,defense:25,resistance:25,speed:25};
+  const states=[1,2].map(tokenId=>{
+    const resourceKey=`chain:43114:${collection}:${tokenId}`, learned=[...policy.species.nissel.starters,...(tokenId===2?[2147483647]:[])];
+    return parseCombat({resourceKey,level:1,experience:0,currentHealth:0,maxHealth:50,version:21,recoverAt:null,equipped:learned.slice(0,4),
+      moves:learned.map((id,i)=>({id,remaining:0,maximum:42,equipped:i<4})),learning:{resourceKey,catalogueVersion:"move-choices-v2",learned}});
+  });
+  const response=await inventoryHandler(request(),deps({sources:sources([asset(1,a,{metadata}),asset(2,a,{metadata})]),readCombat:async()=>states}));
+  assert.equal(response.status,200);
+  const {nfts}=await response.json();
+  assert.equal(nfts.rows.length,2);
+  assert.equal(nfts.rows[0].details.combatVerified,true);
+  assert.equal(nfts.rows[0].details.moves.find(m=>m.id===9008).name,policy.moveNames[9008]);
+  assert.equal(nfts.rows[0].details.moves.find(m=>m.id===9008).remainingPP,0);
+  assert.equal(nfts.rows[1].details,undefined);
+  assert.equal(nfts.rows[1].detailsUnavailable,true);
+  assert.deepEqual(nfts.warnings,["COMBAT_STATE_UNAVAILABLE"]);
 });

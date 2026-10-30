@@ -21,6 +21,8 @@
     "check:cloudflare": "node scripts/check-cloudflare-build.cjs",
     "test:wallet:local": "node --test tests/wallet/*.test.cjs",
     "test:inventory": "node scripts/test-inventory.cjs",
+    "sync:move-learning": "node scripts/sync-move-learning.cjs",
+    "check:move-learning": "node scripts/sync-move-learning.cjs --check",
     "dev:beta": "next dev --hostname 0.0.0.0 --port 3100",
     "test:game-inventory": "node --test tests/inventory/game-feed.test.cjs tests/inventory/game-team.test.cjs",
     "test:game-store:local": "node --test tests/inventory/game-store.test.cjs",

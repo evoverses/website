@@ -1,5 +1,7 @@
 # Inventory move unlock visibility
 
+Current choice-based profiles are covered by [the 29 October repair](profile-move-learning-2026-10-29.md). The automatic unlock behaviour below remains applicable to legacy cohorts only.
+
 Initial implementation snapshot, 9 October 2026, `dan-dev`. Prepared for GitHub sync; no deployment.
 
 All account and NFT Evo cards show only **New move unlocks at level X** until the Evo reaches that level. Locked names and PP are omitted from the shared Stats and Moves hover/focus/tap panel, and masked in the details model. Unlocked names, equipped state and verified PP continue to display normally. Existing fonts, card layout and responsive panel behavior are retained.

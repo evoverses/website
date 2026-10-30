@@ -55,6 +55,10 @@ for (const file of [
       .replace(
         'require("@/data/evo-progression.json")',
         'require("../../../data/evo-progression.json")',
+      )
+      .replace(
+        'require("@/data/move-learning.json")',
+        'require("../../../data/move-learning.json")',
       ),
   );
 }
@@ -67,9 +71,13 @@ fs.copyFileSync(
   path.join(root, "src/data/evo-progression.json"),
   path.join(out, "data/evo-progression.json"),
 );
+fs.copyFileSync(
+  path.join(root, "src/data/move-learning.json"),
+  path.join(out, "data/move-learning.json"),
+);
 const result = spawnSync(
   process.execPath,
-  ["--test", path.join(root, "tests/inventory/inventory.test.cjs")],
+  ["--test", ...process.argv.slice(2), path.join(root, "tests/inventory/inventory.test.cjs"), path.join(root, "tests/inventory/move-learning.test.cjs")],
   {
     stdio: "inherit",
     env: { ...process.env, EVOVERSES_INVENTORY_TEST_LIB: out },
