@@ -1,13 +1,13 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
 function load(file,imports={}){
- const source=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+ const source=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,esModuleInterop:true}}).outputText;
  const module={exports:{}};
  vm.runInNewContext(source,{module,exports:module.exports,Buffer,Headers,AbortController,URL,URLSearchParams,TextDecoder,setTimeout,clearTimeout,fetch,Date,require:name=>Object.hasOwn(imports,name)?imports[name]:require(name)});
  return module.exports;
 }
 const healthCore=load('../../packages/evoverses/src/lib/asset/health.ts');
 const evoCore=load('src/lib/player/inventory/evo.ts',{'@/data/evo-progression.json':require('../../src/data/evo-progression.json'),'@workspace/evoverses/lib/asset/health':healthCore});
-const combatCore=load('src/lib/player/inventory/combat.ts');
+const combatCore=load('src/lib/player/inventory/combat.ts',{'@/data/move-learning.json':require('../../src/data/move-learning.json')});
 const core=load('src/lib/player/auth-core.ts',{'./inventory/evo':evoCore,'./inventory/combat':combatCore});
 const profile={player:{id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',displayName:'Test trainer',experience:40},balance:{evoros:125}};
 const token='a'.repeat(64);

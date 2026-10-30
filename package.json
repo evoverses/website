@@ -23,7 +23,9 @@
   "pnpm": {
     "overrides": {
       "react": "19.3.1",
-      "react-dom": "19.3.1"
+      "react-dom": "19.3.1",
+      "@types/react": "19.3.0",
+      "@types/react-dom": "19.3.0"
     }
   }
 }

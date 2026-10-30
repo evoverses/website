@@ -5,7 +5,7 @@ function loader(overrides={}) {
  function load(file){
   file=path.resolve(file);if(cache.has(file))return cache.get(file).exports;
   const module={exports:{}};cache.set(file,module);
-  const source=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+  const source=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
   const localRequire=name=>{
    if(Object.hasOwn(overrides,name))return overrides[name];
    let target=name.startsWith('.')?path.resolve(path.dirname(file),name):name.startsWith('@/')?path.resolve('src',name.slice(2)):name.startsWith('@workspace/evoverses/')?path.resolve('../../packages/evoverses/src',name.slice('@workspace/evoverses/'.length)):null;
