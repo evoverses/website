@@ -1,6 +1,8 @@
 import { verifyAuthCookie } from "@/lib/thirdweb/auth.edge";
 import { NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 
+// Retain the Edge middleware convention for the Cloudflare adapter. Next.js 16's
+// proxy convention changes this boundary to the Node.js runtime.
 export const middleware = async (request: NextRequest, event: NextFetchEvent) => {
   // Game-account pages verify their independent cookie against the player service.
   // Profile and its Liquidity page authenticate in the profile layout.

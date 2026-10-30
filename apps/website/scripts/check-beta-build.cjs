@@ -4,7 +4,7 @@ const fs = require("node:fs"), path = require("node:path");
 const cwd = path.resolve(__dirname, "..");
 const configPath = path.join(cwd, "tsconfig.json");
 const original = fs.readFileSync(configPath, "utf8");
-const result = spawnSync(process.execPath, [path.join(cwd, "node_modules/next/dist/bin/next"), "build"], {
+const result = spawnSync(process.execPath, [path.join(cwd, "node_modules/next/dist/bin/next"), "build", "--webpack"], {
   cwd, stdio: "inherit",
   env: { ...process.env, EVOVERSES_LOCAL_BUILD_CHECK: "1", NEXT_TELEMETRY_DISABLED: "1" },
 });

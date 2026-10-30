@@ -45,7 +45,7 @@ function run(args,cwd) {
 console.log("Credential-free compatibility source: " + source);
 run(["install","--frozen-lockfile"], source);
 // Build explicitly so OpenNext does not invoke a separate global pnpm binary.
-run(["exec","next","build"], app);
+run(["exec","next","build","--webpack"], app);
 // On Windows, pnpm's external tool cache can widen Next's tracing root to the
 // user profile. Keep the actual generated trace, and also expose its monorepo
 // subtree at the layout OpenNext expects. Nothing is fabricated or removed.
