@@ -1,0 +1,74 @@
+{
+  "productionVersion": "ea431f6a-09ac-42ae-8b5d-3956815f58c7",
+  "profileSource": "98f2a4e",
+  "preservedProductionFiles": [
+    {
+      "path": "apps/website/src/components/app-navbar/wallet-controls.tsx",
+      "sha256": "7859e78da4f8817b7ffc7470b46783fbc9d40ed3d158c80090f40c25e29dec2c"
+    },
+    {
+      "path": "apps/website/src/components/drawers/list-for-sale-drawer.tsx",
+      "sha256": "f88db1c1e3e58f3e30584b52ffdbd7c8b63ee4c701297eb4adde0afc50398150"
+    },
+    {
+      "path": "apps/website/src/components/drawers/buy-now-drawer.tsx",
+      "sha256": "b37d3841dcdd8d3888f4035551b4687fe97e2a196269256a5d4ebeca3f61553b"
+    },
+    {
+      "path": "apps/website/src/components/nursery/hooks.ts",
+      "sha256": "6cf6534db2b5ecadc07ac9f001499aa3e9f2edd602d31d1c0904f708b199c9d9"
+    },
+    {
+      "path": "apps/website/src/lib/marketplace/owner-listing.ts",
+      "sha256": "207ee3e10a1d162b2cc9a965cf982793ab66cae71a21d92a8ed7bb5dd3890391"
+    },
+    {
+      "path": "apps/website/src/lib/nursery/egg-origin.ts",
+      "sha256": "bec14ed9904dec5809e3a9c6c4fb20949d67b0b82dcc99301e17f4257a7c5e53"
+    },
+    {
+      "path": "apps/website/src/lib/nursery/wallet-actions.ts",
+      "sha256": "ec256431c7c6f60f2fabc592e795b4b70bfc73693eb4642d8731e43aaafad61d"
+    },
+    {
+      "path": "apps/website/src/lib/nursery/contracts.ts",
+      "sha256": "91dd8db0b3d4e593176c2786b4c54fa70694e901b2adbf942b22e1cf0a6ca5a0"
+    },
+    {
+      "path": "apps/website/src/lib/nursery/wallet-send.ts",
+      "sha256": "536ebfe1befae26f6020b477d6c82d66065571efdbee2a208140ec2d5d59468a"
+    },
+    {
+      "path": "apps/website/src/lib/nursery/fuji-assets.ts",
+      "sha256": "c3f57e5262385504f7e8f1551f251ffe2ccda3a83f70fa2a807058512fac12bc"
+    },
+    {
+      "path": "apps/website/src/lib/nursery/audit-client.ts",
+      "sha256": "d806b82d56ed9684fd90f63520c2a96cd58b17f772a72e1c8e95f257a85b0630"
+    },
+    {
+      "path": "apps/website/tests/player/nursery-security.test.cjs",
+      "sha256": "fc1d4c163e5f8865cbd01001ac44376999b243fa7911a99da1bb58f9fea7b6d5"
+    },
+    {
+      "path": "apps/website/tests/marketplace/owner-listing.test.cjs",
+      "sha256": "d28983fa5c230c645acb021fd5305640f7410f0ed2af17b7feb6ae791344e09a"
+    },
+    {
+      "path": "apps/website/tests/marketplace/purchase-success.test.cjs",
+      "sha256": "4edb305cd1ae3190b2a4271f1819c9c32fc51c38644d6cf7f81e22cd420bad01"
+    },
+    {
+      "path": "apps/website/tests/nursery/wallet-send.test.mts",
+      "sha256": "380318e7498283b4286c7b1f68f41644761f70a7f7dd84f2ffeddbe945008ac2"
+    },
+    {
+      "path": "apps/website/tests/nursery/egg-origin.test.mts",
+      "sha256": "a7ec4e5b43d458e3a9ce90a6d86ec2e6f5905fc342e8977034a16aa2b75d551f"
+    },
+    {
+      "path": "apps/website/tests/nursery/wallet.test.mts",
+      "sha256": "108cdcc5fdb6e53226f2dde8f041d2757c9c41e4f31ebc5f2f3dd1bea23321a1"
+    }
+  ]
+}

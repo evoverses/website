@@ -5,7 +5,7 @@ import { nurseryGasBudget } from "./gas-budget";
 import { nurseryAction } from "./audit-core";
 import { requireBreedingApproval } from "../beta/release-policy";
 import { nurseryTokenAddress as evoContractAddress, nurseryNftAddress as evoNftContractAddress, nurseryBerthaAddress, nurseryHermannAddress, nurseryNetworkConfigured, nurseryWrapperAddress, nurseryChain, usesChainlinkRandomness, nurseryRegistryVersion } from "./network";
-import { client } from "@/lib/thirdweb/config";
+import { sendNurseryWalletTransaction } from "./wallet-send";
 import berthaJson from "./abi/Breeder_Bertha.json";
 import hermannJson from "./abi/Hatcher_Hermann.json";
 import {
@@ -19,11 +19,9 @@ import {
   maxUint256,
   erc721Abi,
 } from "viem";
-import { defineChain, prepareTransaction, sendTransaction } from "thirdweb";
 import type { Account } from "thirdweb/wallets";
 import { nativeBudget } from "./rules";
 import { discoverOwnedEggs } from "./discovery";
-const chain = defineChain(nurseryChain.id);
 
 export const berthaAbi = berthaJson as Abi;
 export const hermannAbi = hermannJson as Abi;
@@ -33,7 +31,8 @@ export const hermannAddress = nurseryHermannAddress;
 export const nurseryConfigured = nurseryNetworkConfigured;
 export const nurseryClient = createPublicClient({
   chain: nurseryChain,
-  transport: http(),
+  batch: { multicall: true },
+  transport: http(undefined, { timeout: 10_000, retryCount: 1 }),
 });
 const enumerableNftAbi = [
   ...erc721Abi,
@@ -245,7 +244,7 @@ export async function sendNurseryTransaction(
     send: async () => {
       if (gas === undefined) throw new Error("Transaction gas has not been checked.");
       options.onProgress?.("wallet");
-      return (await sendTransaction({ account, transaction: prepareTransaction({ client, chain, to, data, value: options.value ?? 0n, gasPrice: options.gasPrice, gas }) })).transactionHash;
+      return (await sendNurseryWalletTransaction(account, { chainId: nurseryChain.id, to, data, value: options.value ?? 0n, gasPrice: options.gasPrice, gas })).transactionHash;
     },
     submitted: hash => { options.submitted?.(hash as Hex); options.onProgress?.("confirming"); },
     wait: async hash => {
@@ -296,7 +295,11 @@ export function nurseryError(error: unknown) {
   const message =
     error instanceof Error
       ? error.message
-      : "Something went wrong. Refresh and try again.";
+      : typeof error === "object" && error !== null && "message" in error && typeof error.message === "string"
+        ? error.message
+        : "Something went wrong. Refresh and try again.";
+  if (/nonce too low|nonce has already been used|already known/i.test(message))
+    return "Another transaction used this wallet's nonce. Check your wallet's pending transactions before retrying this action.";
   if (/reject|denied/i.test(message)) return "Wallet request cancelled.";
   if (/insufficient funds/i.test(message))
     return "You need more AVAX for the surcharge and network gas.";

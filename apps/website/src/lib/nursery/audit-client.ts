@@ -25,7 +25,12 @@ export async function recordNurseryEvent(event: Omit<AuditEvent, 'kind'>, requir
     if (required) throw error;
   }
 }
-export async function retryNurseryAudit() {
+let auditRetry: Promise<void> | undefined;
+export function retryNurseryAudit() {
+  if (!auditRetry) auditRetry = deliverQueuedAudit().finally(() => { auditRetry = undefined; });
+  return auditRetry;
+}
+async function deliverQueuedAudit() {
   const events = queued();
   for (const event of events) {
     try { await post(event); } catch { return; }

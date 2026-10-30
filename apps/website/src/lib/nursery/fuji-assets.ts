@@ -8,7 +8,9 @@ import type { SquidAsset, SquidAssetEvoMetadata } from '@workspace/evoverses/lib
 import { species, elements, natures } from '@workspace/database/types/evo';
 import { AccessError } from '@/lib/downloads/server';
 
-const client = createPublicClient({ chain: nurseryChain, transport: http() });
+// Canonical pages share one block; batch parallel token reads instead of issuing
+// a separate RPC request for every field of every Evo in the wallet.
+const client = createPublicClient({ chain: nurseryChain, batch: { multicall: true }, transport: http(undefined, { timeout: 10_000, retryCount: 1 }) });
 const enumerable = [...erc721Abi, { type: 'function', name: 'tokenOfOwnerByIndex', stateMutability: 'view', inputs: [{ name: 'owner', type: 'address' }, { name: 'index', type: 'uint256' }], outputs: [{ type: 'uint256' }] }] as const;
 function number(value: bigint, max = Number.MAX_SAFE_INTEGER) {
   if (value < 0n || value > BigInt(max)) throw new Error('Invalid canonical test asset'); return Number(value);

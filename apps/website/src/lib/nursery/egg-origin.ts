@@ -17,7 +17,9 @@ export async function readEggOrigin(tokenId: bigint, egg: Egg, head: { number: b
     if (block.hash === cached.blockHash && block.timestamp === egg[3] && cached.parent1 === egg[0] && cached.parent2 === egg[1]) return cached;
     cache.delete(key);
   }
-  const recent = head.number > 1023n ? head.number - 1023n : 0n;
+  // The public Fuji RPC accepts at most 100 blocks per eth_getLogs request.
+  // Older eggs use the timestamp lookup below, whose final range is at most 64 blocks.
+  const recent = head.number > 99n ? head.number - 99n : 0n;
   const query = (fromBlock: bigint, toBlock: bigint) => client.getLogs({ address: nurseryHermannAddress, event, args: { tokenId }, fromBlock, toBlock, strict: true });
   let logs = await query(recent, head.number);
   if (!logs.length) {
