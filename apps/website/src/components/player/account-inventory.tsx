@@ -248,7 +248,9 @@ function EvoDetails({
             </dl>
           </section>
           <section className="min-w-0">
-            <h6 className="mb-3 text-sm font-bold">Moves and unlock levels</h6>
+            <h6 className="mb-3 text-sm font-bold">
+              {details.moves.some(move => move.choice) ? "Learned moves and choices" : "Moves and unlock levels"}
+            </h6>
             <ul className="space-y-2 text-xs">
               {details.moves.map((move) => (
                 <li
@@ -259,16 +261,18 @@ function EvoDetails({
                     <>
                       <div className="flex justify-between gap-3">
                         <span className="font-semibold">{move.name}</span>
-                        <span className="shrink-0">Level {move.level}</span>
+                        <span className="shrink-0">{move.choice && move.level === 1 ? "Starter" : `Level ${move.level}`}</span>
                       </div>
                       <p className="mt-1">
-                        {move.equipped ? "Equipped" : "Available"}
+                        {move.equipped ? "Equipped" : move.choice ? "Learned" : "Available"}
                         {move.remainingPP !== undefined &&
                           ` · PP ${move.remainingPP}/${move.maximumPP}`}
                       </p>
                     </>
                   ) : (
-                    <p>New move unlocks at level {move.level}</p>
+                    <p>{move.choice
+                      ? move.level <= details.level ? "Unlearned move - choose in game" : `New move choice from level ${move.level}`
+                      : `New move unlocks at level ${move.level}`}</p>
                   )}
                 </li>
               ))}
@@ -313,6 +317,9 @@ export function InventoryCard({
             onDetailsOpenChange={onDetailsOpenChange}
           />
         </>
+      )}
+      {row.detailsUnavailable && (
+        <p className="text-xs text-muted-foreground">Stats and moves are temporarily unavailable.</p>
       )}
       {row.kind === "item" ? (
         <p className="break-words text-xs">

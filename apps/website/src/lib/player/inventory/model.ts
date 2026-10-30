@@ -9,6 +9,26 @@ const display = displayCatalogue as Record<
 >;
 export const title = (value: string) =>
   value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+function ordinaryEvo(evo: Inventory["evos"][number]): InventoryRow {
+  const experience = evo.combat?.experience ?? evo.experience;
+  const row: InventoryRow = {
+    id: `evo:${evo.id}`, kind: "evo", name: title(evo.speciesKey),
+    image: null, quantity: 1, xp: experience, species: evo.speciesKey,
+    category: "Evos", displayId: evo.displayId,
+  };
+  if (isGeneratedStats(evo.stats)) {
+    try {
+      const details = evoProgression(evo.speciesKey, evo.stats, experience);
+      if (evo.combat?.level !== undefined && details.level !== evo.combat.level) throw Error("Invalid Evo progression");
+      row.details = evo.combat ? combatDetails(details, evo.combat, evo.speciesKey) : details;
+    } catch {
+      // Keep the holding and the rest of the profile available. Never turn
+      // inconsistent battle data into apparently verified HP or learned moves.
+      row.detailsUnavailable = true;
+    }
+  }
+  return row;
+}
 export function ordinaryInventory(inventory: Inventory): InventoryRow[] {
   // Revisions identify storage stacks; Profile shows one total per product.
   const items = new Map<string, InventoryRow>();
@@ -32,20 +52,7 @@ export function ordinaryInventory(inventory: Inventory): InventoryRow[] {
   }
   return [
     ...items.values(),
-    ...inventory.evos.map((evo) => ({
-      id: `evo:${evo.id}`,
-      kind: "evo" as const,
-      name: title(evo.speciesKey),
-      image: null,
-      quantity: 1,
-      xp: evo.experience,
-      species: evo.speciesKey,
-      category: "Evos",
-      displayId: evo.displayId,
-      ...(isGeneratedStats(evo.stats)
-        ? { details: evo.combat ? combatDetails(evoProgression(evo.speciesKey, evo.stats,evo.experience),evo.combat) : evoProgression(evo.speciesKey,evo.stats,evo.experience) }
-        : {}),
-    })),
+    ...inventory.evos.map(ordinaryEvo),
   ];
 }
 export type InventoryFilters = {
